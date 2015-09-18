@@ -5,7 +5,11 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateRidesTable extends Migration
 {
-
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
     public function up()
     {
         Schema::create('rides', function (Blueprint $table) {
@@ -21,6 +25,12 @@ class CreateRidesTable extends Migration
             $table->timestamps();
         });
     }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
     public function down()
     {
         Schema::drop('rides');
