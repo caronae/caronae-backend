@@ -22,7 +22,7 @@ Route::get('create/{name}/{token}', function($name, $token) {
     $user->name = $name;
     $user->token = $token;
 
-    $user->save;
+    $user->save();
 });
 
 //rota padrão do laravel podemos excluir depois

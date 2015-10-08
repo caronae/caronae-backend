@@ -10,17 +10,15 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('profile');
-            $table->string('course');
-            $table->string('unit');
-            $table->string('zone');
-            $table->string('neighborhood');
-            $table->string('phoneNumber');
-            $table->string('email');
-            $table->boolean('carOwner');
-            $table->string('carModel');
-            $table->string('carColor');
-            $table->string('carPlate');
+            $table->string('profile')->nullable();
+            $table->string('course')->nullable();
+            $table->string('phone_number')->nullable();
+            $table->string('email')->nullable();
+            $table->boolean('car_owner')->default(false);
+            $table->string('car_model')->nullable();
+            $table->string('car_color')->nullable();
+            $table->string('car_plate')->nullable();
+            $table->string('token')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

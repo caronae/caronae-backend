@@ -14,14 +14,17 @@ class CreateRidesTable extends Migration
     {
         Schema::create('rides', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('street');
-            $table->string('neighborhood');
             $table->string('zone');
-            $table->string('hub');
+            $table->string('neighborhood');
+			$table->boolean('go');
+            $table->string('place')->nullable();
+            $table->string('way')->nullable();
+            $table->integer('routine_id')->nullable();
+            $table->string('hub')->nullable();
             $table->integer('slots');
             $table->time('time');
             $table->date('date');
-            $table->string('description');
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }
