@@ -44,20 +44,19 @@ class UserController extends Controller
         $user->name = $decode->name;
         $user->profile = $decode->profile;
         $user->course = $decode->course;
-        $user->unit = $decode->unit;
-        $user->zone = $decode->zone;
         $user->neighborhood = $decode->neighborhood;
-        $user->phoneNumber = $decode->phoneNumber;
-        $user->email = $decode->phoneNumber;
-        $user->carOwner = $decode->carOwner;
-        $user->carModel = $decode->carModel;
-        $user->carColor = $decode->carColor;
-        $user->carPlate = $decode->carPlate;
+        $user->phone_number = $decode->phoneNumber;
+        $user->email = $decode->email;
+        $user->car_owner = $decode->car_owner;
+        $user->car_model = $decode->car_model;
+        $user->car_color = $decode->car_color;
+        $user->car_plate = $decode->car_plate;
+        $user->token = $decode->token;
 
 
-        //$user->save();
+        $user->save();
 
-        return var_dump($user);
+        //return var_dump($user);
     }
 
     /**
@@ -80,30 +79,7 @@ class UserController extends Controller
      */
     public function edit($id, Request $request)
     {
-        $user = User::where('id', $id)->first();
 
-        //todo: leonardo prefere fazer pelo header ou json decode como foi a outra request?
-        $user->profile = $request->header('profile');
-
-        /*
-        $user->name = $request->header('name');
-        $user->profile = $request->header('profile');
-        $user->course = $request->header('course');
-        $user->unit = $request->header('unit');
-        $user->zone = $request->header('zone');
-        $user->neighborhood = $request->header('neighborhood');
-        $user->phoneNumber = $request->header('phoneNumber');
-        $user->email = $request->header('email');
-        $user->carOwner = $request->header('carOwner');
-        $user->carModel = $request->header('carModel');
-        $user->carColor = $request->header('carColor');
-        $user->carPlate = $request->header('carPlate');
-        */
-
-        $user->save();
-
-        //para debug
-        return var_dump($user);
 
     }
 
@@ -116,7 +92,25 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $decode = json_decode($request->getContent());
+
+        //todo: verificar em um middleware
+        $user = User::where('token', $decode->token)->first();
+
+        $user->name = $decode->name;
+        $user->profile = $decode->profile;
+        $user->course = $decode->course;
+        $user->neighborhood = $decode->neighborhood;
+        $user->phone_number = $decode->phone_number;
+        $user->email = $decode->email;
+        $user->car_owner = $decode->car_owner;
+        $user->car_model = $decode->car_model;
+        $user->car_color = $decode->car_color;
+        $user->car_plate = $decode->car_plate;
+        $user->token = $decode->token;
+
+
+        $user->save();
     }
 
     /**
