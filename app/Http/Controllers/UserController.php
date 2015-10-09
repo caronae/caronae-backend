@@ -33,7 +33,7 @@ class UserController extends Controller
     public function auth(Request $request) {
         $decode = json_decode($request->getContent());
 
-        $user = User::where('profile', $decode->token)->first();
+        $user = User::where('token', $decode->token)->first();
 
         return $user;
 

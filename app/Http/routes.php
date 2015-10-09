@@ -5,9 +5,6 @@ use App\User;
 
 Route::resource('user', 'UserController');
 
-=======
-Route::resource('user', 'UserController');
-
 Route::post('auth', 'UserController@auth');
 
 >>>>>>> origin/master
