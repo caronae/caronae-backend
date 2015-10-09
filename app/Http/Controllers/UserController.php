@@ -39,6 +39,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $decode = json_decode($request->getContent());
+		
         $user = new User();
 
         $user->name = $decode->name;
@@ -80,7 +81,6 @@ class UserController extends Controller
     public function edit($id, Request $request)
     {
 
-
     }
 
     /**
@@ -100,7 +100,6 @@ class UserController extends Controller
         $user->name = $decode->name;
         $user->profile = $decode->profile;
         $user->course = $decode->course;
-        $user->neighborhood = $decode->neighborhood;
         $user->phone_number = $decode->phone_number;
         $user->email = $decode->email;
         $user->car_owner = $decode->car_owner;
@@ -108,7 +107,6 @@ class UserController extends Controller
         $user->car_color = $decode->car_color;
         $user->car_plate = $decode->car_plate;
         $user->token = $decode->token;
-
 
         $user->save();
     }
