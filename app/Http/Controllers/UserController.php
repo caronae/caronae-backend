@@ -30,6 +30,15 @@ class UserController extends Controller
 
     }
 
+    public function auth(Request $request) {
+        $decode = json_decode($request->getContent());
+
+        $user = User::where('profile', $decode->token)->first();
+
+        return $user;
+
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -44,7 +53,6 @@ class UserController extends Controller
         $user->name = $decode->name;
         $user->profile = $decode->profile;
         $user->course = $decode->course;
-        $user->neighborhood = $decode->neighborhood;
         $user->phone_number = $decode->phoneNumber;
         $user->email = $decode->email;
         $user->car_owner = $decode->car_owner;

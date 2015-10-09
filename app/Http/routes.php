@@ -1,12 +1,9 @@
 <?php
 
 use App\User;
-
-Route::post('teste', 'UserController@jsontest');
-
 Route::resource('user', 'UserController');
 
-
+Route::post('auth', 'UserController@auth');
 
 // rota para testar os resultados no banco
 Route::get('db', function() {
