@@ -1,7 +1,6 @@
 <?php
 
 use App\User;
-<<<<<<< HEAD
 
 Route::resource('user', 'UserController');
 

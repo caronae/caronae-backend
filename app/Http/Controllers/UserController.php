@@ -36,7 +36,6 @@ class UserController extends Controller
         $user = User::where('token', $decode->token)->first();
 
         return $user;
-
     }
 
     /**
@@ -62,10 +61,7 @@ class UserController extends Controller
         $user->car_plate = $decode->car_plate;
         $user->token = $decode->token;
 
-
         $user->save();
-
-        //return var_dump($user);
     }
 
     /**
