@@ -1,9 +1,16 @@
 <?php
 
 use App\User;
+<<<<<<< HEAD
 
 Route::resource('user', 'UserController');
 
+=======
+Route::resource('user', 'UserController');
+
+Route::post('auth', 'UserController@auth');
+
+>>>>>>> origin/master
 // rota para testar os resultados no banco
 Route::get('db', function() {
     $user = User::all()->first();
