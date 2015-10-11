@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Ride;
 
 class RideController extends Controller
 {
@@ -37,7 +38,21 @@ class RideController extends Controller
      */
     public function store(Request $request)
     {
+        $decode = json_decode($request->getContent());
+		
         $ride = new Ride();
+		$ride->myzone = $decode->myzone;
+		$ride->neighborhood = $decode->neighborhood;
+		$ride->place = $decode->place;
+		$ride->route = $decode->route;
+		$ride->mydate = $decode->mydate;
+		$ride->mytime = $decode->mytime;
+		$ride->slots = $decode->slots;
+		$ride->hub = $decode->hub;
+		$ride->description = $decode->description;
+		$ride->going = $decode->going;
+		
+		$ride->save();
     }
 
     /**

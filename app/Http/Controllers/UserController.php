@@ -99,7 +99,7 @@ class UserController extends Controller
         $decode = json_decode($request->getContent());
 
         //todo: verificar em um middleware
-        $user = User::where('token', $decode->token)->first();
+        $user = User::where('token', $request->header('token'))->first();
 
         $user->name = $decode->name;
         $user->profile = $decode->profile;
@@ -110,7 +110,6 @@ class UserController extends Controller
         $user->car_model = $decode->car_model;
         $user->car_color = $decode->car_color;
         $user->car_plate = $decode->car_plate;
-        $user->token = $decode->token;
 
         $user->save();
     }

@@ -3,6 +3,7 @@
 use App\User;
 
 Route::resource('user', 'UserController');
+Route::resource('ride', 'RideController');
 
 Route::post('auth', 'UserController@auth');
 
