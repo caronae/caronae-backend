@@ -9,6 +9,6 @@ class User extends Model
     protected $table = 'users';
 
     public function rides() {
-        return $this->belongToMany('App\Ride');
+        return $this->belongsToMany('App\Ride');
     }
 }

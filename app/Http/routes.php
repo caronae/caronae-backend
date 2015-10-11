@@ -7,6 +7,8 @@ Route::resource('ride', 'RideController');
 
 Route::post('auth', 'UserController@auth');
 
+Route::post('ride/list', 'RideController@listAll');
+
 // rota para testar os resultados no banco
 Route::get('db', function() {
     $user = User::all()->first();
