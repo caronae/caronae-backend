@@ -18,7 +18,18 @@ class RideController extends Controller
      * @return Response
      */
     public function index() {
+	}
+    
+	public function requestJoin(Request $request) {
+        $decode = json_decode($request->getContent());
+        $user = User::where('token', $request->header('token'))->first();
 		
+		$ride_user = new RideUser();
+        $ride_user->user_id = $user->id;
+        $ride_user->ride_id = $decode->rideId;
+        $ride_user->status = 1;
+        
+		$ride_user->save();
 	}
 	
     public function listAll(Request $request)
