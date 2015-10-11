@@ -104,6 +104,16 @@ class RideController extends Controller
         $ride_user->status = 0;
         
 		$ride_user->save();
+		
+		return $ride->id;
+    }
+	
+	public function delete(Request $request)
+    {
+        $decode = json_decode($request->getContent());
+        $ride = Ride::find($decode->rideId);
+        $ride_user = RideUser::where('ride_id', $decode->rideId)->delete();
+		$ride->delete();
     }
 
     /**

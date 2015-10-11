@@ -9,6 +9,7 @@ Route::post('auth', 'UserController@auth');
 
 Route::post('ride/list', 'RideController@listAll');
 Route::post('ride/requestJoin', 'RideController@requestJoin');
+Route::post('ride/delete', 'RideController@delete');
 
 // rota para testar os resultados no banco
 Route::get('db', function() {
