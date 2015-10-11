@@ -18,6 +18,7 @@ class RideController extends Controller
      * @return Response
      */
     public function index() {
+		//
 	}
     
 	public function requestJoin(Request $request) {
@@ -113,9 +114,8 @@ class RideController extends Controller
 	public function delete(Request $request)
     {
         $decode = json_decode($request->getContent());
-        $ride = Ride::find($decode->rideId);
-        $ride_user = RideUser::where('ride_id', $decode->rideId)->delete();
-		$ride->delete();
+        RideUser::where('ride_id', $decode->rideId)->delete();
+        Ride::find($decode->rideId)->delete();
     }
 
     /**

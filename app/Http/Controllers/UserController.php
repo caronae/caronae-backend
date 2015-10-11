@@ -59,7 +59,6 @@ class UserController extends Controller
         $user->car_model = $decode->car_model;
         $user->car_color = $decode->car_color;
         $user->car_plate = $decode->car_plate;
-        $user->token = $decode->token;
 
         $user->save();
     }
