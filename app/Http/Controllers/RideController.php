@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Ride;
+use App\User;
+use App\RideUser;
 
 class RideController extends Controller
 {
@@ -53,6 +55,15 @@ class RideController extends Controller
 		$ride->going = $decode->going;
 		
 		$ride->save();
+		
+        $user = User::where('token', $request->header('token'))->first();
+		
+        $ride_user = new RideUser();
+        $ride_user->user_id = $user->id;
+        $ride_user->ride_id = $ride->id;
+        $ride_user->status = 0;
+        
+		$ride_user->save();
     }
 
     /**
