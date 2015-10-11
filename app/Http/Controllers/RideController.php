@@ -36,30 +36,32 @@ class RideController extends Controller
     {
         $rides = Ride::all();
 		
-		$resultJson = '[';
-		
-		foreach ($rides as $ride) {
-			$user = $ride->users()->where('status', 0)->first();
+		if ($rides->count() > 0) {
+			$resultJson = '[';
 			
-			$arr = array('driverName' => $user->name, 
-								'course' => $user->course, 
-								'neighborhood' => $ride->neighborhood, 
-								'place' => $ride->place, 
-								'route' => $ride->route, 
-								'time' => $ride->mytime, 
-								'slots' => $ride->slots, 
-								'hub' => $ride->hub, 
-								'going' => $ride->going, 
-								'rideId' => $ride->id, 
-								'driverId' => $user->id);
+			foreach ($rides as $ride) {
+				$user = $ride->users()->where('status', 0)->first();
+				
+				$arr = array('driverName' => $user->name, 
+									'course' => $user->course, 
+									'neighborhood' => $ride->neighborhood, 
+									'place' => $ride->place, 
+									'route' => $ride->route, 
+									'time' => $ride->mytime, 
+									'slots' => $ride->slots, 
+									'hub' => $ride->hub, 
+									'going' => $ride->going, 
+									'rideId' => $ride->id, 
+									'driverId' => $user->id);
+				
+				$resultJson .= json_encode($arr) . ',';
+			}
 			
-			$resultJson .= json_encode($arr) . ',';
+			$resultJson = substr($resultJson, 0, -1);  
+			$resultJson .= ']';
+			
+			return $resultJson;
 		}
-		
-		$resultJson = substr($resultJson, 0, -1);  
-		$resultJson .= ']';
-		
-		return $resultJson;
     }
 
     /**
