@@ -30,14 +30,6 @@ class UserController extends Controller
 
     }
 
-    public function auth(Request $request) {
-        $decode = json_decode($request->getContent());
-
-        $user = User::where('token', $decode->token)->first();
-
-        return $user;
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -83,7 +75,7 @@ class UserController extends Controller
      */
     public function edit($id, Request $request)
     {
-
+		//
     }
 
     /**
@@ -113,6 +105,14 @@ class UserController extends Controller
         $user->save();
     }
 
+    public function auth(Request $request) {
+        $decode = json_decode($request->getContent());
+
+        $user = User::where('token', $decode->token)->first();
+
+        return $user;
+    }
+	
     /**
      * Remove the specified resource from storage.
      *

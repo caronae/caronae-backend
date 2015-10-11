@@ -20,50 +20,6 @@ class RideController extends Controller
     public function index() {
 		//
 	}
-    
-	public function requestJoin(Request $request) {
-        $decode = json_decode($request->getContent());
-        $user = User::where('token', $request->header('token'))->first();
-		
-		$ride_user = new RideUser();
-        $ride_user->user_id = $user->id;
-        $ride_user->ride_id = $decode->rideId;
-        $ride_user->status = 1;
-        
-		$ride_user->save();
-	}
-	
-    public function listAll(Request $request)
-    {
-        $rides = Ride::all();
-		
-		if ($rides->count() > 0) {
-			$resultJson = '[';
-			
-			foreach ($rides as $ride) {
-				$user = $ride->users()->where('status', 0)->first();
-				
-				$arr = array('driverName' => $user->name, 
-									'course' => $user->course, 
-									'neighborhood' => $ride->neighborhood, 
-									'place' => $ride->place, 
-									'route' => $ride->route, 
-									'time' => $ride->mytime, 
-									'slots' => $ride->slots, 
-									'hub' => $ride->hub, 
-									'going' => $ride->going, 
-									'rideId' => $ride->id, 
-									'driverId' => $user->id);
-				
-				$resultJson .= json_encode($arr) . ',';
-			}
-			
-			$resultJson = substr($resultJson, 0, -1);  
-			$resultJson .= ']';
-			
-			return $resultJson;
-		}
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -109,6 +65,50 @@ class RideController extends Controller
 		$ride_user->save();
 		
 		return $ride->id;
+    }
+	
+	public function requestJoin(Request $request) {
+        $decode = json_decode($request->getContent());
+        $user = User::where('token', $request->header('token'))->first();
+		
+		$ride_user = new RideUser();
+        $ride_user->user_id = $user->id;
+        $ride_user->ride_id = $decode->rideId;
+        $ride_user->status = 1;
+        
+		$ride_user->save();
+	}
+	
+    public function listAll(Request $request)
+    {
+        $rides = Ride::all();
+		
+		if ($rides->count() > 0) {
+			$resultJson = '[';
+			
+			foreach ($rides as $ride) {
+				$user = $ride->users()->where('status', 0)->first();
+				
+				$arr = array('driverName' => $user->name, 
+									'course' => $user->course, 
+									'neighborhood' => $ride->neighborhood, 
+									'place' => $ride->place, 
+									'route' => $ride->route, 
+									'time' => $ride->mytime, 
+									'slots' => $ride->slots, 
+									'hub' => $ride->hub, 
+									'going' => $ride->going, 
+									'rideId' => $ride->id, 
+									'driverId' => $user->id);
+				
+				$resultJson .= json_encode($arr) . ',';
+			}
+			
+			$resultJson = substr($resultJson, 0, -1);  
+			$resultJson .= ']';
+			
+			return $resultJson;
+		}
     }
 	
 	public function delete(Request $request)
