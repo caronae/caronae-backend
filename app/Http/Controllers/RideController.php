@@ -79,9 +79,14 @@ class RideController extends Controller
 		$ride_user->save();
 	}
 	
-    public function listAll(Request $request)
+    public function listFiltered(Request $request)
     {
-        $rides = Ride::all();
+        $decode = json_decode($request->getContent());
+		
+        $rides = Ride::where('myzone', $decode->zone)->
+							where('neighborhood', $decode->neighborhood)->
+							where('going', $decode->go)->
+							where('mydate', $decode->date)->get();
 		
 		if ($rides->count() > 0) {
 			$resultJson = '[';
