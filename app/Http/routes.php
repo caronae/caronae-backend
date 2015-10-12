@@ -18,13 +18,19 @@ Route::get('db', function() {
     var_dump($user);
 });
 
-Route::get('create/{name}/{token}', function($name, $token) {
+Route::get('signup/{name}', function($name) {
+	if (User::where('name', $name)->count() > 0) {
+		return $name . ' já existe';
+	}
+	
     $user = new User();
 
     $user->name = $name;
-    $user->token = $token;
+    $user->token = $name;
 
     $user->save();
+	
+	return $name . ' cadastrado';
 });
 
 //rota padrão do laravel podemos excluir depois
