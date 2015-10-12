@@ -109,8 +109,19 @@ class UserController extends Controller
         $decode = json_decode($request->getContent());
 
         $user = User::where('token', $decode->token)->first();
+        $rides = $user->rides;
+		
+		$drivingRides = array();
+		foreach($rides as $ride) {
+			if ($ride->pivot->status == 0) {
+				array_push($drivingRides, $ride);
+			}
+		}
+		
+		$resultJson = array("user" => $user, "rides" => $rides);
+		
 
-        return $user;
+        return $resultJson;
     }
 	
     /**

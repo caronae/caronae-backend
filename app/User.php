@@ -9,6 +9,6 @@ class User extends Model
     protected $table = 'users';
 
     public function rides() {
-        return $this->belongsToMany('App\Ride');
+        return $this->belongsToMany('App\Ride')->withPivot('status');
     }
 }
