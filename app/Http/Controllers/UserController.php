@@ -109,6 +109,10 @@ class UserController extends Controller
         $decode = json_decode($request->getContent());
 
         $user = User::where('token', $decode->token)->first();
+		if ($user == null) {
+			return;
+		}
+		
         $rides = $user->rides;
 		
 		$drivingRides = array();
@@ -119,7 +123,6 @@ class UserController extends Controller
 		}
 		
 		$resultJson = array("user" => $user, "rides" => $rides);
-		
 
         return $resultJson;
     }
