@@ -122,7 +122,7 @@ class UserController extends Controller
 			}
 		}
 		
-		$resultJson = array("user" => $user, "rides" => $rides);
+		$resultJson = array("user" => $user, "rides" => $drivingRides);
 
         return $resultJson;
     }
