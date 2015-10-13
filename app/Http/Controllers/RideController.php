@@ -154,6 +154,17 @@ class RideController extends Controller
 
         return $requesters;
     }
+	
+	public function answerJoinRequest(Request $request)
+    {
+        $decode = json_decode($request->getContent());
+		
+		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $decode->userId, 'status' => 1];
+        $rideUser = RideUser::where($matchThese)->first();
+		$rideUser->status = $decode->accepted ? 3 : 4;
+		
+		$rideUser->save();
+    }
 
     /**
      * Display the specified resource.
