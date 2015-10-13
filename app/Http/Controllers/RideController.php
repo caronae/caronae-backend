@@ -83,27 +83,16 @@ class RideController extends Controller
     {
         $decode = json_decode($request->getContent());
 		
-		if (empty($decode->zone)) {
-			if (empty($decode->neighborhood)) {
-				$rides = Ride::where('going', $decode->go)->
-							where('mydate', $decode->date)->get();
-			} else {
-				$rides = Ride::where('neighborhood', $decode->neighborhood)->
-							where('going', $decode->go)->
-							where('mydate', $decode->date)->get();
-			}
-		} else {
-			if (empty($decode->neighborhood)) {
-				$rides = Ride::where('myzone', $decode->zone)->
-							where('going', $decode->go)->
-							where('mydate', $decode->date)->get();
-			} else {
-				$rides = Ride::where('myzone', $decode->zone)->
-							where('neighborhood', $decode->neighborhood)->
-							where('going', $decode->go)->
-							where('mydate', $decode->date)->get();
-			}
+		$matchThese = ['going' => $decode->go, 'mydate' => $decode->date];
+		
+		if (!empty($decode->zone)) {
+			$matchThese['myzone'] = $decode->zone;
 		}
+		if (!empty($decode->neighborhood)) {
+			$matchThese['neighborhood'] = $decode->neighborhood;
+		}
+				
+		$rides = Ride::where($matchThese)->get();
 		
 		if ($rides->count() > 0) {
 			$resultJson = '[';
