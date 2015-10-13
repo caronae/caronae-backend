@@ -139,6 +139,21 @@ class RideController extends Controller
         RideUser::where('ride_id', $decode->rideId)->delete();
         Ride::find($decode->rideId)->delete();
     }
+	
+	public function getRequesters($rideId)
+    {
+        $ride = Ride::find($rideId)->first();
+        $users = $ride->users;
+		
+		$requesters = array();
+		foreach($users as $user) {
+			if ($user->pivot->status == 1) {
+				array_push($requesters, $user);
+			}
+		}
+
+        return $requesters;
+    }
 
     /**
      * Display the specified resource.
