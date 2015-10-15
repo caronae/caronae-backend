@@ -12,6 +12,7 @@ Route::post('ride/requestJoin', 'RideController@requestJoin');
 Route::post('ride/delete', 'RideController@delete');
 Route::get('ride/getRequesters/{rideId}', 'RideController@getRequesters');
 Route::post('ride/answerJoinRequest', 'RideController@answerJoinRequest');
+Route::post('ride/getMyActiveRides', 'RideController@getMyActiveRides');
 
 // rota para testar os resultados no banco
 Route::get('db', function() {

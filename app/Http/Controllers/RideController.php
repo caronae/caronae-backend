@@ -134,6 +134,37 @@ class RideController extends Controller
 		}
     }
 	
+	public function getMyActiveRides(Request $request) {
+        $user = User::where('token', $request->header('token'))->first();
+		
+		$rides = $user->rides;
+		$resultArray = array();
+		foreach($rides as $ride) {
+			if ($ride->pivot->status == 0 || $ride->pivot->status == 2) {
+					$users = $ride->users;
+					
+					$users2 = array();
+					foreach($users as $user2) {
+						if ($user2->pivot->status == 0) {
+							//$users3[] = $user2;
+							array_unshift($users2, $user2);
+						}
+						if ($user2->pivot->status == 2) {
+							//$users3[] = $user2;
+							array_push($users2, $user2);
+						}
+					}
+					
+					if(count($users2) > 1) {
+						//$resultArray[$ride] = $users2;
+						array_push($resultArray, array("ride" => $ride, "users" => $users2));
+					}
+			}
+		}
+		
+		return $resultArray;
+	}
+	
 	public function delete(Request $request)
     {
         $decode = json_decode($request->getContent());
