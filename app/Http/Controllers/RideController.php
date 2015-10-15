@@ -165,6 +165,22 @@ class RideController extends Controller
 		return $resultArray;
 	}
 	
+	public function leaveRide(Request $request) {
+		
+        $user = User::where('token', $request->header('token'))->first();
+        $decode = json_decode($request->getContent());
+		
+		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
+        $rideUser = RideUser::where($matchThese)->first();
+		if ($rideUser->status == 0) {
+			RideUser::where('ride_id', $decode->rideId)->delete();
+			Ride::find($decode->rideId)->delete();
+		} else {
+			$rideUser->status = 4;
+			$rideUser->save();
+		}
+}
+	
 	public function delete(Request $request)
     {
         $decode = json_decode($request->getContent());
