@@ -24,6 +24,9 @@ Route::get('signup/{name}', function($name) {
 	if (User::where('name', $name)->count() > 0) {
 		return $name . ' já existe';
 	}
+	if (User::where('token', $name)->count() > 0) {
+		return 'token ' . $name . ' já existe';
+	}
 	
     $user = new User();
 
