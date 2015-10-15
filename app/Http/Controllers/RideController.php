@@ -71,10 +71,16 @@ class RideController extends Controller
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
 		
-		$ride_user = new RideUser();
+		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
+        $ride_user = RideUser::where($matchThese)->first();
+		
+		if ($ride_user != null)
+			return;
+		
+        $ride_user = new RideUser();
         $ride_user->user_id = $user->id;
         $ride_user->ride_id = $decode->rideId;
-        $ride_user->status = 1;
+		$ride_user->status = 1;
         
 		$ride_user->save();
 	}
