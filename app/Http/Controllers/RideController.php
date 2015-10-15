@@ -98,27 +98,33 @@ class RideController extends Controller
 			$resultJson = '[';
 			
 			foreach ($rides as $ride) {
-				$user = $ride->users()->where('status', 0)->first();
-				
-				$arr = array('driverName' => $user->name, 
-									'course' => $user->course, 
-									'neighborhood' => $ride->neighborhood, 
-									'place' => $ride->place, 
-									'route' => $ride->route, 
-									'time' => $ride->mytime, 
-									'slots' => $ride->slots, 
-									'hub' => $ride->hub, 
-									'going' => $ride->going, 
-									'rideId' => $ride->id, 
-									'driverId' => $user->id);
-				
-				$resultJson .= json_encode($arr) . ',';
+				$matchThese2 = ['ride_id' => $ride->id, 'status' => 1];
+				$matchThese3 = ['ride_id' => $ride->id, 'status' => 2];
+				if (RideUser::where($matchThese2)->orWhere($matchThese3)->count() < $ride->slots) {
+					$user = $ride->users()->where('status', 0)->first();
+					
+					$arr = array('driverName' => $user->name, 
+										'course' => $user->course, 
+										'neighborhood' => $ride->neighborhood, 
+										'place' => $ride->place, 
+										'route' => $ride->route, 
+										'time' => $ride->mytime, 
+										'slots' => $ride->slots, 
+										'hub' => $ride->hub, 
+										'going' => $ride->going, 
+										'rideId' => $ride->id, 
+										'driverId' => $user->id);
+					
+					$resultJson .= json_encode($arr) . ',';
+				}
 			}
 			
-			$resultJson = substr($resultJson, 0, -1);  
-			$resultJson .= ']';
-			
-			return $resultJson;
+			if (strlen($resultJson) > 1) {
+				$resultJson = substr($resultJson, 0, -1);  
+				$resultJson .= ']';
+				
+				return $resultJson;
+			}
 		}
     }
 	
@@ -150,7 +156,7 @@ class RideController extends Controller
 		
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $decode->userId, 'status' => 1];
         $rideUser = RideUser::where($matchThese)->first();
-		$rideUser->status = $decode->accepted ? 3 : 4;
+		$rideUser->status = $decode->accepted ? 2 : 3;
 		
 		$rideUser->save();
     }
