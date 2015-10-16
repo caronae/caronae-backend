@@ -188,9 +188,10 @@ class RideController extends Controller
         Ride::find($decode->rideId)->delete();
     }
 	
-	public function getRequesters($rideId)
+	public function getRequesters(Request $request)
     {
-        $ride = Ride::find($rideId)->first();
+        $decode = json_decode($request->getContent());
+        $ride = Ride::find($decode->rideId);
         $users = $ride->users;
 		
 		$requesters = array();

@@ -10,7 +10,7 @@ Route::post('auth', 'UserController@auth');
 Route::post('ride/list', 'RideController@listFiltered');
 Route::post('ride/requestJoin', 'RideController@requestJoin');
 Route::post('ride/delete', 'RideController@delete');
-Route::get('ride/getRequesters/{rideId}', 'RideController@getRequesters');
+Route::post('ride/getRequesters', 'RideController@getRequesters');
 Route::post('ride/answerJoinRequest', 'RideController@answerJoinRequest');
 Route::post('ride/getMyActiveRides', 'RideController@getMyActiveRides');
 Route::post('ride/leaveRide', 'RideController@leaveRide');
