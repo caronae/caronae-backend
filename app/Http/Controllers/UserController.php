@@ -47,6 +47,7 @@ class UserController extends Controller
         $user->course = $decode->course;
         $user->phone_number = $decode->phoneNumber;
         $user->email = $decode->email;
+        $user->location = $decode->location;
         $user->car_owner = $decode->car_owner;
         $user->car_model = $decode->car_model;
         $user->car_color = $decode->car_color;
@@ -97,6 +98,7 @@ class UserController extends Controller
         $user->course = $decode->course;
         $user->phone_number = $decode->phone_number;
         $user->email = $decode->email;
+        $user->location = $decode->location;
         $user->car_owner = $decode->car_owner;
         $user->car_model = $decode->car_model;
         $user->car_color = $decode->car_color;
