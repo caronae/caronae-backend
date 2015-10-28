@@ -23,9 +23,6 @@ Route::get('db', ['middleware' => 'jwt.auth', function() {
 }]);
 
 Route::get('signup/{name}', function($name) {
-	if (User::where('name', $name)->count() > 0) {
-		return $name . ' já existe';
-	}
 	if (User::where('token', $name)->count() > 0) {
 		return 'token ' . $name . ' já existe';
 	}
@@ -39,15 +36,12 @@ Route::get('signup/{name}', function($name) {
 
     $user->save();
 	
-	return $name . ' cadastrado';
+	return $name . ' cadastrado com o token ' . $name;
 });
 
 Route::get('signup/{name}/{token}', function($name, $token) {
-	if (User::where('name', $name)->count() > 0) {
-		return $name . ' já existe';
-	}
 	if (User::where('token', $token)->count() > 0) {
-		return $token . ' já existe';
+		return 'token ' . $token . ' já existe';
 	}
 	
     $user = new User();
