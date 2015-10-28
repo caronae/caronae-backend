@@ -16,11 +16,11 @@ Route::post('ride/getMyActiveRides', 'RideController@getMyActiveRides');
 Route::post('ride/leaveRide', 'RideController@leaveRide');
 
 // rota para testar os resultados no banco
-Route::get('db', function() {
+Route::get('db', ['middleware' => 'jwt.auth', function() {
     $user = User::all()->first();
 
     var_dump($user);
-});
+}]);
 
 Route::get('signup/{name}', function($name) {
 	if (User::where('name', $name)->count() > 0) {
