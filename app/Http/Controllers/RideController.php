@@ -91,14 +91,14 @@ class RideController extends Controller
 		
 		$matchThese = ['going' => $decode->go, 'mydate' => $decode->date];
 		
-		if (!empty($decode->zone)) {
-			$matchThese['myzone'] = $decode->zone;
-		}
-		if (!empty($decode->neighborhood)) {
-			$matchThese['neighborhood'] = $decode->neighborhood;
-		}
-				
-		$rides = Ride::where($matchThese)->get();
+		$locations = explode(", ", $decode->location);
+		
+		if ($locations[0] == "Centro" || $locations[0] == "Zona Sul" || $locations[0] == "Zona Oeste" || $locations[0] == "Zona Norte" || $locations[0] == "Baixada" || $locations[0] == "Grande Niterói")
+				$locationColumn = 'myzone';
+		else
+				$locationColumn = 'neighborhood';
+			
+		$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->get();
 		
 		if ($rides->count() > 0) {
 			$resultJson = '[';
@@ -112,9 +112,11 @@ class RideController extends Controller
 					$arr = array('driverName' => $user->name, 
 										'course' => $user->course, 
 										'neighborhood' => $ride->neighborhood, 
+										'zone' => $ride->myzone, 
 										'place' => $ride->place, 
 										'route' => $ride->route, 
 										'time' => $ride->mytime, 
+										'date' => $ride->mydate, 
 										'slots' => $ride->slots, 
 										'hub' => $ride->hub, 
 										'going' => $ride->going, 

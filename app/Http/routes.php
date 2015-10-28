@@ -34,6 +34,8 @@ Route::get('signup/{name}', function($name) {
 
     $user->name = $name;
     $user->token = $name;
+    $user->profile = "Perfil padrão";
+    $user->course = "Curso padrão";
 
     $user->save();
 	
@@ -52,6 +54,8 @@ Route::get('signup/{name}/{token}', function($name, $token) {
 
     $user->name = $name;
     $user->token = $token;
+    $user->profile = "Perfil padrão";
+    $user->course = "Curso padrão";
 
     $user->save();
 	
