@@ -44,8 +44,6 @@ class RideController extends Controller
     {
         $decode = json_decode($request->getContent());
 
-        $rides_created = 0;
-		
         $ride = new Ride();
 		$ride->myzone = $decode->myzone;
 		$ride->neighborhood = $decode->neighborhood;
@@ -61,7 +59,7 @@ class RideController extends Controller
 		$ride->week_days = $decode->week_days;
 		$ride->save();
 
-		$rides_created++;
+		$rides_created[] = $ride->id;
 
 		// Check if ride generates a routine and create future events
 		if ($decode->week_days !== "") {
@@ -106,7 +104,8 @@ class RideController extends Controller
 					$repeating_ride->going = $decode->going;
 					$repeating_ride->routine_id = $ride->id; // References the original ride which originated this ride
 					$repeating_ride->save();
-					$rides_created++;
+
+					$rides_created[] = $repeating_ride->id;
 
 				}
 			} while ($repeating_ride_date <= $repeats_until);
@@ -122,7 +121,6 @@ class RideController extends Controller
 		$ride_user->save();
 		
 		$result['rides_created'] = $rides_created;
-		$result['ride_id'] = $ride->id;
 		return $result;
     }
 	
