@@ -10,6 +10,9 @@ use App\Ride;
 use App\User;
 use App\RideUser;
 
+use \DateTime;
+use \DateInterval;
+
 class RideController extends Controller
 {
     /**
@@ -40,20 +43,73 @@ class RideController extends Controller
     public function store(Request $request)
     {
         $decode = json_decode($request->getContent());
-		
+
         $ride = new Ride();
 		$ride->myzone = $decode->myzone;
 		$ride->neighborhood = $decode->neighborhood;
 		$ride->place = $decode->place;
 		$ride->route = $decode->route;
-		$ride->mydate = $decode->mydate;
+		$ride->mydate = DateTime::createFromFormat('d/m/Y', $decode->mydate);
 		$ride->mytime = $decode->mytime;
 		$ride->slots = $decode->slots;
 		$ride->hub = $decode->hub;
 		$ride->description = $decode->description;
 		$ride->going = $decode->going;
-		
+		$ride->repeats_until = DateTime::createFromFormat('d/m/Y', $decode->repeats_until);
+		$ride->week_days = $decode->week_days;
 		$ride->save();
+
+		$rides_created[] = $ride->id;
+
+		// Check if ride generates a routine and create future events
+		if ($decode->week_days !== "") {
+			$initial_date = $ride->mydate->setTime(0,0,0);
+			$repeats_until = $ride->repeats_until->setTime(23,59,59);
+			$starting_week_day = $initial_date->format('N'); // 1: monday, 2: tuesday, ...
+			// Convert week days string (e.g. 1,3,5 for mon, wed and fri) to array
+			$week_days = explode(',', $ride->week_days);
+
+			// Calculate the interval between each week day (e.g. If the event starts on mondays
+			// and repeats mondays and wednesdays, there is a two day difference from the initial
+			// date and 5 days to the next monday. I can then add those days to the initial date
+			// until I reach the ending date.)
+			$repeating_intervals = [];
+			for ($i=0; $i<count($week_days); $i++) {
+				$d = (($week_days[($i+1)%count($week_days)] - $week_days[$i]) + 7) % 7;
+				$repeating_intervals[] = $d;
+			}
+
+			// Generate all future events until end date
+			$repeating_ride_date = $initial_date;
+			do {
+				foreach ($repeating_intervals as $repeating_day) {
+					$repeating_ride_date = $repeating_ride_date->add(new DateInterval('P' . $repeating_day .  'D'));
+					if ($repeating_ride_date > $repeats_until) {
+						break;
+					}
+
+					// Creating repeating ride object. All fields are the same except for 
+					// the date - which will have a new generated date - and a foreign key
+					// to the original ride (routine_id).
+					$repeating_ride = new Ride();
+					$repeating_ride->myzone = $decode->myzone;
+					$repeating_ride->neighborhood = $decode->neighborhood;
+					$repeating_ride->place = $decode->place;
+					$repeating_ride->route = $decode->route;
+					$repeating_ride->mydate = $repeating_ride_date; // New date
+					$repeating_ride->mytime = $decode->mytime;
+					$repeating_ride->slots = $decode->slots;
+					$repeating_ride->hub = $decode->hub;
+					$repeating_ride->description = $decode->description;
+					$repeating_ride->going = $decode->going;
+					$repeating_ride->routine_id = $ride->id; // References the original ride which originated this ride
+					$repeating_ride->save();
+
+					$rides_created[] = $repeating_ride->id;
+
+				}
+			} while ($repeating_ride_date <= $repeats_until);
+		}
 		
         $user = User::where('token', $request->header('token'))->first();
 		
@@ -64,7 +120,8 @@ class RideController extends Controller
         
 		$ride_user->save();
 		
-		return $ride->id;
+		$result['rides_created'] = $rides_created;
+		return $result;
     }
 	
 	public function requestJoin(Request $request) {
@@ -261,4 +318,6 @@ class RideController extends Controller
     {
         //
     }
+
+
 }
