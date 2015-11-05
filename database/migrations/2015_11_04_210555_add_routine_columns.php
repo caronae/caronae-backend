@@ -25,6 +25,8 @@ class AddRoutineColumns extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('rides', function (Blueprint $table) {
+            $table->dropColumn(['week_days', 'repeats_until']);
+        });
     }
 }
