@@ -65,9 +65,20 @@ class RideController extends Controller
 		if ($decode->week_days !== "") {
 			$initial_date = $ride->mydate->setTime(0,0,0);
 			$repeats_until = $ride->repeats_until->setTime(23,59,59);
-			$starting_week_day = $initial_date->format('N'); // 1: monday, 2: tuesday, ...
 			// Convert week days string (e.g. 1,3,5 for mon, wed and fri) to array
 			$week_days = explode(',', $ride->week_days);
+
+			// Check if the format is ok
+			if (count($week_days) > 7) {
+				return response()->json(['error'=>'Field "week_days" expects up to 7 elements.'], 400);
+			}
+			$week_days = array_unique($week_days); // Remove duplicated days
+			foreach ($week_days as $week_day) {
+				if ($week_day < 1 || $week_day > 7) {
+					return response()->json(['error'=>'Field "week_days" expects elements with range [1,7].'], 400);
+				}
+			}
+
 
 			// Calculate the interval between each week day (e.g. If the event starts on mondays
 			// and repeats mondays and wednesdays, there is a two day difference from the initial
@@ -75,8 +86,25 @@ class RideController extends Controller
 			// until I reach the ending date.)
 			$repeating_intervals = [];
 			for ($i=0; $i<count($week_days); $i++) {
-				$d = (($week_days[($i+1)%count($week_days)] - $week_days[$i]) + 7) % 7;
+				$next_week_day = $week_days[($i+1) % count($week_days)]; // Get next element or first if next doesn't exist
+				$d = $next_week_day - $week_days[$i]; // Days between this week day and the next occurence
+				// If the result is 0 or less, it means the next day is in the following week, so let's add 7 to make it > 1 again.
+				if ($d <= 0) {
+					$d += 7;
+				}
+
+				// TODO: Só pra testar
+				if ($d <= 0) {
+					return response()->json(['error'=>'Internal error generating routines (negative interval).'], 500);
+				}
+
 				$repeating_intervals[] = $d;
+			}
+
+
+			// TODO: Só pra testar
+			if (count($repeating_intervals) == 0) {
+				return response()->json(['error'=>'Internal error generating routines (no repeating patterns).'], 500);
 			}
 
 			// Generate all future events until end date
