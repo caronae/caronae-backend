@@ -43,28 +43,34 @@ class RideController extends Controller
     public function store(Request $request)
     {
         $decode = json_decode($request->getContent());
+        $mydate = DateTime::createFromFormat('d/m/Y', $decode->mydate);
+        $repeats_until = DateTime::createFromFormat('d/m/Y', $decode->repeats_until);
 
         $ride = new Ride();
 		$ride->myzone = $decode->myzone;
 		$ride->neighborhood = $decode->neighborhood;
 		$ride->place = $decode->place;
 		$ride->route = $decode->route;
-		$ride->mydate = DateTime::createFromFormat('d/m/Y', $decode->mydate);
+		$ride->mydate = $mydate->format('Y-m-d');
 		$ride->mytime = $decode->mytime;
 		$ride->slots = $decode->slots;
 		$ride->hub = $decode->hub;
 		$ride->description = $decode->description;
 		$ride->going = $decode->going;
-		$ride->repeats_until = DateTime::createFromFormat('d/m/Y', $decode->repeats_until);
+		if ($decode->repeats_until != "") {
+			$ride->repeats_until = $repeats_until->format('Y-m-d');
+		} else {
+			$ride->repeats_until = "";
+		}
 		$ride->week_days = $decode->week_days;
 		$ride->save();
 
-		$rides_created[] = $ride->id;
+		$rides_created[] = $ride;
 
 		// Check if ride generates a routine and create future events
 		if ($decode->week_days !== "") {
-			$initial_date = $ride->mydate->setTime(0,0,0);
-			$repeats_until = $ride->repeats_until->setTime(23,59,59);
+			$initial_date = $mydate->setTime(0,0,0);
+			$repeats_until = $repeats_until->setTime(23,59,59);
 			// Convert week days string (e.g. 1,3,5 for mon, wed and fri) to array
 			$week_days = explode(',', $ride->week_days);
 
@@ -124,7 +130,7 @@ class RideController extends Controller
 					$repeating_ride->neighborhood = $decode->neighborhood;
 					$repeating_ride->place = $decode->place;
 					$repeating_ride->route = $decode->route;
-					$repeating_ride->mydate = $repeating_ride_date; // New date
+					$repeating_ride->mydate = $repeating_ride_date->format('Y-m-d'); // New date
 					$repeating_ride->mytime = $decode->mytime;
 					$repeating_ride->slots = $decode->slots;
 					$repeating_ride->hub = $decode->hub;
@@ -133,7 +139,7 @@ class RideController extends Controller
 					$repeating_ride->routine_id = $ride->id; // References the original ride which originated this ride
 					$repeating_ride->save();
 
-					$rides_created[] = $repeating_ride->id;
+					$rides_created[] = $repeating_ride;
 
 				}
 			} while ($repeating_ride_date <= $repeats_until);
