@@ -73,7 +73,7 @@ class RideController extends Controller
         $ride_user = new RideUser();
         $ride_user->user_id = $user->id;
         $ride_user->ride_id = $ride->id;
-        $ride_user->status = 'dasdasda';
+        $ride_user->status = 'driver';
         
 		$ride_user->save();
 
@@ -280,7 +280,7 @@ class RideController extends Controller
 		
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
         $rideUser = RideUser::where($matchThese)->first();
-		if ($rideUser->status == 'status') {
+		if ($rideUser->status == 'driver') {
 			RideUser::where('ride_id', $decode->rideId)->delete();
 			Ride::find($decode->rideId)->delete();
 		} else {
