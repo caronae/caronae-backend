@@ -113,7 +113,7 @@ class RideController extends Controller
 					return response()->json(['error'=>'Internal error generating routines (negative interval).'], 500);
 				}
 
-				$repeating_intervals[] = $d;
+				$repeating_intervals[$week_days[$i]] = $d;
 			}
 
 			// TODO: Só pra testar
@@ -123,7 +123,7 @@ class RideController extends Controller
 
 			// Find first occurence of event. If the date for the original event is not one
 			// of the week days of the routine, let's find the first one which is.
-			$routine_first_date = $initial_date;
+			$routine_first_date = $initial_date->add(new DateInterval('P1D'));
 			$routine_first_date_week_day = $routine_first_date->format('N');
 			while (!in_array($routine_first_date_week_day, $week_days)) {
 				$routine_first_date = $routine_first_date->add(new DateInterval('P1D'));
@@ -133,44 +133,42 @@ class RideController extends Controller
 			// Generate all future events until end date
 			$repeating_ride_date = $routine_first_date;
 			do {
-				foreach ($repeating_intervals as $repeating_day) {
-					if ($repeating_ride_date > $repeats_until) {
-						break;
-					}
-					
-					// Creating repeating ride object. All fields are the same except for 
-					// the date - which will have a new generated date - and a foreign key
-					// to the original ride (routine_id).
-					$repeating_ride = new Ride();
-					$repeating_ride->myzone = $decode->myzone;
-					$repeating_ride->neighborhood = $decode->neighborhood;
-					$repeating_ride->place = $decode->place;
-					$repeating_ride->route = $decode->route;
-					$repeating_ride->mydate = $repeating_ride_date->format('Y-m-d'); // New date
-					$repeating_ride->mytime = $decode->mytime;
-					$repeating_ride->slots = $decode->slots;
-					$repeating_ride->hub = $decode->hub;
-					$repeating_ride->description = $decode->description;
-					$repeating_ride->going = $decode->going;
-					$repeating_ride->routine_id = $ride->id; // References the original ride which originated this ride
-					$repeating_ride->save();
-
-					$rides_created[] = $repeating_ride;
-					
-					//saving the relationship between ride and user
-					$ride_user = new RideUser();
-					$ride_user->user_id = $user->id;
-					$ride_user->ride_id = $repeating_ride->id;
-					$ride_user->status = 'driver';
-					
-					$ride_user->save();
-
-					$repeating_ride_date = $repeating_ride_date->add(new DateInterval('P' . $repeating_day .  'D'));
+				if ($repeating_ride_date > $repeats_until) {
+					break;
 				}
+				
+				// Creating repeating ride object. All fields are the same except for 
+				// the date - which will have a new generated date - and a foreign key
+				// to the original ride (routine_id).
+				$repeating_ride = new Ride();
+				$repeating_ride->myzone = $decode->myzone;
+				$repeating_ride->neighborhood = $decode->neighborhood;
+				$repeating_ride->place = $decode->place;
+				$repeating_ride->route = $decode->route;
+				$repeating_ride->mydate = $repeating_ride_date->format('Y-m-d'); // New date
+				$repeating_ride->mytime = $decode->mytime;
+				$repeating_ride->slots = $decode->slots;
+				$repeating_ride->hub = $decode->hub;
+				$repeating_ride->description = $decode->description;
+				$repeating_ride->going = $decode->going;
+				$repeating_ride->routine_id = $ride->id; // References the original ride which originated this ride
+				$repeating_ride->save();
+
+				$rides_created[] = $repeating_ride;
+				
+				// Saving the relationship between ride and user
+				$ride_user = new RideUser();
+				$ride_user->user_id = $user->id;
+				$ride_user->ride_id = $repeating_ride->id;
+				$ride_user->status = 'driver';
+				
+				$ride_user->save();
+
+				$repeating_ride_date_week_day = $repeating_ride_date->format('N');
+				$repeating_ride_date = $repeating_ride_date->add(new DateInterval('P' . $repeating_intervals[$repeating_ride_date_week_day] .  'D'));
 			} while ($repeating_ride_date <= $repeats_until);
 		}
 				
-		//$result['rides_created'] = $rides_created;
 		return $rides_created;
     }
 	
