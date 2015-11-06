@@ -121,8 +121,17 @@ class RideController extends Controller
 				return response()->json(['error'=>'Internal error generating routines (no repeating patterns).'], 500);
 			}
 
+			// Find first occurence of event. If the date for the original event is not one
+			// of the week days of the routine, let's find the first one which is.
+			$routine_first_date = $initial_date;
+			$routine_first_date_week_day = $routine_first_date->format('N');
+			while (!in_array($routine_first_date_week_day, $week_days)) {
+				$routine_first_date = $routine_first_date->add(new DateInterval('P1D'));
+				$routine_first_date_week_day = $routine_first_date->format('N');
+			}
+
 			// Generate all future events until end date
-			$repeating_ride_date = $initial_date;
+			$repeating_ride_date = $routine_first_date;
 			do {
 				foreach ($repeating_intervals as $repeating_day) {
 					$repeating_ride_date = $repeating_ride_date->add(new DateInterval('P' . $repeating_day .  'D'));
