@@ -42,11 +42,12 @@ class RideController extends Controller
      */
     public function store(Request $request)
     {
+        $user = User::where('token', $request->header('token'))->first();
+		
         $decode = json_decode($request->getContent());
+		
         $mydate = DateTime::createFromFormat('d/m/Y', $decode->mydate);
         $repeats_until = DateTime::createFromFormat('d/m/Y', $decode->repeats_until);
-
-        $user = User::where('token', $request->header('token'))->first();
 		
         $ride = new Ride();
 		$ride->myzone = $decode->myzone;
@@ -68,9 +69,16 @@ class RideController extends Controller
 		$ride->save();
 
 		$rides_created[] = $ride;
+		
+        $ride_user = new RideUser();
+        $ride_user->user_id = $user->id;
+        $ride_user->ride_id = $ride->id;
+        $ride_user->status = 0;
+        
+		$ride_user->save();
 
 		// Check if ride generates a routine and create future events
-		if ($decode->week_days !== "") {
+		if ($decode->week_days != "") {
 			$initial_date = $mydate->setTime(0,0,0);
 			$repeats_until = $repeats_until->setTime(23,59,59);
 			// Convert week days string (e.g. 1,3,5 for mon, wed and fri) to array
@@ -86,7 +94,6 @@ class RideController extends Controller
 					return response()->json(['error'=>'Field "week_days" expects elements with range [1,7].'], 400);
 				}
 			}
-
 
 			// Calculate the interval between each week day (e.g. If the event starts on mondays
 			// and repeats mondays and wednesdays, there is a two day difference from the initial
@@ -108,7 +115,6 @@ class RideController extends Controller
 
 				$repeating_intervals[] = $d;
 			}
-
 
 			// TODO: Só pra testar
 			if (count($repeating_intervals) == 0) {
@@ -142,27 +148,19 @@ class RideController extends Controller
 					$repeating_ride->save();
 
 					$rides_created[] = $repeating_ride;
-
 					
-        $ride_user = new RideUser();
-        $ride_user->user_id = $user->id;
-        $ride_user->ride_id = $repeating_ride->id;
-        $ride_user->status = 0;
-        
-		$ride_user->save();
+					//saving the relationship between ride and user
+					$ride_user = new RideUser();
+					$ride_user->user_id = $user->id;
+					$ride_user->ride_id = $repeating_ride->id;
+					$ride_user->status = 0;
+					
+					$ride_user->save();
 				}
 			} while ($repeating_ride_date <= $repeats_until);
 		}
-		
-		
-        $ride_user = new RideUser();
-        $ride_user->user_id = $user->id;
-        $ride_user->ride_id = $ride->id;
-        $ride_user->status = 0;
-        
-		$ride_user->save();
-		
-		$result['rides_created'] = $rides_created;
+				
+		//$result['rides_created'] = $rides_created;
 		return $rides_created;
     }
 	
