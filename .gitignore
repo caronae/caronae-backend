@@ -5,3 +5,4 @@ Homestead.yaml
 x
 /.idea
 /storage/framework/sessions
+composer.lock

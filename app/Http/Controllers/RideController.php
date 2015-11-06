@@ -46,6 +46,8 @@ class RideController extends Controller
         $mydate = DateTime::createFromFormat('d/m/Y', $decode->mydate);
         $repeats_until = DateTime::createFromFormat('d/m/Y', $decode->repeats_until);
 
+        $user = User::where('token', $request->header('token'))->first();
+		
         $ride = new Ride();
 		$ride->myzone = $decode->myzone;
 		$ride->neighborhood = $decode->neighborhood;
@@ -141,11 +143,17 @@ class RideController extends Controller
 
 					$rides_created[] = $repeating_ride;
 
+					
+        $ride_user = new RideUser();
+        $ride_user->user_id = $user->id;
+        $ride_user->ride_id = $repeating_ride->id;
+        $ride_user->status = 0;
+        
+		$ride_user->save();
 				}
 			} while ($repeating_ride_date <= $repeats_until);
 		}
 		
-        $user = User::where('token', $request->header('token'))->first();
 		
         $ride_user = new RideUser();
         $ride_user->user_id = $user->id;
@@ -155,7 +163,7 @@ class RideController extends Controller
 		$ride_user->save();
 		
 		$result['rides_created'] = $rides_created;
-		return $result;
+		return $rides_created;
     }
 	
 	public function requestJoin(Request $request) {
