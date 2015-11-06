@@ -134,11 +134,10 @@ class RideController extends Controller
 			$repeating_ride_date = $routine_first_date;
 			do {
 				foreach ($repeating_intervals as $repeating_day) {
-					$repeating_ride_date = $repeating_ride_date->add(new DateInterval('P' . $repeating_day .  'D'));
 					if ($repeating_ride_date > $repeats_until) {
 						break;
 					}
-
+					
 					// Creating repeating ride object. All fields are the same except for 
 					// the date - which will have a new generated date - and a foreign key
 					// to the original ride (routine_id).
@@ -165,6 +164,8 @@ class RideController extends Controller
 					$ride_user->status = 'driver';
 					
 					$ride_user->save();
+
+					$repeating_ride_date = $repeating_ride_date->add(new DateInterval('P' . $repeating_day .  'D'));
 				}
 			} while ($repeating_ride_date <= $repeats_until);
 		}
