@@ -119,7 +119,7 @@ class UserController extends Controller
 		
 		$drivingRides = array();
 		foreach($rides as $ride) {
-			if ($ride->pivot->status == 0) {
+			if ($ride->pivot->status == 'driver') {
 				array_push($drivingRides, $ride);
 			}
 		}

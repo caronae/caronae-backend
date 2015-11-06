@@ -73,7 +73,7 @@ class RideController extends Controller
         $ride_user = new RideUser();
         $ride_user->user_id = $user->id;
         $ride_user->ride_id = $ride->id;
-        $ride_user->status = 0;
+        $ride_user->status = 'dasdasda';
         
 		$ride_user->save();
 
@@ -153,7 +153,7 @@ class RideController extends Controller
 					$ride_user = new RideUser();
 					$ride_user->user_id = $user->id;
 					$ride_user->ride_id = $repeating_ride->id;
-					$ride_user->status = 0;
+					$ride_user->status = 'driver';
 					
 					$ride_user->save();
 				}
@@ -177,7 +177,7 @@ class RideController extends Controller
         $ride_user = new RideUser();
         $ride_user->user_id = $user->id;
         $ride_user->ride_id = $decode->rideId;
-		$ride_user->status = 1;
+		$ride_user->status = 'pending';
         
 		$ride_user->save();
 	}
@@ -201,10 +201,10 @@ class RideController extends Controller
 			$resultJson = '[';
 			
 			foreach ($rides as $ride) {
-				$matchThese2 = ['ride_id' => $ride->id, 'status' => 1];
-				$matchThese3 = ['ride_id' => $ride->id, 'status' => 2];
+				$matchThese2 = ['ride_id' => $ride->id, 'status' => 'pending'];
+				$matchThese3 = ['ride_id' => $ride->id, 'status' => 'accepted'];
 				if (RideUser::where($matchThese2)->orWhere($matchThese3)->count() < $ride->slots) {
-					$user = $ride->users()->where('status', 0)->first();
+					$user = $ride->users()->where('status', 'driver')->first();
 					
 					$arr = array('driverName' => $user->name, 
 										'course' => $user->course, 
@@ -239,16 +239,16 @@ class RideController extends Controller
 		$rides = $user->rides;
 		$resultArray = array();
 		foreach($rides as $ride) {
-			if ($ride->pivot->status == 0 || $ride->pivot->status == 2) {
+			if ($ride->pivot->status == 'driver' || $ride->pivot->status == 'accepted') {
 					$users = $ride->users;
 					
 					$users2 = array();
 					foreach($users as $user2) {
-						if ($user2->pivot->status == 0) {
+						if ($user2->pivot->status == 'driver') {
 							//$users3[] = $user2;
 							array_unshift($users2, $user2);
 						}
-						if ($user2->pivot->status == 2) {
+						if ($user2->pivot->status == 'accepted') {
 							//$users3[] = $user2;
 							array_push($users2, $user2);
 						}
@@ -271,11 +271,11 @@ class RideController extends Controller
 		
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
         $rideUser = RideUser::where($matchThese)->first();
-		if ($rideUser->status == 0) {
+		if ($rideUser->status == 'status') {
 			RideUser::where('ride_id', $decode->rideId)->delete();
 			Ride::find($decode->rideId)->delete();
 		} else {
-			$rideUser->status = 4;
+			$rideUser->status = 'quit';
 			$rideUser->save();
 		}
 }
@@ -295,7 +295,7 @@ class RideController extends Controller
 		
 		$requesters = array();
 		foreach($users as $user) {
-			if ($user->pivot->status == 1) {
+			if ($user->pivot->status == 'pending') {
 				array_push($requesters, $user);
 			}
 		}
@@ -307,9 +307,9 @@ class RideController extends Controller
     {
         $decode = json_decode($request->getContent());
 		
-		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $decode->userId, 'status' => 1];
+		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $decode->userId, 'status' => 'pending'];
         $rideUser = RideUser::where($matchThese)->first();
-		$rideUser->status = $decode->accepted ? 2 : 3;
+		$rideUser->status = $decode->accepted ? 'accepted' : 'refused';
 		
 		$rideUser->save();
     }
