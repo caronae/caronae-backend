@@ -329,6 +329,12 @@ class RideController extends Controller
 		$rideUser->status = $decode->accepted ? 'accepted' : 'refused';
 		
 		$rideUser->save();
+		
+		//send notification		
+		$user = User::find($rideUser->user_id);
+		$postGcm = new PostGCM();
+		$message = $decode->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(';
+		return $postGcm->post($message, $user->gcm_token);
     }
 
     /**
