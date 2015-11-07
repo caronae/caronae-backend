@@ -67,7 +67,6 @@ class UserController extends Controller
         //
     }
 
-    // POST user/{id}/edit
     /**
      * Show the form for editing the specified resource.
      *
@@ -128,6 +127,15 @@ class UserController extends Controller
 
         return $resultJson;
     }
+	
+	public function saveGcmToken(Request $request) {
+		$user = User::where('token', $request->header('token'))->first();
+		$decode = json_decode($request->getContent());
+		
+		$user->gcm_token = $decode->token;
+		
+		$user->save();
+	}
 	
     /**
      * Remove the specified resource from storage.

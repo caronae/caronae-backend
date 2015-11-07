@@ -4,136 +4,110 @@ namespace App\Http;
 
 class PostGCM
 {
-    //------------------------------
-// Payload data you want to send 
-// to Android device (will be
-// accessible via intent extras)
-//------------------------------
+	function post($message, $id)
+	{
+		//$ids = array( 'abc', 'def' );
+		//$ids = array( $ids );
+		$data = array( 'message' => $message );
+		
+		//------------------------------
+		// Replace with real GCM API 
+		// key from Google APIs Console
+		// 
+		// https://code.google.com/apis/console/
+		//------------------------------
 
-//$data = array( 'message' => 'Hello World!' );
+		$apiKey = 'AIzaSyBtGz81bar_LcwtN_fpPTKRMBL5glp2T18';
 
-//------------------------------
-// The recipient registration IDs
-// that will receive the push
-// (Should be stored in your DB)
-// 
-// Read about it here:
-// http://developer.android.com/google/gcm/
-//------------------------------
+		//------------------------------
+		// Define URL to GCM endpoint
+		//------------------------------
 
-//$ids = array( 'abc', 'def' );
+		$url = 'https://android.googleapis.com/gcm/send';
 
-//------------------------------
-// Call our custom GCM function
-//------------------------------
+		//------------------------------
+		// Set GCM post variables
+		// (Device IDs and push payload)
+		//------------------------------
 
-//sendGoogleCloudMessage(  $data, $ids );
+		$post = array(
+						//'registration_ids'  => $id,
+						'to' 	=> $id,
+						'data' => $data,
+						);
 
-//------------------------------
-// Define custom GCM function
-//------------------------------
+		//------------------------------
+		// Set CURL request headers
+		// (Authentication and type)
+		//------------------------------
 
-function post( $data2, $ids2 )
-{
-$ids = array( $ids2 );
-$data = array( 'message' => $data2 );
-    //------------------------------
-    // Replace with real GCM API 
-    // key from Google APIs Console
-    // 
-    // https://code.google.com/apis/console/
-    //------------------------------
+		$headers = array( 
+							'Authorization: key=' . $apiKey,
+							'Content-Type: application/json'
+						);
 
-    $apiKey = 'AIzaSyBtGz81bar_LcwtN_fpPTKRMBL5glp2T18';
+		//------------------------------
+		// Initialize curl handle
+		//------------------------------
 
-    //------------------------------
-    // Define URL to GCM endpoint
-    //------------------------------
+		$ch = curl_init();
 
-    $url = 'https://android.googleapis.com/gcm/send';
+		//------------------------------
+		// Set URL to GCM endpoint
+		//------------------------------
 
-    //------------------------------
-    // Set GCM post variables
-    // (Device IDs and push payload)
-    //------------------------------
+		curl_setopt( $ch, CURLOPT_URL, $url );
 
-    $post = array(
-                    'registration_ids'  => $ids,
-                    'data'              => $data,
-                    );
+		//------------------------------
+		// Set request method to POST
+		//------------------------------
 
-    //------------------------------
-    // Set CURL request headers
-    // (Authentication and type)
-    //------------------------------
+		curl_setopt( $ch, CURLOPT_POST, true );
 
-    $headers = array( 
-                        'Authorization: key=' . $apiKey,
-                        'Content-Type: application/json'
-                    );
+		//------------------------------
+		// Set our custom headers
+		//------------------------------
 
-    //------------------------------
-    // Initialize curl handle
-    //------------------------------
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
 
-    $ch = curl_init();
+		//------------------------------
+		// Get the response back as 
+		// string instead of printing it
+		//------------------------------
 
-    //------------------------------
-    // Set URL to GCM endpoint
-    //------------------------------
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 
-    curl_setopt( $ch, CURLOPT_URL, $url );
+		//------------------------------
+		// Set post data as JSON
+		//------------------------------
 
-    //------------------------------
-    // Set request method to POST
-    //------------------------------
+		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $post ) );
 
-    curl_setopt( $ch, CURLOPT_POST, true );
+		//------------------------------
+		// Actually send the push!
+		//------------------------------
 
-    //------------------------------
-    // Set our custom headers
-    //------------------------------
+		$result = curl_exec( $ch );
 
-    curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
+		//------------------------------
+		// Error? Display it!
+		//------------------------------
 
-    //------------------------------
-    // Get the response back as 
-    // string instead of printing it
-    //------------------------------
+		if ( curl_errno( $ch ) )
+		{
+			return 'GCM error: ' . curl_error( $ch );
+		}
 
-    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		//------------------------------
+		// Close curl handle
+		//------------------------------
 
-    //------------------------------
-    // Set post data as JSON
-    //------------------------------
+		curl_close( $ch );
 
-    curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $post ) );
+		//------------------------------
+		// Debug GCM response
+		//------------------------------
 
-    //------------------------------
-    // Actually send the push!
-    //------------------------------
-
-    $result = curl_exec( $ch );
-
-    //------------------------------
-    // Error? Display it!
-    //------------------------------
-
-    if ( curl_errno( $ch ) )
-    {
-        echo 'GCM error: ' . curl_error( $ch );
-    }
-
-    //------------------------------
-    // Close curl handle
-    //------------------------------
-
-    curl_close( $ch );
-
-    //------------------------------
-    // Debug GCM response
-    //------------------------------
-
-    echo $result;
-}
+		return $result;
+	}
 }

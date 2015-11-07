@@ -16,14 +16,7 @@ Route::post('ride/answerJoinRequest', 'RideController@answerJoinRequest');
 Route::post('ride/getMyActiveRides', 'RideController@getMyActiveRides');
 Route::post('ride/leaveRide', 'RideController@leaveRide');
 
-Route::post('gcmToken', function(Request $request) {
-	$user = User::where('token', $request->header('token'))->first();
-	$decode = json_decode($request->getContent());
-	
-	$user->gcm_token = $decode->token;
-	
-	$user->save();
-});
+Route::post('user/saveGcmToken', 'UserController@saveGcmToken');
 
 // rota para testar os resultados no banco
 Route::get('db', ['middleware' => 'jwt.auth', function() {
