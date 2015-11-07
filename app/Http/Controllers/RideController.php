@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Ride;
 use App\User;
 use App\RideUser;
+use App\Http\PostGCM;
 
 use \DateTime;
 use \DateInterval;
@@ -179,8 +180,8 @@ class RideController extends Controller
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
         $ride_user = RideUser::where($matchThese)->first();
 		
-		if ($ride_user != null)
-			return;
+		/*if ($ride_user != null)
+			return;*/
 		
         $ride_user = new RideUser();
         $ride_user->user_id = $user->id;
@@ -188,6 +189,14 @@ class RideController extends Controller
 		$ride_user->status = 'pending';
         
 		$ride_user->save();
+		
+		//send notification
+		$matchThese = ['ride_id' => $decode->rideId, 'status' => 'driver'];
+        $ride_user = RideUser::where($matchThese)->first();
+		
+        $user = User::find($ride_user->user_id);
+		$postGcm = new PostGCM();
+		return $postGcm->post("Sua carona recebeu uma solicitação", $user->gcm_token);
 	}
 	
     public function listFiltered(Request $request)
