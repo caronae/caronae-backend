@@ -199,27 +199,25 @@ class RideController extends Controller
 	public function requestJoin(Request $request) {
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return 'usuário não encontrado com esse token';
+		}
 		
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
         $ride_user = RideUser::where($matchThese)->first();
 		
+		//if a relationship already exists, do not create another one
 		if ($ride_user != null)
-			return;
+			return 'relationship between user and ride already exists as ' . $ride_user->status;
 		
-        $ride_user = new RideUser();
-        $ride_user->user_id = $user->id;
-        $ride_user->ride_id = $decode->rideId;
-		$ride_user->status = 'pending';
-        
-		$ride_user->save();
+		//save relationship between ride and user
+		$user->rides()->attach($decode->rideId, ['status' => 'pending']);
 		
 		//send notification
-		$matchThese = ['ride_id' => $decode->rideId, 'status' => 'driver'];
-        $ride_user = RideUser::where($matchThese)->first();
-		
-        $user = User::find($ride_user->user_id);
+		//get ride's driver
+		$driver = Ride::find($decode->rideId)->users()->where('status', 'driver')->first();
 		$postGcm = new PostGCM();
-		return $postGcm->postToOne("Sua carona recebeu uma solicitação", $user->gcm_token);
+		return $postGcm->postToOne("Sua carona recebeu uma solicitação", $driver->gcm_token);
 	}
 	
 	public function getMyActiveRides(Request $request) {
