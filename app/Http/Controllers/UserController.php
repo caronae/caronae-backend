@@ -10,86 +10,27 @@ use App\User;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  Request  $request
-     * @return Response
-     */
-    public function store(Request $request)
-    {
-        $decode = json_decode($request->getContent());
+    public function signUp($name, $token) {
+		if (User::where('token', $token)->count() > 0) {
+			return 'token ' . $token . ' já existe';
+		}
 		
-        $user = new User();
+		$user = new User();
 
-        $user->name = $decode->name;
-        $user->profile = $decode->profile;
-        $user->course = $decode->course;
-        $user->phone_number = $decode->phoneNumber;
-        $user->email = $decode->email;
-        $user->location = $decode->location;
-        $user->car_owner = $decode->car_owner;
-        $user->car_model = $decode->car_model;
-        $user->car_color = $decode->car_color;
-        $user->car_plate = $decode->car_plate;
+		$user->name = $name;
+		$user->token = $token;
+		$user->profile = "Perfil padrão";
+		$user->course = "Curso padrão";
 
-        $user->save();
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function edit($id, Request $request)
-    {
-		//
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  Request  $request
-     * @param  int  $id
-     * @return Response
-     */
-    public function update(Request $request, $id)
+		$user->save();
+		
+		return $name . ' cadastrado com o token ' . $token;
+	}
+	
+	public function update(Request $request, $id)
     {
         $decode = json_decode($request->getContent());
 
-        //todo: verificar em um middleware
         $user = User::where('token', $request->header('token'))->first();
 
         $user->name = $decode->name;
@@ -136,15 +77,4 @@ class UserController extends Controller
 		
 		$user->save();
 	}
-	
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }
