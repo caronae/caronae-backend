@@ -30,8 +30,10 @@ class UserController extends Controller
 	public function update(Request $request, $id)
     {
         $decode = json_decode($request->getContent());
-
         $user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return 'usuário não encontrado com esse token';
+		}
 
         $user->name = $decode->name;
         $user->profile = $decode->profile;
@@ -49,29 +51,23 @@ class UserController extends Controller
 
     public function auth(Request $request) {
         $decode = json_decode($request->getContent());
-
         $user = User::where('token', $decode->token)->first();
 		if ($user == null) {
-			return;
+			return 'usuário não encontrado com esse token';
 		}
 		
-        $rides = $user->rides;
+		//get user's rides as driver
+        $drivingRides = $user->rides()->where('status', 'driver')->get();
 		
-		$drivingRides = array();
-		foreach($rides as $ride) {
-			if ($ride->pivot->status == 'driver') {
-				array_push($drivingRides, $ride);
-			}
-		}
-		
-		$resultJson = array("user" => $user, "rides" => $drivingRides);
-
-        return $resultJson;
+		return array("user" => $user, "rides" => $drivingRides);
     }
 	
 	public function saveGcmToken(Request $request) {
-		$user = User::where('token', $request->header('token'))->first();
 		$decode = json_decode($request->getContent());
+		$user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return 'usuário não encontrado com esse token';
+		}
 		
 		$user->gcm_token = $decode->token;
 		
