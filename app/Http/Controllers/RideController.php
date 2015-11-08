@@ -16,67 +16,40 @@ use \DateInterval;
 
 class RideController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
-    public function index() {
-		//
-	}
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  Request  $request
-     * @return Response
-     */
-    public function store(Request $request)
-    {
-        $user = User::where('token', $request->header('token'))->first();
-		
+    public function store(Request $request) {
         $decode = json_decode($request->getContent());
+        $user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return 'usuário não encontrado com esse token';
+		}
 		
-        $mydate = DateTime::createFromFormat('d/m/Y', $decode->mydate);
-        $repeats_until = DateTime::createFromFormat('d/m/Y', $decode->repeats_until);
-		
+		//create new ride and save it
         $ride = new Ride();
 		$ride->myzone = $decode->myzone;
 		$ride->neighborhood = $decode->neighborhood;
 		$ride->place = $decode->place;
 		$ride->route = $decode->route;
+        $mydate = DateTime::createFromFormat('d/m/Y', $decode->mydate);
 		$ride->mydate = $mydate->format('Y-m-d');
 		$ride->mytime = $decode->mytime;
 		$ride->slots = $decode->slots;
 		$ride->hub = $decode->hub;
 		$ride->description = $decode->description;
 		$ride->going = $decode->going;
+        $repeats_until = DateTime::createFromFormat('d/m/Y', $decode->repeats_until);
 		if ($decode->repeats_until != "") {
 			$ride->repeats_until = $repeats_until->format('Y-m-d');
 		} else {
 			$ride->repeats_until = "";
 		}
 		$ride->week_days = $decode->week_days;
+		
 		$ride->save();
 
 		$rides_created[] = $ride;
 		
-        $ride_user = new RideUser();
-        $ride_user->user_id = $user->id;
-        $ride_user->ride_id = $ride->id;
-        $ride_user->status = 'driver';
-        
-		$ride_user->save();
+		//save relationship between ride and user
+		$user->rides()->attach($ride->id, ['status' => 'driver']);
 
 		// Check if ride generates a routine and create future events
 		if ($decode->week_days != "") {
@@ -153,17 +126,13 @@ class RideController extends Controller
 				$repeating_ride->description = $decode->description;
 				$repeating_ride->going = $decode->going;
 				$repeating_ride->routine_id = $ride->id; // References the original ride which originated this ride
+				
 				$repeating_ride->save();
 
 				$rides_created[] = $repeating_ride;
 				
 				// Saving the relationship between ride and user
-				$ride_user = new RideUser();
-				$ride_user->user_id = $user->id;
-				$ride_user->ride_id = $repeating_ride->id;
-				$ride_user->status = 'driver';
-				
-				$ride_user->save();
+				$user->rides()->attach($repeating_ride->id, ['status' => 'driver']);
 
 				$repeating_ride_date_week_day = $repeating_ride_date->format('N');
 				$repeating_ride_date = $repeating_ride_date->add(new DateInterval('P' . $repeating_intervals[$repeating_ride_date_week_day] .  'D'));
@@ -199,8 +168,7 @@ class RideController extends Controller
 		return $postGcm->postToOne("Sua carona recebeu uma solicitação", $user->gcm_token);
 	}
 	
-    public function listFiltered(Request $request)
-    {
+    public function listFiltered(Request $request) {
         $decode = json_decode($request->getContent());
 		
 		$matchThese = ['going' => $decode->go, 'mydate' => $decode->date];
@@ -318,15 +286,13 @@ class RideController extends Controller
 		}
 }
 	
-	public function delete(Request $request)
-    {
+	public function delete(Request $request) {
         $decode = json_decode($request->getContent());
         RideUser::where('ride_id', $decode->rideId)->delete();
         Ride::find($decode->rideId)->delete();
     }
 	
-	public function getRequesters(Request $request)
-    {
+	public function getRequesters(Request $request) {
         $decode = json_decode($request->getContent());
         $ride = Ride::find($decode->rideId);
         $users = $ride->users;
@@ -341,8 +307,7 @@ class RideController extends Controller
         return $requesters;
     }
 	
-	public function answerJoinRequest(Request $request)
-    {
+	public function answerJoinRequest(Request $request) {
         $decode = json_decode($request->getContent());
 		
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $decode->userId, 'status' => 'pending'];
@@ -357,51 +322,4 @@ class RideController extends Controller
 		$message = $decode->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(';
 		return $postGcm->postToOne($message, $user->gcm_token);
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  Request  $request
-     * @param  int  $id
-     * @return Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
-
 }

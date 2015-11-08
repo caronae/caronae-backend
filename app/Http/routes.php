@@ -1,13 +1,14 @@
 <?php
 
-Route::resource('ride', 'RideController');
-
+//user routes
 Route::get('user/signup/{name}/{token}', 'UserController@signUp'); //mudar essa rota de get para post assim q possível
 Route::post('user/login', 'UserController@login');
 Route::put('user/update', 'UserController@update');
 Route::put('user/saveGcmToken', 'UserController@saveGcmToken');
 Route::put('user/clearGcmToken', 'UserController@clearGcmToken');
 
+//ride routes
+Route::post('ride/store', 'RideController@store');
 Route::post('ride/list', 'RideController@listFiltered');
 Route::post('ride/requestJoin', 'RideController@requestJoin');
 Route::post('ride/delete', 'RideController@delete');
@@ -20,4 +21,3 @@ Route::post('ride/leaveRide', 'RideController@leaveRide');
 Route::get('/', function () {
     return View::make('welcome');
 });
-
