@@ -1,11 +1,12 @@
 <?php
 
-Route::resource('user', 'UserController');
 Route::resource('ride', 'RideController');
 
-Route::get('user/signup/{name}/{token}', 'UserController@signUp');
-Route::post('user/auth', 'UserController@auth');
-Route::post('user/saveGcmToken', 'UserController@saveGcmToken');
+Route::get('user/signup/{name}/{token}', 'UserController@signUp'); //mudar essa rota de get para post assim q possível
+Route::post('user/login', 'UserController@login');
+Route::put('user/update', 'UserController@update');
+Route::put('user/saveGcmToken', 'UserController@saveGcmToken');
+Route::put('user/clearGcmToken', 'UserController@clearGcmToken');
 
 Route::post('ride/list', 'RideController@listFiltered');
 Route::post('ride/requestJoin', 'RideController@requestJoin');

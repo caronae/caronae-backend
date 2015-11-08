@@ -27,8 +27,20 @@ class UserController extends Controller
 		return $name . ' cadastrado com o token ' . $token;
 	}
 	
-	public function update(Request $request, $id)
-    {
+    public function login(Request $request) {
+        $decode = json_decode($request->getContent());
+        $user = User::where('token', $decode->token)->first();
+		if ($user == null) {
+			return 'usuário não encontrado com esse token';
+		}
+		
+		//get user's rides as driver
+        $drivingRides = $user->rides()->where('status', 'driver')->get();
+		
+		return array("user" => $user, "rides" => $drivingRides);
+    }
+	
+	public function update(Request $request) {
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
 		if ($user == null) {
@@ -47,21 +59,8 @@ class UserController extends Controller
         $user->car_plate = $decode->car_plate;
 
         $user->save();
-    }
+	}
 
-    public function auth(Request $request) {
-        $decode = json_decode($request->getContent());
-        $user = User::where('token', $decode->token)->first();
-		if ($user == null) {
-			return 'usuário não encontrado com esse token';
-		}
-		
-		//get user's rides as driver
-        $drivingRides = $user->rides()->where('status', 'driver')->get();
-		
-		return array("user" => $user, "rides" => $drivingRides);
-    }
-	
 	public function saveGcmToken(Request $request) {
 		$decode = json_decode($request->getContent());
 		$user = User::where('token', $request->header('token'))->first();
@@ -72,5 +71,17 @@ class UserController extends Controller
 		$user->gcm_token = $decode->token;
 		
 		$user->save();
-	}
+    }
+
+	public function clearGcmToken(Request $request) {
+		$decode = json_decode($request->getContent());
+		$user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return 'usuário não encontrado com esse token';
+		}
+		
+		$user->gcm_token = '';
+		
+		$user->save();
+    }
 }
