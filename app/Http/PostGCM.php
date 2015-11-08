@@ -4,12 +4,34 @@ namespace App\Http;
 
 class PostGCM
 {
-	function post($message, $id)
-	{
+	function postToOne($message, $id) {
 		//$ids = array( 'abc', 'def' );
 		//$ids = array( $ids );
 		$data = array( 'message' => $message );
 		
+		$post = array(
+						'to' 	=> $id,
+						'data' => $data,
+					);
+					
+		return $this->doPost($post);
+	}
+	
+	function postToMany($message, $ids) {
+		//$ids = array( 'abc', 'def' );
+		//$ids = array( $ids );
+		$data = array( 'message' => $message );
+		
+		$post = array(
+						'registration_ids'  => $ids,
+						'data' => $data,
+					);
+					
+		return $this->doPost($post);
+	}
+	
+	function doPost($post)
+	{
 		//------------------------------
 		// Replace with real GCM API 
 		// key from Google APIs Console
@@ -24,17 +46,6 @@ class PostGCM
 		//------------------------------
 
 		$url = 'https://android.googleapis.com/gcm/send';
-
-		//------------------------------
-		// Set GCM post variables
-		// (Device IDs and push payload)
-		//------------------------------
-
-		$post = array(
-						//'registration_ids'  => $id,
-						'to' 	=> $id,
-						'data' => $data,
-						);
 
 		//------------------------------
 		// Set CURL request headers

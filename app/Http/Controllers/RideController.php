@@ -180,8 +180,8 @@ class RideController extends Controller
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
         $ride_user = RideUser::where($matchThese)->first();
 		
-		/*if ($ride_user != null)
-			return;*/
+		if ($ride_user != null)
+			return;
 		
         $ride_user = new RideUser();
         $ride_user->user_id = $user->id;
@@ -196,7 +196,7 @@ class RideController extends Controller
 		
         $user = User::find($ride_user->user_id);
 		$postGcm = new PostGCM();
-		return $postGcm->post("Sua carona recebeu uma solicitação", $user->gcm_token);
+		return $postGcm->postToOne("Sua carona recebeu uma solicitação", $user->gcm_token);
 	}
 	
     public function listFiltered(Request $request)
@@ -262,17 +262,14 @@ class RideController extends Controller
 					$users2 = array();
 					foreach($users as $user2) {
 						if ($user2->pivot->status == 'driver') {
-							//$users3[] = $user2;
 							array_unshift($users2, $user2);
 						}
 						if ($user2->pivot->status == 'accepted') {
-							//$users3[] = $user2;
 							array_push($users2, $user2);
 						}
 					}
 					
 					if(count($users2) > 1) {
-						//$resultArray[$ride] = $users2;
 						array_push($resultArray, array("ride" => $ride, "users" => $users2));
 					}
 			}
@@ -289,11 +286,35 @@ class RideController extends Controller
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
         $rideUser = RideUser::where($matchThese)->first();
 		if ($rideUser->status == 'driver') {
+			$ride = Ride::find($decode->rideId);
+			
+			$riders = $ride->users()->where('status', 'accepted')->get();
+			
+			foreach($riders as $rider) {
+				$ridersTokens[] = $rider->gcm_token;
+			}
+			
 			RideUser::where('ride_id', $decode->rideId)->delete();
-			Ride::find($decode->rideId)->delete();
+			$ride->delete();
+			
+			$postGcm = new PostGCM();
+			if (count($ridersTokens) > 1) {
+				return $postGcm->postToMany("Um motorista cancelou uma carona ativa sua", $ridersTokens);
+			} else {
+				return $postGcm->postToOne("Um motorista cancelou uma carona ativa sua", reset($ridersTokens));
+			}
+			
 		} else {
 			$rideUser->status = 'quit';
 			$rideUser->save();
+			
+			//send notification to driver
+			$matchThese = ['ride_id' => $decode->rideId, 'status' => 'driver'];
+			$rideUser = RideUser::where($matchThese)->first();
+		
+			$user = User::find($rideUser->user_id);
+			$postGcm = new PostGCM();
+			return $postGcm->postToOne("Um caronista desistiu de sua carona", $user->gcm_token);
 		}
 }
 	
@@ -334,7 +355,7 @@ class RideController extends Controller
 		$user = User::find($rideUser->user_id);
 		$postGcm = new PostGCM();
 		$message = $decode->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(';
-		return $postGcm->post($message, $user->gcm_token);
+		return $postGcm->postToOne($message, $user->gcm_token);
     }
 
     /**
