@@ -142,6 +142,60 @@ class RideController extends Controller
 		return $rides_created;
     }
 	
+    public function listFiltered(Request $request) {
+        $decode = json_decode($request->getContent());
+		
+		//locations will come as a string divided by ", ", explode the string into an array 
+		$locations = explode(", ", $decode->location);
+		
+		//location can be zones or neighborhoods, check if first array position is a zone or a neighborhood
+		if ($locations[0] == "Centro" || $locations[0] == "Zona Sul" || $locations[0] == "Zona Oeste" || $locations[0] == "Zona Norte" || $locations[0] == "Baixada" || $locations[0] == "Grande Niterói")
+				$locationColumn = 'myzone';//if location is filtered by zone, query by 'myzone' column
+		else
+				$locationColumn = 'neighborhood';//if location is filtered by neighborhood, query by 'neighborhood' column
+		
+		$matchThese = ['going' => $decode->go, 'mydate' => $decode->date];
+		//query the rides
+		$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->get();
+		
+		if ($rides->count() > 0) {
+			$resultJson = '[';
+			
+			foreach ($rides as $ride) {
+				//check if ride is full
+				if ($ride->users()->where('status', 'pending')->orWhere('status', 'accepted')->count() < $ride->slots) {
+					//gets the driver
+					$user = $ride->users()->where('status', 'driver')->first();
+					
+					//make array with driver's info and ride's info
+					$arr = array('driverId' => $user->id,
+										'driverName' => $user->name, 
+										'course' => $user->course, 
+										'neighborhood' => $ride->neighborhood, 
+										'zone' => $ride->myzone, 
+										'place' => $ride->place, 
+										'route' => $ride->route, 
+										'time' => $ride->mytime, 
+										'date' => $ride->mydate, 
+										'slots' => $ride->slots, 
+										'hub' => $ride->hub, 
+										'going' => $ride->going, 
+										'rideId' => $ride->id);
+					
+					$resultJson .= json_encode($arr) . ',';
+				}
+			}
+			
+			//remove last ',' from json
+			if (strlen($resultJson) > 1) {
+				$resultJson = substr($resultJson, 0, -1);  
+				$resultJson .= ']';
+				
+				return $resultJson;
+			}
+		}
+    }
+	
 	public function requestJoin(Request $request) {
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
@@ -167,56 +221,6 @@ class RideController extends Controller
 		$postGcm = new PostGCM();
 		return $postGcm->postToOne("Sua carona recebeu uma solicitação", $user->gcm_token);
 	}
-	
-    public function listFiltered(Request $request) {
-        $decode = json_decode($request->getContent());
-		
-		$matchThese = ['going' => $decode->go, 'mydate' => $decode->date];
-		
-		$locations = explode(", ", $decode->location);
-		
-		if ($locations[0] == "Centro" || $locations[0] == "Zona Sul" || $locations[0] == "Zona Oeste" || $locations[0] == "Zona Norte" || $locations[0] == "Baixada" || $locations[0] == "Grande Niterói")
-				$locationColumn = 'myzone';
-		else
-				$locationColumn = 'neighborhood';
-			
-		$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->get();
-		
-		if ($rides->count() > 0) {
-			$resultJson = '[';
-			
-			foreach ($rides as $ride) {
-				$matchThese2 = ['ride_id' => $ride->id, 'status' => 'pending'];
-				$matchThese3 = ['ride_id' => $ride->id, 'status' => 'accepted'];
-				if (RideUser::where($matchThese2)->orWhere($matchThese3)->count() < $ride->slots) {
-					$user = $ride->users()->where('status', 'driver')->first();
-					
-					$arr = array('driverName' => $user->name, 
-										'course' => $user->course, 
-										'neighborhood' => $ride->neighborhood, 
-										'zone' => $ride->myzone, 
-										'place' => $ride->place, 
-										'route' => $ride->route, 
-										'time' => $ride->mytime, 
-										'date' => $ride->mydate, 
-										'slots' => $ride->slots, 
-										'hub' => $ride->hub, 
-										'going' => $ride->going, 
-										'rideId' => $ride->id, 
-										'driverId' => $user->id);
-					
-					$resultJson .= json_encode($arr) . ',';
-				}
-			}
-			
-			if (strlen($resultJson) > 1) {
-				$resultJson = substr($resultJson, 0, -1);  
-				$resultJson .= ']';
-				
-				return $resultJson;
-			}
-		}
-    }
 	
 	public function getMyActiveRides(Request $request) {
         $user = User::where('token', $request->header('token'))->first();
