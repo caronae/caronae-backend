@@ -142,6 +142,11 @@ class RideController extends Controller
 		return $rides_created;
     }
 	
+	public function delete($rideId) {
+        RideUser::where('ride_id', $rideId)->delete(); //delete all relationships with this ride first
+        Ride::destroy($rideId);
+    }
+	
     public function listFiltered(Request $request) {
         $decode = json_decode($request->getContent());
 		
@@ -258,6 +263,9 @@ class RideController extends Controller
 	
 	public function getMyActiveRides(Request $request) {
         $user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return 'usuário não encontrado com esse token';
+		}
 		
 		$rides = $user->rides;
 		$resultArray = array();
@@ -322,11 +330,5 @@ class RideController extends Controller
 			$postGcm = new PostGCM();
 			return $postGcm->postToOne("Um caronista desistiu de sua carona", $user->gcm_token);
 		}
-}
-	
-	public function delete(Request $request) {
-        $decode = json_decode($request->getContent());
-        RideUser::where('ride_id', $decode->rideId)->delete();
-        Ride::find($decode->rideId)->delete();
-    }
+	}
 }

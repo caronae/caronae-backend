@@ -8,8 +8,8 @@ Route::put('user/saveGcmToken', 'UserController@saveGcmToken');
 Route::put('user/clearGcmToken', 'UserController@clearGcmToken');
 
 //ride routes
-Route::post('ride/store', 'RideController@store');
-Route::post('ride/delete', 'RideController@delete');
+Route::post('ride', 'RideController@store');
+Route::delete('ride/{rideId}', 'RideController@delete');
 Route::post('ride/listFiltered', 'RideController@listFiltered');
 Route::post('ride/requestJoin', 'RideController@requestJoin');
 Route::get('ride/getRequesters/{rideId}', 'RideController@getRequesters');
