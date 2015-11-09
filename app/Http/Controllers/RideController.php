@@ -185,6 +185,7 @@ class RideController extends Controller
 										'slots' => $ride->slots, 
 										'hub' => $ride->hub, 
 										'going' => $ride->going, 
+										'description' => $ride->description, 
 										'rideId' => $ride->id);
 					
 					$resultJson .= json_encode($arr) . ',';
