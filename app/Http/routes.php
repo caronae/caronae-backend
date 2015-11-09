@@ -14,7 +14,7 @@ Route::post('ride/listFiltered', 'RideController@listFiltered');
 Route::post('ride/requestJoin', 'RideController@requestJoin');
 Route::get('ride/getRequesters/{rideId}', 'RideController@getRequesters');
 Route::post('ride/answerJoinRequest', 'RideController@answerJoinRequest');
-Route::post('ride/getMyActiveRides', 'RideController@getMyActiveRides');
+Route::get('ride/getMyActiveRides', 'RideController@getMyActiveRides');
 Route::post('ride/leaveRide', 'RideController@leaveRide');
 
 //rota padrão do laravel podemos excluir depois

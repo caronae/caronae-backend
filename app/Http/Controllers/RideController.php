@@ -267,26 +267,27 @@ class RideController extends Controller
 			return 'usuário não encontrado com esse token';
 		}
 		
-		$rides = $user->rides;
+		//active rides have 'driver' or 'accepted' status
+		$rides = $user->rides()->where('status', 'driver')->orWhere('status', 'accepted')->get();
+		
 		$resultArray = array();
 		foreach($rides as $ride) {
-			if ($ride->pivot->status == 'driver' || $ride->pivot->status == 'accepted') {
-					$users = $ride->users;
-					
-					$users2 = array();
-					foreach($users as $user2) {
-						if ($user2->pivot->status == 'driver') {
-							array_unshift($users2, $user2);
-						}
-						if ($user2->pivot->status == 'accepted') {
-							array_push($users2, $user2);
-						}
-					}
-					
-					if(count($users2) > 1) {
-						array_push($resultArray, array("ride" => $ride, "users" => $users2));
-					}
+			$riders = $ride->users;
+			if (count($riders) == 1)//if size is 1, the driver is the only one in the ride, ride is not active
+				continue;
+			
+			//now we need to put the driver in the beginning of the array
+			$ridersSorted = array();
+			foreach($riders as $rider) {
+				if ($rider->pivot->status == 'driver') {
+					array_unshift($ridersSorted, $rider);//if this user is the driver, put him in the beginning of the array
+				}
+				if ($rider->pivot->status == 'accepted') {
+					array_push($ridersSorted, $rider);
+				}
 			}
+			
+			array_push($resultArray, array("ride" => $ride, "users" => $ridersSorted));
 		}
 		
 		return $resultArray;
