@@ -3,7 +3,7 @@
 //user routes
 Route::get('user/signup/{name}/{token}', 'UserController@signUp'); //mudar essa rota de get para post assim q possível
 Route::post('user/login', 'UserController@login');
-Route::put('user/update', 'UserController@update');
+Route::put('user', 'UserController@update');
 Route::put('user/saveGcmToken', 'UserController@saveGcmToken');
 Route::put('user/clearGcmToken', 'UserController@clearGcmToken');
 
