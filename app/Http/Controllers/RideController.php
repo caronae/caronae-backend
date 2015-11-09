@@ -214,10 +214,13 @@ class RideController extends Controller
 		$user->rides()->attach($decode->rideId, ['status' => 'pending']);
 		
 		//send notification
-		//get ride's driver
-		$driver = Ride::find($decode->rideId)->users()->where('status', 'driver')->first();
-		$postGcm = new PostGCM();
-		return $postGcm->postToOne("Sua carona recebeu uma solicitação", $driver->gcm_token);
+		$driver = Ride::find($decode->rideId)->users()->where('status', 'driver')->first(); //get ride's driver
+		if (!empty($driver->gcm_token)) { //if driver has gcm token, send notification to him
+			$postGcm = new PostGCM();
+			return $postGcm->postToOne("Sua carona recebeu uma solicitação", $driver->gcm_token);
+		} else {
+			return 'request sent but driver did not have gcm token';
+		}
 	}
 	
 	public function getMyActiveRides(Request $request) {
