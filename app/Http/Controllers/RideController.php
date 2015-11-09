@@ -168,7 +168,7 @@ class RideController extends Controller
 			
 			foreach ($rides as $ride) {
 				//check if ride is full
-				if ($ride->users()->where('status', 'pending')->orWhere('status', 'accepted')->count() < $ride->slots) {
+				if ($ride->users()->whereIn('status', ['pending', 'accepted'])->count() < $ride->slots) {
 					//gets the driver
 					$user = $ride->users()->where('status', 'driver')->first();
 					
@@ -268,12 +268,12 @@ class RideController extends Controller
 		}
 		
 		//active rides have 'driver' or 'accepted' status
-		$rides = $user->rides()->where('status', 'driver')->orWhere('status', 'accepted')->get();
+		$rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->get();
 		
 		$resultArray = array();
 		foreach($rides as $ride) {
-			$riders = $ride->users;
-			if (count($riders) == 1)//if size is 1, the driver is the only one in the ride, ride is not active
+			$riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
+			if (count($riders) == 1)//if count == 1 driver is the only one on the ride, therefore ride is not active
 				continue;
 			
 			//now we need to put the driver in the beginning of the array
@@ -294,42 +294,46 @@ class RideController extends Controller
 	}
 	
 	public function leaveRide(Request $request) {
-		
-        $user = User::where('token', $request->header('token'))->first();
         $decode = json_decode($request->getContent());
+        $user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return 'usuário não encontrado com esse token';
+		}
 		
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
-        $rideUser = RideUser::where($matchThese)->first();
-		if ($rideUser->status == 'driver') {
+        $rideUser = RideUser::where($matchThese)->first();//get relationship
+		if ($rideUser->status == 'driver') {//if user is the driver the ride needs to be deleted
 			$ride = Ride::find($decode->rideId);
 			
-			$riders = $ride->users()->where('status', 'accepted')->get();
+			//get gcm tokens from users accepted on the ride
+			$ridersTokens = $ride->users()->where('status', 'accepted')->lists('gcm_token');
 			
-			foreach($riders as $rider) {
-				$ridersTokens[] = $rider->gcm_token;
-			}
-			
-			RideUser::where('ride_id', $decode->rideId)->delete();
+			RideUser::where('ride_id', $decode->rideId)->delete();//delete all relationships to this ride
 			$ride->delete();
 			
+			//send notification to riders on that ride
 			$postGcm = new PostGCM();
 			if (count($ridersTokens) > 1) {
 				return $postGcm->postToMany("Um motorista cancelou uma carona ativa sua", $ridersTokens);
-			} else {
-				return $postGcm->postToOne("Um motorista cancelou uma carona ativa sua", reset($ridersTokens));
 			}
-			
-		} else {
+			if (count($ridersTokens) == 1) {
+				return $postGcm->postToOne("Um motorista cancelou uma carona ativa sua", $ridersTokens[0]);
+			}
+			//this doesn't handle the case where users' gcm tokens aren't null but are empty (''), they'll still be on the $ridersToken and will receive an error from gcm
+			if (count($ridersTokens) == 0) {
+				return 'left ride but no users had gcm token';
+			}
+		} else {//if user is not the driver, just set relationship as quit
 			$rideUser->status = 'quit';
 			$rideUser->save();
 			
-			//send notification to driver
-			$matchThese = ['ride_id' => $decode->rideId, 'status' => 'driver'];
-			$rideUser = RideUser::where($matchThese)->first();
-		
-			$user = User::find($rideUser->user_id);
-			$postGcm = new PostGCM();
-			return $postGcm->postToOne("Um caronista desistiu de sua carona", $user->gcm_token);
+			$driver = Ride::find($decode->rideId)->users()->where('status', 'driver')->first();
+			if (!empty($driver->gcm_token)) { //if user has gcm token, send notification to him
+				$postGcm = new PostGCM();
+				return $postGcm->postToOne('Um caronista desistiu de sua carona', $driver->gcm_token);
+			} else {
+				return 'left ride but driver did not have gcm token';
+			}
 		}
 	}
 }
