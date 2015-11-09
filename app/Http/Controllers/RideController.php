@@ -223,15 +223,37 @@ class RideController extends Controller
 		}
 	}
 	
-	public function getRequesters(Request $request) {
-        $decode = json_decode($request->getContent());
-		
-        $ride = Ride::find($decode->rideId);
+	public function getRequesters($rideId) {
+        $ride = Ride::find($rideId);
 		if ($ride == null) {
-			return 'ride not found with id = ' . $decode->rideId;
+			return 'ride not found with id = ' . $rideId;
 		}
 		
 		return $ride->users()->where('status', 'pending')->get();
+    }
+	
+	public function answerJoinRequest(Request $request) {
+        $decode = json_decode($request->getContent());
+		
+		//find existing relationship which should be pending
+		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $decode->userId, 'status' => 'pending'];
+        $rideUser = RideUser::where($matchThese)->first();
+		if ($rideUser == null)
+			return 'relationship between ride_id = ' . $decode->rideId . ' and user_id = ' . $decode->userId . ' with status pending not found';
+		
+		$rideUser->status = $decode->accepted ? 'accepted' : 'refused';
+		
+		$rideUser->save();
+		
+		//send notification		
+		$user = User::find($rideUser->user_id);
+		if (!empty($user->gcm_token)) { //if user has gcm token, send notification to him
+			$postGcm = new PostGCM();
+			$message = $decode->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(';
+			return $postGcm->postToOne($message, $user->gcm_token);
+		} else {
+			return 'request answered but user did not have gcm token';
+		}
     }
 	
 	public function getMyActiveRides(Request $request) {
@@ -306,21 +328,5 @@ class RideController extends Controller
         $decode = json_decode($request->getContent());
         RideUser::where('ride_id', $decode->rideId)->delete();
         Ride::find($decode->rideId)->delete();
-    }
-	
-	public function answerJoinRequest(Request $request) {
-        $decode = json_decode($request->getContent());
-		
-		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $decode->userId, 'status' => 'pending'];
-        $rideUser = RideUser::where($matchThese)->first();
-		$rideUser->status = $decode->accepted ? 'accepted' : 'refused';
-		
-		$rideUser->save();
-		
-		//send notification		
-		$user = User::find($rideUser->user_id);
-		$postGcm = new PostGCM();
-		$message = $decode->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(';
-		return $postGcm->postToOne($message, $user->gcm_token);
     }
 }
