@@ -72,16 +72,4 @@ class UserController extends Controller
 		
 		$user->save();
     }
-
-	public function clearGcmToken(Request $request) {
-		$decode = json_decode($request->getContent());
-		$user = User::where('token', $request->header('token'))->first();
-		if ($user == null) {
-			return 'usuário não encontrado com esse token';
-		}
-		
-		$user->gcm_token = '';
-		
-		$user->save();
-    }
 }

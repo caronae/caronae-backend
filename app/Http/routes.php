@@ -5,7 +5,6 @@ Route::get('user/signup/{name}/{token}', 'UserController@signUp'); //mudar essa 
 Route::post('user/login', 'UserController@login');
 Route::put('user', 'UserController@update');
 Route::put('user/saveGcmToken', 'UserController@saveGcmToken');
-Route::put('user/clearGcmToken', 'UserController@clearGcmToken');
 
 //ride routes
 Route::post('ride', 'RideController@store');
