@@ -223,6 +223,17 @@ class RideController extends Controller
 		}
 	}
 	
+	public function getRequesters(Request $request) {
+        $decode = json_decode($request->getContent());
+		
+        $ride = Ride::find($decode->rideId);
+		if ($ride == null) {
+			return 'ride not found with id = ' . $decode->rideId;
+		}
+		
+		return $ride->users()->where('status', 'pending')->get();
+    }
+	
 	public function getMyActiveRides(Request $request) {
         $user = User::where('token', $request->header('token'))->first();
 		
@@ -295,21 +306,6 @@ class RideController extends Controller
         $decode = json_decode($request->getContent());
         RideUser::where('ride_id', $decode->rideId)->delete();
         Ride::find($decode->rideId)->delete();
-    }
-	
-	public function getRequesters(Request $request) {
-        $decode = json_decode($request->getContent());
-        $ride = Ride::find($decode->rideId);
-        $users = $ride->users;
-		
-		$requesters = array();
-		foreach($users as $user) {
-			if ($user->pivot->status == 'pending') {
-				array_push($requesters, $user);
-			}
-		}
-
-        return $requesters;
     }
 	
 	public function answerJoinRequest(Request $request) {
