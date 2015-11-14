@@ -4,32 +4,6 @@ namespace App\Http;
 
 class PostGCM
 {
-	function postToOne($message, $id) {
-		//$ids = array( 'abc', 'def' );
-		//$ids = array( $ids );
-		$data = array( 'message' => $message );
-		
-		$post = array(
-						'to' 	=> $id,
-						'data' => $data,
-					);
-					
-		return $this->doPost($post);
-	}
-	
-	function postToMany($message, $ids) {
-		//$ids = array( 'abc', 'def' );
-		//$ids = array( $ids );
-		$data = array( 'message' => $message );
-		
-		$post = array(
-						'registration_ids'  => $ids,
-						'data' => $data,
-					);
-					
-		return $this->doPost($post);
-	}
-	
 	function doPost($post)
 	{
 		//------------------------------

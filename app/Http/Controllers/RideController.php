@@ -223,7 +223,12 @@ class RideController extends Controller
 		$driver = Ride::find($decode->rideId)->users()->where('status', 'driver')->first(); //get ride's driver
 		if (!empty($driver->gcm_token)) { //if driver has gcm token, send notification to him
 			$postGcm = new PostGCM();
-			return $postGcm->postToOne("Sua carona recebeu uma solicitação", $driver->gcm_token);
+			$data = array( 	'message' 	=> "Sua carona recebeu uma solicitação",
+									'msgType' 	=> "joinRequest"
+									);
+			$body = array(	'to' 			=> $driver->gcm_token,
+									'data' 		=> $data);
+			return $postGcm->doPost($body);
 		} else {
 			return 'request sent but driver did not have gcm token';
 		}
@@ -255,8 +260,13 @@ class RideController extends Controller
 		$user = User::find($rideUser->user_id);
 		if (!empty($user->gcm_token)) { //if user has gcm token, send notification to him
 			$postGcm = new PostGCM();
-			$message = $decode->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(';
-			return $postGcm->postToOne($message, $user->gcm_token);
+			$data = array( 	'message' 	=> $decode->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(',
+									'msgType' 	=> $decode->accepted ? 'accepted' : 'refused',
+									'rideId'	 	=> $decode->rideId
+									);
+			$body = array(	'to' 			=> $user->gcm_token,
+									'data' 		=> $data);
+			return $postGcm->doPost($body);
 		} else {
 			return 'request answered but user did not have gcm token';
 		}
@@ -314,11 +324,19 @@ class RideController extends Controller
 			
 			//send notification to riders on that ride
 			$postGcm = new PostGCM();
+			$data = array( 	'message' 	=> 'Um motorista cancelou uma carona ativa sua',
+									'msgType' 	=> "cancelled"
+									);
+			//$body[] = array(	'data' 		=> $data);
 			if (count($ridersTokens) > 1) {
-				return $postGcm->postToMany("Um motorista cancelou uma carona ativa sua", $ridersTokens);
+				$body = array(	'registration_ids' 	=> $ridersTokens,
+										'data' 				=> $data);
+				return $postGcm->doPost($body);
 			}
 			if (count($ridersTokens) == 1) {
-				return $postGcm->postToOne("Um motorista cancelou uma carona ativa sua", $ridersTokens[0]);
+				$body = array(	'to' 		=> $ridersTokens[0],
+										'data' 	=> $data);
+				return $postGcm->doPost($body);
 			}
 			//this doesn't handle the case where users' gcm tokens aren't null but are empty (''), they'll still be on the $ridersToken and will receive an error from gcm
 			if (count($ridersTokens) == 0) {
@@ -331,7 +349,12 @@ class RideController extends Controller
 			$driver = Ride::find($decode->rideId)->users()->where('status', 'driver')->first();
 			if (!empty($driver->gcm_token)) { //if user has gcm token, send notification to him
 				$postGcm = new PostGCM();
-				return $postGcm->postToOne('Um caronista desistiu de sua carona', $driver->gcm_token);
+				$data = array( 	'message' 	=> 'Um caronista desistiu de sua carona',
+										'msgType' 	=> "quitter"
+										);
+				$body = array(	'to' 			=> $driver->gcm_token,
+										'data' 		=> $data);
+				return $postGcm->doPost($body);
 			} else {
 				return 'left ride but driver did not have gcm token';
 			}
