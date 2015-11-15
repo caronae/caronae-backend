@@ -325,9 +325,10 @@ class RideController extends Controller
 			//send notification to riders on that ride
 			$postGcm = new PostGCM();
 			$data = array( 	'message' 	=> 'Um motorista cancelou uma carona ativa sua',
-									'msgType' 	=> "cancelled"
+									'msgType' 	=> "cancelled",
+									'rideId'	 	=> $decode->rideId
 									);
-			//$body[] = array(	'data' 		=> $data);
+			
 			if (count($ridersTokens) > 1) {
 				$body = array(	'registration_ids' 	=> $ridersTokens,
 										'data' 				=> $data);

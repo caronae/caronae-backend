@@ -19,7 +19,7 @@ class PostGCM
 		// Define URL to GCM endpoint
 		//------------------------------
 
-		$url = 'https://android.googleapis.com/gcm/send';
+		$url = 'https://gcm-http.googleapis.com/gcm/send';
 
 		//------------------------------
 		// Set CURL request headers
