@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     public function signUp($name, $token) {
 		if (User::where('token', $token)->count() > 0) {
-			return 'token ' . $token . ' já existe';
+			return response()->json(['error'=>'User token already exists.'], 409);
 		}
 		
 		$user = new User();
@@ -31,7 +31,7 @@ class UserController extends Controller
         $decode = json_decode($request->getContent());
         $user = User::where('token', $decode->token)->first();
 		if ($user == null) {
-			return 'usuário não encontrado com esse token';
+			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
 		//get user's rides as driver
@@ -44,7 +44,7 @@ class UserController extends Controller
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
 		if ($user == null) {
-			return 'usuário não encontrado com esse token';
+			return response()->json(['error'=>'User ' . $request->header('token') . ' token not authorized.'], 403);
 		}
 
         $user->name = $decode->name;
@@ -65,7 +65,7 @@ class UserController extends Controller
 		$decode = json_decode($request->getContent());
 		$user = User::where('token', $request->header('token'))->first();
 		if ($user == null) {
-			return 'usuário não encontrado com esse token';
+			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
 		$user->gcm_token = $decode->token;

@@ -20,7 +20,7 @@ class RideController extends Controller
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
 		if ($user == null) {
-			return 'usuário não encontrado com esse token';
+			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
 		//create new ride and save it
@@ -206,7 +206,7 @@ class RideController extends Controller
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
 		if ($user == null) {
-			return 'usuário não encontrado com esse token';
+			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
@@ -275,7 +275,7 @@ class RideController extends Controller
 	public function getMyActiveRides(Request $request) {
         $user = User::where('token', $request->header('token'))->first();
 		if ($user == null) {
-			return 'usuário não encontrado com esse token';
+			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
 		//active rides have 'driver' or 'accepted' status
@@ -308,7 +308,7 @@ class RideController extends Controller
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
 		if ($user == null) {
-			return 'usuário não encontrado com esse token';
+			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
