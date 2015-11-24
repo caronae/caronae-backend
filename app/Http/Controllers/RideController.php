@@ -163,43 +163,34 @@ class RideController extends Controller
 		//query the rides
 		$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->get();
 		
-		if ($rides->count() > 0) {
-			$resultJson = '[';
-			
-			foreach ($rides as $ride) {
-				//check if ride is full
-				if ($ride->users()->whereIn('status', ['pending', 'accepted'])->count() < $ride->slots) {
-					//gets the driver
-					$user = $ride->users()->where('status', 'driver')->first();
-					
-					//make array with driver's info and ride's info
-					$arr = array('driverId' => $user->id,
-										'driverName' => $user->name, 
-										'course' => $user->course, 
-										'neighborhood' => $ride->neighborhood, 
-										'zone' => $ride->myzone, 
-										'place' => $ride->place, 
-										'route' => $ride->route, 
-										'time' => $ride->mytime, 
-										'date' => $ride->mydate, 
-										'slots' => $ride->slots, 
-										'hub' => $ride->hub, 
-										'going' => $ride->going, 
-										'description' => $ride->description, 
-										'rideId' => $ride->id);
-					
-					$resultJson .= json_encode($arr) . ',';
-				}
-			}
-			
-			//remove last ',' from json
-			if (strlen($resultJson) > 1) {
-				$resultJson = substr($resultJson, 0, -1);  
-				$resultJson .= ']';
+		$results = [];
+		foreach($rides as $ride) {
+			//check if ride is full
+			if ($ride->users()->whereIn('status', ['pending', 'accepted'])->count() < $ride->slots) {
+				//gets the driver
+				$user = $ride->users()->where('status', 'driver')->first();
 				
-				return $resultJson;
+				//make array with driver's info and ride's info
+				$arr = array('driverId' => $user->id,
+									'driverName' => $user->name, 
+									'course' => $user->course, 
+									'neighborhood' => $ride->neighborhood, 
+									'zone' => $ride->myzone, 
+									'place' => $ride->place, 
+									'route' => $ride->route, 
+									'time' => $ride->mytime, 
+									'date' => $ride->mydate, 
+									'slots' => $ride->slots, 
+									'hub' => $ride->hub, 
+									'going' => $ride->going, 
+									'description' => $ride->description, 
+									'rideId' => $ride->id);
+				
+				$results[] = $arr;
 			}
 		}
+			
+		return $results;
     }
 	
 	public function requestJoin(Request $request) {
