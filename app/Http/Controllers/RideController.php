@@ -40,7 +40,7 @@ class RideController extends Controller
 		if ($decode->repeats_until != "") {
 			$ride->repeats_until = $repeats_until->format('Y-m-d');
 		} else {
-			$ride->repeats_until = "";
+			$ride->repeats_until = NULL;
 		}
 		$ride->week_days = $decode->week_days;
 		
