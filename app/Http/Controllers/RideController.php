@@ -125,6 +125,7 @@ class RideController extends Controller
 				$repeating_ride->hub = $decode->hub;
 				$repeating_ride->description = $decode->description;
 				$repeating_ride->going = $decode->going;
+				$repeating_ride->week_days = $decode->week_days;
 				$repeating_ride->routine_id = $ride->id; // References the original ride which originated this ride
 				
 				$repeating_ride->save();
@@ -163,9 +164,9 @@ class RideController extends Controller
 		
 		//query the rides
 		if (empty($decode->center)) {
-			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->get();
+			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('mytime', '>=', $decode->time)->get();
 		} else {
-			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('hub', 'LIKE', "$decode->center%")->get();
+			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('mytime', '>=', $decode->time)->where('hub', 'LIKE', "$decode->center%")->get();
 		}
 		
 		$results = [];
