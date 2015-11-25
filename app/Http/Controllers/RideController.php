@@ -160,8 +160,13 @@ class RideController extends Controller
 				$locationColumn = 'neighborhood';//if location is filtered by neighborhood, query by 'neighborhood' column
 		
 		$matchThese = ['going' => $decode->go, 'mydate' => $decode->date];
+		
 		//query the rides
-		$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->get();
+		if (empty($decode->center)) {
+			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->get();
+		} else {
+			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('hub', 'LIKE', "$decode->center%")->get();
+		}
 		
 		$results = [];
 		foreach($rides as $ride) {
