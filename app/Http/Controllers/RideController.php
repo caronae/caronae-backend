@@ -210,8 +210,9 @@ class RideController extends Controller
         $ride_user = RideUser::where($matchThese)->first();
 		
 		//if a relationship already exists, do not create another one
-		if ($ride_user != null)
-			return 'relationship between user and ride already exists as ' . $ride_user->status;
+		if ($ride_user != null) {
+			return response()->json(['message'=>'Relationship between user and ride already exists as ' . $ride_user->status]);
+		}
 		
 		//save relationship between ride and user
 		$user->rides()->attach($decode->rideId, ['status' => 'pending']);
@@ -221,13 +222,17 @@ class RideController extends Controller
 		if (!empty($driver->gcm_token)) { //if driver has gcm token, send notification to him
 			$postGcm = new PostGCM();
 			$data = array( 	'message' 	=> "Sua carona recebeu uma solicitação",
-									'msgType' 	=> "joinRequest"
-									);
-			$body = array(	'to' 			=> $driver->gcm_token,
-									'data' 		=> $data);
-			return $postGcm->doPost($body);
+							'msgType' 	=> "joinRequest"
+						 );
+			$body = array(	'to' 		=> $driver->gcm_token,
+							'data' 		=> $data
+						 );
+
+			$resultGcm = $postGcm->doPost($body);
+
+			return response()->json(['message'=>'Request sent and driver notified.', 'gcmResponse'=>$resultGcm]);
 		} else {
-			return 'request sent but driver did not have gcm token';
+			return response()->json(['message'=>'Request sent but driver did not have GCM token']);
 		}
 	}
 	
