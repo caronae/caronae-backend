@@ -252,7 +252,7 @@ class RideController extends Controller
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $decode->userId, 'status' => 'pending'];
         $rideUser = RideUser::where($matchThese)->first();
 		if ($rideUser == null)
-			return 'relationship between ride_id = ' . $decode->rideId . ' and user_id = ' . $decode->userId . ' with status pending not found';
+			return response()->json(['error'=>'relationship between ride_id = ' . $decode->rideId . ' and user_id = ' . $decode->userId . ' with status pending not found'], 400);
 		
 		$rideUser->status = $decode->accepted ? 'accepted' : 'refused';
 		
@@ -268,9 +268,12 @@ class RideController extends Controller
 									);
 			$body = array(	'to' 			=> $user->gcm_token,
 									'data' 		=> $data);
-			return $postGcm->doPost($body);
+
+			$resultGcm = $postGcm->doPost($body);
+			return response()->json(['message'=>'Request answered and user notified.', 'gcmResponse'=>$resultGcm]);
+
 		} else {
-			return 'request answered but user did not have gcm token';
+			return response()->json(['message'=>'Request answered but user did not have GCM token']);
 		}
     }
 	
