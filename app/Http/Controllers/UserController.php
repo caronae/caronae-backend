@@ -72,4 +72,28 @@ class UserController extends Controller
 		
 		$user->save();
     }
+	
+	public function saveFaceId(Request $request) {
+		$decode = json_decode($request->getContent());
+		$user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return response()->json(['error'=>'User token not authorized.'], 403);
+		}
+		
+		$user->face_id = $decode->id;
+		
+		$user->save();
+    }
+	
+	public function saveProfilePicUrl(Request $request) {
+		$decode = json_decode($request->getContent());
+		$user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return response()->json(['error'=>'User token not authorized.'], 403);
+		}
+		
+		$user->profile_pic_url = $decode->url;
+		
+		$user->save();
+    }
 }
