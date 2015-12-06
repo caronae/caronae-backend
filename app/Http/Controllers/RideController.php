@@ -393,5 +393,34 @@ class RideController extends Controller
 		
 		$ride->done = true;
 		$ride->save();
+		
+		//get gcm tokens from users accepted on the ride
+		$ridersTokens = $ride->users()->where('status', 'accepted')->lists('gcm_token');
+		
+		//send notification to riders on that ride
+		$postGcm = new PostGCM();
+		$data = array( 	'message' 	=> 'Um motorista concluiu uma carona ativa sua',
+								'msgType' 	=> "finished",
+								'rideId'	 	=> $decode->rideId
+								);
+		
+		if (count($ridersTokens) > 1) {
+			$body = array(	'registration_ids' 	=> $ridersTokens,
+									'data' 				=> $data);
+
+			$resultGcm = $postGcm->doPost($body);
+			return response()->json(['message'=>'Ride finished and users were notified.', 'gcmResponse'=>$resultGcm]);
+		}
+		if (count($ridersTokens) == 1) {
+			$body = array(	'to' 		=> $ridersTokens[0],
+									'data' 	=> $data);
+
+			$resultGcm = $postGcm->doPost($body);
+			return response()->json(['message'=>'Ride finished and users were notified.', 'gcmResponse'=>$resultGcm]);
+		}
+		//this doesn't handle the case where users' gcm tokens aren't null but are empty (''), they'll still be on the $ridersToken and will receive an error from gcm
+		if (count($ridersTokens) == 0) {
+			return response()->json(['message'=>'Ride finished but no users have a gcm token.']);
+		}
 	}
 }
