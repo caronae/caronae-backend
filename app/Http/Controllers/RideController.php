@@ -180,6 +180,7 @@ class RideController extends Controller
 				$arr = array('driverId' => $user->id,
 									'driverName' => $user->name, 
 									'course' => $user->course, 
+									'profilePicUrl' => $user->profile_pic_url, 
 									'neighborhood' => $ride->neighborhood, 
 									'myzone' => $ride->myzone, 
 									'place' => $ride->place, 
