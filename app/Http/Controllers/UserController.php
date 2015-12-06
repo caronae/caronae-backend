@@ -35,7 +35,8 @@ class UserController extends Controller
 		}
 		
 		//get user's rides as driver
-        $drivingRides = $user->rides()->where('status', 'driver')->get();
+		$matchThese = ['status' => 'driver', 'done' => false];
+        $drivingRides = $user->rides()->where($matchThese)->get();
 		
 		return array("user" => $user, "rides" => $drivingRides);
     }
@@ -47,7 +48,6 @@ class UserController extends Controller
 			return response()->json(['error'=>'User ' . $request->header('token') . ' token not authorized.'], 403);
 		}
 
-        $user->name = $decode->name;
         $user->profile = $decode->profile;
         $user->course = $decode->course;
         $user->phone_number = $decode->phone_number;

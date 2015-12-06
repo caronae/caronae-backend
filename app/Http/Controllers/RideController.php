@@ -160,7 +160,7 @@ class RideController extends Controller
 		else
 				$locationColumn = 'neighborhood';//if location is filtered by neighborhood, query by 'neighborhood' column
 		
-		$matchThese = ['going' => $decode->go, 'mydate' => $decode->date];
+		$matchThese = ['going' => $decode->go, 'mydate' => $decode->date, 'done' => false];
 		
 		//query the rides
 		if (empty($decode->center)) {
@@ -240,7 +240,7 @@ class RideController extends Controller
 	public function getRequesters($rideId) {
         $ride = Ride::find($rideId);
 		if ($ride == null) {
-			return 'ride not found with id = ' . $rideId;
+			return response()->json(['error'=>'ride not found with id = ' . $rideId], 400);
 		}
 		
 		return $ride->users()->where('status', 'pending')->get();
@@ -259,7 +259,7 @@ class RideController extends Controller
 		
 		$rideUser->save();
 		
-		//send notification		
+		//send notification
 		$user = User::find($rideUser->user_id);
 		if (!empty($user->gcm_token)) { //if user has gcm token, send notification to him
 			$postGcm = new PostGCM();
@@ -272,7 +272,6 @@ class RideController extends Controller
 
 			$resultGcm = $postGcm->doPost($body);
 			return response()->json(['message'=>'Request answered and user notified.', 'gcmResponse'=>$resultGcm]);
-
 		} else {
 			return response()->json(['message'=>'Request answered but user did not have GCM token']);
 		}
@@ -285,7 +284,7 @@ class RideController extends Controller
 		}
 		
 		//active rides have 'driver' or 'accepted' status
-		$rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->get();
+		$rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->where('done', false)->get();
 		
 		$resultArray = array();
 		foreach($rides as $ride) {
@@ -371,5 +370,28 @@ class RideController extends Controller
 				return response()->json(['message'=>'Left ride but driver did not have gcm token.']);
 			}
 		}
+	}
+
+	public function finishRide(Request $request) {
+        $decode = json_decode($request->getContent());
+        $user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return response()->json(['error'=>'User token not authorized.'], 403);
+		}
+		
+		$ride = Ride::find($decode->rideId);
+		if ($ride == null) {
+			return response()->json(['error'=>'ride not found with id = ' . $rideId], 400);
+		}
+		
+		//find existing relationship which should be driver
+		$matchThese = ['ride_id' => $ride->id, 'user_id' => $user->id, 'status' => 'driver'];
+        $rideUser = RideUser::where($matchThese)->first();
+		if ($rideUser == null) {
+			return response()->json(['error'=>'user is not the driver of this ride'], 403);
+		}
+		
+		$ride->done = true;
+		$ride->save();
 	}
 }
