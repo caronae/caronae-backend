@@ -337,16 +337,20 @@ class RideController extends Controller
 			if (count($ridersTokens) > 1) {
 				$body = array(	'registration_ids' 	=> $ridersTokens,
 										'data' 				=> $data);
-				return $postGcm->doPost($body);
+
+				$resultGcm = $postGcm->doPost($body);
+				return response()->json(['message'=>'Left ride and users were notified.', 'gcmResponse'=>$resultGcm]);
 			}
 			if (count($ridersTokens) == 1) {
 				$body = array(	'to' 		=> $ridersTokens[0],
 										'data' 	=> $data);
-				return $postGcm->doPost($body);
+
+				$resultGcm = $postGcm->doPost($body);
+				return response()->json(['message'=>'Left ride and users were notified.', 'gcmResponse'=>$resultGcm]);
 			}
 			//this doesn't handle the case where users' gcm tokens aren't null but are empty (''), they'll still be on the $ridersToken and will receive an error from gcm
 			if (count($ridersTokens) == 0) {
-				return 'left ride but no users had gcm token';
+				return response()->json(['message'=>'Left ride but no users have a gcm token.']);
 			}
 		} else {//if user is not the driver, just set relationship as quit
 			$rideUser->status = 'quit';
@@ -360,9 +364,10 @@ class RideController extends Controller
 										);
 				$body = array(	'to' 			=> $driver->gcm_token,
 										'data' 		=> $data);
-				return $postGcm->doPost($body);
+				$resultGcm = $postGcm->doPost($body);
+				return response()->json(['message'=>'Left ride and users were notified.', 'gcmResponse'=>$resultGcm]);
 			} else {
-				return 'left ride but driver did not have gcm token';
+				return response()->json(['message'=>'Left ride but driver did not have gcm token.']);
 			}
 		}
 	}
