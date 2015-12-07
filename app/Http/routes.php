@@ -18,6 +18,7 @@ Route::post('ride/answerJoinRequest', 'RideController@answerJoinRequest');
 Route::get('ride/getMyActiveRides', 'RideController@getMyActiveRides');
 Route::post('ride/leaveRide', 'RideController@leaveRide');
 Route::post('ride/finishRide', 'RideController@finishRide');
+Route::get('ride/getRidesHistory', 'RideController@getRidesHistory');
 
 //rota padrão do laravel podemos excluir depois
 Route::get('/', function () {

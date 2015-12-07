@@ -423,4 +423,30 @@ class RideController extends Controller
 			return response()->json(['message'=>'Ride finished but no users have a gcm token.']);
 		}
 	}
+
+	public function getRidesHistory(Request $request) {
+        $user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return response()->json(['error'=>'User token not authorized.'], 403);
+		}
+		
+		$rides = $user->rides()->where('done', true)->whereIn('status', ['driver', 'accepted'])->get();
+		
+		$resultJson = array();
+		foreach($rides as $ride) {
+			$riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
+			$ridersCount = count($riders) - 1;//subtract 1 to not count driver
+			
+			foreach($riders as $rider) {
+				if ($rider->pivot->status == 'driver') {
+					$driverPic = $rider->profile_pic_url;
+					
+					$resultJson[] = array("ride" => $ride, "driverPic" => $driverPic, "ridersCount" => $ridersCount);
+					break;
+				}				
+			}
+		}
+		
+		return $resultJson;
+	}
 }
