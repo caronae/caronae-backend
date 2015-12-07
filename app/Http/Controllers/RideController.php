@@ -449,4 +449,16 @@ class RideController extends Controller
 		
 		return $resultJson;
 	}
+	
+	public function getRidesHistoryCount($userId) {
+        $user = User::find($userId);
+		if ($user == null) {
+			return response()->json(['error'=>'User not found with id = ' . $userId], 400);
+		}
+		
+		$offeredCount = $user->rides()->where('done', true)->where('status', 'driver')->count();
+		$takenCount = $user->rides()->where('done', true)->where('status', 'accepted')->count();
+		
+		return array("offeredCount" => $offeredCount, "takenCount" => $takenCount);
+	}
 }
