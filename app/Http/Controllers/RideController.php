@@ -174,24 +174,22 @@ class RideController extends Controller
 			//check if ride is full
 			if ($ride->users()->whereIn('status', ['pending', 'accepted'])->count() < $ride->slots) {
 				//gets the driver
-				$user = $ride->users()->where('status', 'driver')->first();
+				$driver = $ride->users()->where('status', 'driver')->first();
+				unset($driver->pivot);
 				
 				//make array with driver's info and ride's info
-				$arr = array('driverId' => $user->id,
-									'driverName' => $user->name, 
-									'course' => $user->course, 
-									'profilePicUrl' => $user->profile_pic_url, 
-									'neighborhood' => $ride->neighborhood, 
-									'myzone' => $ride->myzone, 
-									'place' => $ride->place, 
-									'route' => $ride->route, 
-									'mytime' => $ride->mytime, 
-									'mydate' => $ride->mydate, 
-									'slots' => $ride->slots, 
-									'hub' => $ride->hub, 
-									'going' => $ride->going, 
-									'description' => $ride->description, 
-									'rideId' => $ride->id);
+				$arr = array('driver' => $driver,
+							'neighborhood' => $ride->neighborhood, 
+							'myzone' => $ride->myzone, 
+							'place' => $ride->place, 
+							'route' => $ride->route, 
+							'mytime' => $ride->mytime, 
+							'mydate' => $ride->mydate, 
+							'slots' => $ride->slots, 
+							'hub' => $ride->hub, 
+							'going' => $ride->going, 
+							'description' => $ride->description, 
+							'rideId' => $ride->id);
 				
 				$results[] = $arr;
 			}
