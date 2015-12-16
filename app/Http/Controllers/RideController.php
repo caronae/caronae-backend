@@ -435,16 +435,24 @@ class RideController extends Controller
 		$resultJson = array();
 		foreach($rides as $ride) {
 			$riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
-			$ridersCount = count($riders) - 1;//subtract 1 to not count driver
-			
+
+			$resultRide = $ride;
+			unset($resultRide->pivot); 
+
+			$resultRiders = [];
 			foreach($riders as $rider) {
-				if ($rider->pivot->status == 'driver') {
-					$driverPic = $rider->profile_pic_url;
-					
-					$resultJson[] = array("ride" => $ride, "driverPic" => $driverPic, "ridersCount" => $ridersCount);
-					break;
-				}				
+				$riderStatus = $rider->pivot->status;
+				unset($rider->pivot);
+
+				if ($riderStatus == 'driver') {
+					$resultRide->driver = $rider;
+				} else {
+					$resultRiders[] = $rider;
+				}
 			}
+			
+			$resultRide->riders = $resultRiders;
+			$resultJson[] = $resultRide;
 		}
 		
 		return $resultJson;
