@@ -286,22 +286,28 @@ class RideController extends Controller
 		
 		$resultArray = array();
 		foreach($rides as $ride) {
+			$resultRide = $ride;
+			unset($ride->pivot);
+
 			$riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
 			if (count($riders) == 1)//if count == 1 driver is the only one on the ride, therefore ride is not active
 				continue;
 			
 			//now we need to put the driver in the beginning of the array
-			$ridersSorted = array();
+			$resultRiders = [];
 			foreach($riders as $rider) {
-				if ($rider->pivot->status == 'driver') {
-					array_unshift($ridersSorted, $rider);//if this user is the driver, put him in the beginning of the array
-				}
-				if ($rider->pivot->status == 'accepted') {
-					array_push($ridersSorted, $rider);
+				$riderStatus = $rider->pivot->status;
+				unset($rider->pivot);
+
+				if ($riderStatus == 'driver') {
+					$resultRide->driver = $rider;
+				} else {
+					$resultRiders[] = $rider;
 				}
 			}
 			
-			array_push($resultArray, array("ride" => $ride, "users" => $ridersSorted));
+			$resultRide->riders = $resultRiders;
+			$resultArray[] = $resultRide;
 		}
 		
 		return $resultArray;
