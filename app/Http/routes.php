@@ -21,6 +21,9 @@ Route::post('ride/finishRide', 'RideController@finishRide');
 Route::get('ride/getRidesHistory', 'RideController@getRidesHistory');
 Route::get('ride/getRidesHistoryCount/{userId}', 'RideController@getRidesHistoryCount');
 
+//falae routes
+Route::post('falae/sendMessage', 'FalaeController@sendMessage');
+
 //rota padrão do laravel podemos excluir depois
 Route::get('/', function () {
     return View::make('welcome');
