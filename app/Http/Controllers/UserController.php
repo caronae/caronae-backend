@@ -8,6 +8,8 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\User;
 
+use Facebook;
+
 class UserController extends Controller
 {
     public function signUp($name, $token) {
@@ -83,7 +85,8 @@ class UserController extends Controller
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
-		$user->face_id = $decode->id;
+		if ($decode->id) $user->face_id = $decode->id;
+		if ($decode->token)$user->face_token = $decode->token;
 		
 		$user->save();
     }
@@ -98,5 +101,47 @@ class UserController extends Controller
 		$user->profile_pic_url = $decode->url;
 		
 		$user->save();
+    }
+	
+	public function mutualFriends(Request $request, $id) {
+		$user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return response()->json(['error'=>'User ' . $request->header('token') . ' token not authorized.'], 403);
+		} else if ($user->face_token == null) {
+			return response()->json(['error'=>'User is not connected with Facebook.'], 400);
+		}
+
+		$queryUser = User::where('id', $id)->first();
+		if ($queryUser == null) {
+			return response()->json(['error'=>'User not found.'], 400);
+		} else if ($queryUser->face_id == null) {
+			return response()->json(['error'=>'Queried user is not connected with Facebook.'], 400);
+		}
+
+		$fb = new Facebook\Facebook([
+			'app_id' => '933455893356973',
+			'app_secret' => '007b9930ed5a15c407c44768edcbfebd',
+			'default_graph_version' => 'v2.5'
+		]);
+
+		try {
+			$response = $fb->get('/' . $queryUser->face_id . '?fields=context.fields(mutual_friends)', $user->face_token);
+		} catch(Facebook\Exceptions\FacebookResponseException $e) {
+		  // When Graph returns an error
+			return response()->json(['error'=>'Facebook Graph returned an error: ' . $e->getMessage()], 500);
+		} catch(Facebook\Exceptions\FacebookSDKException $e) {
+		  // When validation fails or other local issues
+			return response()->json(['error'=>'Facebook SDK returned an error: ' . $e->getMessage()], 500);
+		}
+
+		$mutualFriendsFB = $response->getGraphObject()['context']['mutual_friends'];
+		// Array will hold only the Facebook IDs of the mutual friends
+		$friendsFacebookIds = [];
+		foreach ($mutualFriendsFB as $friendFB) {
+			$friendsFacebookIds[] = $friendFB['id'];
+		}
+		
+		$mutualFriends = User::whereIn('face_id', $friendsFacebookIds)->get();
+		return response()->json($mutualFriends);
     }
 }
