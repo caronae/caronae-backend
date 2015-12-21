@@ -86,7 +86,7 @@ class UserController extends Controller
 		}
 		
 		if ($decode->id) $user->face_id = $decode->id;
-		if ($decode->token)$user->face_token = $decode->token;
+		if ($decode->token) $user->face_token = $decode->token;
 		
 		$user->save();
     }
@@ -108,14 +108,14 @@ class UserController extends Controller
 		if ($user == null) {
 			return response()->json(['error'=>'User ' . $request->header('token') . ' token not authorized.'], 403);
 		} else if ($user->face_token == null) {
-			return response()->json(['error'=>'User is not connected with Facebook.'], 400);
+			return response()->json(['error'=>'User is not connected with Facebook.'], 403);
 		}
 
 		$queryUser = User::where('id', $id)->first();
 		if ($queryUser == null) {
-			return response()->json(['error'=>'User not found.'], 400);
+			return response()->json(['error'=>'Requested user not found.'], 400);
 		} else if ($queryUser->face_id == null) {
-			return response()->json(['error'=>'Queried user is not connected with Facebook.'], 400);
+			return response()->json(['error'=>'Requested user is not connected with Facebook.'], 400);
 		}
 
 		$fb = new Facebook\Facebook([
