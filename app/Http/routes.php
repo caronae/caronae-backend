@@ -7,6 +7,7 @@ Route::put('user', 'UserController@update');
 Route::put('user/saveGcmToken', 'UserController@saveGcmToken');
 Route::put('user/saveFaceId', 'UserController@saveFaceId');
 Route::put('user/saveProfilePicUrl', 'UserController@saveProfilePicUrl');
+Route::get('user/{id}/mutualFriends', 'UserController@mutualFriends');
 
 //ride routes
 Route::post('ride', 'RideController@store');
@@ -20,6 +21,9 @@ Route::post('ride/leaveRide', 'RideController@leaveRide');
 Route::post('ride/finishRide', 'RideController@finishRide');
 Route::get('ride/getRidesHistory', 'RideController@getRidesHistory');
 Route::get('ride/getRidesHistoryCount/{userId}', 'RideController@getRidesHistoryCount');
+
+//falae routes
+Route::post('falae/sendMessage', 'FalaeController@sendMessage');
 
 //rota padrão do laravel podemos excluir depois
 Route::get('/', function () {
