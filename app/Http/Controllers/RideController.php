@@ -177,21 +177,12 @@ class RideController extends Controller
 				$driver = $ride->users()->where('status', 'driver')->first();
 				unset($driver->pivot);
 				
-				//make array with driver's info and ride's info
-				$arr = array('driver' => $driver,
-							'neighborhood' => $ride->neighborhood, 
-							'myzone' => $ride->myzone, 
-							'place' => $ride->place, 
-							'route' => $ride->route, 
-							'mytime' => $ride->mytime, 
-							'mydate' => $ride->mydate, 
-							'slots' => $ride->slots, 
-							'hub' => $ride->hub, 
-							'going' => $ride->going, 
-							'description' => $ride->description, 
-							'rideId' => $ride->id);
+				$resultRide = $ride;
+				unset($ride->pivot);
 				
-				$results[] = $arr;
+				$resultRide->driver = $driver;
+				
+				$results[] = $resultRide;
 			}
 		}
 			

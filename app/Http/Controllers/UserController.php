@@ -86,7 +86,6 @@ class UserController extends Controller
 		}
 		
 		if ($decode->id) $user->face_id = $decode->id;
-		if ($decode->token) $user->face_token = $decode->token;
 		
 		$user->save();
     }
@@ -103,19 +102,18 @@ class UserController extends Controller
 		$user->save();
     }
 	
-	public function mutualFriends(Request $request, $id) {
+	public function getMutualFriends(Request $request, $id, $fbtoken) {
 		$user = User::where('token', $request->header('token'))->first();
 		if ($user == null) {
 			return response()->json(['error'=>'User ' . $request->header('token') . ' token not authorized.'], 403);
-		} else if ($user->face_token == null) {
-			return response()->json(['error'=>'User is not connected with Facebook.'], 403);
 		}
 
-		$queryUser = User::where('id', $id)->first();
+		$queryUser = User::find($id);
 		if ($queryUser == null) {
 			return response()->json(['error'=>'Requested user not found.'], 400);
-		} else if ($queryUser->face_id == null) {
-			return response()->json(['error'=>'Requested user is not connected with Facebook.'], 400);
+		}
+		if (empty($queryUser->face_id)) {
+			return response()->json(['error'=>'Requested user does not have face id.'], 400);
 		}
 
 		$fb = new Facebook\Facebook([
@@ -123,9 +121,9 @@ class UserController extends Controller
 			'app_secret' => '007b9930ed5a15c407c44768edcbfebd',
 			'default_graph_version' => 'v2.5'
 		]);
-
+		
 		try {
-			$response = $fb->get('/' . $queryUser->face_id . '?fields=context.fields(mutual_friends)', $user->face_token);
+			$response = $fb->get('/' . $queryUser->face_id . '?fields=context.fields(mutual_friends)', $fbtoken);
 		} catch(Facebook\Exceptions\FacebookResponseException $e) {
 		  // When Graph returns an error
 			return response()->json(['error'=>'Facebook Graph returned an error: ' . $e->getMessage()], 500);
