@@ -7,7 +7,7 @@ Route::put('user', 'UserController@update');
 Route::put('user/saveGcmToken', 'UserController@saveGcmToken');
 Route::put('user/saveFaceId', 'UserController@saveFaceId');
 Route::put('user/saveProfilePicUrl', 'UserController@saveProfilePicUrl');
-Route::get('user/{id}/{fbtoken}/getMutualFriends', 'UserController@getMutualFriends');
+Route::get('user/{id}/mutualFriends', 'UserController@getMutualFriends');
 
 //ride routes
 Route::post('ride', 'RideController@store');

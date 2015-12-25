@@ -102,18 +102,15 @@ class UserController extends Controller
 		$user->save();
     }
 	
-	public function getMutualFriends(Request $request, $id, $fbtoken) {
+	public function getMutualFriends(Request $request, $fbid) {
 		$user = User::where('token', $request->header('token'))->first();
 		if ($user == null) {
 			return response()->json(['error'=>'User ' . $request->header('token') . ' token not authorized.'], 403);
 		}
 
-		$queryUser = User::find($id);
-		if ($queryUser == null) {
-			return response()->json(['error'=>'Requested user not found.'], 400);
-		}
-		if (empty($queryUser->face_id)) {
-			return response()->json(['error'=>'Requested user does not have face id.'], 400);
+		$fbtoken = $request->header('Facebook-Token');
+		if ($fbtoken == null) {
+			return response()->json(['error'=>'User\'s Facebook token missing.'], 403);
 		}
 
 		$fb = new Facebook\Facebook([
@@ -123,7 +120,7 @@ class UserController extends Controller
 		]);
 		
 		try {
-			$response = $fb->get('/' . $queryUser->face_id . '?fields=context.fields(mutual_friends)', $fbtoken);
+			$response = $fb->get('/' . $fbid . '?fields=context.fields(mutual_friends)', $fbtoken);
 		} catch(Facebook\Exceptions\FacebookResponseException $e) {
 		  // When Graph returns an error
 			return response()->json(['error'=>'Facebook Graph returned an error: ' . $e->getMessage()], 500);
@@ -133,6 +130,8 @@ class UserController extends Controller
 		}
 
 		$mutualFriendsFB = $response->getGraphObject()['context']['mutual_friends'];
+		$totalFriendsCount = $mutualFriendsFB->getMetaData()['summary']['total_count'];
+
 		// Array will hold only the Facebook IDs of the mutual friends
 		$friendsFacebookIds = [];
 		foreach ($mutualFriendsFB as $friendFB) {
@@ -140,6 +139,6 @@ class UserController extends Controller
 		}
 		
 		$mutualFriends = User::whereIn('face_id', $friendsFacebookIds)->get();
-		return response()->json($mutualFriends);
+		return response()->json(["total_count" => $totalFriendsCount, "mutual_friends" => $mutualFriends]);
     }
 }
