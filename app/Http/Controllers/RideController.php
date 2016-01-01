@@ -22,6 +22,9 @@ class RideController extends Controller
 		if ($user == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
+		if ($user->deleted_at != null) {
+			return response()->json(['error'=>'User banned.'], 403);
+		}
 		
 		//create new ride and save it
         $ride = new Ride();
@@ -150,6 +153,13 @@ class RideController extends Controller
 	
     public function listFiltered(Request $request) {
         $decode = json_decode($request->getContent());
+		$user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return response()->json(['error'=>'User token not authorized.'], 403);
+		}
+		if ($user->deleted_at != null) {
+			return response()->json(['error'=>'User banned.'], 403);
+		}
 		
 		//locations will come as a string divided by ", ", explode the string into an array 
 		$locations = explode(", ", $decode->location);
@@ -164,9 +174,9 @@ class RideController extends Controller
 		
 		//query the rides
 		if (empty($decode->center)) {
-			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('mytime', '>=', $decode->time)->get();
+			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('mytime', '>=', $decode->time)->whereNull('deleted_at')->get();
 		} else {
-			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('mytime', '>=', $decode->time)->where('hub', 'LIKE', "$decode->center%")->get();
+			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('mytime', '>=', $decode->time)->whereNull('deleted_at')->where('hub', 'LIKE', "$decode->center%")->get();
 		}
 		
 		$results = [];
@@ -194,6 +204,9 @@ class RideController extends Controller
         $user = User::where('token', $request->header('token'))->first();
 		if ($user == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
+		}
+		if ($user->deleted_at != null) {
+			return response()->json(['error'=>'User banned.'], 403);
 		}
 		
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
@@ -271,9 +284,12 @@ class RideController extends Controller
 		if ($user == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
+		if ($user->deleted_at != null) {
+			return response()->json(['error'=>'User banned.'], 403);
+		}
 		
 		//active rides have 'driver' or 'accepted' status
-		$rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->where('done', false)->get();
+		$rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->whereNull('deleted_at')->where('done', false)->get();
 		
 		$resultArray = array();
 		foreach($rides as $ride) {
@@ -424,6 +440,9 @@ class RideController extends Controller
 		if ($user == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
+		if ($user->deleted_at != null) {
+			return response()->json(['error'=>'User banned.'], 403);
+		}
 		
 		$rides = $user->rides()->where('done', true)->whereIn('status', ['driver', 'accepted'])->get();
 		
@@ -457,6 +476,9 @@ class RideController extends Controller
         $user = User::find($userId);
 		if ($user == null) {
 			return response()->json(['error'=>'User not found with id = ' . $userId], 400);
+		}
+		if ($user->deleted_at != null) {
+			return response()->json(['error'=>'User banned.'], 403);
 		}
 		
 		$offeredCount = $user->rides()->where('done', true)->where('status', 'driver')->count();

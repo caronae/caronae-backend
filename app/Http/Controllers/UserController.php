@@ -35,6 +35,9 @@ class UserController extends Controller
 		if ($user == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
+		if ($user->deleted_at != null) {
+			return response()->json(['error'=>'User banned.'], 403);
+		}
 		
 		//get user's rides as driver
 		$matchThese = ['status' => 'driver', 'done' => false];
@@ -106,6 +109,9 @@ class UserController extends Controller
 		$user = User::where('token', $request->header('token'))->first();
 		if ($user == null) {
 			return response()->json(['error'=>'User ' . $request->header('token') . ' token not authorized.'], 403);
+		}
+		if ($user->deleted_at != null) {
+			return response()->json(['error'=>'User banned.'], 403);
 		}
 
 		$fbtoken = $request->header('Facebook-Token');

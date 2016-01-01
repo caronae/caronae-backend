@@ -16,6 +16,9 @@ class FalaeController extends Controller
 		if ($user == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
+		if ($user->deleted_at != null) {
+			return response()->json(['error'=>'User banned.'], 403);
+		}
 		
 		$to = "macecchi@gmail.com";
 		$headers = [];
