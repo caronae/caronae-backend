@@ -21,6 +21,7 @@ Route::post('ride/leaveRide', 'RideController@leaveRide');
 Route::post('ride/finishRide', 'RideController@finishRide');
 Route::get('ride/getRidesHistory', 'RideController@getRidesHistory');
 Route::get('ride/getRidesHistoryCount/{userId}', 'RideController@getRidesHistoryCount');
+Route::post('ride/saveFeedback', 'RideController@saveFeedback');
 
 //falae routes
 Route::post('falae/sendMessage', 'FalaeController@sendMessage');

@@ -451,7 +451,6 @@ class RideController extends Controller
 			$riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
 
 			$resultRide = $ride;
-			unset($resultRide->pivot); 
 
 			$resultRiders = [];
 			foreach($riders as $rider) {
@@ -466,6 +465,8 @@ class RideController extends Controller
 			}
 			
 			$resultRide->riders = $resultRiders;
+			$resultRide->feedback = $resultRide->pivot->feedback;
+			unset($resultRide->pivot); 
 			$resultJson[] = $resultRide;
 		}
 		
@@ -485,5 +486,18 @@ class RideController extends Controller
 		$takenCount = $user->rides()->where('done', true)->where('status', 'accepted')->count();
 		
 		return array("offeredCount" => $offeredCount, "takenCount" => $takenCount);
+	}
+	
+	public function saveFeedback(Request $request) {
+		$decode = json_decode($request->getContent());
+        $matchThese = ['ride_id' => $decode->rideId, 'user_id' => $decode->userId];
+        $ride_user = RideUser::where($matchThese)->first();
+		
+		if ($ride_user == null) {
+			return response()->json(['error'=>'relationship between user with id ' . $decode->userId . ' and ride with id '. $decode->rideId . ' does not exist or ride does not exist'], 400);
+		}
+		
+		$ride_user->feedback = $request->feedback;
+		$ride_user->save();
 	}
 }
