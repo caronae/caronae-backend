@@ -185,11 +185,8 @@ class RideController extends Controller
 			if ($ride->users()->whereIn('status', ['pending', 'accepted'])->count() < $ride->slots) {
 				//gets the driver
 				$driver = $ride->users()->where('status', 'driver')->first();
-				unset($driver->pivot);
 				
-				$resultRide = $ride;
-				unset($ride->pivot);
-				
+				$resultRide = $ride;				
 				$resultRide->driver = $driver;
 				
 				$results[] = $resultRide;
@@ -294,7 +291,6 @@ class RideController extends Controller
 		$resultArray = array();
 		foreach($rides as $ride) {
 			$resultRide = $ride;
-			unset($ride->pivot);
 
 			$riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
 			if (count($riders) == 1)//if count == 1 driver is the only one on the ride, therefore ride is not active
@@ -304,7 +300,6 @@ class RideController extends Controller
 			$resultRiders = [];
 			foreach($riders as $rider) {
 				$riderStatus = $rider->pivot->status;
-				unset($rider->pivot);
 
 				if ($riderStatus == 'driver') {
 					$resultRide->driver = $rider;
@@ -455,7 +450,6 @@ class RideController extends Controller
 			$resultRiders = [];
 			foreach($riders as $rider) {
 				$riderStatus = $rider->pivot->status;
-				unset($rider->pivot);
 
 				if ($riderStatus == 'driver') {
 					$resultRide->driver = $rider;
@@ -466,7 +460,6 @@ class RideController extends Controller
 			
 			$resultRide->riders = $resultRiders;
 			$resultRide->feedback = $resultRide->pivot->feedback;
-			unset($resultRide->pivot); 
 			$resultJson[] = $resultRide;
 		}
 		
