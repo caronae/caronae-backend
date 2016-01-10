@@ -156,12 +156,9 @@ class RideController extends Controller
 		if ($user == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
-		if ($user->deleted_at != null) {
-			return response()->json(['error'=>'User banned.'], 403);
-		}
 		
 		//query the rides
-		$rides = Ride::where('mydate', '>=', new DateTime('today'))->whereNull('deleted_at')->take(50)->get();
+		$rides = Ride::where('mydate', '>=', new DateTime('today'))->take(50)->get();
 		
 		$results = [];
 		foreach($rides as $ride) {
@@ -169,6 +166,8 @@ class RideController extends Controller
 			if ($ride->users()->whereIn('status', ['pending', 'accepted'])->count() < $ride->slots) {
 				//gets the driver
 				$driver = $ride->users()->where('status', 'driver')->first();
+				//if could not find driver, he's probably been banned, so skip ride
+				if (!$driver) continue;
 				
 				$resultRide = $ride;				
 				$resultRide->driver = $driver;
@@ -214,6 +213,8 @@ class RideController extends Controller
 			if ($ride->users()->whereIn('status', ['pending', 'accepted'])->count() < $ride->slots) {
 				//gets the driver
 				$driver = $ride->users()->where('status', 'driver')->first();
+				//if could not find driver, he's probably been banned, so skip ride
+				if (!$driver) continue;
 				
 				$resultRide = $ride;				
 				$resultRide->driver = $driver;
