@@ -150,7 +150,36 @@ class RideController extends Controller
         RideUser::where('ride_id', $rideId)->delete(); //delete all relationships with this ride first
         Ride::destroy($rideId);
     }
-	
+
+    public function listAll(Request $request) {
+		$user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return response()->json(['error'=>'User token not authorized.'], 403);
+		}
+		if ($user->deleted_at != null) {
+			return response()->json(['error'=>'User banned.'], 403);
+		}
+		
+		//query the rides
+		$rides = Ride::where('mydate', '>=', new DateTime('today'))->whereNull('deleted_at')->take(50)->get();
+		
+		$results = [];
+		foreach($rides as $ride) {
+			//check if ride is full
+			if ($ride->users()->whereIn('status', ['pending', 'accepted'])->count() < $ride->slots) {
+				//gets the driver
+				$driver = $ride->users()->where('status', 'driver')->first();
+				
+				$resultRide = $ride;				
+				$resultRide->driver = $driver;
+				
+				$results[] = $resultRide;
+			}
+		}
+			
+		return $results;
+    }
+
     public function listFiltered(Request $request) {
         $decode = json_decode($request->getContent());
 		$user = User::where('token', $request->header('token'))->first();

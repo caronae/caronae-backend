@@ -10,6 +10,7 @@ Route::put('user/saveProfilePicUrl', 'UserController@saveProfilePicUrl');
 Route::get('user/{id}/mutualFriends', 'UserController@getMutualFriends');
 
 //ride routes
+Route::get('ride/all', 'RideController@listAll');
 Route::post('ride', 'RideController@store');
 Route::delete('ride/{rideId}', 'RideController@delete');
 Route::post('ride/listFiltered', 'RideController@listFiltered');
