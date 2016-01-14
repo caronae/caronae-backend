@@ -163,8 +163,6 @@ class RideController extends Controller
 			if ($ride->users()->whereIn('status', ['pending', 'accepted'])->count() < $ride->slots) {
 				//gets the driver
 				$driver = $ride->users()->where('status', 'driver')->first();
-				//if could not find driver, he's probably been banned, so skip ride
-				if (!$driver) continue;
 				
 				$resultRide = $ride;				
 				$resultRide->driver = $driver;
