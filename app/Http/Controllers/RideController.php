@@ -187,7 +187,7 @@ class RideController extends Controller
 		$locations = explode(", ", $decode->location);
 		
 		//location can be zones or neighborhoods, check if first array position is a zone or a neighborhood
-		if ($locations[0] == "Centro" || $locations[0] == "Zona Sul" || $locations[0] == "Zona Oeste" || $locations[0] == "Zona Norte" || $locations[0] == "Baixada" || $locations[0] == "Grande Niterói")
+		if ($locations[0] == "Centro" || $locations[0] == "Zona Sul" || $locations[0] == "Zona Oeste" || $locations[0] == "Zona Norte" || $locations[0] == "Baixada" || $locations[0] == "Grande Niterói" || $locations[0] == "Outros")
 				$locationColumn = 'myzone';//if location is filtered by zone, query by 'myzone' column
 		else
 				$locationColumn = 'neighborhood';//if location is filtered by neighborhood, query by 'neighborhood' column
