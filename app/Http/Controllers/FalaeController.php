@@ -20,7 +20,7 @@ class FalaeController extends Controller
 			return response()->json(['error'=>'User banned.'], 403);
 		}
 		
-		$to = "macecchi@gmail.com";
+		$to = "igor.rocha@poli.ufrj.br";
 		$headers = [];
 		$headers[] = "Content-type: text/plain; charset=utf-8";
 		$headers[] = "From: {$user->name} <{$user->email}>";
