@@ -17,11 +17,13 @@ class FalaeController extends Controller
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
-		$to = "caronae@fundoverde.ufrj.br";
+		//$to = "caronae@fundoverde.ufrj.br";
+		$to = "leommarques7@mail.com";
 		$headers = [];
 		$headers[] = "Content-type: text/plain; charset=utf-8";
 		$headers[] = "From: {$user->name} <{$user->email}>";
-		$headers[] = "Subject: {$decode->subject}";
+		$subject = $decode->subject . " - ID UFRJ: " . $user->id_ufrj;
+		$headers[] = "Subject: {$subject}";
 
 		$mailStatus = mail($to, $decode->subject, $decode->message, implode("\r\n", $headers));
 
