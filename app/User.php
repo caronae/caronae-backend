@@ -9,7 +9,7 @@ class User extends Model
 {
     use SoftDeletes;
 
-	protected $hidden = ['token', 'gcm_token', 'pivot'];
+	protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj'];
 	
     public function rides() {
         return $this->belongsToMany('App\Ride')->withPivot('status', 'feedback')->withTimestamps();

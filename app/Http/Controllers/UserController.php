@@ -28,6 +28,53 @@ class UserController extends Controller
 		
 		return $name . ' cadastrado com o token ' . $token;
 	}
+
+    public function signUpIntranet($idUFRJ, $token) {
+		if (User::where('token', $token)->count() > 0) {
+			return response()->json(['error'=>'User token already exists.'], 409);
+		}
+
+		$context = stream_context_create(['http' => ['timeout' => 2]]);
+		$intranetResponseJSON = @file_get_contents('http://146.164.2.117:9200/_search?q=IdentificacaoUFRJ:' . $idUFRJ, FILE_TEXT, $context);
+
+		// Check if the connection was successful
+		if ($intranetResponseJSON == false) {
+			return response()->json(['error'=>'Failed to connect to Intranet.'], 500);
+		}
+		
+		$intranetResponse = json_decode($intranetResponseJSON);
+
+		// Check if we received the expected result with a hit
+		if ($intranetResponse->hits->hits && count($intranetResponse->hits->hits) > 0) {
+			$intranetUser = $intranetResponse->hits->hits[0]->_source;
+			$intranetUserType = $intranetResponse->hits->hits[0]->_type;
+
+			// Check if the extracted user has all required fields
+			if (!isset($intranetUser->nome) || !isset($intranetUser->nomeCurso) || 
+				!isset($intranetUser->situacaoMatricula) || !$intranetUserType) {
+				return response()->json(['error'=>'Unexpected response from intranet.'], 500);
+			}
+
+			// Check if the user is still enrolled
+			if ($intranetUser->situacaoMatricula != "Ativa") {
+				return response()->json(['error'=>'User does not have an active ID from intranet.'], 403);
+			}
+		} else {
+			return response()->json(['error'=>'No UFRJ profile found with this identification.'], 403);
+		}
+
+		$user = new User();
+
+		$user->name = ucwords(strtolower($intranetUser->nome));
+		$user->token = $token;
+		$user->id_ufrj = $idUFRJ;
+		$user->profile = ucfirst($intranetUserType);
+		$user->course = $intranetUser->nomeCurso;
+
+		$user->save();
+		
+		return $user->name . ' cadastrado com o token ' . $token;
+	}
 	
     public function login(Request $request) {
         $decode = json_decode($request->getContent());
