@@ -9,6 +9,7 @@ Route::put('user/saveGcmToken', 'UserController@saveGcmToken');
 Route::put('user/saveFaceId', 'UserController@saveFaceId');
 Route::put('user/saveProfilePicUrl', 'UserController@saveProfilePicUrl');
 Route::get('user/{id}/mutualFriends', 'UserController@getMutualFriends');
+Route::get('user/intranetPhoto/{hash}', 'UserController@loadIntranetPhoto');
 
 //ride routes
 Route::get('ride/all/{going}', 'RideController@listAll');

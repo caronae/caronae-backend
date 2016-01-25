@@ -71,6 +71,13 @@ class UserController extends Controller
 		$user->profile = ucfirst($intranetUserType);
 		$user->course = $intranetUser->nomeCurso;
 
+		if (isset($intranetUser->urlFoto) && $intranetUser->urlFoto != '') {
+			list($photoHost, $photoHash) = explode('/',$intranetUser->urlFoto);
+			if ($photoHost == '146.164.2.117:8090') {
+				$user->profile_pic_url = 'http://web1.tic.ufrj.br/caronae/user/intranetPhoto/' . $photoHash;
+			}
+		}
+
 		$user->save();
 		
 		return $user->name . ' cadastrado com o token ' . $token;
@@ -187,5 +194,19 @@ class UserController extends Controller
 		
 		$mutualFriends = User::whereIn('face_id', $friendsFacebookIds)->get();
 		return response()->json(["total_count" => $totalFriendsCount, "mutual_friends" => $mutualFriends]);
+    }
+
+    public function loadIntranetPhoto($hash) {
+    	$context = stream_context_create(['http' => ['timeout' => 2]]);
+		$intranetResponseRaw = @file_get_contents('http://146.164.2.117:8090/' . $hash, FILE_BINARY, $context);
+
+		// Check if the connection was successful
+		if ($intranetResponseRaw == false) {
+			return response()->json(['error'=>'Failed to connect to Intranet photos database.'], 500);
+		}
+
+		// TODO: Confirm if the photo is always a JPG
+		return response($intranetResponseRaw)->header('Content-Type', 'image/jpg');
+		
     }
 }
