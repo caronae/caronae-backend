@@ -65,7 +65,7 @@ class UserController extends Controller
 
 		$user = new User();
 
-		$user->name = ucwords(strtolower($intranetUser->nome));
+		$user->name = mb_convert_case($intranetUser->nome, MB_CASE_TITLE, "UTF-8");
 		$user->token = $token;
 		$user->id_ufrj = $idUFRJ;
 		$user->profile = ucfirst($intranetUserType);
