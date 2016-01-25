@@ -12,7 +12,7 @@ Route::get('user/{id}/mutualFriends', 'UserController@getMutualFriends');
 Route::get('user/intranetPhoto/{hash}', 'UserController@loadIntranetPhoto');
 
 //ride routes
-Route::get('ride/all/{going}', 'RideController@listAll');
+Route::get('ride/all', 'RideController@listAll');
 Route::post('ride', 'RideController@store');
 Route::delete('ride/{rideId}', 'RideController@delete');
 Route::post('ride/listFiltered', 'RideController@listFiltered');

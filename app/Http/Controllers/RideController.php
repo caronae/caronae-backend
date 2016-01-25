@@ -148,14 +148,14 @@ class RideController extends Controller
         Ride::destroy($rideId);
     }
 
-    public function listAll(Request $request, $going) {
+    public function listAll(Request $request) {
 		$user = User::where('token', $request->header('token'))->first();
 		if ($user == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
 		//query the rides
-		$rides = Ride::where('mydate', '>=', new DateTime('today'))->where('going', $going)->take(50)->get();
+		$rides = Ride::where('mydate', '>=', new DateTime('today'))->take(50)->get();
 		
 		$results = [];
 		foreach($rides as $ride) {
