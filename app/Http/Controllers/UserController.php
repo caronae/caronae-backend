@@ -26,7 +26,7 @@ class UserController extends Controller
 
 		$user->save();
 		
-		return $name . ' cadastrado com o token ' . $token;
+		return $user;
 	}
 
     public function signUpIntranet($idUFRJ, $token) {
@@ -80,7 +80,7 @@ class UserController extends Controller
 
 		$user->save();
 		
-		return $user->name . ' cadastrado com o token ' . $token;
+		return $user;
 	}
 	
     public function login(Request $request) {
