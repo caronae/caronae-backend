@@ -22,7 +22,7 @@ class FalaeController extends Controller
 		$headers[] = "Content-type: text/plain; charset=utf-8";
 		$headers[] = "From: {$user->name} <{$user->email}>";
 
-		$subject = $decode->subject . " ID UFRJ: " . $user->id_ufrj;
+		$subject = $decode->subject . " - ID UFRJ: " . $user->id_ufrj;
 		$headers[] = "Subject: {$subject}";
 
 		$mailStatus = mail($to, $subject, $decode->message, implode("\r\n", $headers));
