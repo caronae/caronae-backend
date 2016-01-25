@@ -1,7 +1,7 @@
 <?php
 
 //user routes
-Route::get('user/signup/{name}/{token}', 'UserController@signUp'); //mudar essa rota de get para post assim q possível
+Route::get('user/signup/{name}/{token}', 'UserController@signUp'); 
 Route::get('user/signup/intranet/{id}/{token}', 'UserController@signUpIntranet'); // id: identificacao UFRJ(CPF)
 Route::post('user/login', 'UserController@login');
 Route::put('user', 'UserController@update');
