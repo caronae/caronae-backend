@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ExcelExporter;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\User;
 
 use Facebook;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -220,6 +222,21 @@ class UserController extends Controller
 			return User::onlyTrashed()->get();
 		else
 			return User::all();
+	}
+
+	public function indexExcel(Request $request){
+		$query = User::select('name', 'profile', 'course', 'location');
+
+		if($request->has('banned'))
+			$query = $query->onlyTrashed();
+
+		$data = $query->get()->toArray();
+
+		(new ExcelExporter())->export('usuarios',
+			['Nome', 'Perfil UFRJ', 'Curso', 'Bairro'],
+			$data,
+			$request->get('type', 'xlsx')
+		);
 	}
 
 	public function banir($id)

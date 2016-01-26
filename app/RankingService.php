@@ -136,7 +136,7 @@ class RankingService
                 'profile',
                 DB::raw('COUNT(*) as caronas'),
                 DB::raw('(select * from unnest(array_agg(caronistas)) as t group by t order by count(*) desc limit 1) as moda'),
-                DB::raw('AVG(caronistas) as media')
+                DB::raw('round(AVG(caronistas), 2) as media')
             )->get();
     }
 }

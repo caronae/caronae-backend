@@ -6,17 +6,34 @@
             <span class="title">
                 Usuários
             </span>
+
             @if($banned)
-                <a class="btn btn-primary pull-right" href="{{ action('UserController@index', ['banned' => 'true']) }}">
-                    <span class="glyphicon glyphicon-ban-circle"></span>
-                    Ver usuários banidos
-                </a>
+                <?php $getParamsToButton = ['banned' => true] ?>
+                <?php $getParamsToExport = [] ?>
             @else
-                <a class="btn btn-primary pull-right" href="{{ action('UserController@index') }}">
-                    <span class="glyphicon glyphicon-ok-circle"></span>
-                    Ver usuários ativos
-                </a>
+                <?php $getParamsToButton = [] ?>
+                <?php $getParamsToExport = ['banned' => true] ?>
             @endif
+
+            <a class="btn btn-primary pull-right" href="{{ action('UserController@index', $getParamsToButton) }}">
+                <span class="glyphicon glyphicon-ban-circle"></span>
+                Ver usuários banidos
+            </a>
+
+            <div class="btn-group">
+                <a href="{{ action('UserController@indexExcel', $getParamsToExport + ['type' => 'xlsx']) }}" class="btn btn-success" title="Exportar para .xlsx">
+                    <span class="glyphicon glyphicon-list-alt"></span>
+                    <span class="glyphicon glyphicon-new-window"></span>
+                </a>
+                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ action('UserController@indexExcel', $getParamsToExport + ['type' => 'xlsx']) }}">Exportar para .xlsx</a></li>
+                    <li><a href="{{ action('UserController@indexExcel', $getParamsToExport + ['type' => 'csv']) }}">Exportar para .csv</a></li>
+                </ul>
+            </div>
         </div>
 
         @include('includes.message')

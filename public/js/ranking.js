@@ -1,6 +1,16 @@
 $(function() {
 
     var $errorAlert = $('.error-alert');
+    var $exportButton = $('.export-button');
+    var $exportButtonCSV = $('.export-button-csv');
+
+    $exportButton.on('click', function(){
+        document.location.href = getUrlExcel('xlsx');
+    });
+
+    $exportButtonCSV.on('click', function(){
+        document.location.href = getUrlExcel('csv');
+    });
 
     var getPeriodStart = function () {
         return $('.period-start').val();
@@ -25,6 +35,10 @@ $(function() {
 
     var getUrl = function () {
         return document.location.href + '.json' + '?start=' + getPeriodStart() + '&' + 'end=' + getPeriodEnd();
+    };
+
+    var getUrlExcel = function(type){
+        return document.location.href + '.excel' + '?' + 'type=' + type + '&' + 'start=' + getPeriodStart() + '&' + 'end=' + getPeriodEnd();
     };
 
     $('.search-period-form').on('submit', function (event) {

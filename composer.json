@@ -10,7 +10,8 @@
         "doctrine/dbal": "v2.4.2",
         "tymon/jwt-auth": "0.5.*",
         "facebook/php-sdk-v4": "^5.1",
-        "barryvdh/laravel-ide-helper": "^2.1"
+        "barryvdh/laravel-ide-helper": "^2.1",
+        "maatwebsite/excel": "~2.1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
