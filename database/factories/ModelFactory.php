@@ -11,11 +11,25 @@
 |
 */
 
-$factory->define(App\User::class, function ($faker) {
+$factory->define(App\User::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,
-        'email' => $faker->email,
-        'password' => str_random(10),
-        'remember_token' => str_random(10),
+        'profile' => $faker->titleMale,
+        'course' => $faker->company,
+        'location' => $faker->city,
     ];
 });
+
+$factory->define(App\Ride::class, function (Faker\Generator $faker) {
+    return [
+        'myzone' => $faker->city,
+        'neighborhood' => $faker->city,
+        'going' => $faker->boolean(),
+        'slots' => $faker->numberBetween(0, 4),
+        'mytime' => $faker->time(),
+        'mydate' => $faker->date(),
+        'done' => $faker->boolean()
+    ];
+});
+
+

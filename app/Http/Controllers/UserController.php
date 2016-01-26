@@ -209,4 +209,34 @@ class UserController extends Controller
 		return response($intranetResponseRaw)->header('Content-Type', 'image/jpg');
 		
     }
+
+	public function index(Request $request)
+	{
+		return view('users.index')->with('banned', !$request->has('banned'));
+	}
+
+	public function indexJson(Request $request){
+		if($request->has('banned'))
+			return User::onlyTrashed()->get();
+		else
+			return User::all();
+	}
+
+	public function banir($id)
+	{
+		$user = User::find($id);
+
+		$user->banish();
+
+		return back()->with('message', 'Usuario "'.$user->name.'" banido com sucesso.');
+	}
+
+	public function desbanir($id)
+	{
+		$user = User::withTrashed()->find($id);
+
+		$user->unbanish();
+
+		return back()->with('message', 'Usuario "'.$user->name.'" desbanido com sucesso.');
+	}
 }

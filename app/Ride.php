@@ -10,6 +10,7 @@ class Ride extends Model
     use SoftDeletes;
 
     protected $hidden = ['pivot'];
+    protected $dates = ['deleted_at'];
 
     public function users() {
         return $this->belongsToMany('App\User')->withPivot('status', 'feedback')->withTimestamps();
