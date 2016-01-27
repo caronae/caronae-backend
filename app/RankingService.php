@@ -37,13 +37,8 @@ class RankingService
         $sub = $this->baseQuery($periodStart, $periodEnd)
             ->where('ride_user.status', '=', 'driver')
 
-//            ->orWhere(function($query){ // sem nenhum carona, mas motorista
-//                $query->where('car_owner', '=', true);
-//                $query->whereNull('ride_user.user_id');
-//            })
             ->select(
                 "users.id",
-                //"rides.id as rideId," . // veja a count da proxima query
                 "users.name",
                 "users.profile",
                 "users.course",
@@ -72,7 +67,7 @@ class RankingService
             )->get();
     }
 
-    public function getUsersOrderedByCaronasInPeriod($periodStart, $periodEnd)
+    public function getUsersOrderedByRidesInPeriod($periodStart, $periodEnd)
     {
         return $this->baseQuery($periodStart, $periodEnd)
             ->where('ride_user.status', '=', 'accepted')
@@ -89,7 +84,7 @@ class RankingService
             )->get();
     }
 
-    public function getDriversOrderedByCaronasInPeriod($periodStart, $periodEnd)
+    public function getDriversOrderedByRidesInPeriod($periodStart, $periodEnd)
     {
         return $this->baseQuery($periodStart, $periodEnd)
             ->leftJoin('neighborhoods', function($join){

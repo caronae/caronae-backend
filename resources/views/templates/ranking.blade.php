@@ -7,6 +7,21 @@
                 @yield('title')
             </span>
 
+            <div class="btn-group export-dropdown">
+                <button type="button" class="btn btn-success export-button" title="Exportar para .xlsx">
+                    <span class="glyphicon glyphicon-list-alt"></span>
+                    <span class="glyphicon glyphicon-new-window"></span>
+                </button>
+                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="export-button" href="javascript:void(0)">Exportar para .xlsx</a></li>
+                    <li><a class="export-button-csv" href="javascript:void(0)">Exportar para .csv</a></li>
+                </ul>
+            </div>
+
             <form class="form-inline pull-right search-period-form">
                 <span>De:</span>
                 <input
@@ -30,20 +45,6 @@
                     Mostrar
                 </button>
 
-                <div class="btn-group">
-                    <button type="button" class="btn btn-success export-button" title="Exportar para .xlsx">
-                        <span class="glyphicon glyphicon-list-alt"></span>
-                        <span class="glyphicon glyphicon-new-window"></span>
-                    </button>
-                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="export-button" href="javascript:void(0)">Exportar para .xlsx</a></li>
-                        <li><a class="export-button-csv" href="javascript:void(0)">Exportar para .csv</a></li>
-                    </ul>
-                </div>
             </form>
 
         </div>

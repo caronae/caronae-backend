@@ -5,12 +5,7 @@ namespace App\Http\Controllers;
 use App\ExcelExporter;
 use App\Http\Requests\RankingRequest;
 use App\RankingService;
-use App\Ride;
-use App\RideUser;
-use App\User;
 use Carbon\Carbon;
-use DB;
-use Illuminate\Http\Request;
 
 class RankingController extends Controller
 {
@@ -45,28 +40,28 @@ class RankingController extends Controller
         );
     }
 
-    public function greaterCaronistas()
+    public function greaterRiders()
     {
-        return view('rankings.greater_caronistas');
+        return view('rankings.greater_riders');
     }
 
-    public function greaterCaronistasJson(RankingRequest $request)
+    public function greaterRidersJson(RankingRequest $request)
     {
         $start = Carbon::createFromFormat('d/m/Y', $request->get('start'));
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
 
-        $data = with(new RankingService())->getUsersOrderedByCaronasInPeriod($start, $end);
+        $data = with(new RankingService())->getUsersOrderedByRidesInPeriod($start, $end);
         return $data;
     }
 
-    public function greaterCaronistasExcel(RankingRequest $request)
+    public function greaterRidersExcel(RankingRequest $request)
     {
         $start = Carbon::createFromFormat('d/m/Y', $request->get('start'));
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
 
-        $data = with(new RankingService())->getUsersOrderedByCaronasInPeriod($start, $end);
+        $data = with(new RankingService())->getUsersOrderedByRidesInPeriod($start, $end);
 
         (new ExcelExporter())->export('caronistas-com-mais-caronas',
             ['Nome', 'Perfil UFRJ', 'Curso', 'Caronas'],
@@ -75,28 +70,28 @@ class RankingController extends Controller
         );
     }
 
-    public function greaterDriversCaronistas()
+    public function greaterDriversRiders()
     {
-        return view('rankings.greater_drivers_caronistas');
+        return view('rankings.greater_drivers_riders');
     }
 
-    public function greaterDriversCaronistasJson(RankingRequest $request)
+    public function greaterDriversRidersJson(RankingRequest $request)
     {
         $start = Carbon::createFromFormat('d/m/Y', $request->get('start'));
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
 
-        $data = with(new RankingService())->getDriversOrderedByCaronasInPeriod($start, $end);
+        $data = with(new RankingService())->getDriversOrderedByRidesInPeriod($start, $end);
         return $data;
     }
 
-    public function greaterDriversCaronistasExcel(RankingRequest $request)
+    public function greaterDriversRidersExcel(RankingRequest $request)
     {
         $start = Carbon::createFromFormat('d/m/Y', $request->get('start'));
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
 
-        $data = with(new RankingService())->getDriversOrderedByCaronasInPeriod($start, $end);
+        $data = with(new RankingService())->getDriversOrderedByRidesInPeriod($start, $end);
 
         (new ExcelExporter())->export('motoristas-com-mais-caronas',
             ['Nome', 'Perfil UFRJ', 'Curso', 'Carbono Economizado', 'Caronas'],

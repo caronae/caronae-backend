@@ -239,7 +239,7 @@ class UserController extends Controller
 		);
 	}
 
-	public function banir($id)
+	public function banish($id)
 	{
 		$user = User::find($id);
 
@@ -248,11 +248,11 @@ class UserController extends Controller
 		return back()->with('message', 'Usuario "'.$user->name.'" banido com sucesso.');
 	}
 
-	public function desbanir($id)
+	public function unban($id)
 	{
 		$user = User::withTrashed()->find($id);
 
-		$user->unbanish();
+		$user->unban();
 
 		return back()->with('message', 'Usuario "'.$user->name.'" desbanido com sucesso.');
 	}

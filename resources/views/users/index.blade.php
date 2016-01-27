@@ -15,12 +15,7 @@
                 <?php $getParamsToExport = ['banned' => true] ?>
             @endif
 
-            <a class="btn btn-primary pull-right" href="{{ action('UserController@index', $getParamsToButton) }}">
-                <span class="glyphicon glyphicon-ban-circle"></span>
-                Ver usuários banidos
-            </a>
-
-            <div class="btn-group">
+            <div class="btn-group export-dropdown">
                 <a href="{{ action('UserController@indexExcel', $getParamsToExport + ['type' => 'xlsx']) }}" class="btn btn-success" title="Exportar para .xlsx">
                     <span class="glyphicon glyphicon-list-alt"></span>
                     <span class="glyphicon glyphicon-new-window"></span>
@@ -34,6 +29,11 @@
                     <li><a href="{{ action('UserController@indexExcel', $getParamsToExport + ['type' => 'csv']) }}">Exportar para .csv</a></li>
                 </ul>
             </div>
+
+            <a class="btn btn-primary pull-right" href="{{ action('UserController@index', $getParamsToButton) }}">
+                <span class="glyphicon glyphicon-ban-circle"></span>
+                Ver usuários banidos
+            </a>
         </div>
 
         @include('includes.message')
@@ -58,7 +58,7 @@
 
         $('.table').DataTable({
             "ajax" : {
-                'url': url('admin/usuarios.json') + (getQueryParameterByName('banned') ? '?banned=true' : ''),
+                'url': url('admin/users.json') + (getQueryParameterByName('banned') ? '?banned=true' : ''),
                 'dataSrc': ''
             },
             columns: [

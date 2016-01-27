@@ -46,23 +46,23 @@ Route::group(['middleware' => 'csrf'], function(){
         Route::get('edit', 'AdminController@getEdit');
         Route::post('edit', 'AdminController@postEdit');
 
-        Route::get('usuarios', 'UserController@index');
-        Route::get('usuarios.json', 'UserController@indexJson');
-        Route::get('usuarios.excel', 'UserController@indexExcel');
-        Route::post('usuario/{id}/banir', 'UserController@banir');
-        Route::post('usuario/{id}/desbanir', 'UserController@desbanir');
+        Route::get('users', 'UserController@index');
+        Route::get('users.json', 'UserController@indexJson');
+        Route::get('users.excel', 'UserController@indexExcel');
+        Route::post('user/{id}/banish', 'UserController@banish');
+        Route::post('user/{id}/unban', 'UserController@unban');
 
         Route::get('ranking/better-feedback', 'RankingController@betterFeedback');
         Route::get('ranking/better-feedback.json', 'RankingController@betterFeedbackJson');
         Route::get('ranking/better-feedback.excel', 'RankingController@betterFeedbackExcel');
 
-        Route::get('ranking/greater-caronistas', 'RankingController@greaterCaronistas');
-        Route::get('ranking/greater-caronistas.json', 'RankingController@greaterCaronistasJson');
-        Route::get('ranking/greater-caronistas.excel', 'RankingController@greaterCaronistasExcel');
+        Route::get('ranking/greater-riders', 'RankingController@greaterRiders');
+        Route::get('ranking/greater-riders.json', 'RankingController@greaterRidersJson');
+        Route::get('ranking/greater-riders.excel', 'RankingController@greaterRidersExcel');
 
-        Route::get('ranking/greater-drivers-caronistas', 'RankingController@greaterDriversCaronistas');
-        Route::get('ranking/greater-drivers-caronistas.json', 'RankingController@greaterDriversCaronistasJson');
-        Route::get('ranking/greater-drivers-caronistas.excel', 'RankingController@greaterDriversCaronistasExcel');
+        Route::get('ranking/greater-drivers-riders', 'RankingController@greaterDriversRiders');
+        Route::get('ranking/greater-drivers-riders.json', 'RankingController@greaterDriversRidersJson');
+        Route::get('ranking/greater-drivers-riders.excel', 'RankingController@greaterDriversRidersExcel');
 
         Route::get('ranking/greater-average-occupancy', 'RankingController@greaterAverageOccupancy');
         Route::get('ranking/greater-average-occupancy.json', 'RankingController@greaterAverageOccupancyJson');

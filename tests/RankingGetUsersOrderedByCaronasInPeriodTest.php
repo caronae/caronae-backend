@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\User;
 
-class RankingGetUsersOrderedByCaronasInPeriodTest extends TestCase
+class RankinggetUsersOrderedByRidesInPeriodTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -43,7 +43,7 @@ class RankingGetUsersOrderedByCaronasInPeriodTest extends TestCase
             ['done' => true], ['done' => true], ['done' => true]
         ]);
 
-        $users = with(new RankingService)->getUsersOrderedByCaronasInPeriod(Carbon::minValue(), Carbon::maxValue());
+        $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
 
         $this->assertTrue(count($users) == 1);
         $this->assertTrue($users[0]->caronas == 3);
@@ -57,7 +57,7 @@ class RankingGetUsersOrderedByCaronasInPeriodTest extends TestCase
             ['done' => true], ['done' => true], ['done' => false]
         ]);
 
-        $users = with(new RankingService)->getUsersOrderedByCaronasInPeriod(Carbon::minValue(), Carbon::maxValue());
+        $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
 
         $this->assertTrue(count($users) == 1);
         $this->assertTrue($users[0]->caronas == 2);
@@ -71,7 +71,7 @@ class RankingGetUsersOrderedByCaronasInPeriodTest extends TestCase
             ['done' => true, 'mydate' => '2015-01-08'], ['done' => true, 'mydate' => '2015-01-10'], ['done' => true, 'mydate' => '2015-01-12']
         ]);
 
-        $users = with(new RankingService)->getUsersOrderedByCaronasInPeriod(Carbon::createFromDate(2015, 1, 9), Carbon::createFromDate(2015, 1, 11));
+        $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::createFromDate(2015, 1, 9), Carbon::createFromDate(2015, 1, 11));
 
         $this->assertTrue(count($users) == 1);
         $this->assertTrue($users[0]->caronas == 1);
@@ -85,7 +85,7 @@ class RankingGetUsersOrderedByCaronasInPeriodTest extends TestCase
             ['done' => true, 'mydate' => '2015-01-09'], ['done' => true, 'mydate' => '2015-01-10'], ['done' => true, 'mydate' => '2015-01-12']
         ]);
 
-        $users = with(new RankingService)->getUsersOrderedByCaronasInPeriod(Carbon::createFromDate(2015, 1, 9), Carbon::createFromDate(2015, 1, 10));
+        $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::createFromDate(2015, 1, 9), Carbon::createFromDate(2015, 1, 10));
 
         $this->assertTrue(count($users) == 1);
         $this->assertTrue($users[0]->caronas == 2);
@@ -99,7 +99,7 @@ class RankingGetUsersOrderedByCaronasInPeriodTest extends TestCase
             ['done' => true, 'mydate' => '2015-01-08'], ['done' => true, 'mydate' => '2015-01-10'], ['done' => true, 'mydate' => '2015-01-12']
         ]);
 
-        $users = with(new RankingService)->getUsersOrderedByCaronasInPeriod(Carbon::createFromDate(2015, 1, 10), Carbon::createFromDate(2015, 1, 10));
+        $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::createFromDate(2015, 1, 10), Carbon::createFromDate(2015, 1, 10));
 
         $this->assertTrue(count($users) == 1);
         $this->assertTrue($users[0]->caronas == 1);
@@ -119,7 +119,7 @@ class RankingGetUsersOrderedByCaronasInPeriodTest extends TestCase
             ['done' => true], ['done' => true], ['done' => true], ['done' => true]
         ]);
 
-        $users = with(new RankingService)->getUsersOrderedByCaronasInPeriod(Carbon::minValue(), Carbon::maxValue());
+        $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
 
         $this->assertTrue(count($users) == 2);
         $this->assertTrue($users[0]->caronas == 4);
@@ -140,7 +140,7 @@ class RankingGetUsersOrderedByCaronasInPeriodTest extends TestCase
             ['done' => true], ['done' => true], ['done' => true], ['done' => true]
         ]);
 
-        $users = with(new RankingService)->getUsersOrderedByCaronasInPeriod(Carbon::minValue(), Carbon::maxValue());
+        $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
 
         $this->assertTrue(count($users) == 1);
         $this->assertTrue($users[0]->caronas == 4);

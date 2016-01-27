@@ -28,6 +28,11 @@ body {
     font-size: 1.8em;
 }
 
+.export-dropdown {
+    float: right !important; /* pull-right from bootstrap */
+    margin-left: 0.3em;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {

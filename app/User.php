@@ -36,7 +36,7 @@ class User extends Model
         });
     }
 
-    public function unbanish(){
+    public function unban(){
         $this->restore();
     }
 }
