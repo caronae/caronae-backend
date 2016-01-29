@@ -194,9 +194,9 @@ class RideController extends Controller
 		
 		//query the rides
 		if (empty($decode->center)) {
-			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('mytime', '>=', $decode->time)->get();
+			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('mytime', '>=', $decode->time)->take(50)->get();
 		} else {
-			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('mytime', '>=', $decode->time)->where('hub', 'LIKE', "$decode->center%")->get();
+			$rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('mytime', '>=', $decode->time)->where('hub', 'LIKE', "$decode->center%")->take(50)->get();
 		}
 		
 		$results = [];
@@ -452,7 +452,7 @@ class RideController extends Controller
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
-		$rides = $user->rides()->where('done', true)->whereIn('status', ['driver', 'accepted'])->get();
+		$rides = $user->rides()->where('done', true)->whereIn('status', ['driver', 'accepted'])->take(50)->get();
 		
 		$resultJson = array();
 		foreach($rides as $ride) {
