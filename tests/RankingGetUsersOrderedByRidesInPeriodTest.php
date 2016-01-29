@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\User;
 
-class RankinggetUsersOrderedByRidesInPeriodTest extends TestCase
+class RankingGetUsersOrderedByRidesInPeriodTest extends TestCase
 {
     use DatabaseTransactions;
 

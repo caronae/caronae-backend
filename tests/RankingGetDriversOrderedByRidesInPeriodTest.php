@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\User;
 
-class RankinggetDriversOrderedByRidesInPeriodTest extends TestCase
+class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -27,6 +27,15 @@ class RankinggetDriversOrderedByRidesInPeriodTest extends TestCase
         Model::unguard();
     }
 
+    private function getUser($firstTimeAsDriver = null){
+        $firstTimeAsDriver = $firstTimeAsDriver ?: Carbon::minValue()->format('Y-m-d');
+        $user = factory(User::class)->create();
+        $ride = factory(Ride::class)->create(['done' => true, 'mydate' => $firstTimeAsDriver]);
+        $user->rides()->save($ride, ['status' => 'driver']);
+
+        return $user;
+    }
+
     public function createRides($user, $rideAttrs){
         factory(User::class, count($rideAttrs))->create()->each(function($u, $i) use($user, $rideAttrs) {
             $ride = factory(Ride::class)->create($rideAttrs[$i]);
@@ -37,7 +46,7 @@ class RankinggetDriversOrderedByRidesInPeriodTest extends TestCase
 
     public function testCaronasHaveCorrectValue()
     {
-        $user = factory(User::class)->create(['car_owner' => true]);
+        $user = $this->getUser();
 
         $this->createRides($user, [
             ['done' => true, 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
@@ -54,7 +63,7 @@ class RankinggetDriversOrderedByRidesInPeriodTest extends TestCase
 
     public function testOnlyConsiderDoneRides()
     {
-        $user = factory(User::class)->create(['car_owner' => true]);
+        $user = $this->getUser();
 
         $this->createRides($user, [
             ['done' => true, 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
@@ -73,7 +82,7 @@ class RankinggetDriversOrderedByRidesInPeriodTest extends TestCase
 
     public function testOnlyConsiderInsidePeriod()
     {
-        $user = factory(User::class)->create(['car_owner' => true]);
+        $user = $this->getUser();
 
         $this->createRides($user, [
             ['done' => true, 'mydate' => '2015-01-08', 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
@@ -91,7 +100,7 @@ class RankinggetDriversOrderedByRidesInPeriodTest extends TestCase
 
     public function testOnlyConsiderInsidePeriodInclusive()
     {
-        $user = factory(User::class)->create(['car_owner' => true]);
+        $user = $this->getUser();
 
         $this->createRides($user, [
             ['done' => true, 'mydate' => '2015-01-08', 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
@@ -108,7 +117,7 @@ class RankinggetDriversOrderedByRidesInPeriodTest extends TestCase
 
     public function testCanSelectOneDayPeriod()
     {
-        $user = factory(User::class)->create(['car_owner' => true]);
+        $user = $this->getUser();
 
         $this->createRides($user, [
             ['done' => true, 'mydate' => '2015-01-08', 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
@@ -125,7 +134,7 @@ class RankinggetDriversOrderedByRidesInPeriodTest extends TestCase
 
     public function testOrderCorrectly()
     {
-        $user2 = factory(User::class)->create(['car_owner' => true]);
+        $user2 = $this->getUser();
 
         $this->createRides($user2, [
             ['done' => true, 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
@@ -133,7 +142,7 @@ class RankinggetDriversOrderedByRidesInPeriodTest extends TestCase
             ['done' => true, 'myzone' => 'Baixada', 'neighborhood' => 'Magé']
         ]);
 
-        $user = factory(User::class)->create(['car_owner' => true]);
+        $user = $this->getUser();
 
         $this->createRides($user, [
             ['done' => true, 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
@@ -155,7 +164,9 @@ class RankinggetDriversOrderedByRidesInPeriodTest extends TestCase
 
     public function testConsiderOnlyActiveUsers()
     {
-        $user = factory(User::class)->create(['car_owner' => true, 'deleted_at' => '2015-01-23']);
+        $user = $this->getUser();
+        $user->deleted_at = '2015-01-23';
+        $user->save();
 
         $this->createRides($user, [
             ['done' => true, 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
@@ -163,7 +174,7 @@ class RankinggetDriversOrderedByRidesInPeriodTest extends TestCase
             ['done' => true, 'myzone' => 'Baixada', 'neighborhood' => 'Magé']
         ]);
 
-        $user2 = factory(User::class)->create(['car_owner' => true]);
+        $user2 = $this->getUser();
 
         $this->createRides($user2, [
             ['done' => true, 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
@@ -179,9 +190,9 @@ class RankinggetDriversOrderedByRidesInPeriodTest extends TestCase
         $this->assertTrue($users[0]->carbono_economizado == 11266);
     }
 
-    public function testConsiderOnlyCarOwners()
+    public function testConsiderOnlyDriversInPeriod()
     {
-        $user = factory(User::class)->create(['car_owner' => false]);
+        $user = $this->getUser(Carbon::maxValue()->format('Y-m-d'));
 
         $this->createRides($user, [
             ['done' => true, 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
@@ -189,13 +200,33 @@ class RankinggetDriversOrderedByRidesInPeriodTest extends TestCase
             ['done' => true, 'myzone' => 'Baixada', 'neighborhood' => 'Magé']
         ]);
 
-        $user2 = factory(User::class)->create(['car_owner' => true]);
+        $user2 = $this->getUser();
 
         $this->createRides($user2, [
             ['done' => true, 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
             ['done' => true, 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
             ['done' => true, 'myzone' => 'Baixada', 'neighborhood' => 'Magé'],
             ['done' => true, 'myzone' => 'Zona Sul', 'neighborhood' => 'Catete'],
+        ]);
+
+        $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::minValue(), Carbon::createFromFormat('Y-m-d', '2015-01-23'));
+
+        $this->assertTrue(count($users) == 1);
+        $this->assertTrue($users[0]->caronas == 4);
+        $this->assertTrue($users[0]->carbono_economizado == 11266);
+    }
+
+    public function testConsiderOnlyRidesAfterBecomingADriver()
+    {
+        $user = $this->getUser('2015-06-21');
+
+        $this->createRides($user, [
+            ['done' => true, 'mydate' => '2015-06-20', 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
+            ['done' => true, 'mydate' => '2015-06-20', 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
+            ['done' => true, 'mydate' => '2015-06-21', 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
+            ['done' => true, 'mydate' => '2015-06-21', 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
+            ['done' => true, 'mydate' => '2015-06-21', 'myzone' => 'Baixada', 'neighborhood' => 'Magé'],
+            ['done' => true, 'mydate' => '2015-06-21', 'myzone' => 'Zona Sul', 'neighborhood' => 'Catete'],
         ]);
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());

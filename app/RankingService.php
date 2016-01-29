@@ -92,7 +92,17 @@ class RankingService
                 $join->on('rides.neighborhood', '=', 'neighborhoods.name');
             })
 
-            ->where('users.car_owner', '=', true)
+            ->where('rides.mydate', '>=', DB::raw("
+                (SELECT mydate
+                 FROM users as u
+                 JOIN ride_user ON users.id = ride_user.user_id
+                 JOIN rides ON rides.id = ride_user.ride_id
+                 WHERE u.id = users.id AND
+                       ride_user.status = 'driver' AND
+                       rides.done = true
+                 ORDER BY mydate ASC
+                 LIMIT 1
+                 )"))
 
             ->where('ride_user.status', '=', 'accepted')
 
@@ -105,6 +115,7 @@ class RankingService
                 "users.profile",
                 "users.course",
                 DB::raw('COUNT(*) as caronas'),
+                // 131 é um valor mágico. É a taxa media de carbono emitido por um carro no Brasil
                 DB::raw('SUM(neighborhoods.distance * 131) as carbono_economizado')
             )->get();
     }
