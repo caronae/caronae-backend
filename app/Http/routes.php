@@ -82,3 +82,23 @@ Route::group(['middleware' => 'csrf'], function(){
     Route::post('password/reset', 'Auth\PasswordController@postReset');
 
 });
+
+//apenas para testes
+Route::get('clear/rideuser', function(){
+	RideUser::truncate();
+});
+
+Route::get('clear/ride', function(){
+	RideUser::truncate();
+	Ride::truncate();
+});
+
+Route::get('clear/user', function(){
+	User::truncate();
+});
+
+Route::get('clear', function(){
+	RideUser::truncate();
+	Ride::truncate();
+	User::truncate();
+});
