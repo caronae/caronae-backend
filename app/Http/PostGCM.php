@@ -4,7 +4,7 @@ namespace App\Http;
 
 class PostGCM
 {
-	function doPost($post)
+	public static function doPost($post)
 	{
 		//------------------------------
 		// Replace with real GCM API 
@@ -94,5 +94,21 @@ class PostGCM
 		//------------------------------
 
 		return $result;
+	}
+
+	public static function sendNotification($gcmTokens, $data) {
+		$body = [
+					'notification' 		=> ['body' => $data['message']],
+					'content_available' => true,
+					'data' 				=> $data
+				];
+
+		if (is_array($gcmTokens)) {
+			$body['registration_ids'] = $gcmTokens;
+		} else {
+			$body['to'] = $gcmTokens;
+		}
+
+		return self::doPost($body);
 	}
 }
