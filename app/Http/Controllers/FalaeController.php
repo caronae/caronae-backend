@@ -17,7 +17,7 @@ class FalaeController extends Controller
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
-		$to = "caronae@fundoverde.com";
+		$to = "caronae@fundoverde.ufrj.br";
 		$headers = [];
 		$headers[] = "Content-type: text/plain; charset=utf-8";
 		$headers[] = "From: {$user->name} <{$user->email}>";
