@@ -532,6 +532,7 @@ class RideController extends Controller
 			$from = $el->going ? $place : "Fundão";
 			$to = $el->going ? "Fundão" : $place;
 			$distance = $el->distance;
+			// manipula a ordem dos atributos para ficarem corretas em relação aos headers da tabela
 			unset($el->myzone);
 			unset($el->neighborhood);
 			unset($el->going);

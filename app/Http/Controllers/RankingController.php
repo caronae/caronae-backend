@@ -7,7 +7,7 @@ use App\Http\Requests\RankingRequest;
 use App\RankingService;
 use Carbon\Carbon;
 use DB;
-use Symfony\Component\HttpFoundation\Request;
+use Illuminate\Http\Request;
 
 class RankingController extends Controller
 {
@@ -177,11 +177,12 @@ class RankingController extends Controller
 
     public function taxaDeCarbono(Request $request){
 
-        $start = Carbon::createFromFormat('d/m/Y', $request->get('start', Carbon::now()->format('d/m/Y')));
+        $start = Carbon::createFromFormat('d/m/Y', $request->get('start', Carbon::now()->subMonth()->format('d/m/Y')));
 
-        $end = Carbon::createFromFormat('d/m/Y', $request->get('end', Carbon::now()->subMonth()->format('d/m/Y')));
+        $end = Carbon::createFromFormat('d/m/Y', $request->get('end', Carbon::now()->format('d/m/Y')));
 
-        if($start->gt($end)) view('taxaDeCarbono.index')->with('taxa', null)->with('errou', 'O fim do período deve ser depois do começo do período.');
+        if($start->gt($end))
+            return view('taxaDeCarbono.index')->with('taxa', null)->with('errou', 'O fim do período deve ser depois do começo do período.');
 
         $taxa = $this->getTaxaDeCarbono($start, $end);
 

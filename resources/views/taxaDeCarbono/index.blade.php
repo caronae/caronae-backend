@@ -4,7 +4,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">
             <span class="title">
-                Taxa De Carbono Economizada
+                Taxa de Carbono Economizada
             </span>
 
             <form class="form-inline pull-right search-period-form" method="get" action="{{ action("RankingController@taxaDeCarbono") }}">
@@ -45,14 +45,11 @@
 
         </div>
 
-        <div class="error-alert alert alert-danger alert-dismissible" role="alert" style="display: none">
-            <button type="button" class="close" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            <span class="content">
-                @if(!empty($errou)) {{ $error }} @endif
-            </span>
-        </div>
+        @if(!empty($errou))
+            <div class="error-alert alert alert-danger alert-dismissible" role="alert">
+                 {{ $errou }}
+            </div>
+        @endif
 
         @if($taxa)
         <h1 class="text-center">
