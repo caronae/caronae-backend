@@ -68,6 +68,12 @@ Route::group(['middleware' => 'csrf'], function(){
         Route::get('ranking/greater-average-occupancy.json', 'RankingController@greaterAverageOccupancyJson');
         Route::get('ranking/greater-average-occupancy.excel', 'RankingController@greaterAverageOccupancyExcel');
 
+        Route::get('rides', 'RideController@index');
+        Route::get('rides.json', 'RideController@indexJson');
+        Route::get('rides.excel', 'RideController@indexExcel');
+
+        Route::get('taxaDeCarbono', 'RankingController@taxaDeCarbono');
+
         Route::get('logout', 'Auth\AuthController@getLogout');
 
     });

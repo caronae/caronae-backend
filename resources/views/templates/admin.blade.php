@@ -59,6 +59,18 @@
                     </li>
                 </ul>
             </li>
+            <li>
+                <a href="{{ action('RideController@index') }}">
+                    <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                    Caronas
+                </a>
+            </li>
+            <li>
+                <a href="{{ action('RankingController@taxaDeCarbono') }}">
+                    <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                    Taxa de Carbono
+                </a>
+            </li>
         </ul>
         <a href="{{action('Auth\AuthController@getLogout')}}" class="navbar-text navbar-right">
             <span class="glyphicon glyphicon-log-out"></span>

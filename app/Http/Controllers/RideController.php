@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\ExcelExporter;
+use App\Http\Requests\RankingRequest;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -478,5 +480,71 @@ class RideController extends Controller
 		
 		$ride_user->feedback = $request->feedback;
 		$ride_user->save();
+	}
+
+	public function index(){
+		return view('rides.index');
+	}
+
+	public function indexJson(RankingRequest $request){ // Essa view não é exatamente um ranking, mas reutilizar codigo é sempre bom
+		return Ride::join('neighborhoods', function($join){
+			$join->on('myzone', '=', 'zone');
+			$join->on('neighborhood', '=', 'name');
+		})
+		->join('ride_user', function($join){
+			$join->on('ride_user.ride_id', '=', 'rides.id');
+		})
+		->join('users', function($join){
+			$join->on('ride_user.user_id', '=', 'users.id');
+		})
+		->where('ride_user.status', '=', 'driver')
+		->where('done', '=', true)
+		->where('rides.mydate', '>=', $request->get('start'))
+		->where('rides.mydate', '<=', $request->get('end'))
+		->select('users.name as driver', 'mydate', 'mytime', 'myzone', 'neighborhood', 'going', 'distance')
+		->orderBy('mydate', 'DESC')
+		->orderBy('mytime', 'DESC')
+		->get();
+	}
+
+	public function indexExcel(RankingRequest $request){
+		$data =  Ride::join('neighborhoods', function($join){
+			$join->on('myzone', '=', 'zone');
+			$join->on('neighborhood', '=', 'name');
+		})
+		->join('ride_user', function($join){
+			$join->on('ride_user.ride_id', '=', 'rides.id');
+		})
+		->join('users', function($join){
+			$join->on('ride_user.user_id', '=', 'users.id');
+		})
+		->where('ride_user.status', '=', 'driver')
+		->where('done', '=', true)
+		->where('rides.mydate', '>=', $request->get('start'))
+		->where('rides.mydate', '<=', $request->get('end'))
+		->select('users.name as driver', 'mydate', 'mytime', 'myzone', 'neighborhood', 'going', 'distance')
+		->orderBy('mydate', 'DESC')
+		->orderBy('mytime', 'DESC')
+		->get();
+
+		$data->each(function($el){
+			$place = $el->neighborhood . '/' . $el->myzone;
+			$from = $el->going ? $place : "Fundão";
+			$to = $el->going ? "Fundão" : $place;
+			$distance = $el->distance;
+			unset($el->myzone);
+			unset($el->neighborhood);
+			unset($el->going);
+			unset($el->distance);
+			$el->from = $from;
+			$el->to = $to;
+			$el->distance = $distance;
+		});
+
+		(new ExcelExporter())->export('caronas-dadas',
+			['Motorista', 'Data', 'Hora', 'Origem', 'Destino', 'Distancia'],
+			$data->toArray(),
+			$request->get('type', 'xlsx')
+		);
 	}
 }
