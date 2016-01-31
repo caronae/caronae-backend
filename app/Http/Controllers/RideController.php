@@ -147,7 +147,12 @@ class RideController extends Controller
 	
 	public function delete($rideId) {
         RideUser::where('ride_id', $rideId)->delete(); //delete all relationships with this ride first
-        Ride::destroy($rideId);
+        $ride = Ride::find($rideId);
+		if ($ride == null) {
+			return response()->json(['error'=>'ride not found with id = ' . $rideId], 400);
+		}
+		
+		$ride->forceDelete();
     }
 
     public function listAll(Request $request) {
