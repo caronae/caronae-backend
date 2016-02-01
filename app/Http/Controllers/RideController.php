@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\ExcelExporter;
 use App\Http\Requests\RankingRequest;
+use DB;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -491,64 +492,103 @@ class RideController extends Controller
 		return view('rides.index');
 	}
 
-	public function indexJson(RankingRequest $request){ // Essa view não é exatamente um ranking, mas reutilizar codigo é sempre bom
+	private function userStats($periodStart, $periodEnd){
+		return DB::table('users')
+			->join('ride_user', function($join){
+				$join->on('ride_user.user_id', '=', 'users.id');
+			})
+			->join('rides', function($join){
+				$join->on('ride_user.ride_id', '=', 'rides.id');
+			})
+			->join('neighborhoods', function($join){
+				$join->on('rides.myzone', '=', 'neighborhoods.zone');
+				$join->on('rides.neighborhood', '=', 'neighborhoods.name');
+			})
+			->where('ride_user.status', '=', 'driver')
+			->where('done', '=', true)
+			->where('rides.mydate', '>=', $periodStart)
+			->where('rides.mydate', '<=', $periodEnd)
+
+			->groupBy('users.id')
+
+			->select(
+				'users.id',
+				DB::raw('SUM(distance) as distancia_total'),
+				DB::raw('COUNT(*) as numero_de_caronas'),
+				DB::raw('(SUM(distance) / COUNT(*)) as distancia_media')
+			);
+	}
+
+	public function getRides($periodStart, $periodEnd){
+		$join = $this->userStats($periodStart, $periodEnd);
+
 		return Ride::join('neighborhoods', function($join){
-			$join->on('myzone', '=', 'zone');
-			$join->on('neighborhood', '=', 'name');
+			$join->on('rides.myzone', '=', 'neighborhoods.zone');
+			$join->on('rides.neighborhood', '=', 'neighborhoods.name');
 		})
-		->join('ride_user', function($join){
-			$join->on('ride_user.ride_id', '=', 'rides.id');
-		})
-		->join('users', function($join){
-			$join->on('ride_user.user_id', '=', 'users.id');
-		})
-		->where('ride_user.status', '=', 'driver')
-		->where('done', '=', true)
-		->where('rides.mydate', '>=', $request->get('start'))
-		->where('rides.mydate', '<=', $request->get('end'))
-		->select('users.name as driver', 'mydate', 'mytime', 'myzone', 'neighborhood', 'going', 'distance')
-		->orderBy('mydate', 'DESC')
-		->orderBy('mytime', 'DESC')
-		->get();
+			->join('ride_user', function($join){
+				$join->on('ride_user.ride_id', '=', 'rides.id');
+			})
+			->join('users', function($join){
+				$join->on('ride_user.user_id', '=', 'users.id');
+			})
+			->join(DB::raw('(' . $join->toSql() . ') as t1'), function($join){
+				$join->on('users.id' , '=', 't1.id');
+			})
+			->mergeBindings($join)
+			->where('ride_user.status', '=', 'driver')
+			->where('done', '=', true)
+			->where('rides.mydate', '>=', $periodStart)
+			->where('rides.mydate', '<=', $periodEnd)
+			->select('users.name as driver', 'users.course', 'mydate', 'mytime', 'myzone', 'neighborhood', 'going', 'distance',
+				't1.distancia_total',
+				't1.numero_de_caronas',
+				't1.distancia_media'
+			)
+			->orderBy('mydate', 'DESC')
+			->orderBy('mytime', 'DESC')
+			->get();
+	}
+
+	public function indexJson(RankingRequest $request){ // Essa view não é exatamente um ranking, mas reutilizar codigo é sempre bom
+		$start = $request->get('start');
+		$end = $request->get('end');
+
+		return $this->getRides($start, $end);
 	}
 
 	public function indexExcel(RankingRequest $request){
-		$data =  Ride::join('neighborhoods', function($join){
-			$join->on('myzone', '=', 'zone');
-			$join->on('neighborhood', '=', 'name');
-		})
-		->join('ride_user', function($join){
-			$join->on('ride_user.ride_id', '=', 'rides.id');
-		})
-		->join('users', function($join){
-			$join->on('ride_user.user_id', '=', 'users.id');
-		})
-		->where('ride_user.status', '=', 'driver')
-		->where('done', '=', true)
-		->where('rides.mydate', '>=', $request->get('start'))
-		->where('rides.mydate', '<=', $request->get('end'))
-		->select('users.name as driver', 'mydate', 'mytime', 'myzone', 'neighborhood', 'going', 'distance')
-		->orderBy('mydate', 'DESC')
-		->orderBy('mytime', 'DESC')
-		->get();
+		$start = $request->get('start');
+		$end = $request->get('end');
+
+		$data = $this->getRides($start, $end);
 
 		$data->each(function($el){
 			$place = $el->neighborhood . '/' . $el->myzone;
 			$from = $el->going ? $place : "Fundão";
 			$to = $el->going ? "Fundão" : $place;
 			$distance = $el->distance;
+			$distancia_total = $el->distancia_total;
+			$numero_de_caronas = $el->numero_de_caronas;
+			$distancia_media = $el->distancia_media;
 			// manipula a ordem dos atributos para ficarem corretas em relação aos headers da tabela
 			unset($el->myzone);
 			unset($el->neighborhood);
 			unset($el->going);
 			unset($el->distance);
+			unset($el->distancia_total);
+			unset($el->numero_de_caronas);
+			unset($el->distancia_media);
 			$el->from = $from;
 			$el->to = $to;
 			$el->distance = $distance;
+			$el->distancia_total = $distancia_total;
+			$el->numero_de_caronas = $numero_de_caronas;
+			$el->distancia_media = $distancia_media;
 		});
 
 		(new ExcelExporter())->export('caronas-dadas',
-			['Motorista', 'Data', 'Hora', 'Origem', 'Destino', 'Distancia'],
+			['Motorista', 'Curso', 'Data', 'Hora', 'Origem', 'Destino', 'Distancia', 'Distancia Total', 'Total de Caronas', 'Distancia Média'],
 			$data->toArray(),
 			$request->get('type', 'xlsx')
 		);
