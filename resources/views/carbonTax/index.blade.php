@@ -53,9 +53,8 @@
 
         @if($taxa)
         <h1 class="text-center">
-            <span style="font-size: 7em;">{{ $taxa }}</span>
+            <span style="font-size: 3em;">{{ $taxa }}</span>
             <br>
-            <span style="font-size: 1em;">g/Km</span>
         </h1>
         @else
             <h1 class="text-center">
