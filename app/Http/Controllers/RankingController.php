@@ -132,60 +132,19 @@ class RankingController extends Controller
         );
     }
 
-    public function baseQuery(Carbon $periodStart, Carbon $periodEnd){
-        // this method returns a common base query that all other methods use.
-        return DB::table('users')
-            ->leftJoin('ride_user', function($join){
-                $join->on('users.id', '=', 'ride_user.user_id');
-
-            })->leftJoin('rides', function($join)  {
-                $join->on('ride_user.ride_id', '=', 'rides.id');
-            })
-            ->whereNull('users.deleted_at')
-            ->where('rides.done', '=', true)
-            ->where('rides.mydate', '>=', $periodStart->format("Y-m-d"))
-            ->where('rides.mydate', '<=', $periodEnd->format("Y-m-d"));
-    }
-
-    public function getTaxaDeCarbono($periodStart, $periodEnd)
-    {
-        return $this->baseQuery($periodStart, $periodEnd)
-            ->leftJoin('neighborhoods', function($join){
-                $join->on('rides.myzone', '=', 'neighborhoods.zone');
-                $join->on('rides.neighborhood', '=', 'neighborhoods.name');
-            })
-
-            ->where('rides.mydate', '>=', DB::raw("
-                (SELECT mydate
-                 FROM users as u
-                 JOIN ride_user ON users.id = ride_user.user_id
-                 JOIN rides ON rides.id = ride_user.ride_id
-                 WHERE u.id = users.id AND
-                       ride_user.status = 'driver' AND
-                       rides.done = true
-                 ORDER BY mydate ASC
-                 LIMIT 1
-                 )"))
-
-            ->where('ride_user.status', '=', 'accepted')
-
-            ->select(
-                // 131 é um valor mágico. É a taxa media de carbono emitido por um carro no Brasil
-                DB::raw('SUM(neighborhoods.distance * 131) as carbono_economizado')
-            )->get()[0]->carbono_economizado;
-    }
-
-    public function taxaDeCarbono(Request $request){
+    public function carbonTax(Request $request){
 
         $start = Carbon::createFromFormat('d/m/Y', $request->get('start', Carbon::now()->subMonth()->format('d/m/Y')));
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end', Carbon::now()->format('d/m/Y')));
 
+        $view = view('carbonTax.index');
+
         if($start->gt($end))
-            return view('taxaDeCarbono.index')->with('taxa', null)->with('errou', 'O fim do período deve ser depois do começo do período.');
+            return $view->with('taxa', null)->with('errou', 'O fim do período deve ser depois do começo do período.');
 
-        $taxa = $this->getTaxaDeCarbono($start, $end);
+        $taxa = (new RankingService)->getCarbonTaxSaved($start, $end);
 
-        return view('taxaDeCarbono.index')->with('taxa', $taxa);
+        return $view->with('taxa', $taxa);
     }
 }

@@ -7,7 +7,7 @@
                 Taxa de Carbono Economizada
             </span>
 
-            <form class="form-inline pull-right search-period-form" method="get" action="{{ action("RankingController@taxaDeCarbono") }}">
+            <form class="form-inline pull-right search-period-form" method="get" action="{{ action("RankingController@carbonTax") }}">
                 <span>De:</span>
                 <input
                         type="text"

@@ -66,7 +66,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ action('RankingController@taxaDeCarbono') }}">
+                <a href="{{ action('RankingController@carbonTax') }}">
                     <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
                     Taxa de Carbono
                 </a>
