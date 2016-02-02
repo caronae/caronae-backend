@@ -76,7 +76,7 @@ class UserController extends Controller
 		if (isset($intranetUser->urlFoto) && $intranetUser->urlFoto != '') {
 			list($photoHost, $photoHash) = explode('/',$intranetUser->urlFoto);
 			if ($photoHost == '146.164.2.117:8090') {
-				$user->profile_pic_url = 'http://web1.tic.ufrj.br/caronae/user/intranetPhoto/' . $photoHash;
+				$user->profile_pic_url = 'http://caronae.tic.ufrj.br/user/intranetPhoto/' . $photoHash;
 			}
 		}
 
@@ -210,6 +210,57 @@ class UserController extends Controller
 		// TODO: Confirm if the photo is always a JPG
 		return response($intranetResponseRaw)->header('Content-Type', 'image/jpg');
 		
+    }
+
+    public function getIntranetPhotoUrl(Request $request) {
+		$user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return response()->json(['error'=>'User ' . $request->header('token') . ' token not authorized.'], 403);
+		}
+
+		$idUFRJ = $user->id_ufrj;
+		if ($idUFRJ == null || $idUFRJ != '') {
+			return response()->json(['error'=>'User does not have an Intranet identification.'], 403);
+		}
+
+		$context = stream_context_create(['http' => ['timeout' => 2]]);
+		$intranetResponseJSON = @file_get_contents('http://146.164.2.117:9200/_search?q=IdentificacaoUFRJ:' . $idUFRJ, FILE_TEXT, $context);
+
+		// Check if the connection was successful
+		if ($intranetResponseJSON == false) {
+			return response()->json(['error'=>'Failed to connect to Intranet.'], 500);
+		}
+		
+		$intranetResponse = json_decode($intranetResponseJSON);
+
+		// Check if we received the expected result with a hit
+		if ($intranetResponse->hits->hits && count($intranetResponse->hits->hits) > 0) {
+			$intranetUser = $intranetResponse->hits->hits[0]->_source;
+			$intranetUserType = $intranetResponse->hits->hits[0]->_type;
+
+			// Check if the extracted user has all required fields
+			if (!isset($intranetUser->nome) || !isset($intranetUser->nomeCurso) || 
+				!isset($intranetUser->situacaoMatricula) || !$intranetUserType) {
+				return response()->json(['error'=>'Unexpected response from intranet.'], 500);
+			}
+
+			// Check if the user is still enrolled
+			if ($intranetUser->situacaoMatricula != "Ativa") {
+				return response()->json(['error'=>'User does not have an active ID from intranet.'], 403);
+			}
+		} else {
+			return response()->json(['error'=>'No UFRJ profile found with this identification.'], 403);
+		}
+
+		// Get photo url
+		if (isset($intranetUser->urlFoto) && $intranetUser->urlFoto != '') {
+			list($photoHost, $photoHash) = explode('/',$intranetUser->urlFoto);
+			if ($photoHost == '146.164.2.117:8090') {
+				$newPhotoURL = 'http://caronae.tic.ufrj.br/user/intranetPhoto/' . $photoHash;
+				return response()->json(['url'=>$newPhotoURL]);
+			}
+		}
+
     }
 
 	public function index(Request $request)

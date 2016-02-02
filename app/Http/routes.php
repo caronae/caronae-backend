@@ -1,8 +1,8 @@
 <?php
 
-// API interface. Is used by the mobile apps
+// API interface. Used by the mobile apps
 
-//user routes
+// User routes
 Route::get('user/signup/{name}/{token}', 'UserController@signUp'); 
 Route::get('user/signup/intranet/{idUFRJ}/{token}', 'UserController@signUpIntranet');
 Route::post('user/login', 'UserController@login');
@@ -11,9 +11,10 @@ Route::put('user/saveGcmToken', 'UserController@saveGcmToken');
 Route::put('user/saveFaceId', 'UserController@saveFaceId');
 Route::put('user/saveProfilePicUrl', 'UserController@saveProfilePicUrl');
 Route::get('user/{id}/mutualFriends', 'UserController@getMutualFriends');
+Route::get('user/intranetPhotoUrl', 'UserController@getIntranetPhotoUrl');
 Route::get('user/intranetPhoto/{hash}', 'UserController@loadIntranetPhoto');
 
-//ride routes
+// Ride routes
 Route::get('ride/all', 'RideController@listAll');
 Route::post('ride', 'RideController@store');
 Route::delete('ride/{rideId}', 'RideController@delete');
@@ -28,7 +29,7 @@ Route::get('ride/getRidesHistory', 'RideController@getRidesHistory');
 Route::get('ride/getRidesHistoryCount/{userId}', 'RideController@getRidesHistoryCount');
 Route::post('ride/saveFeedback', 'RideController@saveFeedback');
 
-//falae routes
+// Falae routes
 Route::post('falae/sendMessage', 'FalaeController@sendMessage');
 
 // Site interface. Used by system admins
