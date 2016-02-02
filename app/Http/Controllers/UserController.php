@@ -219,7 +219,7 @@ class UserController extends Controller
 		}
 
 		$idUFRJ = $user->id_ufrj;
-		if ($idUFRJ == null || $idUFRJ != '') {
+		if ($idUFRJ == null || $idUFRJ == '') {
 			return response()->json(['error'=>'User does not have an Intranet identification.'], 403);
 		}
 
