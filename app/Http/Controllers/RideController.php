@@ -248,7 +248,7 @@ class RideController extends Controller
 		$driver = Ride::find($decode->rideId)->users()->where('status', 'driver')->first(); //get ride's driver
 		if (!empty($driver->gcm_token)) { //if driver has gcm token, send notification to him
 			$data = array( 	'message' 	=> "Sua carona recebeu uma solicitação",
-							'msgType' 	=> "joinRequest"
+							'msgType' 	=> "joinRequest",
 							'rideId'	 	=> $decode->rideId
 						 );
 
