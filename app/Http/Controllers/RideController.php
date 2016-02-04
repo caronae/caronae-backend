@@ -249,6 +249,7 @@ class RideController extends Controller
 		if (!empty($driver->gcm_token)) { //if driver has gcm token, send notification to him
 			$data = array( 	'message' 	=> "Sua carona recebeu uma solicitação",
 							'msgType' 	=> "joinRequest"
+							'rideId'	 	=> $decode->rideId
 						 );
 
 			$resultGcm = PostGCM::sendNotification($driver->gcm_token, $data);
