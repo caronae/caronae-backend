@@ -73,13 +73,13 @@
                     render: function ( data, type, full, meta ) {
                         var action, message, buttonLabel, glyphicon, btnType;
                         if(getQueryParameterByName('banned')){
-                            action = url('admin/usuario/'+data+'/desbanir');
+                            action = url('admin/user/'+data+'/unban');
                             message = "Deseja mesmo desbanir esse usuario?";
                             buttonLabel = 'Desbanir';
                             glyphicon = "ok-circle";
                             btnType = "success";
                         } else {
-                            action = url('admin/usuario/'+data+'/banir');
+                            action = url('admin/user/'+data+'/banish');
                             message = "Deseja mesmo banir esse usuario?";
                             buttonLabel = 'Banir';
                             glyphicon = "ban-circle";
