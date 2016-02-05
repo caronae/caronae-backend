@@ -15,13 +15,13 @@ class AdminController extends Controller
     }
 
     public function getEdit(){
-        $data['admin'] = Admin::find(1);
+        $data['admin'] = Admin::first();
         return view('admin.edit')->with($data);
     }
 
     public function postEdit(AdminEditRequest $request)
     {
-        $admin = Admin::find(1);
+        $admin = Admin::first();
 
         $admin->fill($request->all());
 
