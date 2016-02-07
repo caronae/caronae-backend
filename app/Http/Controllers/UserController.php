@@ -25,6 +25,7 @@ class UserController extends Controller
 		$user->token = $token;
 		$user->profile = "Perfil padrão";
 		$user->course = "Curso padrão";
+		$user->id_ufrj = "";
 
 		$user->save();
 		
@@ -87,9 +88,10 @@ class UserController extends Controller
 	
     public function login(Request $request) {
         $decode = json_decode($request->getContent());
-        $user = User::where('token', $decode->token)->first();
+		$matchThese = ['token' => $decode->token, 'id_ufrj' => $decode->id_ufrj];
+        $user = User::where($matchThese)->first();
 		if ($user == null) {
-			return response()->json(['error'=>'User token not authorized.'], 403);
+			return response()->json(['error'=>'User not found with provided credentials.'], 403);
 		}
 		
 		//get user's rides as driver
