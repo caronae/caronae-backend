@@ -36,6 +36,9 @@ class UserController extends Controller
 		if (User::where('token', $token)->count() > 0) {
 			return response()->json(['error'=>'User token already exists.'], 409);
 		}
+		if (User::where('id_ufrj', $idUFRJ)->count() > 0) {
+			return response()->json(['error'=>'User id_ufrj already exists.'], 409);
+		}
 
 		$context = stream_context_create(['http' => ['timeout' => 2]]);
 		$intranetResponseJSON = @file_get_contents('http://146.164.2.117:9200/_search?q=IdentificacaoUFRJ:' . $idUFRJ, FILE_TEXT, $context);
