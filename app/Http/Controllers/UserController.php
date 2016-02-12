@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\ExcelExporter;
-use Illuminate\Http\Request;
-
+use App\ExcelExport\ExcelExporter;
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\User;
-
 use Facebook;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {

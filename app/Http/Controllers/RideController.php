@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\ExcelExporter;
+use App\ExcelExport\ExcelExporter;
+use App\Http\PostGCM;
+use App\Http\Requests;
 use App\Http\Requests\RankingRequest;
+use App\Ride;
+use App\RideUser;
+use App\User;
+use DateInterval;
+use DateTime;
 use DB;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\Ride;
-use App\User;
-use App\RideUser;
-use App\Http\PostGCM;
-
-use \DateTime;
-use \DateInterval;
 
 class RideController extends Controller
 {

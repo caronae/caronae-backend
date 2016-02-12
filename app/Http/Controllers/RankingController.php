@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\ExcelExporter;
+use App\ExcelExport\ExcelExporter;
 use App\Http\Requests\RankingRequest;
 use App\RankingService;
 use Carbon\Carbon;
-use DB;
 use Illuminate\Http\Request;
 
 class RankingController extends Controller
