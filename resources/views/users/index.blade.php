@@ -86,13 +86,13 @@
                             btnType= "warning";
                         }
                         return $('<div>' +
-                                '<form action="'+action+'" method="post" onsubmit="return confirm(\''+message+'\')">'+
-                                '<input type="hidden" name="_token" value="'+csrf_token()+'"/>'+
-                                '<button type="submit" class="btn btn-'+btnType+'">'+
-                                '<span class="glyphicon glyphicon-'+glyphicon+'"></span>' +
-                                buttonLabel+
-                                '</button>'+
-                                '</form>'+
+                                    '<form action="'+action+'" method="post" onsubmit="return confirm(\''+message+'\')">'+
+                                        '<input type="hidden" name="_token" value="'+csrf_token()+'"/>'+
+                                        '<button type="submit" class="btn btn-'+btnType+'">'+
+                                            '<span class="glyphicon glyphicon-'+glyphicon+'"></span>' +
+                                            buttonLabel+
+                                        '</button>'+
+                                    '</form>'+
                                 '</div>')
                                 .html()
                     }

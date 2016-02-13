@@ -22,7 +22,7 @@ class RankingController extends Controller
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
 
-        $data = with(new RankingService())->getUsersOrderedByBestFeedbackInPeriod($start, $end);
+        $data = (new RankingService())->getUsersOrderedByBestFeedbackInPeriod($start, $end);
         return $data;
     }
 
@@ -32,7 +32,7 @@ class RankingController extends Controller
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
 
-        $data = with(new RankingService())->getUsersOrderedByBestFeedbackInPeriod($start, $end);
+        $data = (new RankingService())->getUsersOrderedByBestFeedbackInPeriod($start, $end);
 
         (new ExcelExporter())->export('motoristas-melhor-avaliados',
             ['Nome', 'Perfil UFRJ', 'Curso', 'Caronas Dadas', 'Caronistas Levados', 'Feedback Positivo', 'Feedback Negativo', 'Sem Feedback', 'Reputação'],
@@ -52,7 +52,7 @@ class RankingController extends Controller
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
 
-        $data = with(new RankingService())->getUsersOrderedByRidesInPeriod($start, $end);
+        $data = (new RankingService())->getUsersOrderedByRidesInPeriod($start, $end);
         return $data;
     }
 
@@ -62,7 +62,7 @@ class RankingController extends Controller
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
 
-        $data = with(new RankingService())->getUsersOrderedByRidesInPeriod($start, $end);
+        $data = (new RankingService())->getUsersOrderedByRidesInPeriod($start, $end);
 
         (new ExcelExporter())->export('caronistas-com-mais-caronas',
             ['Nome', 'Perfil UFRJ', 'Curso', 'Caronas'],
@@ -82,7 +82,7 @@ class RankingController extends Controller
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
 
-        $data = with(new RankingService())->getDriversOrderedByRidesInPeriod($start, $end);
+        $data = (new RankingService())->getDriversOrderedByRidesInPeriod($start, $end);
         return $data;
     }
 
@@ -92,7 +92,7 @@ class RankingController extends Controller
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
 
-        $data = with(new RankingService())->getDriversOrderedByRidesInPeriod($start, $end);
+        $data = (new RankingService())->getDriversOrderedByRidesInPeriod($start, $end);
 
         (new ExcelExporter())->export('motoristas-com-mais-caronas',
             ['Nome', 'Perfil UFRJ', 'Curso', 'Carbono Economizado', 'Caronas'],
@@ -112,7 +112,7 @@ class RankingController extends Controller
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
 
-        $data = with(new RankingService())->getDriversOrderedByAverageOccupancyInPeriod($start, $end);
+        $data = (new RankingService())->getDriversOrderedByAverageOccupancyInPeriod($start, $end);
         return $data;
     }
 
@@ -122,7 +122,7 @@ class RankingController extends Controller
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
 
-        $data = with(new RankingService())->getDriversOrderedByAverageOccupancyInPeriod($start, $end);
+        $data = (new RankingService())->getDriversOrderedByAverageOccupancyInPeriod($start, $end);
 
         (new ExcelExporter())->export('motoristas-com-melhor-ocupacao-media',
             ['Nome', 'Perfil UFRJ', 'Curso', 'Caronas', 'Moda', 'Media'],
@@ -137,7 +137,7 @@ class RankingController extends Controller
 
         $end = Carbon::createFromFormat('d/m/Y', $request->get('end', Carbon::now()->format('d/m/Y')));
 
-        $view = view('carbonTax.index');
+        $view = view('carbon-tax.index');
 
         if($start->gt($end))
             return $view->with('taxa', null)->with('errou', 'O fim do período deve ser depois do começo do período.');
