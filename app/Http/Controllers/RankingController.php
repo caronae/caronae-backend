@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\ExcelExport\ExcelExporter;
 use App\Http\Requests\RankingRequest;
-use App\RankingService;
+use App\Services\RankingService;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class RankingController extends Controller
 {
@@ -129,21 +128,5 @@ class RankingController extends Controller
             $data,
             $request->get('type', 'xlsx')
         );
-    }
-
-    public function carbonTax(Request $request){
-
-        $start = Carbon::createFromFormat('d/m/Y', $request->get('start', Carbon::now()->subMonth()->format('d/m/Y')));
-
-        $end = Carbon::createFromFormat('d/m/Y', $request->get('end', Carbon::now()->format('d/m/Y')));
-
-        $view = view('carbon-tax.index');
-
-        if($start->gt($end))
-            return $view->with('taxa', null)->with('errou', 'O fim do período deve ser depois do começo do período.');
-
-        $taxa = (new RankingService)->getCarbonTaxSaved($start, $end);
-
-        return $view->with('taxa', $taxa);
     }
 }

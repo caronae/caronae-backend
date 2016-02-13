@@ -22,30 +22,11 @@
                 </ul>
             </div>
 
-            <form class="form-inline pull-right search-period-form">
-                <span>De:</span>
-                <input
-                        type="text"
-                        class="form-control period-start"
-                        value="{{ \Carbon\Carbon::now()->subMonth()->format('d/m/Y') }}"
-                        placeholder="esse dia"
-                        data-provide="datepicker"
-                >
-                <span>Até:</span>
-                <input
-                        type="text"
-                        class="form-control period-end"
-                        value="{{ \Carbon\Carbon::now()->format('d/m/Y') }}"
-                        placeholder="esse dia"
-                        data-provide="datepicker"
-                >
-
-                <button class="btn btn-primary">
-                    <span class="glyphicon glyphicon-search"></span>
-                    Mostrar
-                </button>
-
-            </form>
+            @include('includes.period-search-form', [
+                'formClass' => 'search-period-form',
+                'defaultStart' => \Carbon\Carbon::now()->subMonth()->format('d/m/Y'),
+                'defaultEnd' => \Carbon\Carbon::now()->format('d/m/Y')
+            ])
 
         </div>
 

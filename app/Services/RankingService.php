@@ -1,42 +1,12 @@
 <?php
 
-namespace App;
+namespace App\Services;
 
 use Carbon\Carbon;
 use DB;
 
-class RankingService
+class RankingService extends Service
 {
-
-    private function baseQuery(Carbon $periodStart, Carbon $periodEnd){
-        // this method returns a common base query that all other methods use.
-        return DB::table('users')
-            ->leftJoin('ride_user', function($join){
-                $join->on('users.id', '=', 'ride_user.user_id');
-
-            })->leftJoin('rides', function($join)  {
-                $join->on('ride_user.ride_id', '=', 'rides.id');
-            })
-            ->whereNull('users.deleted_at')
-            ->where('rides.done', '=', true)
-            ->where('rides.mydate', '>=', $periodStart->format("Y-m-d"))
-            ->where('rides.mydate', '<=', $periodEnd->format("Y-m-d"));
-    }
-
-    private function whenUserBecameADriver(){
-        return DB::raw("
-                (SELECT mydate
-                 FROM users as u
-                 JOIN ride_user ON users.id = ride_user.user_id
-                 JOIN rides ON rides.id = ride_user.ride_id
-                 WHERE u.id = users.id AND
-                       ride_user.status = 'driver' AND
-                       rides.done = true
-                 ORDER BY mydate ASC
-                 LIMIT 1
-                 )");
-    }
-
     public function getUsersOrderedByBestFeedbackInPeriod(Carbon $periodStart, Carbon $periodEnd)
     {
         /**
@@ -148,23 +118,5 @@ class RankingService
                 DB::raw('(select * from unnest(array_agg(caronistas)) as t group by t order by count(*) desc limit 1) as moda'),
                 DB::raw('round(AVG(caronistas), 2) as media')
             )->get();
-    }
-
-    public function getCarbonTaxSaved($periodStart, $periodEnd)
-    {
-        return $this->baseQuery($periodStart, $periodEnd)
-            ->leftJoin('neighborhoods', function($join){
-                $join->on('rides.myzone', '=', 'neighborhoods.zone');
-                $join->on('rides.neighborhood', '=', 'neighborhoods.name');
-            })
-
-            ->where('rides.mydate', '>=', $this->whenUserBecameADriver())
-
-            ->where('ride_user.status', '=', 'accepted')
-
-            ->select(
-                // 131 é um valor mágico. É a taxa media de carbono emitido por um carro no Brasil
-                DB::raw('SUM(neighborhoods.distance * 131) as carbono_economizado')
-            )->get()[0]->carbono_economizado;
     }
 }

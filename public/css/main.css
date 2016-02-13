@@ -5,3 +5,11 @@
 .table .alert {
     margin-bottom: 0;
 }
+
+.carbon-tax-saved span {
+    font-size: 3em;
+}
+
+.carbon-tax-nothing-saved {
+    margin-bottom: 2.5em;
+}

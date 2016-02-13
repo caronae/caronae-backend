@@ -73,7 +73,7 @@ Route::group(['middleware' => 'csrf'], function(){
         Route::get('rides.json', 'RideController@indexJson');
         Route::get('rides.excel', 'RideController@indexExcel');
 
-        Route::get('carbonTax', 'RankingController@carbonTax');
+        Route::get('carbonTax', 'CarbonTaxController@carbonTax');
 
         Route::get('logout', 'Auth\AuthController@getLogout');
 
