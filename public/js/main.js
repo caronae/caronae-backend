@@ -1,12 +1,5 @@
 $(function() {
 
-    var baseURL = '';
-	url = function(url){
-	    if(!baseURL) baseURL = $('head').data('url');
-
-	    return baseURL + '/' + url;
-	};
-
 	var token = '';
 	csrf_token = function(){
 		if(!token) token = $('head').data('token');
@@ -22,7 +15,7 @@ $(function() {
 	$.extend( true, $.fn.dataTable.defaults, {
 		"processing": true,
 		"language" : {
-			"url": url('vendor/DataTables/Portuguese-Brasil.json')
+			"url": routes.datatables.ptBrLanguageFile
 		}
 	} );
 

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\ExcelExport\ExcelExporter;
 use App\Http\Requests\RankingRequest;
 use App\Services\RankingService;
-use Carbon\Carbon;
 
 class RankingController extends Controller
 {
@@ -17,21 +16,12 @@ class RankingController extends Controller
 
     public function betterFeedbackJson(RankingRequest $request)
     {
-        $start = Carbon::createFromFormat('d/m/Y', $request->get('start'));
-
-        $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
-
-        $data = (new RankingService())->getUsersOrderedByBestFeedbackInPeriod($start, $end);
-        return $data;
+        return (new RankingService())->getUsersOrderedByBestFeedbackInPeriod($request->getDate('start'), $request->getDate('end'));
     }
 
     public function betterFeedbackExcel(RankingRequest $request)
     {
-        $start = Carbon::createFromFormat('d/m/Y', $request->get('start'));
-
-        $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
-
-        $data = (new RankingService())->getUsersOrderedByBestFeedbackInPeriod($start, $end);
+        $data = (new RankingService())->getUsersOrderedByBestFeedbackInPeriod($request->getDate('start'), $request->getDate('end'));
 
         (new ExcelExporter())->export('motoristas-melhor-avaliados',
             ['Nome', 'Perfil UFRJ', 'Curso', 'Caronas Dadas', 'Caronistas Levados', 'Feedback Positivo', 'Feedback Negativo', 'Sem Feedback', 'Reputação'],
@@ -47,21 +37,12 @@ class RankingController extends Controller
 
     public function greaterRidersJson(RankingRequest $request)
     {
-        $start = Carbon::createFromFormat('d/m/Y', $request->get('start'));
-
-        $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
-
-        $data = (new RankingService())->getUsersOrderedByRidesInPeriod($start, $end);
-        return $data;
+        return (new RankingService())->getUsersOrderedByRidesInPeriod($request->getDate('start'), $request->getDate('end'));
     }
 
     public function greaterRidersExcel(RankingRequest $request)
     {
-        $start = Carbon::createFromFormat('d/m/Y', $request->get('start'));
-
-        $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
-
-        $data = (new RankingService())->getUsersOrderedByRidesInPeriod($start, $end);
+        $data = (new RankingService())->getUsersOrderedByRidesInPeriod($request->getDate('start'), $request->getDate('end'));
 
         (new ExcelExporter())->export('caronistas-com-mais-caronas',
             ['Nome', 'Perfil UFRJ', 'Curso', 'Caronas'],
@@ -77,21 +58,12 @@ class RankingController extends Controller
 
     public function greaterDriversRidersJson(RankingRequest $request)
     {
-        $start = Carbon::createFromFormat('d/m/Y', $request->get('start'));
-
-        $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
-
-        $data = (new RankingService())->getDriversOrderedByRidesInPeriod($start, $end);
-        return $data;
+        return (new RankingService())->getDriversOrderedByRidesInPeriod($request->getDate('start'), $request->getDate('end'));
     }
 
     public function greaterDriversRidersExcel(RankingRequest $request)
     {
-        $start = Carbon::createFromFormat('d/m/Y', $request->get('start'));
-
-        $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
-
-        $data = (new RankingService())->getDriversOrderedByRidesInPeriod($start, $end);
+        $data = (new RankingService())->getDriversOrderedByRidesInPeriod($request->getDate('start'), $request->getDate('end'));
 
         (new ExcelExporter())->export('motoristas-com-mais-caronas',
             ['Nome', 'Perfil UFRJ', 'Curso', 'Carbono Economizado', 'Caronas'],
@@ -107,21 +79,12 @@ class RankingController extends Controller
 
     public function greaterAverageOccupancyJson(RankingRequest $request)
     {
-        $start = Carbon::createFromFormat('d/m/Y', $request->get('start'));
-
-        $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
-
-        $data = (new RankingService())->getDriversOrderedByAverageOccupancyInPeriod($start, $end);
-        return $data;
+        return (new RankingService())->getDriversOrderedByAverageOccupancyInPeriod($request->getDate('start'), $request->getDate('end'));
     }
 
     public function greaterAverageOccupancyExcel(RankingRequest $request)
     {
-        $start = Carbon::createFromFormat('d/m/Y', $request->get('start'));
-
-        $end = Carbon::createFromFormat('d/m/Y', $request->get('end'));
-
-        $data = (new RankingService())->getDriversOrderedByAverageOccupancyInPeriod($start, $end);
+        $data = (new RankingService())->getDriversOrderedByAverageOccupancyInPeriod($request->getDate('start'), $request->getDate('end'));
 
         (new ExcelExporter())->export('motoristas-com-melhor-ocupacao-media',
             ['Nome', 'Perfil UFRJ', 'Curso', 'Caronas', 'Moda', 'Media'],

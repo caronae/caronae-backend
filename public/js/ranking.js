@@ -5,11 +5,11 @@ $(function() {
     var $exportButtonCSV = $('.export-button-csv');
 
     $exportButton.on('click', function(){
-        document.location.href = getUrlExcel('xlsx');
+        document.location.href = routes.ranking.excel('xlsx', getPeriodStart(), getPeriodEnd());
     });
 
     $exportButtonCSV.on('click', function(){
-        document.location.href = getUrlExcel('csv');
+        document.location.href = routes.ranking.excel('csv', getPeriodStart(), getPeriodEnd());
     });
 
     var getPeriodStart = function () {
@@ -33,18 +33,14 @@ $(function() {
         hideError();
     });
 
-    var getUrl = function () {
-        return document.location.href + '.json' + '?start=' + getPeriodStart() + '&' + 'end=' + getPeriodEnd();
-    };
-
-    var getUrlExcel = function(type){
-        return document.location.href + '.excel' + '?' + 'type=' + type + '&' + 'start=' + getPeriodStart() + '&' + 'end=' + getPeriodEnd();
+    var getDatatablesDataURL = function() {
+        return routes.ranking.json(getPeriodStart(), getPeriodEnd());
     };
 
     $('.search-period-form').on('submit', function (event) {
         event.preventDefault();
         hideError();
-        $('.table').DataTable().ajax.url(getUrl()).load();
+        $('.table').DataTable().ajax.url(getDatatablesDataURL()).load();
     });
 
     var showFeedbackForResponse = function (response) {
@@ -61,7 +57,7 @@ $(function() {
 
     $.extend(true, $.fn.dataTable.defaults, {
         "ajax": {
-            'url': getUrl(),
+            'url': getDatatablesDataURL(),
             'dataSrc': '',
             'error': showFeedbackForResponse
         },

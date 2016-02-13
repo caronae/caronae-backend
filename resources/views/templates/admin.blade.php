@@ -108,6 +108,7 @@
 <script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js')}}"></script>
 <script type="text/javascript" src="{{ asset("vendor/DataTables/datatables.min.js") }}"></script>
 <script type="text/javascript" src="{{ asset("vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js") }}"></script>
+<script type="text/javascript" src="{{ asset("js/routes.js") }}"></script>
 <script type="text/javascript" src="{{ asset("js/main.js") }}"></script>
 @yield('js')
 </body>

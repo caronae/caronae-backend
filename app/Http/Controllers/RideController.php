@@ -490,76 +490,13 @@ class RideController extends Controller
 		return view('rides.index');
 	}
 
-	private function userStats($periodStart, $periodEnd){
-		return DB::table('users')
-			->join('ride_user', function($join){
-				$join->on('ride_user.user_id', '=', 'users.id');
-			})
-			->join('rides', function($join){
-				$join->on('ride_user.ride_id', '=', 'rides.id');
-			})
-			->join('neighborhoods', function($join){
-				$join->on('rides.myzone', '=', 'neighborhoods.zone');
-				$join->on('rides.neighborhood', '=', 'neighborhoods.name');
-			})
-			->where('ride_user.status', '=', 'driver')
-			->where('done', '=', true)
-			->where('rides.mydate', '>=', $periodStart)
-			->where('rides.mydate', '<=', $periodEnd)
-
-			->groupBy('users.id')
-
-			->select(
-				'users.id',
-				DB::raw('SUM(distance) as distancia_total'),
-				DB::raw('COUNT(*) as numero_de_caronas'),
-				DB::raw('(SUM(distance) / COUNT(*)) as distancia_media')
-			);
-	}
-
-	public function getRides($periodStart, $periodEnd){
-		$join = $this->userStats($periodStart, $periodEnd);
-
-		return Ride::join('neighborhoods', function($join){
-			$join->on('rides.myzone', '=', 'neighborhoods.zone');
-			$join->on('rides.neighborhood', '=', 'neighborhoods.name');
-		})
-			->join('ride_user', function($join){
-				$join->on('ride_user.ride_id', '=', 'rides.id');
-			})
-			->join('users', function($join){
-				$join->on('ride_user.user_id', '=', 'users.id');
-			})
-			->join(DB::raw('(' . $join->toSql() . ') as t1'), function($join){
-				$join->on('users.id' , '=', 't1.id');
-			})
-			->mergeBindings($join)
-			->where('ride_user.status', '=', 'driver')
-			->where('done', '=', true)
-			->where('rides.mydate', '>=', $periodStart)
-			->where('rides.mydate', '<=', $periodEnd)
-			->select('users.name as driver', 'users.course', 'mydate', 'mytime', 'myzone', 'neighborhood', 'going', 'distance',
-				't1.distancia_total',
-				't1.numero_de_caronas',
-				't1.distancia_media'
-			)
-			->orderBy('mydate', 'DESC')
-			->orderBy('mytime', 'DESC')
-			->get();
-	}
-
-	public function indexJson(RankingRequest $request){ // Essa view não é exatamente um ranking, mas reutilizar codigo é sempre bom
-		$start = $request->get('start');
-		$end = $request->get('end');
-
-		return $this->getRides($start, $end);
+	public function indexJson(RankingRequest $request){
+		// o RankingRequest está sendo usado para reutilizar código, mas isso tecnicamente não é um ranking
+		return Ride::getInPeriodWithUserInfo($request->getDate('start'), $request->getDate('end'));
 	}
 
 	public function indexExcel(RankingRequest $request){
-		$start = $request->get('start');
-		$end = $request->get('end');
-
-		$data = $this->getRides($start, $end);
+		$data = Ride::getInPeriodWithUserInfo($request->getDate('start'), $request->getDate('end'));
 
 		$data->each(function($el){
 			$place = $el->neighborhood . '/' . $el->myzone;

@@ -24,8 +24,8 @@ class RankingRequest extends Request
     public function rules()
     {
         return [
-            'start' => 'required|date_format:d/m/Y',
-            'end' => 'required|date_format:d/m/Y|after_or_equals:start'
+            'start' => ['required', 'date_format:'.$this->getDateFormat()],
+            'end' => ['required','date_format:'.$this->getDateFormat(),'after_or_equals:start']
         ];
     }
 

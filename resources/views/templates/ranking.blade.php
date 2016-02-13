@@ -24,8 +24,8 @@
 
             @include('includes.period-search-form', [
                 'formClass' => 'search-period-form',
-                'defaultStart' => \Carbon\Carbon::now()->subMonth()->format('d/m/Y'),
-                'defaultEnd' => \Carbon\Carbon::now()->format('d/m/Y')
+                'defaultStart' => \Carbon\Carbon::now()->subMonth(),
+                'defaultEnd' => \Carbon\Carbon::now()
             ])
 
         </div>

@@ -22,8 +22,8 @@ class CarbonTaxRequest extends Request
     public function rules()
     {
         return [
-            'start' => 'date_format:d/m/Y',
-            'end' => 'date_format:d/m/Y|after_or_equals:start'
+            'start' => 'date_format:'.$this->getDateFormat(),
+            'end' => ['date_format:'.$this->getDateFormat(), 'after_or_equals:start']
         ];
     }
 

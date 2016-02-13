@@ -10,8 +10,8 @@
             @include('includes.period-search-form', [
                 'formMethod' => 'get',
                 'formAction' => action("CarbonTaxController@carbonTax"),
-                'defaultStart' => old('start', $start->format('d/m/Y')),
-                'defaultEnd' => old('end', $end->format('d/m/Y'))
+                'defaultStart' => old('start', $start),
+                'defaultEnd' => old('end', $end)
             ])
 
         </div>
