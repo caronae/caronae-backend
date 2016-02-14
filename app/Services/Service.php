@@ -11,7 +11,7 @@ use DB;
  */
 class Service
 {
-    protected function baseQuery(Carbon $periodStart, Carbon $periodEnd){
+    protected function baseQueryWithAllUsers(Carbon $periodStart, Carbon $periodEnd){
         return DB::table('users')
             ->leftJoin('ride_user', function($join){
                 $join->on('users.id', '=', 'ride_user.user_id');
@@ -19,10 +19,14 @@ class Service
             })->leftJoin('rides', function($join)  {
                 $join->on('ride_user.ride_id', '=', 'rides.id');
             })
-            ->whereNull('users.deleted_at')
             ->where('rides.done', '=', true)
             ->where('rides.mydate', '>=', $periodStart->format("Y-m-d"))
             ->where('rides.mydate', '<=', $periodEnd->format("Y-m-d"));
+    }
+
+    protected function baseQuery(Carbon $periodStart, Carbon $periodEnd){
+        return $this->baseQueryWithAllUsers($periodStart, $periodEnd)
+            ->whereNull('users.deleted_at');
     }
 
     protected function whenUserBecameADriver(){

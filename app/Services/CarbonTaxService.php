@@ -8,7 +8,7 @@ class CarbonTaxService extends Service
 {
     public function getCarbonTaxSaved($periodStart, $periodEnd)
     {
-        return $this->baseQuery($periodStart, $periodEnd)
+        return $this->baseQueryWithAllUsers($periodStart, $periodEnd)
             ->leftJoin('neighborhoods', function($join){
                 $join->on('rides.myzone', '=', 'neighborhoods.zone');
                 $join->on('rides.neighborhood', '=', 'neighborhoods.name');
