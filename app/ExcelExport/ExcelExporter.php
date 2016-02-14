@@ -9,7 +9,7 @@ use Maatwebsite\Excel\Readers\LaravelExcelReader;
 
 class ExcelExporter
 {
-    public function export($name, $headers, $data, $type){
+    public function exportBase($name, $headers, $data, $type, $sheetCallback){
         $excel = new Excel(
             app(PHPExcel::class),
             app(LaravelExcelReader::class),
@@ -17,16 +17,28 @@ class ExcelExporter
             app(LaravelExcelWriterWithBetterCSVSupport::class)
         );
 
-        $excel->create('caronae-'.$name, function($document) use($data, $name, $headers) {
-            $document->sheet(str_limit($name, 27), function ($sheet) use ($data, $headers) {
-                // resolve o problema de os elementos serem stdClass ao invés de array
-                $data = array_map(function ($el) {
-                    return (array)$el;
-                }, $data);
-
-                array_unshift($data, $headers);
-                $sheet->fromArray($data);
-            });
+        $excel->create('caronae-'.$name, function($document) use($data, $name, $headers, $sheetCallback) {
+            $document->sheet(str_limit($name, 27), $sheetCallback);
         })->export($type);
+    }
+
+    public function export($name, $headers, $data, $type){
+        $this->exportBase($name, $headers, $data, $type, function ($sheet) use ($data, $headers) {
+            // resolve o problema de os elementos serem stdClass ao invés de array
+            $data = array_map(function ($el) {
+                return (array)$el;
+            }, $data);
+
+            array_unshift($data, $headers);
+            $sheet->fromArray($data);
+        });
+    }
+
+    public function exportWithBlade($name, $view, $headers, $data, $type){
+        $this->exportBase($name, $headers, $data, $type, function ($sheet) use ($data, $headers, $view) {
+
+            $sheet->loadView($view, ['data' => $data]);
+
+        });
     }
 }

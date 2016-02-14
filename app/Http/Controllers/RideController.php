@@ -498,31 +498,7 @@ class RideController extends Controller
 	public function indexExcel(RankingRequest $request){
 		$data = Ride::getInPeriodWithUserInfo($request->getDate('start'), $request->getDate('end'));
 
-		$data->each(function($el){
-			$place = $el->neighborhood . '/' . $el->myzone;
-			$from = $el->going ? $place : "Fundão";
-			$to = $el->going ? "Fundão" : $place;
-			$distance = $el->distance;
-			$distancia_total = $el->distancia_total;
-			$numero_de_caronas = $el->numero_de_caronas;
-			$distancia_media = $el->distancia_media;
-			// manipula a ordem dos atributos para ficarem corretas em relação aos headers da tabela
-			unset($el->myzone);
-			unset($el->neighborhood);
-			unset($el->going);
-			unset($el->distance);
-			unset($el->distancia_total);
-			unset($el->numero_de_caronas);
-			unset($el->distancia_media);
-			$el->from = $from;
-			$el->to = $to;
-			$el->distance = $distance;
-			$el->distancia_total = $distancia_total;
-			$el->numero_de_caronas = $numero_de_caronas;
-			$el->distancia_media = $distancia_media;
-		});
-
-		(new ExcelExporter())->export('caronas-dadas',
+		(new ExcelExporter())->exportWithBlade('caronas-dadas', 'rides.excel-export-sheet',
 			['Motorista', 'Curso', 'Data', 'Hora', 'Origem', 'Destino', 'Distancia', 'Distancia Total', 'Total de Caronas', 'Distancia Média'],
 			$data->toArray(),
 			$request->get('type', 'xlsx')
