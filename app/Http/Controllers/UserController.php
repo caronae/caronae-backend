@@ -49,11 +49,10 @@ class UserController extends Controller
 		// Check if we received the expected result with a hit
 		if ($intranetResponse->hits->hits && count($intranetResponse->hits->hits) > 0) {
 			$intranetUser = $intranetResponse->hits->hits[0]->_source;
-			$intranetUserType = $intranetResponse->hits->hits[0]->_type;
 
 			// Check if the extracted user has all required fields
 			if (!isset($intranetUser->nome) || !isset($intranetUser->nomeCurso) || 
-				!isset($intranetUser->situacaoMatricula) || !$intranetUserType) {
+				!isset($intranetUser->situacaoMatricula) || !isset($intranetUser->nivel)) {
 				return response()->json(['error'=>'Unexpected response from intranet.'], 500);
 			}
 
@@ -70,8 +69,16 @@ class UserController extends Controller
 		$user->name = mb_convert_case($intranetUser->nome, MB_CASE_TITLE, "UTF-8");
 		$user->token = $token;
 		$user->id_ufrj = $idUFRJ;
-		$user->profile = ucfirst($intranetUserType);
 		$user->course = $intranetUser->nomeCurso;
+		if ($intranetUser->alunoServidor == "1") {
+			$user->profile = "Servidor";
+		} else {
+			if ($intranetUser->nivel == "Graduação") {
+				$user->profile = "Aluno";				
+			} else {
+				$user->profile = $intranetUser->nivel;
+			}			
+		}
 
 		if (isset($intranetUser->urlFoto) && $intranetUser->urlFoto != '') {
 			list($photoHost, $photoHash) = explode('/',$intranetUser->urlFoto);
