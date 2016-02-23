@@ -160,7 +160,7 @@ class RideController extends Controller
 		}
 		
 		//query the rides
-		$rides = Ride::where('mydate', '>=', new DateTime('today'))->orderBy('mydate', 'asc')->take(50)->get();
+		$rides = Ride::where('mydate', '>=', new DateTime('today'))->where('done', false)->orderBy('mydate', 'asc')->take(50)->get();
 		
 		$results = [];
 		foreach($rides as $ride) {
