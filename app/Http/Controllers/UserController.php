@@ -73,11 +73,7 @@ class UserController extends Controller
 		if ($intranetUser->alunoServidor == "1") {
 			$user->profile = "Servidor";
 		} else {
-			if ($intranetUser->nivel == "Graduação") {
-				$user->profile = "Aluno";				
-			} else {
-				$user->profile = $intranetUser->nivel;
-			}			
+			$user->profile = $intranetUser->nivel;
 		}
 
 		if (isset($intranetUser->urlFoto) && $intranetUser->urlFoto != '') {
