@@ -19,7 +19,6 @@ class CreateUsersTable extends Migration
             $table->string('car_color')->nullable();
             $table->string('car_plate')->nullable();
             $table->string('token')->nullable();
-            $table->rememberToken();
             $table->timestamps();
         });
     }
