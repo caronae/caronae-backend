@@ -163,7 +163,7 @@ class RideController extends Controller
 		$rideIdList = $user->rides()->where($matchThese)->lists('ride_id');
 		
 		RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
-		Ride::whereIn('id', $rideIdList)->forceDelete(); //delete all relationships with the rides first
+		Ride::whereIn('id', $rideIdList)->forceDelete();
     }
 
     public function listAll(Request $request) {
