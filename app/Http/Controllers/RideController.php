@@ -152,6 +152,18 @@ class RideController extends Controller
 		
 		$ride->forceDelete();
     }
+	
+	public function deleteAllFromUser($userId) {
+		$user = User::find($userId);
+		if ($user == null) {
+			return response()->json(['error'=>'User not found with id ' . $userId], 400);
+		}
+		
+		$rideIdList = $user->rides()->where('status', 'driver')->lists('ride_id');
+		
+		RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
+		Ride::whereIn('id', $rideIdList)->forceDelete(); //delete all relationships with the rides first
+    }
 
     public function listAll(Request $request) {
 		$user = User::where('token', $request->header('token'))->first();
