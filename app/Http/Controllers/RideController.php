@@ -52,7 +52,7 @@ class RideController extends Controller
 		$user->rides()->attach($ride->id, ['status' => 'driver']);
 
 		// Check if ride generates a routine and create future events
-		if ($decode->week_days != "") {
+		if ($decode->week_days != "") {			
 			$initial_date = $mydate->setTime(0,0,0);
 			$repeats_until = $repeats_until->setTime(23,59,59);
 			// Convert week days string (e.g. 1,3,5 for mon, wed and fri) to array
@@ -139,17 +139,20 @@ class RideController extends Controller
 				$repeating_ride_date = $repeating_ride_date->add(new DateInterval('P' . $repeating_intervals[$repeating_ride_date_week_day] .  'D'));
 			} while ($repeating_ride_date <= $repeats_until);
 		}
+
+		$ride->routine_id = $ride->id;
+		$ride->save();
 				
 		return $rides_created;
     }
 	
 	public function delete($rideId) {
-        RideUser::where('ride_id', $rideId)->delete(); //delete all relationships with this ride first
-        $ride = Ride::find($rideId);
+		$ride = Ride::find($rideId);
 		if ($ride == null) {
 			return response()->json(['error'=>'ride not found with id = ' . $rideId], 400);
 		}
-		
+
+		RideUser::where('ride_id', $rideId)->delete(); //delete all relationships with this ride first
 		$ride->forceDelete();
     }
 	
@@ -164,6 +167,14 @@ class RideController extends Controller
 		
 		RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
 		Ride::whereIn('id', $rideIdList)->forceDelete();
+    }
+	
+	public function deleteAllFromRoutine($routineId) {
+		$matchThese = ['routine_id' => $routineId, 'done' => false];
+		$rideIdList = Ride::where($matchThese)->lists('id');
+	
+		RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
+		Ride::where($matchThese)->forceDelete();
     }
 
     public function listAll(Request $request) {
