@@ -147,34 +147,46 @@ class RideController extends Controller
     }
 	
 	public function delete($rideId) {
-		$ride = Ride::find($rideId);
-		if ($ride == null) {
-			return response()->json(['error'=>'ride not found with id = ' . $rideId], 400);
-		}
+        DB::transaction(function($rideId) use ($rideId) {
 
-		RideUser::where('ride_id', $rideId)->delete(); //delete all relationships with this ride first
-		$ride->forceDelete();
+			$ride = Ride::find($rideId);
+			if ($ride == null) {
+				return response()->json(['error'=>'ride not found with id = ' . $rideId], 400);
+			}
+
+			RideUser::where('ride_id', $rideId)->delete(); //delete all relationships with this ride first
+			$ride->forceDelete();
+
+        });
     }
 	
 	public function deleteAllFromUser($userId) {
-		$user = User::find($userId);
-		if ($user == null) {
-			return response()->json(['error'=>'User not found with id ' . $userId], 400);
-		}
-		
-		$matchThese = ['status' => 'driver', 'done' => false];
-		$rideIdList = $user->rides()->where($matchThese)->lists('ride_id');
-		
-		RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
-		Ride::whereIn('id', $rideIdList)->forceDelete();
+        DB::transaction(function($userId) use ($userId) {
+
+			$user = User::find($userId);
+			if ($user == null) {
+				return response()->json(['error'=>'User not found with id ' . $userId], 400);
+			}
+			
+			$matchThese = ['status' => 'driver', 'done' => false];
+			$rideIdList = $user->rides()->where($matchThese)->lists('ride_id');
+			
+			RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
+			Ride::whereIn('id', $rideIdList)->forceDelete();
+
+        });
     }
 	
 	public function deleteAllFromRoutine($routineId) {
-		$matchThese = ['routine_id' => $routineId, 'done' => false];
-		$rideIdList = Ride::where($matchThese)->lists('id');
-	
-		RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
-		Ride::where($matchThese)->forceDelete();
+        DB::transaction(function($routineId) use ($routineId) {
+
+			$matchThese = ['routine_id' => $routineId, 'done' => false];
+			$rideIdList = Ride::where($matchThese)->lists('id');
+		
+			RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
+			Ride::where($matchThese)->forceDelete();
+
+        });
     }
 
     public function listAll(Request $request) {
