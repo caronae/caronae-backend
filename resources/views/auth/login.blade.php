@@ -4,7 +4,7 @@
 <div class="form-top">
     <div class="form-top-left">
         <h3>Faça login na área administrativa</h3>
-        <p>Digite o seu nome de usuário e senha para acessar:</p>
+        <p>Digite o seu email e senha para acessar:</p>
     </div>
     <div class="form-top-right">
         <i class="fa fa-lock"></i>
@@ -20,7 +20,7 @@
         </div>
         <div class="form-group">
             <label class="sr-only" for="password">Senha</label>
-            <input type="password" name="password" placeholder="Password..." class="form-password form-control" id="password">
+            <input type="password" name="password" placeholder="Senha..." class="form-password form-control" id="password">
         </div>
         <button type="submit" class="btn">Login</button>
     </form>
