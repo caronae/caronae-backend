@@ -36,13 +36,33 @@ Route::post('falae/sendMessage', 'FalaeController@sendMessage');
 
 // Site interface. Used by system admins
 
+Route::get('static_pages/sobre.html', function(){
+    return view('static_pages/sobre');
+});
+Route::get('static_pages/termos.html', function(){
+    return view('static_pages/termos');
+});
+
 Route::group(['middleware' => 'csrf'], function(){
+
+    // Public site interface
 
     Route::get('/', [
         'as' => 'home',
         'middleware' => 'auth',
         'uses' => 'AdminController@getIndex'
     ]);
+
+    Route::get('auth/login', 'Auth\AuthController@getLogin');
+    Route::post('auth/login', 'Auth\AuthController@postLogin');
+
+    Route::get('password/email', 'Auth\PasswordController@getEmail');
+    Route::post('password/email', 'Auth\PasswordController@postEmail');
+
+    Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
+    Route::post('password/reset', 'Auth\PasswordController@postReset');
+
+    // Administrative pages
 
     Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 
@@ -80,15 +100,6 @@ Route::group(['middleware' => 'csrf'], function(){
         Route::get('logout', 'Auth\AuthController@getLogout');
 
     });
-
-    Route::get('auth/login', 'Auth\AuthController@getLogin');
-    Route::post('auth/login', 'Auth\AuthController@postLogin');
-
-    Route::get('password/email', 'Auth\PasswordController@getEmail');
-    Route::post('password/email', 'Auth\PasswordController@postEmail');
-
-    Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
-    Route::post('password/reset', 'Auth\PasswordController@postReset');
 
 });
 

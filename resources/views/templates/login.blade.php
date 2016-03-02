@@ -23,6 +23,16 @@
 
 <body>
 
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-2 header-line brown"></div>
+        <div class="col-xs-2 header-line blue"></div>
+        <div class="col-xs-2 header-line pink"></div>
+        <div class="col-xs-2 header-line green"></div>
+        <div class="col-xs-2 header-line orange"></div>
+        <div class="col-xs-2 header-line red"></div>
+    </div>
+</div>
 <!-- Top content -->
 <div class="top-content">
 
@@ -30,10 +40,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2 text">
-                    <h1>
-                        <strong>Caronaê</strong>
-                        Admin
-                    </h1>
+                    <img src="{{ asset("images/logo_caronae_with_text.png") }}">
                 </div>
             </div>
             <div class="row">
@@ -50,9 +57,10 @@
 <!-- Javascript -->
 <script type="text/javascript" src="{{ asset('vendor/jquery-2.1.4.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset("vendor/DataTables/datatables.min.js") }}"></script>
-<script type="text/javascript" src="{{ asset("vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js") }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/DataTables/datatables.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/jquery.backstretch.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset("js/routes.js") }}"></script>
 <script type="text/javascript" src="{{ asset('js/main.js') }}"></script>
 
 </body>

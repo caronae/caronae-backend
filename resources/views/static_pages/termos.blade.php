@@ -1,12 +1,13 @@
+<html>
 <head>
   <meta charset="utf-8">
   <title>Termos de Uso</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="Webflow">
-  <link rel="stylesheet" type="text/css" href="css/normalize.css">
-  <link rel="stylesheet" type="text/css" href="css/webflow.css">
-  <link rel="stylesheet" type="text/css" href="css/caronae.webflow.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{ asset("css/normalize.css") }}">
+  <link rel="stylesheet" type="text/css" href="{{ asset("css/webflow.css") }}">
+  <link rel="stylesheet" type="text/css" href="{{ asset("css/caronae.webflow.css") }}">
+  <script src="{{ asset("js/webfont_1.4.7.js") }}"></script>
   <script>
     WebFont.load({
       google: {
@@ -14,7 +15,7 @@
       }
     });
   </script>
-  <script type="text/javascript" src="js/modernizr.js"></script>
+  <script type="text/javascript" src="{{ asset("js/modernizr.js") }}"></script>
   <style>
     .pergunta-title{
         cursor:pointer;
@@ -32,7 +33,7 @@
       <div class="w-col w-col-2 w-col-small-2 w-col-tiny-2 header-line red"></div>
     </div>
     <div class="w-container">
-      <a href="#top" class="w-nav-brand logo"><img src="images/caronae-logo.png">
+      <a href="#top" class="w-nav-brand logo"><img src="{{ asset("images/logo_caronae_with_text.png") }}">
       </a>
     </div>
     <h1 align="center">Termos de Uso</h1>
