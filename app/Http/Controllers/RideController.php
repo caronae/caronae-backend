@@ -160,15 +160,15 @@ class RideController extends Controller
         });
     }
 	
-	public function deleteAllFromUser($userId) {
-        DB::transaction(function($userId) use ($userId) {
+	public function deleteAllFromUser($userId, $going) {
+        DB::transaction(function()  use ($userId, $going) {
 
 			$user = User::find($userId);
 			if ($user == null) {
 				return response()->json(['error'=>'User not found with id ' . $userId], 400);
 			}
 			
-			$matchThese = ['status' => 'driver', 'done' => false];
+			$matchThese = ['status' => 'driver', 'going' => $going, 'done' => false];
 			$rideIdList = $user->rides()->where($matchThese)->lists('ride_id');
 			
 			RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
@@ -314,6 +314,12 @@ class RideController extends Controller
 		$rideUser->status = $decode->accepted ? 'accepted' : 'refused';
 		
 		$rideUser->save();
+		
+		//delete other requests from this user on the same 'date' and 'going'
+		$ride = Ride::find($decode->rideId);
+		$rideIdsList = Ride::where('mydate', $ride->mydate)->where('going', $ride->going)->get();
+		$matchThese = ['user_id' => $decode->userId, 'status' => 'pending'];
+		RideUser::where($matchThese)->whereIn('ride_id', $rideIdsList)->delete();
 		
 		//send notification
 		$user = User::find($rideUser->user_id);
