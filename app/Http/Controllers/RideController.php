@@ -315,12 +315,6 @@ class RideController extends Controller
 		
 		$rideUser->save();
 		
-		//delete other requests from this user on the same 'date' and 'going'
-		$ride = Ride::find($decode->rideId);
-		$rideIdsList = Ride::where('mydate', $ride->mydate)->where('going', $ride->going)->get();
-		$matchThese = ['user_id' => $decode->userId, 'status' => 'pending'];
-		RideUser::where($matchThese)->whereIn('ride_id', $rideIdsList)->delete();
-		
 		//send notification
 		$user = User::find($rideUser->user_id);
 		if (!empty($user->gcm_token)) { //if user has gcm token, send notification to him
