@@ -44,12 +44,12 @@
                     </li>
                     <li>
                         <a href="{{ action('RankingController@greaterRiders') }}">
-                            Caronistas com mais caronas
+                            Caronistas que pegam mais caronas
                         </a>
                     </li>
                     <li>
                         <a href="{{ action('RankingController@greaterDriversRiders') }}">
-                            Motoristas com mais caronas
+                            Motoristas que pegam mais caronas
                         </a>
                     </li>
                     <li>
