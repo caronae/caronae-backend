@@ -43,6 +43,7 @@
                 <tr>
                     <th>Nome</th>
                     <th>Perfil UFRJ</th>
+                    <th>Email</th>
                     <th>Curso</th>
                     <th>Bairro</th>
                     <th style="width: 73px">Ações</th>
@@ -64,6 +65,16 @@
             columns: [
                 {data: 'name'},
                 {data: 'profile'},
+                {
+                    data: 'email',
+                    render: function(data, type, full, meta) {
+                        return $('<a>')
+                                .attr('href', 'mailto:'+data)
+                                .attr('target', '_blank')
+                                .text(data)
+                               .prop('outerHTML');
+                    }
+                },
                 {data: 'course'},
                 {data: 'location'},
                 {

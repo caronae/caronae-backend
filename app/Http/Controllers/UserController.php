@@ -280,7 +280,7 @@ class UserController extends Controller
 	}
 
 	public function indexExcel(Request $request){
-		$query = User::select('name', 'profile', 'course', 'location');
+		$query = User::select('name', 'email', 'profile', 'course', 'location');
 
 		if($request->has('banned'))
 			$query = $query->onlyTrashed();
@@ -288,7 +288,7 @@ class UserController extends Controller
 		$data = $query->get()->toArray();
 
 		(new ExcelExporter())->export('usuarios',
-			['Nome', 'Perfil UFRJ', 'Curso', 'Bairro'],
+			['Nome', 'Email', 'Perfil UFRJ', 'Curso', 'Bairro'],
 			$data,
 			$request->get('type', 'xlsx')
 		);
