@@ -26,13 +26,13 @@
         <ul class="nav navbar-nav">
             <li>
                 <a href="{{ action('UserController@index') }}">
-                    <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                     Usuários
                 </a>
             </li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    <span class="glyphicon glyphicon-signal" aria-hidden="true"></span>
+                    <span class="glyphicon glyphicon-stats  " aria-hidden="true"></span>
                     Rankings de Usuarios
                     <span class="caret"></span>
                 </a>
@@ -61,13 +61,13 @@
             </li>
             <li>
                 <a href="{{ action('RideController@index') }}">
-                    <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                    <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
                     Caronas
                 </a>
             </li>
             <li>
                 <a href="{{ action('CarbonTaxController@carbonTax') }}">
-                    <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                    <span class="glyphicon glyphicon-leaf" aria-hidden="true"></span>
                     Taxa de Carbono
                 </a>
             </li>
