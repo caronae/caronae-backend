@@ -5,7 +5,7 @@
 @endsection
 
 @section('table')
-    <table class="table">
+    <table class="table table-hover">
         <thead>
         <tr>
             <th>Motorista</th>
@@ -41,7 +41,46 @@
                 return Math.round(data * 10) / 10 + ' Km';
             };
 
+            var showModal = function(riders){
+                var $modal = $('.modal-riders');
+
+                var $modalBody = $modal.find('.modal-body');
+                $modalBody.html('');
+                for(var i=0; i < riders.length; i++){
+                    var rider = riders[i];
+                    $modalBody
+                    .append(
+                        $('<p>')
+                        .append(rider.name)
+                        .append(' (')
+                        .append(
+                            $('<a>')
+                            .attr('href', "mailto:"+rider.email)
+                            .append(rider.email)
+                        )
+                        .append(')')
+                    );
+                }
+
+                $modal.modal();
+            };
+
+            $('table').on('click', 'tr.carona', function(){
+                var $this = $(this);
+                var rideId = $this.data('ride-id');
+
+                $this.addClass('loading');
+                $.get(routes.riders(rideId)).then(function(riders){
+                    showModal(riders);
+                    $this.removeClass('loading');
+                });
+            });
+
             $('.table').DataTable({
+                createdRow: function( row, data ) {
+                    $(row).addClass( 'carona' );
+                    $(row).attr('data-ride-id', data.id);
+                },
                 columns: [
                     {data: 'driver'},
                     {data: 'course'},
@@ -60,13 +99,13 @@
                             if(full.going)
                                 return  full.neighborhood + '/' + full.myzone;
                             else
-                                return 'Fundão';
+                                return 'Fundão/'+full.hub;
                         }
                     },
                     {
                         render: function ( data, type, full, meta ) {
                             if(full.going)
-                                return 'Fundão';
+                                return 'Fundão/'+full.hub;
                             else
                                 return  full.neighborhood + '/' + full.myzone;
                         }
@@ -77,6 +116,7 @@
                     },
                     {
                         data: 'distancia_total',
+                        className: 'start-of-driver-data',
                         render: formatDistance
                     },
                     {

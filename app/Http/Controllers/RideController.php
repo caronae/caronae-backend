@@ -540,4 +540,10 @@ class RideController extends Controller
 			$request->get('type', 'xlsx')
 		);
 	}
+
+	public function riders($rideId){
+		$ride = Ride::find($rideId);
+
+		return $ride->users()->where('status', 'accepted')->get();
+	}
 }

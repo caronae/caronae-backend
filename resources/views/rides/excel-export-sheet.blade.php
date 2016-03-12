@@ -37,10 +37,10 @@
                     {{ $row['mytime'] }}
                 </td>
                 <td>
-                    {{ $row['going'] ? $row['neighborhood'] . '/' . $row['myzone'] : "Fundão" }}
+                    {{ $row['going'] ? $row['neighborhood'] . '/' . $row['myzone'] : "Fundão/".$row['hub'] }}
                 </td>
                 <td>
-                    {{ $row['going'] ? "Fundão" : $row['neighborhood'] . '/' . $row['myzone'] }}
+                    {{ $row['going'] ? "Fundão/".$row['hub'] : $row['neighborhood'] . '/' . $row['myzone'] }}
                 </td>
                 <td>
                     {{ $row['distance'] }}

@@ -66,7 +66,7 @@ class Ride extends Model
             ->where('done', '=', true)
             ->where('rides.mydate', '>=', $periodStart)
             ->where('rides.mydate', '<=', $periodEnd)
-            ->select('users.name as driver', 'users.course', 'mydate', 'mytime', 'myzone', 'neighborhood', 'going', 'distance',
+            ->select('users.name as driver', 'users.course', 'rides.id', 'mydate', 'mytime', 'myzone', 'neighborhood', 'going', 'hub', 'distance',
                 't1.distancia_total',
                 't1.numero_de_caronas',
                 't1.distancia_media'

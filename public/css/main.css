@@ -13,3 +13,16 @@
 .carbon-tax-nothing-saved {
     margin-bottom: 2.5em;
 }
+
+/* usado na tabela de caronas para dividir dados da carona e dados do motorista */
+.table .start-of-driver-data {
+    border-left: 1px solid #DDD;
+}
+
+.table .carona {
+    cursor: pointer;
+}
+
+.table .carona.loading {
+    cursor: progress;
+}
