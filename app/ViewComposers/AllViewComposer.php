@@ -8,8 +8,9 @@ use Illuminate\Http\Request;
 class AllViewComposer
 {
     public function compose(View $view){
-        // allows the local override of $message during includes
-        // example: @include('view', ['message' => 'oi'])
+        // Permite que o valor de message seja sobreescrito
+        // em uma view no momento do include.
+        // Exemplo: @include('view', ['message' => 'oi'])
         if(!isset($view->getData()['message'])) {
             $view->with([
                 'message' => session()->get('message', '')

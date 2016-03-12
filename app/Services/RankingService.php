@@ -9,15 +9,6 @@ class RankingService extends Service
 {
     public function getUsersOrderedByBestFeedbackInPeriod(Carbon $periodStart, Carbon $periodEnd)
     {
-        /**
-         * Observações:
-         * - Só conta caso a ride esteja done
-         * - O usuario aparece se for motorista ou se não for, mas deu carona no intervalo.
-         *   esse tipo de usuario pode existir caso ele tenha desmarcado a opção de ser motorista no intervalo.
-         * - O numero de caronistas é contado a partir das pessoas que aceitaram ir. Não existe forma atualmente
-         *   de assegurar que a pessoa foi realmente ou de avisar que ela faltou a carona.
-         * - Não esquecer de sumir com usuarios banidos!
-         */
         $sub = $this->baseQuery($periodStart, $periodEnd)
             ->where('ride_user.status', '=', 'driver')
 
@@ -32,14 +23,14 @@ class RankingService extends Service
             );
 
         return DB::table(DB::raw('('.$sub->toSQL().') as t1'))
-            ->mergeBindings($sub)
+            ->mergeBindings($sub) // isso não é documentado pelo Laravel. É necessário para a subquery funcionar
             ->groupBy('id', 'name', 'course', 'profile')
             ->orderBy('reputacao', 'desc')
             ->select(
                 'name',
                 'course',
                 'profile',
-                DB::raw('COUNT(*) as caronas'), // contar rideId ajuda a não contar motoristas sem caronas como 1. Ele será NULL nesse caso
+                DB::raw('COUNT(*) as caronas'),
                 DB::raw('SUM(caronistas) as caronistas'),
                 DB::raw('SUM(feedback_positivo) as feedback_positivo'),
                 DB::raw('SUM(feedback_negativo) as feedback_negativo'),
@@ -115,6 +106,10 @@ class RankingService extends Service
                 'course',
                 'profile',
                 DB::raw('COUNT(*) as caronas'),
+                // Essa query foi feita porque a versão do Postgres do servidor da TIC era antiga
+                // e não possuia a função de Moda nativamente. Essa é a implementação de moda
+                // recomendada pelo Postgres aqui: https://wiki.postgresql.org/wiki/Aggregate_Mode#mode.28.29_for_Postgres_9.3_or_earlier_.28superseded_in_9.4.29
+                // e adaptada para o caso específico dessa query.
                 DB::raw('(select * from unnest(array_agg(caronistas)) as t group by t order by count(*) desc limit 1) as moda'),
                 DB::raw('round(AVG(caronistas), 2) as media')
             )->get();

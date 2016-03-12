@@ -13,7 +13,6 @@ class ExcelExporter
         $excel = new Excel(
             app(PHPExcel::class),
             app(LaravelExcelReader::class),
-            //app(\Maatwebsite\Excel\Writers\LaravelExcelWriter::class)
             app(LaravelExcelWriterWithBetterCSVSupport::class)
         );
 
@@ -29,6 +28,7 @@ class ExcelExporter
                 return (array)$el;
             }, $data);
 
+            // acrescenta os headers no topo
             array_unshift($data, $headers);
             $sheet->fromArray($data);
         });

@@ -85,17 +85,17 @@
                 columns: [
                     {data: 'driver'},
                     {data: 'course'},
-                    {
+                    { // data
                         render: function ( data, type, full, meta ) {
                             return formatDate(full.mydate);
                         }
                     },
-                    {
+                    { // hora
                         render: function ( data, type, full, meta ) {
                             return formatTime(full.mytime);
                         }
                     },
-                    {
+                    { // origem
                         render: function ( data, type, full, meta ) {
                             if(full.going)
                                 return  full.neighborhood + '/' + full.myzone;
@@ -103,7 +103,7 @@
                                 return 'Fundão/'+full.hub;
                         }
                     },
-                    {
+                    { // destino
                         render: function ( data, type, full, meta ) {
                             if(full.going)
                                 return 'Fundão/'+full.hub;

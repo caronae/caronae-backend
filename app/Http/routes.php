@@ -104,27 +104,3 @@ Route::group(['middleware' => 'csrf'], function(){
     });
 
 });
-
-//apenas para testes
-use App\Ride;
-use App\User;
-use App\RideUser;
-
-Route::get('clear/rideuser', function(){
-	DB::table('ride_user')->delete();
-});
-
-Route::get('clear/ride', function(){
-	DB::table('ride_user')->delete();
-	DB::table('rides')->delete();
-});
-
-Route::get('clear/user', function(){
-	DB::table('users')->delete();
-});
-
-Route::get('clear', function(){
-	DB::table('ride_user')->delete();
-	DB::table('rides')->delete();
-	DB::table('users')->delete();
-});

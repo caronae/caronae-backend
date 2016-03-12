@@ -5,13 +5,13 @@
     <title>Area Administrativa | Caronaê</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link href="{{ asset('vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/DataTables/datatables.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap-datepicker/css/bootstrap-datepicker3.css') }}" />
-    <link rel="stylesheet" href="{{ asset('css/templates/admin.css')}}">
-    <link rel="stylesheet" href="{{ asset('css/main.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/templates/admin.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css')}}">
 </head>
 <body>
 
@@ -32,7 +32,7 @@
             </li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    <span class="glyphicon glyphicon-stats  " aria-hidden="true"></span>
+                    <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
                     Rankings de Usuarios
                     <span class="caret"></span>
                 </a>
@@ -104,8 +104,8 @@
 </div>
 <!--  Rodapé -->
 
-<script src="{{ asset('vendor/jquery-2.1.4.min.js')}}"></script>
-<script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{ asset('vendor/jquery-2.1.4.min.js')}}"></script>
+<script type="text/javascript" src="{{ asset('vendor/bootstrap/js/bootstrap.min.js')}}"></script>
 <script type="text/javascript" src="{{ asset("vendor/DataTables/datatables.min.js") }}"></script>
 <script type="text/javascript" src="{{ asset("vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js") }}"></script>
 <script type="text/javascript" src="{{ asset("js/routes.js") }}"></script>

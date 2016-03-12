@@ -47,6 +47,7 @@
                     <th>Curso</th>
                     <th>Bairro</th>
                     <th style="width: 73px">Ações</th>
+                    <!-- Um nova coluna precisa ter seu td adicionado aqui -->
                 </tr>
             </thead>
         </table>
@@ -63,6 +64,14 @@
                 'dataSrc': ''
             },
             columns: [
+                /*
+                 * Para cada coluna, é preciso um objeto descrevendo ela.
+                 * Para só mostrar o valor, basta usar:
+                 * { data: 'valor' },
+                 *
+                 * Para casos mais complexos, siga os exemplos abaixo ou leia a documentação
+                 * do Datatables. Ex: https://datatables.net/reference/option/columns
+                 */
                 {data: 'name'},
                 {data: 'profile'},
                 {
@@ -96,16 +105,26 @@
                             glyphicon = "ban-circle";
                             btnType= "warning";
                         }
-                        return $('<div>' +
-                                    '<form action="'+action+'" method="post" onsubmit="return confirm(\''+message+'\')">'+
-                                        '<input type="hidden" name="_token" value="'+csrf_token()+'"/>'+
-                                        '<button type="submit" class="btn btn-'+btnType+'">'+
-                                            '<span class="glyphicon glyphicon-'+glyphicon+'"></span>' +
-                                            buttonLabel+
-                                        '</button>'+
-                                    '</form>'+
-                                '</div>')
-                                .html()
+                        return $('<form>')
+                                .attr('action', action)
+                                .attr('method', 'post')
+                                .attr('onsubmit', 'return confirm(\''+message+'\')')
+                                .append(
+                                    $('<input>')
+                                    .attr('type', 'hidden')
+                                    .attr('name', '_token')
+                                    .attr('value', csrf_token())
+                                )
+                                .append(
+                                    $('<button>')
+                                    .attr('type', 'submit')
+                                    .attr('class', 'btn btn-'+btnType)
+                                    .append(
+                                        $('<span>')
+                                        .attr('class', 'glyphicon glyphicon-'+glyphicon)
+                                    )
+                                    .append(buttonLabel)
+                                ).prop('outerHTML');
                     }
                 }
             ]

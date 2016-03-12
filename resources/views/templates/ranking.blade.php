@@ -30,6 +30,7 @@
 
         </div>
 
+        <!-- Div da mensagem de erro -->
         <div class="error-alert alert alert-danger alert-dismissible" role="alert" style="display: none">
             <button type="button" class="close" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
