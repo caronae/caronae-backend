@@ -12,8 +12,8 @@ Motoristas com maior ocupação média
         <th>Perfil UFRJ</th>
         <th>Curso</th>
         <th width="66px">Caronas</th>
-        <th width="66px">Moda</th>
-        <th width="80px">Média</th>
+        <th class="text-center" width="66px">Moda de Caronistas</th>
+        <th class="text-center" width="80px">Média de Caronistas</th>
     </tr>
     </thead>
 </table>

@@ -56,6 +56,7 @@
                         .append(
                             $('<a>')
                             .attr('href', "mailto:"+rider.email)
+                            .attr('target', '_blank')
                             .append(rider.email)
                         )
                         .append(')')

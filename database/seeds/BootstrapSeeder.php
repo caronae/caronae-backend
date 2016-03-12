@@ -63,7 +63,7 @@ class BootstrapSeeder extends Seeder
             ['zone' => 'Zona Oeste', 'name' => 'Camorim', 'distance' => 31.5],
             ['zone' => 'Zona Oeste', 'name' => 'Cidade de Deus', 'distance' => 21.7],
             ['zone' => 'Zona Oeste', 'name' => 'Curicica', 'distance' => 22.5],
-            ['zone' => 'Zona Oeste', 'name' => ' Freguesia de Jacarepaguá', 'distance' => 17.1],
+            ['zone' => 'Zona Oeste', 'name' => 'Freguesia de Jacarepaguá', 'distance' => 17.1],
             ['zone' => 'Zona Oeste', 'name' => 'Gardênia Azul', 'distance' => 20.6],
             ['zone' => 'Zona Oeste', 'name' => 'Grumari', 'distance' => 44.9],
             ['zone' => 'Zona Oeste', 'name' => 'Itanhangá', 'distance' => 31.9],

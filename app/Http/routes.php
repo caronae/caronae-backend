@@ -42,9 +42,6 @@ Route::get('static_pages/sobre.html', function(){
 Route::get('static_pages/termos.html', function(){
     return view('static_pages/termos');
 });
-Route::get('static_pages/faq.html', function(){
-    return "<p style='text-align:center;font-family:sans-serif'>Em construção</p>";
-});
 
 Route::group(['middleware' => 'csrf'], function(){
 
