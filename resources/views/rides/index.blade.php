@@ -38,6 +38,7 @@
             };
 
             var formatDistance = function ( data, type, full, meta ) {
+                if(data === null) return '<span title="Zona e/ou bairro com distância desconhecida.">?</span>';
                 return Math.round(data * 10) / 10 + ' Km';
             };
 
