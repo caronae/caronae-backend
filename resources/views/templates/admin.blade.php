@@ -5,7 +5,7 @@
     <title>Area Administrativa | Caronaê</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
     <link rel="icon" type="image/png" href="{{ asset('favicon-32x32.png') }}" sizes="32x32">
     <link rel="icon" type="image/png" href="{{ asset('favicon-96x96.png') }}" sizes="96x96">

@@ -268,6 +268,14 @@ button.remove, button.remove:hover {
 h2.token {
     font-size: 5em;
 }
+@media (max-device-width: 480px) {
+    h2.token {
+        font-size: 4em;
+    }
+    .inner-bg {
+        padding-top: 2em;
+    }
+}
 
 .header-line {
     height: 10px;
