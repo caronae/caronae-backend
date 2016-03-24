@@ -28,7 +28,7 @@ class BootstrapSeeder extends Seeder
             ['zone' => 'Centro', 'name' => 'Benfica', 'distance' => 6.8],
             ['zone' => 'Centro', 'name' => 'Caju', 'distance' => 6.3],
             ['zone' => 'Centro', 'name' => 'Catumbi', 'distance' => 12.6],
-            ['zone' => 'Centro', 'name' => 'Centro', 'distance' => 11.6],
+            ['zone' => 'Centro', 'name' => 'Centro (Bairro)', 'distance' => 11.6],
             ['zone' => 'Centro', 'name' => 'Cidade Nova', 'distance' => 9.8],
             ['zone' => 'Centro', 'name' => 'Estácio', 'distance' => 9.6],
             ['zone' => 'Centro', 'name' => 'Gamboa', 'distance' => 8.9],
@@ -196,13 +196,13 @@ class BootstrapSeeder extends Seeder
             ['zone' => 'Baixada', 'name' => 'Queimados', 'distance' => 45.1],
             ['zone' => 'Baixada', 'name' => 'São João de Meriti', 'distance' => 19.5],
             ['zone' => 'Baixada', 'name' => 'Seropédica', 'distance' => 61.4],
-            ['zone' => 'Grande Niteroi', 'name' => 'Niterói - Região oceânica', 'distance' => 32.5],
-            ['zone' => 'Grande Niteroi', 'name' => 'Niterói - Centro', 'distance' => 20.9],
-            ['zone' => 'Grande Niteroi', 'name' => 'São Gonçalo', 'distance' => 29.2],
-            ['zone' => 'Grande Niteroi', 'name' => 'Maricá', 'distance' => 61.3],
-            ['zone' => 'Grande Niteroi', 'name' => 'Itaboraí', 'distance' => 51.9],
-            ['zone' => 'Grande Niteroi', 'name' => 'Tanguá', 'distance' => 66.9],
-            ['zone' => 'Grande Niteroi', 'name' => 'Rio Bonito', 'distance' => 77.9]
+            ['zone' => 'Grande Niterói', 'name' => 'Região Oceânica (Niterói)', 'distance' => 32.5],
+            ['zone' => 'Grande Niterói', 'name' => 'Centro (Niterói)', 'distance' => 20.9],
+            ['zone' => 'Grande Niterói', 'name' => 'São Gonçalo', 'distance' => 29.2],
+            ['zone' => 'Grande Niterói', 'name' => 'Maricá', 'distance' => 61.3],
+            ['zone' => 'Grande Niterói', 'name' => 'Itaboraí', 'distance' => 51.9],
+            ['zone' => 'Grande Niterói', 'name' => 'Tanguá', 'distance' => 66.9],
+            ['zone' => 'Grande Niterói', 'name' => 'Rio Bonito', 'distance' => 77.9]
         ])->each(function($data){
             Neighborhood::create($data);
         });
