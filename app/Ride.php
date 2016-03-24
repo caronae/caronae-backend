@@ -41,7 +41,7 @@ class Ride extends Model
                 'users.id',
                 DB::raw('SUM(distance) as distancia_total'),
                 DB::raw('COUNT(*) as numero_de_caronas'),
-                DB::raw('(SUM(distance) / COUNT(*)) as distancia_media')
+                DB::raw('(SUM(distance) / COUNT(distance)) as distancia_media')
             );
     }
 
