@@ -214,6 +214,25 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
         $this->assertTrue($users[0]->carbono_economizado == 11266);
     }
 
+    public function testConsiderRidesToUndefinedPlaces()
+    {
+        $user = $this->getDriver();
+
+        $this->createRides($user, [
+            ['done' => true, 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
+            ['done' => true, 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
+            ['done' => true, 'myzone' => 'Baixada', 'neighborhood' => 'Magé'],
+            ['done' => true, 'myzone' => 'Zona Sul', 'neighborhood' => 'Catete'],
+            ['done' => true, 'myzone' => 'Outros', 'neighborhood' => 'Petrópolis'], // Outros/Petrópolis is not on database
+        ]);
+
+        $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
+
+        $this->assertTrue(count($users) == 1);
+        $this->assertTrue($users[0]->caronas == 5);
+        $this->assertTrue($users[0]->carbono_economizado == 11266);
+    }
+
     public function testConsiderOnlyDriversInPeriod()
     {
         $user = $this->getDriver(Carbon::maxValue()->format('Y-m-d'));

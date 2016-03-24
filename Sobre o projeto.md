@@ -62,7 +62,9 @@ A seguir segue a documentação do banco de dados:
 
 - migrations: Tabela usada pelo sistema de migrations do Laravel. Não mexer.
 
-- neighborhoods: Tabela que guarda todos os bairros do Rio de Janeiro.
+- neighborhoods: Tabela que guarda todos os bairros do Rio de Janeiro. Ela contém apenas
+                 os bairros conhecidos pelo app. É possível que nas caronas existam bairros/zonas
+                 que não estejam listadas aqui.
   - id: id do bairro.
   - name: Nome do bairro.
   - zone: Zona da cidade do Rio de Janeiro a qual o bairro pertence.
@@ -94,8 +96,10 @@ A seguir segue a documentação do banco de dados:
 
 - rides: Tabela que contém todas as caronas.
   - id: Id da carona.
-  - myzone: Zona da cidade do Rio de Janeiro da qual o bairro em 'neighborhood' pertence.
-  - neighborhood: Bairro da cidade do Rio de Janeiro para o qual está indo ou do qual está saindo.
+  - myzone: Zona da cidade do Rio de Janeiro da qual o bairro em 'neighborhood' pertence. Pode conter
+            valores que não estão listados na tabela 'neighborhoods'.
+  - neighborhood: Bairro da cidade do Rio de Janeiro para o qual está indo ou do qual está saindo. Pode conter
+                  valores que não estão listados na tabela 'neighborhoods'.
   - going: TRUE, se está indo para o fundão. FALSE, se está saindo.
   - place: ??
   - route: Descrição livre dos pontos por onde essa carona passa.
@@ -119,7 +123,8 @@ A seguir segue a documentação do banco de dados:
   - created_at: ??
   - updated_at: ??
   - status: Determina se o usuario relacionado é motorista da carona(valor "driver"), se pediu para entrar na carona
-            mas ainda não foi aceito ("pending"), se foi aceito(valor "accepted") ou se foi recusado(valor "??").
+            mas ainda não foi aceito ("pending"), se foi aceito(valor "accepted"), se foi aceito mas saiu(valor "quit")
+            ou se foi recusado(valor "refused").
   - feedback: Feedback do caronista sobre a carona. Pode ser positivo(valor "good") ou negativo(valor "bad").
               Pode ser vazio caso o usuario relacionado seja motorista da carona ou o feedback não tenha sido dado.
 

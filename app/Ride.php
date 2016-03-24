@@ -26,7 +26,7 @@ class Ride extends Model
             ->join('rides', function($join){
                 $join->on('ride_user.ride_id', '=', 'rides.id');
             })
-            ->join('neighborhoods', function($join){
+            ->leftJoin('neighborhoods', function($join){
                 $join->on('rides.myzone', '=', 'neighborhoods.zone');
                 $join->on('rides.neighborhood', '=', 'neighborhoods.name');
             })
@@ -48,7 +48,7 @@ class Ride extends Model
     public static function getInPeriodWithUserInfo(Carbon $periodStart, Carbon $periodEnd){
         $join = self::userStats($periodStart, $periodEnd);
 
-        return Ride::join('neighborhoods', function($join){
+        return Ride::leftJoin('neighborhoods', function($join){
             $join->on('rides.myzone', '=', 'neighborhoods.zone');
             $join->on('rides.neighborhood', '=', 'neighborhoods.name');
         })
