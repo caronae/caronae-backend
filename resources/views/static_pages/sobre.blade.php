@@ -1,9 +1,9 @@
 <head>
   <meta charset="utf-8">
   <title>Sobre o Caronaê</title>
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/normalize.css") }}>
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/webflow.css") }}>
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/caronae.webflow.css") }}>
+  <link rel="stylesheet" type="text/css" href="{{ asset("css/normalize.css") }}">
+  <link rel="stylesheet" type="text/css" href="{{ asset("css/webflow.css") }}">
+  <link rel="stylesheet" type="text/css" href="{{ asset("css/caronae.webflow.css") }}">
 </head>
 <body class="landing-page">
     <div class="w-row lines-container">
@@ -23,7 +23,7 @@
 	Aplicativo Android desenvolvido por:<br>
 	<a href="http://www.github.com/leomarques">Leonardo Miranda Marques</a><br><br>
 	Aplicativo iOS desenvolvido por:<br>
-	<a href="http://meriw.xyz">Mário Alberto Cecchi</a><br>
+	<a href="http://meriw.xyz">Mario Cecchi</a><br>
 	<br><br>
 	Criado por alunos da UFRJ, o Caronaê é um aplicativo exclusivo à comunidade UFRJ, com pontos de carona que facilitam o encontro entre motoristas e caroneiros. O aplicativo tem como objetivo facilitar o acesso dos alunos à Cidade Universitária, catalisando os motoristas e demais tripulantes em um serviço digital simples e eficiente. Os dez pontos de carona estão espalhados pelo campus, posicionados em locais de visibilidade, próximos aos acessos dos estacionamentos. 
       <br><br>O acesso ao Caronaê é integrado aos bancos de dados da UFRJ, o que garante segurança e confiabilidade aos usuários - somente alunos, professores e demais funcionários podem utilizar o aplicativo. Depois de receber a liberação do acesso, o usuário checa as caronas disponíveis e decide a sua viagem ideal de acordo com o ponto de partida ou de destino.

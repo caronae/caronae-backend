@@ -1,9 +1,9 @@
 <head>
   <meta charset="utf-8">
   <title>Termos de Uso</title>
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/normalize.css") }}>
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/webflow.css") }}>
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/caronae.webflow.css") }}>
+  <link rel="stylesheet" type="text/css" href="{{ asset("css/normalize.css") }}">
+  <link rel="stylesheet" type="text/css" href="{{ asset("css/webflow.css") }}">
+  <link rel="stylesheet" type="text/css" href="{{ asset("css/caronae.webflow.css") }}">
 </head>
 <body class="landing-page">
     <div class="w-row lines-container">
