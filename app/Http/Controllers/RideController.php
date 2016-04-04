@@ -146,8 +146,17 @@ class RideController extends Controller
 		return $rides_created;
     }
 	
-	public function delete($rideId) {
-        DB::transaction(function($rideId) use ($rideId) {
+	public function delete(Request $request, $rideId) {
+        DB::transaction(function() use ($request, $rideId) {
+			
+			$user = User::where('token', $request->header('token'))->first();
+			if ($user == null) {
+				return response()->json(['error'=>'User token not authorized.'], 403);
+			}
+			$matchThese = ['ride_id' => $rideId, 'user_id' => $user->id, 'status' => 'driver'];
+			if (RideUser::where($matchThese)->count() < 1) {
+				return response()->json(['error'=>'User is not the driver on this ride.'], 403);
+			}
 
 			$ride = Ride::find($rideId);
 			if ($ride == null) {
@@ -160,12 +169,12 @@ class RideController extends Controller
         });
     }
 	
-	public function deleteAllFromUser($userId, $going) {
-        DB::transaction(function()  use ($userId, $going) {
+	public function deleteAllFromUser(Request $request, $going) {
+        DB::transaction(function()  use ($request, $going) {
 
-			$user = User::find($userId);
+			$user = User::where('token', $request->header('token'))->first();
 			if ($user == null) {
-				return response()->json(['error'=>'User not found with id ' . $userId], 400);
+				return response()->json(['error'=>'User token not authorized.'], 403);
 			}
 			
 			$matchThese = ['status' => 'driver', 'going' => $going, 'done' => false];
@@ -177,15 +186,28 @@ class RideController extends Controller
         });
     }
 	
-	public function deleteAllFromRoutine($routineId) {
-        DB::transaction(function($routineId) use ($routineId) {
+	public function deleteAllFromRoutine(Request $request, $routineId) {
+        DB::transaction(function() use ($request, $routineId) {
 
+			$user = User::where('token', $request->header('token'))->first();
+			if ($user == null) {
+				return response()->json(['error'=>'User token not authorized.'], 403);
+			}
+			
 			$matchThese = ['routine_id' => $routineId, 'done' => false];
 			$rideIdList = Ride::where($matchThese)->lists('id');
 		
+			if ($rideIdList == null || empty($rideIdList)) {
+				return response()->json(['error'=>'No rides found with this routine id.'], 400);
+			}
+			$matchThese2 = ['ride_id' => $rideIdList[0], 'user_id' => $user->id, 'status' => 'driver'];
+			if (RideUser::where($matchThese2)->count() < 1) {
+				return response()->json(['error'=>'User is not the driver on this ride.'], 403);
+			}
+			
 			RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
 			Ride::where($matchThese)->forceDelete();
-
+			
         });
     }
 
