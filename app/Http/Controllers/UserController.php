@@ -79,7 +79,7 @@ class UserController extends Controller
 		if (isset($intranetUser->urlFoto) && $intranetUser->urlFoto != '') {
 			list($photoHost, $photoHash) = explode('/',$intranetUser->urlFoto);
 			if ($photoHost == '146.164.2.117:8090') {
-				$user->profile_pic_url = 'http://caronae.tic.ufrj.br/user/intranetPhoto/' . $photoHash;
+				$user->profile_pic_url = 'https://api.caronae.ufrj.br/user/intranetPhoto/' . $photoHash;
 			}
 		}
 
