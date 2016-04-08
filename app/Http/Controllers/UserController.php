@@ -260,7 +260,7 @@ class UserController extends Controller
 		if (isset($intranetUser->urlFoto) && $intranetUser->urlFoto != '') {
 			list($photoHost, $photoHash) = explode('/',$intranetUser->urlFoto);
 			if ($photoHost == '146.164.2.117:8090') {
-				$newPhotoURL = 'http://caronae.tic.ufrj.br/user/intranetPhoto/' . $photoHash;
+				$newPhotoURL = 'https://api.caronae.ufrj.br/user/intranetPhoto/' . $photoHash;
 				return response()->json(['url'=>$newPhotoURL]);
 			}
 		}
