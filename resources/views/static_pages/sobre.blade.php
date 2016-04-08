@@ -20,9 +20,9 @@
     </div>
     <h1 align="center">Sobre o Caronaê</h1>
     <div class="text">
-	Aplicativo Android desenvolvido por:<br>
+	<b>Aplicativo Android desenvolvido por:</b><br>
 	<a href="http://www.github.com/leomarques">Leonardo Miranda Marques</a><br><br>
-	Aplicativo iOS desenvolvido por:<br>
+	<b>Aplicativo iOS desenvolvido por:</b><br>
 	<a href="http://meriw.xyz">Mario Cecchi</a><br>
 	<br><br>
 	Criado por alunos da UFRJ, o Caronaê é um aplicativo exclusivo à comunidade UFRJ, com pontos de carona que facilitam o encontro entre motoristas e caroneiros. O aplicativo tem como objetivo facilitar o acesso dos alunos à Cidade Universitária, catalisando os motoristas e demais tripulantes em um serviço digital simples e eficiente. Os dez pontos de carona estão espalhados pelo campus, posicionados em locais de visibilidade, próximos aos acessos dos estacionamentos. 
