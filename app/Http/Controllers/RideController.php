@@ -169,7 +169,7 @@ class RideController extends Controller
         });
     }
 	
-	public function deleteAllFromUser(Request $request, $going) {
+	public function deleteAllFromUser(Request $request, $userId, $going) {
         DB::transaction(function()  use ($request, $going) {
 
 			$user = User::where('token', $request->header('token'))->first();

@@ -19,7 +19,7 @@ Route::get('ride/all', 'RideController@listAll');
 Route::post('ride', 'RideController@store');
 Route::delete('ride/{rideId}', 'RideController@delete');
 Route::delete('ride/allFromUser/{going}', 'RideController@deleteAllFromUser');
-Route::delete('ride/allFromRoutine/{routineId}', 'RideController@deleteAllFromRoutine');
+Route::delete('ride/allFromRoutine/{userId}/{routineId}', 'RideController@deleteAllFromRoutine');
 Route::post('ride/listFiltered', 'RideController@listFiltered');
 Route::post('ride/requestJoin', 'RideController@requestJoin');
 Route::get('ride/getRequesters/{rideId}', 'RideController@getRequesters');
