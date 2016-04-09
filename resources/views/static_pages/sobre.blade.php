@@ -20,13 +20,13 @@
     </div>
     <h1 align="center">Sobre o Caronaê</h1>
     <div class="text">
-  <h3>Equipe Fluxo Consultoria:</h3><br>
+  <h3>Desenvolvido por Fluxo Consultoria:</h3><br><br>
 	<b>Aplicativo Android desenvolvido por:</b><br>
 	<a href="http://www.github.com/leomarques">Leonardo Miranda Marques</a><br><br>
 	<b>Aplicativo iOS desenvolvido por:</b><br>
-	<a href="http://meriw.xyz">Mario Cecchi</a><br>
+	<a href="http://meriw.xyz">Mario Cecchi</a><br><br>
   <b>Sistema administrativo desenvolvido por:</b><br>
-  <a href="https://github.com/daniellima">Daniel Lima</a><br>
+  <a href="https://github.com/daniellima">Daniel Lima</a><br><br>
   <b>Gerente do projeto:</b><br>
   <a href="https://br.linkedin.com/in/lucasrolim">Lucas Rolim</a><br>
 	<br><br>

@@ -25,7 +25,7 @@
     <br><br>
     Reservamo-nos o direito, por nosso exclusivo critério, de mudar, modificar, excluir ou adicionar qualquer parte das políticas e termos e condições de uso do sistema sem que se faça necessário qualquer notificação. Se fizermos mudanças nos Termos e Condições de Uso indicaremos no topo desta página a data da última revisão. O usuário que continuar a acessar o sistema ou continuar utilizando de suas facilidades após qualquer modificação de política constitui na sua aceitação aos novos Termos e Condições de uso do sistema Caronaê UFRJ. Se o usuário não concordar em aceitar isso ou qualquer futura alteração deste Termos e Condições de Uso, o mesmo não deve acessar ou usar o sistema Caronaê UFRJ. É sua responsabilidade checar regularmente se houve mudanças e revisar as mudanças dos Termos e Condições de uso do sistema Caronaê UFRJ.
     <br><br>
-    <a href="https://caronae.ufrj.br/termos-de-uso.html">Clique aqui para ler na íntegra.</a><br>
+    <h3><a href="https://caronae.ufrj.br/termos-de-uso.html">Clique aqui para ler na íntegra.</a></h3><br><br><br>
     </div>
 </body>
 </html>
