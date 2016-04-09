@@ -22,7 +22,7 @@
     <div class="text">
   <h3>Desenvolvido por Fluxo Consultoria:</h3><br><br>
 	<b>Aplicativo Android desenvolvido por:</b><br>
-	<a href="http://www.github.com/leomarques">Leonardo Miranda Marques</a><br>
+	<a href="http://www.github.com/leomarques">Leonardo Miranda Marques</a><br><br>
 	<b>Aplicativo iOS desenvolvido por:</b><br>
 	<a href="http://meriw.xyz">Mario Cecchi</a><br><br>
   <b>Sistema administrativo desenvolvido por:</b><br>
