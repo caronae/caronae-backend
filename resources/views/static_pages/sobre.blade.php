@@ -21,7 +21,7 @@
     <h1 align="center">Sobre o Caronaê</h1>
     <div class="text">
 	<b>Aplicativo Android desenvolvido por:</b><br>
-	<a href="http://www.github.com/leomarques">Leonardo Miranda Marques</a><br><br>
+	<a href="http://www.github.com/leomarques">Leonardo Miranda Marques</a><br>
 	<b>Aplicativo iOS desenvolvido por:</b><br>
 	<a href="http://meriw.xyz">Mario Cecchi</a><br>
 	<br><br>
