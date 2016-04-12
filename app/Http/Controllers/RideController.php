@@ -219,7 +219,7 @@ class RideController extends Controller
 		
 		//query the rides
 		$minDate = new DateTime('today');
-		$maxDate = new DateTime('+4 days');
+		$maxDate = new DateTime('+2 days');
 		$rides = Ride::where('mydate', '>=', $minDate)->where('mydate', '<=', $maxDate)->where('done', false)->get();
 		
 		$results = [];
