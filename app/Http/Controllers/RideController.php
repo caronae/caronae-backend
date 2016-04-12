@@ -218,9 +218,9 @@ class RideController extends Controller
 		}
 		
 		//query the rides
-		$today = new DateTime('today');
-		$nextWeek = new DateTime('next week');
-		$rides = Ride::where('mydate', '>=', $today)->where('mydate', '<=', $nextWeek)->where('done', false)->orderBy('mydate', 'asc')->get();
+		$minDate = new DateTime('today');
+		$maxDate = new DateTime('+4 days');
+		$rides = Ride::where('mydate', '>=', $minDate)->where('mydate', '<=', $maxDate)->where('done', false)->get();
 		
 		$results = [];
 		foreach($rides as $ride) {
