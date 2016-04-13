@@ -239,6 +239,41 @@ class RideController extends Controller
 		return $results;
     }
 
+    public function listAll2(Request $request) {
+		$user = User::where('token', $request->header('token'))->first();
+		if ($user == null) {
+			return response()->json(['error'=>'User token not authorized.'], 403);
+		}
+		
+		//query the rides
+		$minDate = (new DateTime('today'))->format('Y-m-d');
+		$maxDate = (new DateTime('tomorrow'))->format('Y-m-d');
+		$rides = DB::select("
+			SELECT ride.*, (SELECT user_id FROM ride_user WHERE ride_id = ride.id AND status = 'driver') AS driver_id
+			FROM ride_user AS ru
+			LEFT JOIN rides AS ride ON ride.id = ru.ride_id
+			WHERE ride.mydate >= :minDate
+			AND ride.mydate <= :maxDate
+			AND ride.done=FALSE
+			AND ru.status IN ('pending','accepted','driver')
+			GROUP BY ride.id
+			HAVING count(ru.user_id)-1 < ride.slots
+		", ['minDate' => $minDate, 'maxDate' => $maxDate]);
+		
+		$results = [];
+		foreach($rides as $ride) {
+				//gets the driver
+				$driver = User::where('id', $ride->driver_id)->first();
+					
+				$ride->driver = $driver;
+				unset($ride->driver_id);
+				
+				$results[] = $ride;
+		}
+			
+		return $results;
+    }
+
     public function listFiltered(Request $request) {
         $decode = json_decode($request->getContent());
 		$user = User::where('token', $request->header('token'))->first();
