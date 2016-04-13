@@ -16,7 +16,6 @@ Route::get('user/intranetPhoto/{hash}', 'UserController@loadIntranetPhoto');
 
 // Ride routes
 Route::get('ride/all', 'RideController@listAll');
-Route::get('ride/all2', 'RideController@listAll2');
 Route::post('ride', 'RideController@store');
 Route::delete('ride/{rideId}', 'RideController@delete');
 Route::delete('ride/allFromUser/{userId}/{going}', 'RideController@deleteAllFromUser');

@@ -216,33 +216,6 @@ class RideController extends Controller
 		}
 		
 		//query the rides
-		$minDate = new DateTime('today');
-		$maxDate = new DateTime('tomorrow');
-		$rides = Ride::where('mydate', '>=', $minDate)->where('mydate', '<=', $maxDate)->where('done', false)->get();
-		
-		$results = [];
-		foreach($rides as $ride) {
-			//check if ride is full
-			if ($ride->users()->whereIn('status', ['pending', 'accepted'])->count() < $ride->slots) {
-				//gets the driver
-				$driver = $ride->users()->where('status', 'driver')->first();
-				
-				$resultRide = $ride;				
-				$resultRide->driver = $driver;
-				
-				$results[] = $resultRide;
-			}
-		}
-			
-		return $results;
-    }
-
-    public function listAll2(Request $request) {
-		if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-			return response()->json(['error'=>'User token not authorized.'], 403);
-		}
-		
-		//query the rides
 		$minDate = (new DateTime('today'))->format('Y-m-d');
 		$maxDate = (new DateTime('tomorrow'))->format('Y-m-d');
 		$rides = DB::select("
@@ -259,7 +232,6 @@ class RideController extends Controller
 		
 		$results = [];
 		foreach($rides as $ride) {
-				//gets the driver
 				$driver = User::where('id', $ride->driver_id)->first();
 					
 				$ride->driver = $driver;
