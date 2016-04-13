@@ -17,11 +17,10 @@ use Illuminate\Http\Request;
 class RideController extends Controller
 {
     public function store(Request $request) {
-        $decode = json_decode($request->getContent());
-        $user = User::where('token', $request->header('token'))->first();
-		if ($user == null) {
+		if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
+        $decode = json_decode($request->getContent());
 		
 		//create new ride and save it
         $ride = new Ride();
@@ -212,8 +211,7 @@ class RideController extends Controller
     }
 
     public function listAll(Request $request) {
-		$user = User::where('token', $request->header('token'))->first();
-		if ($user == null) {
+		if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
@@ -240,8 +238,7 @@ class RideController extends Controller
     }
 
     public function listAll2(Request $request) {
-		$user = User::where('token', $request->header('token'))->first();
-		if ($user == null) {
+		if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
@@ -275,11 +272,10 @@ class RideController extends Controller
     }
 
     public function listFiltered(Request $request) {
-        $decode = json_decode($request->getContent());
-		$user = User::where('token', $request->header('token'))->first();
-		if ($user == null) {
+		if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
+        $decode = json_decode($request->getContent());
 		
 		//locations will come as a string divided by ", ", explode the string into an array 
 		$locations = explode(", ", $decode->location);
@@ -319,11 +315,10 @@ class RideController extends Controller
     }
 	
 	public function requestJoin(Request $request) {
-        $decode = json_decode($request->getContent());
-        $user = User::where('token', $request->header('token'))->first();
-		if ($user == null) {
+		if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
+        $decode = json_decode($request->getContent());
 		
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
         $ride_user = RideUser::where($matchThese)->first();
@@ -389,8 +384,7 @@ class RideController extends Controller
     }
 	
 	public function getMyActiveRides(Request $request) {
-        $user = User::where('token', $request->header('token'))->first();
-		if ($user == null) {
+		if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
@@ -425,11 +419,10 @@ class RideController extends Controller
 	}
 	
 	public function leaveRide(Request $request) {
-        $decode = json_decode($request->getContent());
-        $user = User::where('token', $request->header('token'))->first();
-		if ($user == null) {
+		if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
+        $decode = json_decode($request->getContent());
 		
 		$matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
         $rideUser = RideUser::where($matchThese)->first();//get relationship
@@ -479,11 +472,10 @@ class RideController extends Controller
 	}
 
 	public function finishRide(Request $request) {
-        $decode = json_decode($request->getContent());
-        $user = User::where('token', $request->header('token'))->first();
-		if ($user == null) {
+		if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
+        $decode = json_decode($request->getContent());
 		
 		$ride = Ride::find($decode->rideId);
 		if ($ride == null) {
@@ -524,8 +516,7 @@ class RideController extends Controller
 	}
 
 	public function getRidesHistory(Request $request) {
-        $user = User::where('token', $request->header('token'))->first();
-		if ($user == null) {
+		if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
 			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 		
