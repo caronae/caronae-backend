@@ -11,6 +11,7 @@ use App\RideUser;
 use App\User;
 use DateInterval;
 use DateTime;
+use DateTimeZone;
 use DB;
 use Illuminate\Http\Request;
 
@@ -217,8 +218,10 @@ class RideController extends Controller
 		
 		//query the rides
 		$limit = 100;
-		$minDate = (new DateTime('today'))->format('Y-m-d H:i:s');
-		$maxDate = (new DateTime('tomorrow'))->format('Y-m-d');
+		$timezone = new DateTimeZone('America/Sao_Paulo');
+		$minDate = (new DateTime('now', $timezone))->format('Y-m-d H:i:s');
+		$maxDate = (new DateTime('tomorrow', $timezone))->format('Y-m-d');
+
 		$rides = DB::select("
 			SELECT ride.*, (SELECT user_id FROM ride_user WHERE ride_id = ride.id AND status = 'driver') AS driver_id
 			FROM ride_user AS ru
