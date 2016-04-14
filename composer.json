@@ -35,13 +35,15 @@
     "scripts": {
         "post-install-cmd": [
             "php artisan clear-compiled",
-            "php artisan optimize"
+            "php artisan optimize",
+            "php artisan migrate"
         ],
         "pre-update-cmd": [
             "php artisan clear-compiled"
         ],
         "post-update-cmd": [
-            "php artisan optimize"
+            "php artisan optimize",
+            "php artisan migrate"
         ],
         "post-root-package-install": [
             "php -r \"copy('.env.example', '.env');\""
