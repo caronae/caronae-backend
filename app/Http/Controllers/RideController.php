@@ -216,22 +216,19 @@ class RideController extends Controller
 		}
 		
 		//query the rides
-		$limit = 100;
-		$minDate = (new DateTime('today'))->format('Y-m-d H:i:s');
+		$minDate = (new DateTime('today'))->format('Y-m-d');
 		$maxDate = (new DateTime('tomorrow'))->format('Y-m-d');
 		$rides = DB::select("
 			SELECT ride.*, (SELECT user_id FROM ride_user WHERE ride_id = ride.id AND status = 'driver') AS driver_id
 			FROM ride_user AS ru
 			LEFT JOIN rides AS ride ON ride.id = ru.ride_id
-			WHERE (ride.mydate + ride.mytime) >= :minDate
+			WHERE ride.mydate >= :minDate
 			AND ride.mydate <= :maxDate
 			AND ride.done=FALSE
 			AND ru.status IN ('pending','accepted','driver')
 			GROUP BY ride.id
 			HAVING count(ru.user_id)-1 < ride.slots
-			ORDER BY (ride.mydate + ride.mytime) ASC
-			LIMIT :limit
-		", ['minDate' => $minDate, 'maxDate' => $maxDate, 'limit' => $limit]);
+		", ['minDate' => $minDate, 'maxDate' => $maxDate]);
 		
 		$results = [];
 		foreach($rides as $ride) {
