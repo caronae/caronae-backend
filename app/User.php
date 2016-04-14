@@ -10,7 +10,7 @@ class User extends Model
 {
     use SoftDeletes;
 
-	protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj'];
+	protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at'];
     protected $dates = ['deleted_at'];
 
     public function rides() {

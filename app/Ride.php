@@ -11,7 +11,7 @@ class Ride extends Model
 {
     use SoftDeletes;
 
-    protected $hidden = ['pivot'];
+    protected $hidden = ['pivot', 'created_at', 'deleted_at', 'updated_at'];
     protected $dates = ['deleted_at'];
 
     public function users() {

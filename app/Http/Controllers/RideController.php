@@ -238,12 +238,12 @@ class RideController extends Controller
 		
 		$results = [];
 		foreach($rides as $ride) {
-				$driver = User::where('id', $ride->driver_id)->first();
-					
-				$ride->driver = $driver;
-				unset($ride->driver_id);
+			$driver = User::where('id', $ride->driver_id)->first();
 				
-				$results[] = $ride;
+			$ride->driver = $driver;
+			unset($ride->driver_id, $ride->created_at, $ride->updated_at, $ride->deleted_at, $ride->done);
+			
+			$results[] = $ride;
 		}
 			
 		return $results;
