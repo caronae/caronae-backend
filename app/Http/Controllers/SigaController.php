@@ -32,8 +32,7 @@ class SigaController extends Controller
 		}
 		
 		$intranetResponse = json_decode($intranetResponseJSON);
-
-		response()->json($intranetResponse);
+		return response()->json($intranetResponse);
     }
 
 }
