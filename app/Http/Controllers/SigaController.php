@@ -24,14 +24,18 @@ class SigaController extends Controller
 
 		// Decode search
         $searchKey = Input::get('field');
-        $searchValue = urlencode(Input::get('value'));
 		if ($searchKey == 'cpf') $searchKey = 'IdentificacaoUFRJ';
+        $searchValue = urlencode(Input::get('value'));
 		if (!$searchKey || !$searchValue) {
 			return response()->json(['error'=>'Missing search parameters.'], 400);
 		}
+		$from = Input::get('from');
+		if (!$from) $from = 0;
+		$size = Input::get('size');
+		if (!$size) $size = 10;
 
 		$context = stream_context_create(['http' => ['timeout' => 2]]);
-		$intranetResponseJSON = @file_get_contents('http://146.164.2.117:9200/_search?q=' . $searchKey . ':' . $searchValue, FILE_TEXT, $context);
+		$intranetResponseJSON = @file_get_contents('http://146.164.2.117:9200/_search?q=' . $searchKey . ':' . $searchValue . '&from=' . $from . '&size=' . $size, FILE_TEXT, $context);
 
 		// Check if the connection was successful
 		if ($intranetResponseJSON == false) {
