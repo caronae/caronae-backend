@@ -10,6 +10,12 @@ class SigaController extends Controller
 	private $auth_key = 'token=AYAeG!*knMjqLF0[!ND\xs7t3Uv]16d';
 
     public function search(Request $request, $searchKey, $searchValue) {
+    	// Test if is running through SSL
+    	if (!is_secure()) {
+			return response()->json(['error'=>'Route not allowed without SSL.'], 403);
+    	}
+
+    	// Test if authorization token is correct
     	$authorization = $request->header('Authorization');
 		if ($authorization == null || $authorization != $this->auth_key) {
 			return response()->json(['error'=>'Unauthorized.'], 403);
@@ -30,4 +36,8 @@ class SigaController extends Controller
 		response()->json($intranetResponse);
     }
 
+}
+
+function is_secure() {
+	return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off');
 }
