@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 
 class SigaController extends Controller
 {
 	private $auth_key = 'token=AYAeG!*knMjqLF0[!ND\xs7t3Uv]16d';
 
-    public function search(Request $request, $searchKey, $searchValue) {
+    public function search(Request $request) {
     	// Test if is running through SSL
     	if (!is_secure()) {
 			return response()->json(['error'=>'Route not allowed without SSL.'], 403);
@@ -21,7 +22,13 @@ class SigaController extends Controller
 			return response()->json(['error'=>'Unauthorized.'], 403);
 		}
 
+		// Decode search
+        $searchKey = Input::get('field');
+        $searchValue = urlencode(Input::get('value'));
 		if ($searchKey == 'cpf') $searchKey = 'IdentificacaoUFRJ';
+		if (!$searchKey || !$searchValue) {
+			return response()->json(['error'=>'Missing search parameters.'], 400);
+		}
 
 		$context = stream_context_create(['http' => ['timeout' => 2]]);
 		$intranetResponseJSON = @file_get_contents('http://146.164.2.117:9200/_search?q=' . $searchKey . ':' . $searchValue, FILE_TEXT, $context);
