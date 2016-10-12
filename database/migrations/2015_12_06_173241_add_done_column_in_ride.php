@@ -13,7 +13,7 @@ class AddDoneColumnInRide extends Migration
     public function up()
     {
         Schema::table('rides', function (Blueprint $table) {
-            $table->boolean('done')->default('false');
+            $table->boolean('done')->default(false);
         });
     }
 
@@ -25,7 +25,7 @@ class AddDoneColumnInRide extends Migration
     public function down()
     {
         Schema::table('rides', function ($table) {
-			$table->dropColumn('done');
-		});
+    			$table->dropColumn('done');
+    		});
     }
 }
