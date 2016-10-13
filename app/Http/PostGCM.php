@@ -7,13 +7,12 @@ class PostGCM
 	public static function doPost($post)
 	{
 		//------------------------------
-		// Replace with real GCM API 
-		// key from Google APIs Console
-		// 
-		// https://code.google.com/apis/console/
+		// The GCM API key, generated using 
+		// Google APIs Console, should be
+		// placed inside the .env file.
 		//------------------------------
 
-		$apiKey = 'AIzaSyBtGz81bar_LcwtN_fpPTKRMBL5glp2T18';
+		$apiKey = env('GCM_API_KEY');
 
 		//------------------------------
 		// Define URL to GCM endpoint
@@ -26,10 +25,10 @@ class PostGCM
 		// (Authentication and type)
 		//------------------------------
 
-		$headers = array( 
-							'Authorization: key=' . $apiKey,
-							'Content-Type: application/json'
-						);
+		$headers = array(
+			'Authorization: key=' . $apiKey,
+			'Content-Type: application/json'
+		);
 
 		//------------------------------
 		// Initialize curl handle
@@ -56,7 +55,7 @@ class PostGCM
 		curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
 
 		//------------------------------
-		// Get the response back as 
+		// Get the response back as
 		// string instead of printing it
 		//------------------------------
 
@@ -98,10 +97,10 @@ class PostGCM
 
 	public static function sendNotification($gcmTokens, $data) {
 		$body = [
-					'notification' 		=> ['body' => $data['message']],
-					'content_available' => true,
-					'data' 				=> $data
-				];
+			'notification' 		=> ['body' => $data['message']],
+			'content_available' => true,
+			'data' 				=> $data
+		];
 
 		if (is_array($gcmTokens)) {
 			$body['registration_ids'] = $gcmTokens;
