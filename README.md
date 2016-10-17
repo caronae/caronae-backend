@@ -1,10 +1,58 @@
-## Sobre o projeto
+# Caronaê - Backend
+
+Este é o backend no Caronaê, baseado no framework Laravel, em PHP. O backend é
+composto da API mobile e da área administrativa.
 
 Abaixo estão algumas informações importantes sobre o projeto,
 que devem ser lidas para que modificações no projeto sejam
 mais fáceis.
 
-# Bibliotecas usadas
+
+## Instalação
+
+Para instalar o ambiente de desenvolvimento, você precisa ter configurado na 
+sua máquina:
+
+- Apache2
+- PHP 5
+- PostgreSQL
+
+Outras configurações também são suportadas, como nginx e MySQL, porém é recomendado
+utilizar as configurações acima, que são similares às do servidor de produção.
+
+Uma vez configurado o servidor web básico, clone o repositório do backend e aponte
+o DocumentRoot do seu Apache para a pasta _public_ do backend.
+
+Verifique que o banco de dados está sendo executado e crie uma tabela e um 
+usuário para serem usados pelo backend. Em seguida, copie o arquivo `.env.example` 
+para `.env` e atualize os respectivos campos com as configurações de conexão com
+o banco de dados.
+
+Configure também no arquivo .env a constante `GCM_API_KEY`, que é contém a chave
+de acesso ao projeto do GCM, utilizado para envio das notificações.
+
+Agora, você precisará configurar as dependências do projeto, que podem ser 
+instaladas usando o composer:
+
+```
+composer install
+```
+
+Para executar a configuração do banco de dados do Caronaê, que está versionado na 
+forma de migrations, é necessário executá-las usando o artisan:
+
+```
+php artisan migrate
+```
+
+Pronto! Você já deve conseguir acessar o projeto localmente através do seu 
+navegador na porta configurada pelo Apache.
+
+OBS: Nenhum usuário é criado por padrão para a área administrativa. Para 
+acessá-la, é necessário criar um usuário manualmente no banco de dados.
+
+
+## Bibliotecas usadas
 
 Abaixo seguem as bibliotecas mais importantes usadas nesse projeto:
 
@@ -23,7 +71,7 @@ Abaixo seguem as bibliotecas mais importantes usadas nesse projeto:
 - JWT 0.5 (https://github.com/tymondesigns/jwt-auth)
   Usada para realizar autenticação pelos apps mobile.
 
-# Adicionando colunas novas na área administrativa
+## Adicionando colunas novas na área administrativa
 
 O Datatables cria a tabela baseado em um request AJAX feito ao sistema.
 Veja as rotas cujas URLs terminam em ".json" para saber que rota corresponde
@@ -37,7 +85,8 @@ Ver: "views/resources/users/index.blade.php" para um exemplo.
 Se quer que a nova coluna seja exportada via excel, olhe as rotas que terminam
 com ".excel". Veja o metodo "indexExcel" na classe "UserController" para um exemplo.
 
-# Banco de Dados
+
+## Banco de Dados
 
 /!\ Atenção /!\
 
