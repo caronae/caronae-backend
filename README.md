@@ -13,43 +13,78 @@ mais fáceis.
 Para instalar o ambiente de desenvolvimento, você precisa ter configurado na 
 sua máquina:
 
-- Apache2
-- PHP 5
+- PHP 5.6 ou superior
 - PostgreSQL
 
-Outras configurações também são suportadas, como nginx e MySQL, porém é recomendado
-utilizar as configurações acima, que são similares às do servidor de produção.
+Outras configurações também são suportadas, porém é recomendado utilizar as 
+configurações acima, que são similares às do servidor de produção.
 
-Uma vez configurado o servidor web básico, clone o repositório do backend e aponte
-o DocumentRoot do seu Apache para a pasta _public_ do backend.
+Comece fazendo o clone do repositório do backend (este repositório) para seu
+computador e selecionando o diretório dele. Todos os comandos abaixo serão
+executados dentro do diretório do backend.
 
 Verifique que o banco de dados está sendo executado e crie uma tabela e um 
 usuário para serem usados pelo backend. Em seguida, copie o arquivo `.env.example` 
 para `.env` e atualize os respectivos campos com as configurações de conexão com
 o banco de dados.
 
-Configure também no arquivo .env a constante `GCM_API_KEY`, que é contém a chave
-de acesso ao projeto do GCM, utilizado para envio das notificações.
+Caso vá testar notificações, configure também no arquivo `.env` a constante 
+`GCM_API_KEY`, que é a chave de acesso ao projeto do GCM, utilizado para envio 
+das notificações.
 
 Agora, você precisará configurar as dependências do projeto, que podem ser 
-instaladas usando o composer:
+instaladas usando o **Composer**:
 
 ```
 composer install
 ```
 
-Para executar a configuração do banco de dados do Caronaê, que está versionado na 
-forma de migrations, é necessário executá-las usando o artisan:
+Para executar a configuração do banco de dados, que está versionado na 
+forma de migrations, é necessário executar o *migrate* usando o **Artisan**:
 
 ```
 php artisan migrate
 ```
 
-Pronto! Você já deve conseguir acessar o projeto localmente através do seu 
-navegador na porta configurada pelo Apache.
+Uma vez configuradas as dependências, banco de dados e as configurações do projeto,
+execute o seguinte comando para iniciar o servidor:
 
-OBS: Nenhum usuário é criado por padrão para a área administrativa. Para 
-acessá-la, é necessário criar um usuário manualmente no banco de dados.
+```
+php artisan serve
+```
+
+Pronto! Você já deve conseguir acessar o projeto localmente através do endereço
+mostrado ao executar o comando acima.
+
+
+### Populando o banco de dados
+
+Apesar de o servidor já estar funcionando, o banco de dados encontra-se inicialmente
+vazio, ou seja, não há sequer um administrador cadastrado para acessar a área 
+administrativa.
+
+Para popular o banco, execute o comando abaixo, que irá criar um administrador padrão,
+cadastrar as configurações dos bairros e criar alguns usuários de exemplo:
+
+```
+php artisan db:seed
+```
+
+Pronto! Agora você já pode fazer login na área administrativa utilizando o usuário
+padrão.
+
+| E-mail    | Senha    |
+|-----------|----------|
+| 1@1.com   | 1234     |
+
+
+
+## Testes
+
+Parte do backend possui testes que garantem o correto funcionamento de sistema, 
+que ficam dentro da pasta **tests**.
+
+Para executá-los, basta utilizar o **PHPUnit**, que vem instalado como uma das dependências do projeto. Basta executar o comando `vendor/bin/phpunit`.
 
 
 ## Bibliotecas usadas
@@ -88,13 +123,15 @@ com ".excel". Veja o metodo "indexExcel" na classe "UserController" para um exem
 
 ## Banco de Dados
 
-/!\ Atenção /!\
+**Atenção!**
 
 Não altere o banco diretamente. Use o sistema de migrations presente
-na Laravel para realizar mudanças. Assim, elas ficam documentadas e
+no Laravel para realizar mudanças. Assim, elas ficam documentadas e
 podem ser facilmente replicadas no caso de fazer deploy em outros servidores.
+
 Cuidado também ao modificar o banco via migrations e apagar os dados já presentes
-acidentalmente. Sempre faça um backup antes.
+acidentalmente. Sempre faça um backup antes e verifique antes de comittar 
+qualquer modificação se não está sobrescrevendo outras migrations.
 
 --
 
