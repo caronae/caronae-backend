@@ -7,8 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\User;
 use App\Ride;
 
-$faker = Faker\Factory::create();
-
 class TestUser extends TestCase
 {
     use DatabaseTransactions;
@@ -29,17 +27,20 @@ class TestUser extends TestCase
     {
         // create user with some rides
         $user = factory(User::class)->create();
-        // var_dump($user);
-        // $user = User::find($user->id);
+        $user = User::find($user->id);
+        
         // add unfinished rides
-        $rides = [];
-        // $rides = factory(Ride::class, 3)->create(['done' => false])->each(function($ride) use ($user) {
-        //     $user->rides()->attach($ride, ['status' => 'driver']);
-        // });
-        // // add finished rides
-        // factory(Ride::class, 3)->create(['done' => true])->each(function($ride) use ($user) {
-        //     $user->rides()->attach($ride, ['status' => 'driver']);
-        // });
+        $rides = factory(Ride::class, 3)->create(['done' => false])->each(function($ride) use ($user) {
+            $user->rides()->attach($ride, ['status' => 'driver']);
+        });
+        for ($i=0; $i<count($rides); $i++) {
+            $rides[$i] = Ride::find($rides[$i]->id);
+        }
+
+        // add finished rides
+        factory(Ride::class, 3)->create(['done' => true])->each(function($ride) use ($user) {
+            $user->rides()->attach($ride, ['status' => 'driver']);
+        });
 
         $response = $this->json('POST', 'user/login', [
             'id_ufrj' => $user->id_ufrj,
@@ -51,18 +52,41 @@ class TestUser extends TestCase
             'user' => $user->toArray(),
             'rides' => $rides
         ]);
-
     }
 
-    public function testLoginWithInvalidUser() use ($faker)
+    public function testLoginWithInvalidUser()
     {
         $response = $this->json('POST', 'user/login', [
-            'id_ufrj' => $faker->randomNumber(11),
-            'token' => $faker->randomNumber(6)
+            'id_ufrj' => str_random(11),
+            'token' => str_random(6)
         ]);
         $response->assertResponseStatus(403);
         $response->seeJsonEquals([
             'error' => 'User not found with provided credentials.'
         ]);
+    }
+
+    public function testUpdate()
+    {
+        $faker = Faker\Factory::create();
+        $user = factory(User::class)->create();
+
+        $user->face_id = NULL;
+        $user->profile = $faker->titleMale;
+        $user->course = $faker->company;
+        $user->phone_number = $faker->regexify('[0-9]{10-11}');
+        $user->email = $faker->email;
+        $user->location = $faker->city;
+        $user->car_owner = !$user->car_owner;
+        $user->car_model = $user->car_owner ? $faker->company : NULL;
+        $user->car_color = $user->car_owner ? $faker->colorName : NULL;
+        $user->car_plate = $user->car_owner ? 'ABC-1234' : NULL;
+        $user->profile_pic_url = $faker->url;
+
+        $response = $this->json('PUT', 'user', $user->toArray());
+        $response->assertResponseStatus(200);
+
+        $savedUser = User::find($user->id);
+        $this->assertEquals($user->toArray(), $savedUser->toArray());
     }
 }
