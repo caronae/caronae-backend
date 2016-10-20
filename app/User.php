@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
-class User extends Model 
+class User extends Model
 {
     use SoftDeletes;
 
-	protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at'];
+    protected $fillable = ['name', 'email', 'profile', 'id_ufrj', 'token'];
+    protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at'];
     protected $dates = ['deleted_at'];
 
     public function rides() {
@@ -19,7 +20,6 @@ class User extends Model
 
     public function banish(){
         DB::transaction(function(){
-
             $ids = $this->rides()->where('done', false)->get()->pluck('id');
 
             RideUser::where('status', '<>', 'driver')
@@ -32,7 +32,6 @@ class User extends Model
             Ride::whereIn('id', $deadRides)->delete();
 
             $this->delete();
-
         });
     }
 
