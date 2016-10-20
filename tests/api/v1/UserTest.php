@@ -7,6 +7,8 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\User;
 use App\Ride;
 
+$faker = Faker\Factory::create();
+
 class TestUser extends TestCase
 {
     use DatabaseTransactions;
@@ -28,7 +30,7 @@ class TestUser extends TestCase
         // create user with some rides
         $user = factory(User::class)->create();
         // var_dump($user);
-        $user = User::find($user->id);
+        // $user = User::find($user->id);
         // add unfinished rides
         $rides = [];
         // $rides = factory(Ride::class, 3)->create(['done' => false])->each(function($ride) use ($user) {
@@ -52,11 +54,11 @@ class TestUser extends TestCase
 
     }
 
-    public function testLoginWithInvalidUser()
+    public function testLoginWithInvalidUser() use ($faker)
     {
         $response = $this->json('POST', 'user/login', [
-            'id_ufrj' => 'l4ki4h23i',
-            'token' => 'cru32h4i3r'
+            'id_ufrj' => $faker->randomNumber(11),
+            'token' => $faker->randomNumber(6)
         ]);
         $response->assertResponseStatus(403);
         $response->seeJsonEquals([
