@@ -1,4 +1,5 @@
 <?php
+use App\RideUser;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +19,24 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
         'profile' => $faker->titleMale,
         'course' => $faker->company,
         'location' => $faker->city,
+        'car_owner' => false,
+        'car_model' => NULL,
+        'car_color' => NULL,
+        'car_plate' => NULL
+    ];
+});
+
+$factory->defineAs(App\User::class, 'driver', function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->name,
+        'email' => $faker->email,
+        'profile' => $faker->titleMale,
+        'course' => $faker->company,
+        'location' => $faker->city,
+        'car_owner' => true,
+        'car_model' => $faker->company,
+        'car_color' => $faker->colorName,
+        'car_plate' => $faker->regexify('[A-Z]{3}-[0-9]{4}')
     ];
 });
 
@@ -32,5 +51,3 @@ $factory->define(App\Ride::class, function (Faker\Generator $faker) {
         'done' => $faker->boolean()
     ];
 });
-
-
