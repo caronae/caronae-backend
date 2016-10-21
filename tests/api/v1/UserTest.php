@@ -23,6 +23,11 @@ class TestUser extends TestCase
         DB::table('rides')->delete();
     }
 
+    public function testSignUpIntranet()
+    {
+        
+    }
+
     public function testLoginWithValidUser()
     {
         // create user with some rides
@@ -104,5 +109,50 @@ class TestUser extends TestCase
 
         $savedUser = User::find($user->id);
         $this->assertEquals($newToken, $savedUser->gcm_token);
+    }
+
+    public function testSaveFacebookID() 
+    {
+        $user = factory(User::class)->create();
+        $headers = ['token' => $user->token];
+        $newId = str_random(50);
+
+        $response = $this->json('PUT', 'user/saveFaceId', [
+            'id' => $newId
+        ], $headers);
+        $response->assertResponseOk();
+
+        $savedUser = User::find($user->id);
+        $this->assertEquals($newId, $savedUser->face_id);
+    }
+
+    public function testSaveProfilePictureURL() 
+    {
+        $user = factory(User::class)->create();
+        $headers = ['token' => $user->token];
+        $newURL = Faker\Factory::create()->url;
+
+        $response = $this->json('PUT', 'user/saveProfilePicUrl', [
+            'url' => $newURL
+        ], $headers);
+        $response->assertResponseOk();
+
+        $savedUser = User::find($user->id);
+        $this->assertEquals($newURL, $savedUser->profile_pic_url);
+    }
+
+    public function testGetMutualFriends()
+    {
+        
+    }
+
+    public function testLoadIntranetPhoto()
+    {
+        
+    }
+
+    public function testGetIntranetPhotoUrl()
+    {
+        
     }
 }
