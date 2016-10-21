@@ -70,6 +70,7 @@ class TestUser extends TestCase
     {
         $faker = Faker\Factory::create();
         $user = factory(User::class)->create();
+        $headers = ['token' => $user->token];
 
         $user->face_id = NULL;
         $user->profile = $faker->titleMale;
@@ -83,10 +84,25 @@ class TestUser extends TestCase
         $user->car_plate = $user->car_owner ? 'ABC-1234' : NULL;
         $user->profile_pic_url = $faker->url;
 
-        $response = $this->json('PUT', 'user', $user->toArray());
-        $response->assertResponseStatus(200);
+        $response = $this->json('PUT', 'user', $user->toArray(), $headers);
+        $response->assertResponseOk();
 
         $savedUser = User::find($user->id);
         $this->assertEquals($user->toArray(), $savedUser->toArray());
+    }
+
+    public function testSaveGcmToken() 
+    {
+        $user = factory(User::class)->create();
+        $headers = ['token' => $user->token];
+        $newToken = str_random(255);
+
+        $response = $this->json('PUT', 'user/saveGcmToken', [
+            'token' => $newToken
+        ], $headers);
+        $response->assertResponseOk();
+
+        $savedUser = User::find($user->id);
+        $this->assertEquals($newToken, $savedUser->gcm_token);
     }
 }

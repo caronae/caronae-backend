@@ -24,7 +24,9 @@ $factory->define(User::class, function (Faker\Generator $faker) {
         'car_owner' => false,
         'car_model' => NULL,
         'car_color' => NULL,
-        'car_plate' => NULL
+        'car_plate' => NULL,
+        'token' => str_random(6),
+        'id_ufrj' => str_random(11)
     ];
 });
 
