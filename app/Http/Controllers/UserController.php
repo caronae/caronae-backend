@@ -105,9 +105,9 @@ class UserController extends Controller
 	
 	public function update(Request $request) {
         $decode = json_decode($request->getContent());
-        $user = User::where('token', $request->header('token'))->first();
-		if ($user == null) {
-			return response()->json(['error'=>'User ' . $request->header('token') . ' token not authorized.'], 403);
+		$user = User::where('token', $request->header('token'))->first();
+		if (empty($request->header('token')) || $user == NULL) {
+			return response()->json(['error'=>'User token not authorized.'], 403);
 		}
 
         $user->profile = $decode->profile;
