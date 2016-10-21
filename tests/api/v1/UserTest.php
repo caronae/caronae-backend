@@ -29,15 +29,15 @@ class TestUser extends TestCase
         $user = factory(User::class)->create();
         $user = User::find($user->id);
         
-        // add unfinished rides
-        $rides = factory(Ride::class, 3)->create(['done' => false])->each(function($ride) use ($user) {
+        // add unfinished rides, which should be returned
+        $rideIds = [];
+        $rides = factory(Ride::class, 3)->create(['done' => false])->each(function($ride) use ($user, &$rideIds) {
             $user->rides()->attach($ride, ['status' => 'driver']);
+            $rideIds[] = $ride->id;
         });
-        for ($i=0; $i<count($rides); $i++) {
-            $rides[$i] = Ride::find($rides[$i]->id);
-        }
+        $rides = Ride::findMany($rideIds);
 
-        // add finished rides
+        // add finished rides, which shouldn't be returned
         factory(Ride::class, 3)->create(['done' => true])->each(function($ride) use ($user) {
             $user->rides()->attach($ride, ['status' => 'driver']);
         });
@@ -50,7 +50,7 @@ class TestUser extends TestCase
         $response->assertResponseOk();
         $response->seeJsonEquals([
             'user' => $user->toArray(),
-            'rides' => $rides
+            'rides' => $rides->toArray()
         ]);
     }
 
