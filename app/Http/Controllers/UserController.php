@@ -44,7 +44,7 @@ class UserController extends Controller
             return response()->json(['error'=>'User id_ufrj already exists.'], 409);
         }
 
-        $intranetUser = $this->siga->search();
+        $intranetUser = $this->siga->getProfileById($idUFRJ);
         $user = new User();
 
         $user->name = mb_convert_case($intranetUser->nome, MB_CASE_TITLE, "UTF-8");
