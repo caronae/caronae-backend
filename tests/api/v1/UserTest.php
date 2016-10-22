@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use App\User;
 use App\Ride;
+use App\Repositories\SigaInterface;
 
 class TestUser extends TestCase
 {
@@ -25,7 +26,7 @@ class TestUser extends TestCase
 
     public function testSignUpIntranet()
     {
-        
+
     }
 
     public function testLoginWithValidUser()
@@ -33,7 +34,7 @@ class TestUser extends TestCase
         // create user with some rides
         $user = factory(User::class)->create();
         $user = User::find($user->id);
-        
+
         // add unfinished rides, which should be returned
         $rideIds = [];
         $rides = factory(Ride::class, 3)->create(['done' => false])->each(function($ride) use ($user, &$rideIds) {
@@ -96,7 +97,7 @@ class TestUser extends TestCase
         $this->assertEquals($user->toArray(), $savedUser->toArray());
     }
 
-    public function testSaveGcmToken() 
+    public function testSaveGcmToken()
     {
         $user = factory(User::class)->create();
         $headers = ['token' => $user->token];
@@ -111,7 +112,7 @@ class TestUser extends TestCase
         $this->assertEquals($newToken, $savedUser->gcm_token);
     }
 
-    public function testSaveFacebookID() 
+    public function testSaveFacebookID()
     {
         $user = factory(User::class)->create();
         $headers = ['token' => $user->token];
@@ -126,7 +127,7 @@ class TestUser extends TestCase
         $this->assertEquals($newId, $savedUser->face_id);
     }
 
-    public function testSaveProfilePictureURL() 
+    public function testSaveProfilePictureURL()
     {
         $user = factory(User::class)->create();
         $headers = ['token' => $user->token];
@@ -143,16 +144,32 @@ class TestUser extends TestCase
 
     public function testGetMutualFriends()
     {
-        
+
     }
 
     public function testLoadIntranetPhoto()
     {
-        
+
     }
 
     public function testGetIntranetPhotoUrl()
     {
-        
+        $user = factory(User::class)->create();
+        $headers = ['token' => $user->token];
+
+        // Mock Siga interface
+        App::singleton(SigaInterface::class, function($app) use ($user) {
+            $mockResult = new stdClass;
+            $mockResult->urlFoto = '146.164.2.117:8090/image.jpg';
+            $sigaRepositoryMock = Mockery::mock(SigaInterface::class);
+            $sigaRepositoryMock->shouldReceive('getProfileById')->once()->with($user->id_ufrj)->andReturn($mockResult);
+            return $sigaRepositoryMock;
+        });
+
+        $response = $this->json('GET', 'user/intranetPhotoUrl', [], $headers);
+        $response->assertResponseOk();
+        $response->seeJsonEquals([
+            'url' => 'https://api.caronae.ufrj.br/user/intranetPhoto/image.jpg'
+        ]);
     }
 }
