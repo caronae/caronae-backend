@@ -8,7 +8,7 @@ use App\User;
 use App\Ride;
 use App\Repositories\SigaInterface;
 
-class TestUser extends TestCase
+class UserTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -26,7 +26,33 @@ class TestUser extends TestCase
 
     public function testSignUpIntranet()
     {
+        $id_ufrj = str_random(10);
+        $token = str_random(6);
 
+        // Mock Siga interface
+        App::singleton(SigaInterface::class, function($app) use ($id_ufrj) {
+            $mockProfile = new stdClass;
+            $mockProfile->nome = 'FULANO SILVA';
+            $mockProfile->nomeCurso = 'Engenharia';
+            $mockProfile->alunoServidor = '0';
+            $mockProfile->nivel = 'Graduação';
+            $mockProfile->urlFoto = '146.164.2.117:8090/image.jpg';
+            $sigaRepositoryMock = Mockery::mock(SigaInterface::class);
+            $sigaRepositoryMock->shouldReceive('getProfileById')->once()->with($id_ufrj)->andReturn($mockProfile);
+            return $sigaRepositoryMock;
+        });
+
+        $response = $this->json('GET', "user/signup/intranet/$id_ufrj/$token");
+        $response->assertResponseOk();
+        $response->seeJsonContains([
+            'name' => 'Fulano Silva',
+            'course' => 'Engenharia',
+            'profile' => 'Graduação',
+            'profile_pic_url' => 'https://api.caronae.ufrj.br/user/intranetPhoto/image.jpg'
+        ]);
+        // $response->seeJsonStructure([
+        //     '*' => ['id', 'created_at']
+        // ]);
     }
 
     public function testLoginWithValidUser()
@@ -159,10 +185,10 @@ class TestUser extends TestCase
 
         // Mock Siga interface
         App::singleton(SigaInterface::class, function($app) use ($user) {
-            $mockResult = new stdClass;
-            $mockResult->urlFoto = '146.164.2.117:8090/image.jpg';
+            $mockProfile = new stdClass;
+            $mockProfile->urlFoto = '146.164.2.117:8090/image.jpg';
             $sigaRepositoryMock = Mockery::mock(SigaInterface::class);
-            $sigaRepositoryMock->shouldReceive('getProfileById')->once()->with($user->id_ufrj)->andReturn($mockResult);
+            $sigaRepositoryMock->shouldReceive('getProfileById')->once()->with($user->id_ufrj)->andReturn($mockProfile);
             return $sigaRepositoryMock;
         });
 
