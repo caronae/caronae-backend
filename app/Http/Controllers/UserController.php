@@ -14,11 +14,13 @@ class UserController extends Controller
 {
     protected $siga;
 
-    public function __construct(SigaService $siga) {
+    public function __construct(SigaService $siga)
+    {
         $this->siga = $siga;
     }
 
-    public function signUp($name, $token) {
+    public function signUp($name, $token)
+    {
         if (User::where('token', $token)->count() > 0) {
             return response()->json(['error'=>'User token already exists.'], 409);
         }
@@ -36,7 +38,8 @@ class UserController extends Controller
         return $user;
     }
 
-    public function signUpIntranet($idUFRJ, $token) {
+    public function signUpIntranet($idUFRJ, $token)
+    {
         if (User::where('token', $token)->count() > 0) {
             return response()->json(['error'=>'User token already exists.'], 409);
         }
@@ -69,7 +72,8 @@ class UserController extends Controller
         return $user;
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $decode = json_decode($request->getContent());
         $matchThese = ['token' => $decode->token, 'id_ufrj' => $decode->id_ufrj];
         $user = User::where($matchThese)->first();
@@ -84,7 +88,8 @@ class UserController extends Controller
         return array("user" => $user, "rides" => $drivingRides);
     }
 
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
         if (empty($request->header('token')) || $user == NULL) {
@@ -107,7 +112,8 @@ class UserController extends Controller
         $user->save();
     }
 
-    public function saveGcmToken(Request $request) {
+    public function saveGcmToken(Request $request)
+    {
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
         if ($user == null) {
@@ -119,7 +125,8 @@ class UserController extends Controller
         $user->save();
     }
 
-    public function saveFaceId(Request $request) {
+    public function saveFaceId(Request $request)
+    {
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
         if ($user == null) {
@@ -131,7 +138,8 @@ class UserController extends Controller
         $user->save();
     }
 
-    public function saveProfilePicUrl(Request $request) {
+    public function saveProfilePicUrl(Request $request)
+    {
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
         if ($user == null) {
@@ -143,7 +151,8 @@ class UserController extends Controller
         $user->save();
     }
 
-    public function getMutualFriends(Request $request, $fbid) {
+    public function getMutualFriends(Request $request, $fbid)
+    {
         $user = User::where('token', $request->header('token'))->first();
         if ($user == null) {
             return response()->json(['error'=>'User ' . $request->header('token') . ' token not authorized.'], 403);
@@ -183,7 +192,8 @@ class UserController extends Controller
         return response()->json(["total_count" => $totalFriendsCount, "mutual_friends" => $mutualFriends]);
     }
 
-    public function loadIntranetPhoto($hash) {
+    public function loadIntranetPhoto($hash)
+    {
         $context = stream_context_create(['http' => ['timeout' => 2]]);
         $intranetResponseRaw = @file_get_contents('http://146.164.2.117:8090/' . $hash, FILE_BINARY, $context);
 
@@ -194,10 +204,10 @@ class UserController extends Controller
 
         // TODO: Confirm if the photo is always a JPG
         return response($intranetResponseRaw)->header('Content-Type', 'image/jpg');
-
     }
 
-    public function getIntranetPhotoUrl(Request $request) {
+    public function getIntranetPhotoUrl(Request $request)
+    {
         $user = User::where('token', $request->header('token'))->first();
         if ($user == null) {
             return response()->json(['error'=>'User ' . $request->header('token') . ' token not authorized.'], 403);
@@ -217,43 +227,45 @@ class UserController extends Controller
         return view('users.index')->with('banned', !$request->has('banned'));
     }
 
-    public function indexJson(Request $request){
-        if($request->has('banned'))
-        return User::onlyTrashed()->get();
-        else
-        return User::all();
+    public function indexJson(Request $request)
+    {
+        if ($request->has('banned')) {
+            return User::onlyTrashed()->get();
+        } else {
+            return User::all();
+        }
     }
 
-    public function indexExcel(Request $request){
+    public function indexExcel(Request $request)
+    {
         $query = User::select('name', 'email', 'profile', 'course', 'location');
 
-        if($request->has('banned'))
-        $query = $query->onlyTrashed();
+        if ($request->has('banned')) {
+            $query = $query->onlyTrashed();
+        }
 
         $data = $query->get()->toArray();
 
-        (new ExcelExporter())->export('usuarios',
-        ['Nome', 'Email', 'Perfil UFRJ', 'Curso', 'Bairro'],
-        $data,
-        $request->get('type', 'xlsx')
-    );
-}
+        (new ExcelExporter())->export('usuarios', [
+            'Nome', 'Email', 'Perfil UFRJ', 'Curso', 'Bairro'
+        ], $data, $request->get('type', 'xlsx'));
+    }
 
-public function banish($id)
-{
-    $user = User::find($id);
+    public function banish($id)
+    {
+        $user = User::find($id);
 
-    $user->banish();
+        $user->banish();
 
-    return back()->with('message', 'Usuario "'.$user->name.'" banido com sucesso.');
-}
+        return back()->with('message', 'Usuario "'.$user->name.'" banido com sucesso.');
+    }
 
-public function unban($id)
-{
-    $user = User::withTrashed()->find($id);
+    public function unban($id)
+    {
+        $user = User::withTrashed()->find($id);
 
-    $user->unban();
+        $user->unban();
 
-    return back()->with('message', 'Usuario "'.$user->name.'" desbanido com sucesso.');
-}
+        return back()->with('message', 'Usuario "'.$user->name.'" desbanido com sucesso.');
+    }
 }
