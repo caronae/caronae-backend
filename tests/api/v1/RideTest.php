@@ -43,19 +43,18 @@ class RideTest extends TestCase
         $rideIds = [];
         $rides = factory(Ride::class, 'next', 3)->create(['done' => false])->each(function($ride) use ($user, &$rideIds) {
             $ride->users()->attach($user, ['status' => 'driver']);
-            $ride->driver = $user;
-            unset($ride->done);
             $rideIds[] = $ride->id;
         });
-        // $rides = Ride::findMany($rideIds);
 
-        $response = $this->json('GET', "ride/all", [], $this->headers);
+        $rides = Ride::findMany($rideIds);
+        foreach ($rides as $ride) {
+            $ride->driver = $user->toArray();
+            unset($ride->done);
+        }
+
+        $response = $this->json('GET', 'ride/all', [], $this->headers);
         $response->assertResponseOk();
 
-        foreach ($rides as $ride) {
-            // var_dump($ride->toArray());
-
-            $response->seeJsonContains($ride->toArray());
-        }
+        $response->seeJsonEquals($rides->toArray());
     }
 }
