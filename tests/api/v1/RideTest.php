@@ -57,4 +57,164 @@ class RideTest extends TestCase
 
         $response->seeJsonEquals($rides->toArray());
     }
+
+    public function testSearch()
+    {
+
+    }
+
+    public function testCreateWithoutRoutine()
+    {
+        $request = [
+            'myzone' => 'Norte',
+            'neighborhood' => 'Jardim Guanabara',
+            'place' => 'Praia da bica',
+            'route' => 'Linha Vermelha',
+            'mydate' => '20/10/2016',
+            'mytime' => '10:00',
+            'week_days' => NULL,
+            'repeats_until' => NULL,
+            'slots' => '4',
+            'hub' => 'A',
+            'description' => 'Lorem ipsum dolor',
+            'going' => false
+        ];
+
+        $response = $this->json('POST', 'ride', $request, $this->headers);
+        $response->assertResponseOk();
+
+        $response->seeJsonContains([
+            'myzone' => 'Norte',
+            'neighborhood' => 'Jardim Guanabara',
+            'place' => 'Praia da bica',
+            'route' => 'Linha Vermelha',
+            'mydate' => '2016-10-20',
+            'mytime' => '10:00',
+            'slots' => '4',
+            'hub' => 'A',
+            'description' => 'Lorem ipsum dolor',
+            'going' => false
+        ]);
+
+        // $response->seeJsonStructure([
+        //     '*' => ['id']
+        // ]);
+    }
+
+    public function testCreateWithRoutine()
+    {
+        $request = [
+            'myzone' => 'Norte',
+            'neighborhood' => 'Jardim Guanabara',
+            'place' => 'Praia da bica',
+            'route' => 'Linha Vermelha',
+            'mydate' => '24/10/2016',
+            'mytime' => '16:40',
+            'week_days' => '2,4', // tuesday, thursday
+            'repeats_until' => '01/11/2016',
+            'slots' => '4',
+            'hub' => 'A',
+            'description' => 'Lorem ipsum dolor',
+            'going' => true
+        ];
+
+        $response = $this->json('POST', 'ride', $request, $this->headers);
+        $response->assertResponseOk();
+
+        $response->seeJsonContains([
+            'myzone' => 'Norte',
+            'neighborhood' => 'Jardim Guanabara',
+            'place' => 'Praia da bica',
+            'route' => 'Linha Vermelha',
+            'mydate' => '2016-10-25',
+            'mytime' => '16:40',
+            'slots' => '4',
+            'hub' => 'A',
+            'description' => 'Lorem ipsum dolor',
+            'going' => true
+        ]);
+        $response->seeJsonContains([
+            'myzone' => 'Norte',
+            'neighborhood' => 'Jardim Guanabara',
+            'place' => 'Praia da bica',
+            'route' => 'Linha Vermelha',
+            'mydate' => '2016-10-27',
+            'mytime' => '16:40',
+            'slots' => '4',
+            'hub' => 'A',
+            'description' => 'Lorem ipsum dolor',
+            'going' => true
+        ]);
+        $response->seeJsonContains([
+            'myzone' => 'Norte',
+            'neighborhood' => 'Jardim Guanabara',
+            'place' => 'Praia da bica',
+            'route' => 'Linha Vermelha',
+            'mydate' => '2016-11-01',
+            'mytime' => '16:40',
+            'slots' => '4',
+            'hub' => 'A',
+            'description' => 'Lorem ipsum dolor',
+            'going' => true
+        ]);
+
+        // $response->seeJsonStructure([
+        //     '*' => ['id', 'routine_id']
+        // ]);
+    }
+
+    public function testDelete()
+    {
+
+    }
+
+    public function testDeleteAllFromRoutine()
+    {
+
+    }
+
+    public function testJoin()
+    {
+
+    }
+
+    public function testGetRequesters()
+    {
+
+    }
+
+    public function testAnswerJoinRequest()
+    {
+
+    }
+
+    public function testLeave()
+    {
+
+    }
+
+    public function testFinish()
+    {
+
+    }
+
+    public function testSaveFeedback()
+    {
+
+    }
+
+    public function testGetActiveRides()
+    {
+
+    }
+
+    public function testGetHistory()
+    {
+
+    }
+
+    public function testGetHistoryCount()
+    {
+
+    }
 }
