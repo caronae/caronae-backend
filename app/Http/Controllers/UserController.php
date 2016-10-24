@@ -202,7 +202,6 @@ class UserController extends Controller
             return response()->json(['error'=>'Failed to connect to Intranet photos database.'], 500);
         }
 
-        // TODO: Confirm if the photo is always a JPG
         return response($intranetResponseRaw)->header('Content-Type', 'image/jpg');
     }
 

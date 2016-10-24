@@ -265,11 +265,11 @@ class RideController extends Controller
         $locations = explode(", ", $decode->location);
 
         //location can be zones or neighborhoods, check if first array position is a zone or a neighborhood
-        if ($locations[0] == "Centro" || $locations[0] == "Zona Sul" || $locations[0] == "Zona Oeste" || $locations[0] == "Zona Norte" || $locations[0] == "Baixada" || $locations[0] == "Grande Niterói" || $locations[0] == "Outros")
-        $locationColumn = 'myzone';//if location is filtered by zone, query by 'myzone' column
-        else
-        $locationColumn = 'neighborhood';//if location is filtered by neighborhood, query by 'neighborhood' column
-
+        if ($locations[0] == "Centro" || $locations[0] == "Zona Sul" || $locations[0] == "Zona Oeste" || $locations[0] == "Zona Norte" || $locations[0] == "Baixada" || $locations[0] == "Grande Niterói" || $locations[0] == "Outros") {
+            $locationColumn = 'myzone';//if location is filtered by zone, query by 'myzone' column
+        } else {
+            $locationColumn = 'neighborhood';//if location is filtered by neighborhood, query by 'neighborhood' column
+        }
         $matchThese = ['going' => $decode->go, 'mydate' => $decode->date, 'done' => false];
 
         //query the rides
@@ -316,281 +316,286 @@ class RideController extends Controller
         //save relationship between ride and user
         $user->rides()->attach($decode->rideId, ['status' => 'pending']);
 
-        //send notification
+        //if driver has gcm token, send notification
         $driver = Ride::find($decode->rideId)->users()->where('status', 'driver')->first(); //get ride's driver
-        if (!empty($driver->gcm_token)) { //if driver has gcm token, send notification to him
-            $data = array( 	'message' 	=> "Sua carona recebeu uma solicitação",
-            'msgType' 	=> "joinRequest",
-            'rideId'	 	=> $decode->rideId
-        );
+        if (!empty($driver->gcm_token)) {
+            $data = [
+                'message' => "Sua carona recebeu uma solicitação",
+                'msgType' => "joinRequest",
+                'rideId'  => $decode->rideId
+            ];
 
-        $resultGcm = PostGCM::sendNotification($driver->gcm_token, $data);
+            $resultGcm = PostGCM::sendNotification($driver->gcm_token, $data);
 
-        return response()->json(['message'=>'Request sent and driver notified.', 'gcmResponse'=>$resultGcm]);
-    } else {
-        return response()->json(['message'=>'Request sent but driver did not have GCM token']);
-    }
-}
-
-public function getRequesters($rideId)
-{
-    $ride = Ride::find($rideId);
-    if ($ride == null) {
-        return response()->json(['error'=>'ride not found with id = ' . $rideId], 400);
+            return response()->json(['message'=>'Request sent and driver notified.', 'gcmResponse'=>$resultGcm]);
+        } else {
+            return response()->json(['message'=>'Request sent but driver did not have GCM token']);
+        }
     }
 
-    return $ride->users()->where('status', 'pending')->get();
-}
-
-public function answerJoinRequest(Request $request)
-{
-    $decode = json_decode($request->getContent());
-
-    //find existing relationship which should be pending
-    $matchThese = ['ride_id' => $decode->rideId, 'user_id' => $decode->userId, 'status' => 'pending'];
-    $rideUser = RideUser::where($matchThese)->first();
-    if ($rideUser == null)
-    return response()->json(['error'=>'relationship between ride_id = ' . $decode->rideId . ' and user_id = ' . $decode->userId . ' with status pending not found'], 400);
-
-    $rideUser->status = $decode->accepted ? 'accepted' : 'refused';
-
-    $rideUser->save();
-
-    //send notification
-    $user = User::find($rideUser->user_id);
-    if (!empty($user->gcm_token)) { //if user has gcm token, send notification to him
-        $data = array( 	'message' 	=> $decode->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(',
-        'msgType' 	=> $decode->accepted ? 'accepted' : 'refused',
-        'rideId'	 	=> $decode->rideId
-    );
-    $resultGcm = PostGCM::sendNotification($user->gcm_token, $data);
-    return response()->json(['message'=>'Request answered and user notified.', 'gcmResponse'=>$resultGcm]);
-} else {
-    return response()->json(['message'=>'Request answered but user did not have GCM token']);
-}
-}
-
-public function getMyActiveRides(Request $request)
-{
-    if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-        return response()->json(['error'=>'User token not authorized.'], 403);
-    }
-
-    //active rides have 'driver' or 'accepted' status
-    $rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->where('done', false)->get();
-
-    $resultArray = array();
-    foreach($rides as $ride) {
-        $resultRide = $ride;
-
-        $riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
-        if (count($riders) == 1)//if count == 1 driver is the only one on the ride, therefore ride is not active
-        continue;
-
-        //now we need to put the driver in the beginning of the array
-        $resultRiders = [];
-        foreach($riders as $rider) {
-            $riderStatus = $rider->pivot->status;
-
-            if ($riderStatus == 'driver') {
-                $resultRide->driver = $rider;
-            } else {
-                $resultRiders[] = $rider;
-            }
+    public function getRequesters($rideId)
+    {
+        $ride = Ride::find($rideId);
+        if ($ride == null) {
+            return response()->json(['error'=>'ride not found with id = ' . $rideId], 400);
         }
 
-        $resultRide->riders = $resultRiders;
-        $resultArray[] = $resultRide;
+        return $ride->users()->where('status', 'pending')->get();
     }
 
-    return $resultArray;
-}
+    public function answerJoinRequest(Request $request)
+    {
+        $decode = json_decode($request->getContent());
 
-public function leaveRide(Request $request)
-{
-    if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-        return response()->json(['error'=>'User token not authorized.'], 403);
+        //find existing relationship which should be pending
+        $matchThese = ['ride_id' => $decode->rideId, 'user_id' => $decode->userId, 'status' => 'pending'];
+        $rideUser = RideUser::where($matchThese)->first();
+        if ($rideUser == null)
+        return response()->json(['error'=>'relationship between ride_id = ' . $decode->rideId . ' and user_id = ' . $decode->userId . ' with status pending not found'], 400);
+
+        $rideUser->status = $decode->accepted ? 'accepted' : 'refused';
+
+        $rideUser->save();
+
+        //if user has gcm token, send notification
+        $user = User::find($rideUser->user_id);
+        if (!empty($user->gcm_token)) {
+            $data = [
+                'message' => $decode->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(',
+                'msgType' => $decode->accepted ? 'accepted' : 'refused',
+                'rideId'  => $decode->rideId
+            ];
+            $resultGcm = PostGCM::sendNotification($user->gcm_token, $data);
+            return response()->json(['message'=>'Request answered and user notified.', 'gcmResponse'=>$resultGcm]);
+        } else {
+            return response()->json(['message'=>'Request answered but user did not have GCM token']);
+        }
     }
-    $decode = json_decode($request->getContent());
 
-    $matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
-    $rideUser = RideUser::where($matchThese)->first();//get relationship
-    if ($rideUser->status == 'driver') {//if user is the driver the ride needs to be deleted
+    public function getMyActiveRides(Request $request)
+    {
+        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
+            return response()->json(['error'=>'User token not authorized.'], 403);
+        }
+
+        //active rides have 'driver' or 'accepted' status
+        $rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->where('done', false)->get();
+
+        $resultArray = array();
+        foreach($rides as $ride) {
+            $resultRide = $ride;
+
+            $riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
+            //if count == 1 driver is the only one on the ride, therefore ride is not active
+            if (count($riders) == 1) continue;
+
+            //now we need to put the driver in the beginning of the array
+            $resultRiders = [];
+            foreach($riders as $rider) {
+                $riderStatus = $rider->pivot->status;
+
+                if ($riderStatus == 'driver') {
+                    $resultRide->driver = $rider;
+                } else {
+                    $resultRiders[] = $rider;
+                }
+            }
+
+            $resultRide->riders = $resultRiders;
+            $resultArray[] = $resultRide;
+        }
+
+        return $resultArray;
+    }
+
+    public function leaveRide(Request $request)
+    {
+        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
+            return response()->json(['error'=>'User token not authorized.'], 403);
+        }
+        $decode = json_decode($request->getContent());
+
+        $matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
+        $rideUser = RideUser::where($matchThese)->first();//get relationship
+        if ($rideUser->status == 'driver') {//if user is the driver the ride needs to be deleted
+            $ride = Ride::find($decode->rideId);
+
+            //get gcm tokens from users accepted on the ride
+            $ridersTokens = $ride->users()->where('status', 'accepted')->lists('gcm_token');
+
+            RideUser::where('ride_id', $decode->rideId)->delete();//delete all relationships to this ride
+            $ride->delete();
+
+            //send notification to riders on that ride
+            $data = [
+                'message' => 'Um motorista cancelou uma carona ativa sua',
+                'msgType' => 'cancelled',
+                'rideId'  => $decode->rideId
+            ];
+
+            if (count($ridersTokens) > 1) {
+                $resultGcm = PostGCM::sendNotification($ridersTokens, $data);
+                return response()->json(['message'=>'Left ride and users were notified.', 'gcmResponse'=>$resultGcm]);
+            }
+            if (count($ridersTokens) == 1) {
+                $resultGcm = PostGCM::sendNotification($ridersTokens[0], $data);
+                return response()->json(['message'=>'Left ride and users were notified.', 'gcmResponse'=>$resultGcm]);
+            }
+            //this doesn't handle the case where users' gcm tokens aren't null but are empty (''), they'll still be on the $ridersToken and will receive an error from gcm
+            if (count($ridersTokens) == 0) {
+                return response()->json(['message'=>'Left ride but no users have a gcm token.']);
+            }
+        } else {//if user is not the driver, just set relationship as quit
+            $rideUser->status = 'quit';
+            $rideUser->save();
+
+            $driver = Ride::find($decode->rideId)->users()->where('status', 'driver')->first();
+            if (!empty($driver->gcm_token)) { //if user has gcm token, send notification to him
+                $data = [
+                    'message' => 'Um caronista desistiu de sua carona',
+                    'msgType' => 'quitter'
+                ];
+                $resultGcm = PostGCM::sendNotification($driver->gcm_token, $data);
+                return response()->json(['message'=>'Left ride and users were notified.', 'gcmResponse'=>$resultGcm]);
+            } else {
+                return response()->json(['message'=>'Left ride but driver did not have gcm token.']);
+            }
+        }
+    }
+
+    public function finishRide(Request $request)
+    {
+        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
+            return response()->json(['error'=>'User token not authorized.'], 403);
+        }
+        $decode = json_decode($request->getContent());
+
         $ride = Ride::find($decode->rideId);
+        if ($ride == null) {
+            return response()->json(['error'=>'ride not found with id = ' . $rideId], 400);
+        }
+
+        //find existing relationship which should be driver
+        $matchThese = ['ride_id' => $ride->id, 'user_id' => $user->id, 'status' => 'driver'];
+        $rideUser = RideUser::where($matchThese)->first();
+        if ($rideUser == null) {
+            return response()->json(['error'=>'user is not the driver of this ride'], 403);
+        }
+
+        $ride->done = true;
+        $ride->save();
 
         //get gcm tokens from users accepted on the ride
         $ridersTokens = $ride->users()->where('status', 'accepted')->lists('gcm_token');
 
-        RideUser::where('ride_id', $decode->rideId)->delete();//delete all relationships to this ride
-        $ride->delete();
-
         //send notification to riders on that ride
-        $data = array( 	'message' 	=> 'Um motorista cancelou uma carona ativa sua',
-        'msgType' 	=> 'cancelled',
-        'rideId'	=> $decode->rideId
-    );
+        $data = [
+            'message' => 'Um motorista concluiu uma carona ativa sua',
+            'msgType' => "finished",
+            'rideId' => $decode->rideId
+        ];
 
-    if (count($ridersTokens) > 1) {
-        $resultGcm = PostGCM::sendNotification($ridersTokens, $data);
-
-        return response()->json(['message'=>'Left ride and users were notified.', 'gcmResponse'=>$resultGcm]);
-    }
-    if (count($ridersTokens) == 1) {
-        $resultGcm = PostGCM::sendNotification($ridersTokens[0], $data);
-        return response()->json(['message'=>'Left ride and users were notified.', 'gcmResponse'=>$resultGcm]);
-    }
-    //this doesn't handle the case where users' gcm tokens aren't null but are empty (''), they'll still be on the $ridersToken and will receive an error from gcm
-    if (count($ridersTokens) == 0) {
-        return response()->json(['message'=>'Left ride but no users have a gcm token.']);
-    }
-} else {//if user is not the driver, just set relationship as quit
-    $rideUser->status = 'quit';
-    $rideUser->save();
-
-    $driver = Ride::find($decode->rideId)->users()->where('status', 'driver')->first();
-    if (!empty($driver->gcm_token)) { //if user has gcm token, send notification to him
-        $data = array( 	'message' 	=> 'Um caronista desistiu de sua carona',
-        'msgType' 	=> 'quitter'
-    );
-    $resultGcm = PostGCM::sendNotification($driver->gcm_token, $data);
-    return response()->json(['message'=>'Left ride and users were notified.', 'gcmResponse'=>$resultGcm]);
-} else {
-    return response()->json(['message'=>'Left ride but driver did not have gcm token.']);
-}
-}
-}
-
-public function finishRide(Request $request)
-{
-    if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-        return response()->json(['error'=>'User token not authorized.'], 403);
-    }
-    $decode = json_decode($request->getContent());
-
-    $ride = Ride::find($decode->rideId);
-    if ($ride == null) {
-        return response()->json(['error'=>'ride not found with id = ' . $rideId], 400);
+        if (count($ridersTokens) > 1) {
+            $resultGcm = PostGCM::sendNotification($ridersTokens, $data);
+            return response()->json(['message'=>'Ride finished and users were notified.', 'gcmResponse'=>$resultGcm]);
+        }
+        if (count($ridersTokens) == 1) {
+            $resultGcm = PostGCM::sendNotification($ridersTokens[0], $data);
+            return response()->json(['message'=>'Ride finished and users were notified.', 'gcmResponse'=>$resultGcm]);
+        }
+        //this doesn't handle the case where users' gcm tokens aren't null but are empty (''), they'll still be on the $ridersToken and will receive an error from gcm
+        if (count($ridersTokens) == 0) {
+            return response()->json(['message'=>'Ride finished but no users have a gcm token.']);
+        }
     }
 
-    //find existing relationship which should be driver
-    $matchThese = ['ride_id' => $ride->id, 'user_id' => $user->id, 'status' => 'driver'];
-    $rideUser = RideUser::where($matchThese)->first();
-    if ($rideUser == null) {
-        return response()->json(['error'=>'user is not the driver of this ride'], 403);
-    }
-
-    $ride->done = true;
-    $ride->save();
-
-    //get gcm tokens from users accepted on the ride
-    $ridersTokens = $ride->users()->where('status', 'accepted')->lists('gcm_token');
-
-    //send notification to riders on that ride
-    $data = array( 	'message' 	=> 'Um motorista concluiu uma carona ativa sua',
-    'msgType' 	=> "finished",
-    'rideId'	=> $decode->rideId);
-
-    if (count($ridersTokens) > 1) {
-        $resultGcm = PostGCM::sendNotification($ridersTokens, $data);
-
-        return response()->json(['message'=>'Ride finished and users were notified.', 'gcmResponse'=>$resultGcm]);
-    }
-    if (count($ridersTokens) == 1) {
-        $resultGcm = PostGCM::sendNotification($ridersTokens[0], $data);
-        return response()->json(['message'=>'Ride finished and users were notified.', 'gcmResponse'=>$resultGcm]);
-    }
-    //this doesn't handle the case where users' gcm tokens aren't null but are empty (''), they'll still be on the $ridersToken and will receive an error from gcm
-    if (count($ridersTokens) == 0) {
-        return response()->json(['message'=>'Ride finished but no users have a gcm token.']);
-    }
-}
-
-public function getRidesHistory(Request $request)
-{
-    if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-        return response()->json(['error'=>'User token not authorized.'], 403);
-    }
-
-    $rides = $user->rides()->where('done', true)->whereIn('status', ['driver', 'accepted'])->get();
-
-    $resultJson = array();
-    foreach($rides as $ride) {
-        $riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
-
-        $resultRide = $ride;
-
-        $resultRiders = [];
-        foreach($riders as $rider) {
-            $riderStatus = $rider->pivot->status;
-
-            if ($riderStatus == 'driver') {
-                $resultRide->driver = $rider;
-            } else {
-                $resultRiders[] = $rider;
-            }
+    public function getRidesHistory(Request $request)
+    {
+        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
+            return response()->json(['error'=>'User token not authorized.'], 403);
         }
 
-        $resultRide->riders = $resultRiders;
-        $resultRide->feedback = $resultRide->pivot->feedback;
-        $resultJson[] = $resultRide;
+        $rides = $user->rides()->where('done', true)->whereIn('status', ['driver', 'accepted'])->get();
+
+        $resultJson = [];
+        foreach($rides as $ride) {
+            $riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
+
+            $resultRide = $ride;
+
+            $resultRiders = [];
+            foreach($riders as $rider) {
+                $riderStatus = $rider->pivot->status;
+
+                if ($riderStatus == 'driver') {
+                    $resultRide->driver = $rider;
+                } else {
+                    $resultRiders[] = $rider;
+                }
+            }
+
+            $resultRide->riders = $resultRiders;
+            $resultRide->feedback = $resultRide->pivot->feedback;
+            $resultJson[] = $resultRide;
+        }
+
+        return $resultJson;
     }
 
-    return $resultJson;
-}
+    public function getRidesHistoryCount($userId)
+    {
+        $user = User::find($userId);
+        if ($user == null) {
+            return response()->json(['error'=>'User not found with id = ' . $userId], 400);
+        }
 
-public function getRidesHistoryCount($userId)
-{
-    $user = User::find($userId);
-    if ($user == null) {
-        return response()->json(['error'=>'User not found with id = ' . $userId], 400);
+        $offeredCount = $user->rides()->where('done', true)->where('status', 'driver')->count();
+        $takenCount = $user->rides()->where('done', true)->where('status', 'accepted')->count();
+
+        return [
+            "offeredCount" => $offeredCount,
+            "takenCount" => $takenCount
+        ];
     }
 
-    $offeredCount = $user->rides()->where('done', true)->where('status', 'driver')->count();
-    $takenCount = $user->rides()->where('done', true)->where('status', 'accepted')->count();
+    public function saveFeedback(Request $request)
+    {
+        $decode = json_decode($request->getContent());
+        $matchThese = ['ride_id' => $decode->rideId, 'user_id' => $decode->userId];
+        $ride_user = RideUser::where($matchThese)->first();
 
-    return array("offeredCount" => $offeredCount, "takenCount" => $takenCount);
-}
+        if ($ride_user == null) {
+            return response()->json(['error'=>'relationship between user with id ' . $decode->userId . ' and ride with id '. $decode->rideId . ' does not exist or ride does not exist'], 400);
+        }
 
-public function saveFeedback(Request $request)
-{
-    $decode = json_decode($request->getContent());
-    $matchThese = ['ride_id' => $decode->rideId, 'user_id' => $decode->userId];
-    $ride_user = RideUser::where($matchThese)->first();
-
-    if ($ride_user == null) {
-        return response()->json(['error'=>'relationship between user with id ' . $decode->userId . ' and ride with id '. $decode->rideId . ' does not exist or ride does not exist'], 400);
+        $ride_user->feedback = $request->feedback;
+        $ride_user->save();
     }
 
-    $ride_user->feedback = $request->feedback;
-    $ride_user->save();
-}
+    public function index()
+    {
+        return view('rides.index');
+    }
 
-public function index()
-{
-    return view('rides.index');
-}
+    public function indexJson(RankingRequest $request)
+    {
+        // o RankingRequest está sendo usado para reutilizar código, mas isso tecnicamente não é um ranking
+        return Ride::getInPeriodWithUserInfo($request->getDate('start'), $request->getDate('end'));
+    }
 
-public function indexJson(RankingRequest $request)
-{
-    // o RankingRequest está sendo usado para reutilizar código, mas isso tecnicamente não é um ranking
-    return Ride::getInPeriodWithUserInfo($request->getDate('start'), $request->getDate('end'));
-}
+    public function indexExcel(RankingRequest $request)
+    {
+        $data = Ride::getInPeriodWithUserInfo($request->getDate('start'), $request->getDate('end'));
 
-public function indexExcel(RankingRequest $request)
-{
-    $data = Ride::getInPeriodWithUserInfo($request->getDate('start'), $request->getDate('end'));
+        (new ExcelExporter())->exportWithBlade('caronas-dadas', 'rides.excel-export-sheet',
+        ['Motorista', 'Curso', 'Data', 'Hora', 'Origem', 'Destino', 'Distancia', 'Distancia Total', 'Total de Caronas', 'Distancia Média'],
+        $data->toArray(), $request->get('type', 'xlsx'));
+    }
 
-    (new ExcelExporter())->exportWithBlade('caronas-dadas', 'rides.excel-export-sheet',
-    ['Motorista', 'Curso', 'Data', 'Hora', 'Origem', 'Destino', 'Distancia', 'Distancia Total', 'Total de Caronas', 'Distancia Média'],
-    $data->toArray(),
-    $request->get('type', 'xlsx')
-);
-}
+    public function riders($rideId)
+    {
+        $ride = Ride::find($rideId);
 
-public function riders($rideId)
-{
-    $ride = Ride::find($rideId);
-
-    return $ride->users()->where('status', 'accepted')->get();
-}
+        return $ride->users()->where('status', 'accepted')->get();
+    }
 }
