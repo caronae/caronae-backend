@@ -10,24 +10,6 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function signUp($name, $token) {
-		if (User::where('token', $token)->count() > 0) {
-			return response()->json(['error'=>'User token already exists.'], 409);
-		}
-		
-		$user = new User();
-
-		$user->name = $name;
-		$user->token = $token;
-		$user->profile = "Perfil padrão";
-		$user->course = "Curso padrão";
-		$user->id_ufrj = "";
-
-		$user->save();
-		
-		return $user;
-	}
-
     public function signUpIntranet($idUFRJ, $token) {
 		if (User::where('token', $token)->count() > 0) {
 			return response()->json(['error'=>'User token already exists.'], 409);

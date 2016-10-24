@@ -3,7 +3,6 @@
 // API interface. Used by the mobile apps
 
 // User routes
-Route::get('user/signup/{name}/{token}', 'UserController@signUp'); 
 Route::get('user/signup/intranet/{idUFRJ}/{token}', 'UserController@signUpIntranet');
 Route::post('user/login', 'UserController@login');
 Route::put('user', 'UserController@update');
