@@ -41,7 +41,7 @@ class RideTest extends TestCase
     {
         $user = $this->user;
         $rideIds = [];
-        $rides = factory(Ride::class, 'next', 3)->create(['done' => false])->each(function($ride) use ($user, &$rideIds) {
+        $rides = factory(Ride::class, 'next', 2)->create(['done' => false])->each(function($ride) use ($user, &$rideIds) {
             $ride->users()->attach($user, ['status' => 'driver']);
             $rideIds[] = $ride->id;
         });
@@ -55,7 +55,59 @@ class RideTest extends TestCase
         $response = $this->json('GET', 'ride/all', [], $this->headers);
         $response->assertResponseOk();
 
-        $response->seeJsonEquals($rides->toArray());
+        $driverArray = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'profile' => $user->profile,
+            'course' => $user->course,
+            'phone_number' => $user->phone_number,
+            'email' => $user->email,
+            'car_owner' => $user->car_owner,
+            'car_model' => $user->car_model,
+            'car_color' => $user->car_color,
+            'car_plate' => $user->car_plate,
+            'created_at' => $user->created_at->format('Y-m-d H:i:s'),
+            'location' => $user->location,
+            'face_id' => $user->face_id,
+            'profile_pic_url' => $user->profile_pic_url
+        ];
+
+        $response->seeJsonEquals([
+            [
+                'id' => $rides[0]->id,
+                'myzone' => $rides[0]->myzone,
+                'neighborhood' => $rides[0]->neighborhood,
+                'going' => $rides[0]->going,
+                'place' => $rides[0]->place,
+                'route' => $rides[0]->route,
+                'routine_id' => $rides[0]->routine_id,
+                'hub' => $rides[0]->hub,
+                'slots' => $rides[0]->slots,
+                'mytime' => $rides[0]->mytime,
+                'mydate' => $rides[0]->mydate,
+                'description' => $rides[0]->description,
+                'week_days' => $rides[0]->week_days,
+                'repeats_until' => $rides[0]->repeats_until,
+                'driver' => $driverArray
+            ],
+            [
+                'id' => $rides[1]->id,
+                'myzone' => $rides[1]->myzone,
+                'neighborhood' => $rides[1]->neighborhood,
+                'going' => $rides[1]->going,
+                'place' => $rides[1]->place,
+                'route' => $rides[1]->route,
+                'routine_id' => $rides[1]->routine_id,
+                'hub' => $rides[1]->hub,
+                'slots' => $rides[1]->slots,
+                'mytime' => $rides[1]->mytime,
+                'mydate' => $rides[1]->mydate,
+                'description' => $rides[1]->description,
+                'week_days' => $rides[1]->week_days,
+                'repeats_until' => $rides[1]->repeats_until,
+                'driver' => $driverArray
+            ]
+        ]);
     }
 
     public function testSearch()
