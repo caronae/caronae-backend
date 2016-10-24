@@ -45,9 +45,18 @@ $factory->define(Ride::class, function (Faker\Generator $faker) {
         'myzone' => $faker->city,
         'neighborhood' => $faker->city,
         'going' => $faker->boolean(),
-        'slots' => $faker->numberBetween(0, 4),
+        'slots' => $faker->numberBetween(1, 4),
         'mytime' => $faker->time(),
         'mydate' => $faker->date(),
         'done' => $faker->boolean()
     ];
+});
+
+$factory->defineAs(Ride::class, 'next', function (Faker\Generator $faker) use ($factory) {
+    $ride = $factory->raw(Ride::class);
+    $date = $faker->dateTimeBetween('now', 'tomorrow');
+    return array_merge($ride, [
+        'mydate' => $date->format('Y-m-d'),
+        'mytime' => $date->format('H:i:s')
+    ]);
 });
