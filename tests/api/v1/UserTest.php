@@ -63,11 +63,9 @@ class UserTest extends TestCase
 
         // add unfinished rides, which should be returned
         $rideIds = [];
-        $rides = factory(Ride::class, 3)->create(['done' => false])->each(function($ride) use ($user, &$rideIds) {
-            $user->rides()->attach($ride, ['status' => 'driver']);
-            $rideIds[] = $ride->id;
-        });
-        $rides = Ride::findMany($rideIds);
+        $ride = factory(Ride::class)->create(['done' => false]);
+        $user->rides()->attach($ride, ['status' => 'driver']);
+        $ride = Ride::find($ride->id);
 
         // add finished rides, which shouldn't be returned
         factory(Ride::class, 3)->create(['done' => true])->each(function($ride) use ($user) {
@@ -81,8 +79,41 @@ class UserTest extends TestCase
 
         $response->assertResponseOk();
         $response->seeJsonEquals([
-            'user' => $user->toArray(),
-            'rides' => $rides->toArray()
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'profile' => $user->profile,
+                'course' => $user->course,
+                'phone_number' => $user->phone_number,
+                'email' => $user->email,
+                'car_owner' => $user->car_owner,
+                'car_model' => $user->car_model,
+                'car_color' => $user->car_color,
+                'car_plate' => $user->car_plate,
+                'created_at' => $user->created_at->format('Y-m-d H:i:s'),
+                'location' => $user->location,
+                'face_id' => $user->face_id,
+                'profile_pic_url' => $user->profile_pic_url
+            ],
+            'rides' => [
+                [
+                    'id' => $ride->id,
+                    'myzone' => $ride->myzone,
+                    'neighborhood' => $ride->neighborhood,
+                    'going' => $ride->going,
+                    'place' => $ride->place,
+                    'route' => $ride->route,
+                    'routine_id' => $ride->routine_id,
+                    'hub' => $ride->hub,
+                    'slots' => $ride->slots,
+                    'mytime' => $ride->mytime,
+                    'mydate' => $ride->mydate,
+                    'description' => $ride->description,
+                    'week_days' => $ride->week_days,
+                    'repeats_until' => $ride->repeats_until,
+                    'done' => $ride->done
+                ]
+            ]
         ]);
     }
 
@@ -108,6 +139,7 @@ class UserTest extends TestCase
         $user->profile = $faker->titleMale;
         $user->course = $faker->company;
         $user->phone_number = $faker->regexify('[0-9]{10-11}');
+        $user->email = $faker->email;
         $user->email = $faker->email;
         $user->location = $faker->city;
         $user->car_owner = !$user->car_owner;
