@@ -24,72 +24,77 @@ class RideController extends Controller
         }
         $decode = json_decode($request->getContent());
 
-        // TODO: wrap in transaction
+        $rides_created = [];
+        DB::transaction(function() use ($decode, $user, &$rides_created) {
+            //create new ride and save it
+            $ride = new Ride();
+            $ride->myzone = $decode->myzone;
+            $ride->neighborhood = $decode->neighborhood;
+            $ride->place = $decode->place;
+            $ride->route = $decode->route;
+            $ride_date = DateTime::createFromFormat('d/m/Y', $decode->mydate);
+            $ride->mydate = $ride_date->format('Y-m-d');
+            $ride->mytime = $decode->mytime;
+            $ride->slots = $decode->slots;
+            $ride->hub = $decode->hub;
+            $ride->description = $decode->description;
+            $ride->going = $decode->going;
 
-        //create new ride and save it
-        $ride = new Ride();
-        $ride->myzone = $decode->myzone;
-        $ride->neighborhood = $decode->neighborhood;
-        $ride->place = $decode->place;
-        $ride->route = $decode->route;
-        $ride_date = DateTime::createFromFormat('d/m/Y', $decode->mydate);
-        $ride->mydate = $ride_date->format('Y-m-d');
-        $ride->mytime = $decode->mytime;
-        $ride->slots = $decode->slots;
-        $ride->hub = $decode->hub;
-        $ride->description = $decode->description;
-        $ride->going = $decode->going;
-
-        $ride->save();
-        $rides_created[] = $ride;
-
-        // save relationship between ride and user
-        $ride->users()->attach($user->id, ['status' => 'driver']);
-
-        // check if the ride is recurring. if so, there will be a field 'repeats_until'
-        // and a field 'week_days' with the repeating days (1->monday, 2->tuesday, ..., 7->sunday)
-        if (!empty($decode->repeats_until) && is_string($decode->repeats_until)) {
-            $repeats_until = DateTime::createFromFormat('d/m/Y', $decode->repeats_until);
-            $ride->repeats_until = $repeats_until->format('Y-m-d');
-            $ride->week_days = $decode->week_days;
-
-            $repeating_dates = $this->recurringDates($ride_date, $repeats_until, $ride->week_days);
-
-            foreach ($repeating_dates as $date) {
-                // Skip if it's the date of the original Ride
-                if ($date == $ride_date) continue;
-
-                // Creating repeating Ride objects. All fields are the same except for
-                // the date - which will have a new generated date - and a foreign key
-                // to the original Ride (routine_id).
-                $repeating_ride = new Ride();
-                $repeating_ride->myzone = $ride->myzone;
-                $repeating_ride->neighborhood = $ride->neighborhood;
-                $repeating_ride->place = $ride->place;
-                $repeating_ride->route = $ride->route;
-                $repeating_ride->mydate = $date->format('Y-m-d'); // New date
-                $repeating_ride->mytime = $ride->mytime;
-                $repeating_ride->slots = $ride->slots;
-                $repeating_ride->hub = $ride->hub;
-                $repeating_ride->description = $ride->description;
-                $repeating_ride->going = $ride->going;
-                $repeating_ride->week_days = $ride->week_days;
-                $repeating_ride->routine_id = $ride->id; // References the original ride which originated this ride
-
-                $repeating_ride->save();
-
-                $rides_created[] = $repeating_ride;
-
-                // Saving the relationship between ride and user
-                $repeating_ride->users()->attach($user->id, ['status' => 'driver']);
-            }
-
-            $ride->routine_id = $ride->id;
             $ride->save();
-        } else {
-            $ride->repeats_until = NULL;
-        }
+            $rides_created[] = $ride;
 
+            // save relationship between ride and user
+            $ride->users()->attach($user->id, ['status' => 'driver']);
+
+            // check if the ride is recurring. if so, there will be a field 'repeats_until'
+            // and a field 'week_days' with the repeating days (1->monday, 2->tuesday, ..., 7->sunday)
+            if (!empty($decode->repeats_until) && is_string($decode->repeats_until)) {
+                $repeats_until = DateTime::createFromFormat('d/m/Y', $decode->repeats_until);
+                $ride->repeats_until = $repeats_until->format('Y-m-d');
+                $ride->week_days = $decode->week_days;
+
+                $repeating_dates = $this->recurringDates($ride_date, $repeats_until, $ride->week_days);
+
+                foreach ($repeating_dates as $date) {
+                    // Skip if it's the date of the original Ride
+                    if ($date == $ride_date) continue;
+
+                    // Creating repeating Ride objects. All fields are the same except for
+                    // the date - which will have a new generated date - and a foreign key
+                    // to the original Ride (routine_id).
+                    $repeating_ride = new Ride();
+                    $repeating_ride->myzone = $ride->myzone;
+                    $repeating_ride->neighborhood = $ride->neighborhood;
+                    $repeating_ride->place = $ride->place;
+                    $repeating_ride->route = $ride->route;
+                    $repeating_ride->mydate = $date->format('Y-m-d'); // New date
+                    $repeating_ride->mytime = $ride->mytime;
+                    $repeating_ride->slots = $ride->slots;
+                    $repeating_ride->hub = $ride->hub;
+                    $repeating_ride->description = $ride->description;
+                    $repeating_ride->going = $ride->going;
+                    $repeating_ride->week_days = $ride->week_days;
+                    $repeating_ride->routine_id = $ride->id; // References the original ride which originated this ride
+
+                    $repeating_ride->save();
+
+                    $rides_created[] = $repeating_ride;
+
+                    // Saving the relationship between ride and user
+                    $repeating_ride->users()->attach($user->id, ['status' => 'driver']);
+                }
+
+                $ride->routine_id = $ride->id;
+                $ride->save();
+            } else {
+                $ride->repeats_until = NULL;
+            }
+        });
+
+        if (empty($rides_created)) {
+            return response()->json(['error'=>'No rides were created.'], 204);
+        }
+        
         return $rides_created;
     }
 
