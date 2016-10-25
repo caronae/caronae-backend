@@ -173,6 +173,21 @@ class RideTest extends TestCase
         $response = $this->json('POST', 'ride', $request, $this->headers);
         $response->assertResponseOk();
 
+        $jsonContent = json_decode($this->response->getContent());
+        $this->assertEquals(4, count($jsonContent), "Should create exactly 4 rides.");
+
+        $response->seeJsonContains([
+            'myzone' => 'Norte',
+            'neighborhood' => 'Jardim Guanabara',
+            'place' => 'Praia da bica',
+            'route' => 'Linha Vermelha',
+            'mydate' => '2016-10-24',
+            'mytime' => '16:40',
+            'slots' => '4',
+            'hub' => 'A',
+            'description' => 'Lorem ipsum dolor',
+            'going' => true
+        ]);
         $response->seeJsonContains([
             'myzone' => 'Norte',
             'neighborhood' => 'Jardim Guanabara',
