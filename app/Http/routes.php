@@ -33,8 +33,6 @@ Route::post('ride/saveFeedback', 'RideController@saveFeedback');
 // Falae routes
 Route::post('falae/sendMessage', 'FalaeController@sendMessage');
 
-// SIGA routes (private)
-Route::get('siga/search', 'SigaController@search');
 
 // Site interface. Used by system admins
 

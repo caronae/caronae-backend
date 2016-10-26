@@ -149,6 +149,8 @@ return [
         App\Providers\ViewComposerServiceProvider::class,
         App\Providers\ValidatorServiceProvider::class,
 
+        App\Providers\SigaRepositoryServiceProvider::class,
+
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class
     ],
