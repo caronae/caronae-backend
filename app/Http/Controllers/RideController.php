@@ -9,6 +9,7 @@ use App\Http\Requests\RankingRequest;
 use App\Ride;
 use App\RideUser;
 use App\User;
+use Carbon\Carbon;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
@@ -17,6 +18,17 @@ use Illuminate\Http\Request;
 
 class RideController extends Controller
 {
+    /**
+     * Instantiate a new RideController instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('api.v1.auth', ['only' => ['sendChatMessage']]);
+        $this->middleware('api.v1.userBelongsToRide', ['only' => ['sendChatMessage']]);
+    }
+
     public function store(Request $request)
     {
         if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
@@ -94,7 +106,7 @@ class RideController extends Controller
         if (empty($rides_created)) {
             return response()->json(['error'=>'No rides were created.'], 204);
         }
-        
+
         return $rides_created;
     }
 
@@ -522,6 +534,28 @@ class RideController extends Controller
         $ride_user->feedback = $request->feedback;
         $ride_user->save();
     }
+
+    public function sendChatMessage(Request $request, Ride $ride)
+    {
+        $user = $request->get('user');
+        $message = $request->input('message');
+
+        $topic = "/topics/" . $ride->id;
+        $data = [
+            'message' => $message,
+            'rideId' => $ride->id,
+            'msgType' => 'chat',
+            'senderName' => $user->name,
+            'senderId' => $user->id,
+            'time' => Carbon::now()->toDateTimeString()
+        ];
+
+        PostGCM::sendDataToTopic($topic, $data);
+        return response()->json(['message' => 'Message sent.']);
+    }
+
+
+    /// Helper methods
 
     protected function recurringDates($startDate, $endDate, $weekDaysString)
     {

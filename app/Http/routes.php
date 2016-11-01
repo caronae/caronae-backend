@@ -29,6 +29,8 @@ Route::post('ride/finishRide', 'RideController@finishRide');
 Route::get('ride/getRidesHistory', 'RideController@getRidesHistory');
 Route::get('ride/getRidesHistoryCount/{userId}', 'RideController@getRidesHistoryCount');
 Route::post('ride/saveFeedback', 'RideController@saveFeedback');
+Route::post('ride/{ride}/chat', 'RideController@sendChatMessage');
+
 
 // Falae routes
 Route::post('falae/sendMessage', 'FalaeController@sendMessage');

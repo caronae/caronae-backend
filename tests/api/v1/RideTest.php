@@ -284,4 +284,18 @@ class RideTest extends TestCase
     {
 
     }
+
+    public function testSendChatMessage()
+    {
+        // Create fake ride with the user as driver
+        $ride = factory(Ride::class)->create();
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $request = [
+            'message' => str_random(255)
+        ];
+
+        $response = $this->json('POST', 'ride/' . $ride->id . '/chat', $request, $this->headers);
+        $response->assertResponseOk();
+    }
 }
