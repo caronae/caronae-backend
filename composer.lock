@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "cf3ccc8f3780258ba93ec1f17357431d",
-    "content-hash": "0ffc8f96075c76c36028432072082ba8",
+    "hash": "1f3a75d0a6aec8fd875a9a3ed968012c",
+    "content-hash": "c1606c112b7a33ad50c0e5980bd69e22",
     "packages": [
         {
             "name": "barryvdh/laravel-ide-helper",
@@ -682,12 +682,12 @@
             "version": "5.1.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/facebook/facebook-php-sdk-v4.git",
+                "url": "https://github.com/facebook/php-graph-sdk.git",
                 "reference": "2c42fb3002953355f12d3c6e8003a9fd5af563d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/facebook/facebook-php-sdk-v4/zipball/2c42fb3002953355f12d3c6e8003a9fd5af563d9",
+                "url": "https://api.github.com/repos/facebook/php-graph-sdk/zipball/2c42fb3002953355f12d3c6e8003a9fd5af563d9",
                 "reference": "2c42fb3002953355f12d3c6e8003a9fd5af563d9",
                 "shasum": ""
             },
@@ -730,6 +730,7 @@
                 "facebook",
                 "sdk"
             ],
+            "abandoned": "facebook/graph-sdk",
             "time": "2015-11-19 21:07:36"
         },
         {
@@ -1425,6 +1426,55 @@
                 "php"
             ],
             "time": "2015-12-04 15:28:43"
+        },
+        {
+            "name": "nwidart/db-exporter",
+            "version": "dev-feature/postgresql-support",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/macecchi/DbExporter.git",
+                "reference": "81919f50609a01d63099336ec356ca02abacda9c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/macecchi/DbExporter/zipball/81919f50609a01d63099336ec356ca02abacda9c",
+                "reference": "81919f50609a01d63099336ec356ca02abacda9c",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "4.*|5.*",
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Nwidart\\DbExporter": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Widart",
+                    "email": "n.widart@gmail.com"
+                }
+            ],
+            "description": "Export your database quickly and easily as a Laravel Migration and all the data as a Seeder class.",
+            "keywords": [
+                "Artisan",
+                "Command",
+                "Database",
+                "Export",
+                "Laravel",
+                "Migrations",
+                "PHP",
+                "Seed"
+            ],
+            "support": {
+                "source": "https://github.com/macecchi/DbExporter/tree/feature/postgresql-support"
+            },
+            "time": "2016-11-10 01:00:37"
         },
         {
             "name": "paragonie/random_compat",
@@ -4052,7 +4102,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "nwidart/db-exporter": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

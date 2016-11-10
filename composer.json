@@ -11,7 +11,8 @@
         "tymon/jwt-auth": "0.5.*",
         "facebook/php-sdk-v4": "^5.1",
         "barryvdh/laravel-ide-helper": "^2.1",
-        "maatwebsite/excel": "~2.1.0"
+        "maatwebsite/excel": "~2.1.0",
+        "nwidart/db-exporter": "dev-feature/postgresql-support"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -19,6 +20,12 @@
         "phpunit/phpunit": "~4.0",
         "phpspec/phpspec": "~2.1"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/macecchi/DbExporter.git"
+        }
+    ],
     "autoload": {
         "classmap": [
             "database"
