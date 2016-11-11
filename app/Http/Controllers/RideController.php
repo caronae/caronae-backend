@@ -14,6 +14,7 @@ use DateTime;
 use DateTimeZone;
 use DB;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class RideController extends Controller
 {
@@ -96,6 +97,39 @@ class RideController extends Controller
         }
         
         return $rides_created;
+    }
+    
+    public function validateDuplicate(Request $request)
+    {
+        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
+            return response()->json(['error'=>'User token not authorized.'], 403);
+        }
+
+        $dateTime = Carbon::createFromFormat('d/m/Y H:i:s', $request->input('date') . $request->input('time'));
+        $date = $dateTime->format('Y-m-d');
+        $timeMin = $dateTime->copy()->subHours(2)->format('H:i:s'); // check for rides a few hours before the time
+        $timeMax = $dateTime->copy()->addHours(2)->format('H:i:s'); // check for rides a few hours after the time
+
+        $ridesFound = $user->rides()
+            ->where(['mydate' => $date])
+            ->whereBetween('mytime', [$timeMin, $timeMax])
+            ->exists();
+
+        if ($ridesFound) {
+            $valid = false;
+            $status = 'possible_duplicate';
+            $message = 'The user has already offered a ride too close to the specified date.';
+        } else {
+            $valid = true;
+            $status = 'valid';
+            $message = 'No conflicting rides were found close to the specified date.';
+        }
+
+        return response()->json([
+            'valid' => $valid,
+            'status' => $status,
+            'message' => $message
+        ]);
     }
 
     public function delete(Request $request, $rideId)
