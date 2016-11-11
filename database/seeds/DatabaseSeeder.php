@@ -10,14 +10,14 @@ class DatabaseSeeder extends Seeder
         Model::unguard();
 
         if (App::environment() == 'production') {
-            throw new Exception('Seeder executado em ambiente de producao.');
+            throw new Exception('Seeder executado em ambiente de produção.');
         }
 
         //$this->setForeignKeyChecks(false);
 
         $this->call(BootstrapSeeder::class);
         $this->call(AdminTableSeeder::class);
-        $this->call(UserTableSeeder::class);
+        $this->call(UserRideTableSeeder::class);
 
         //$this->setForeignKeyChecks(true);
 
