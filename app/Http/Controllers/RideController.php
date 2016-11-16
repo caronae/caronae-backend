@@ -88,6 +88,8 @@ class RideController extends Controller
                 $ride->routine_id = $ride->id;
                 $ride->save();
             } else {
+                $ride->routine_id = NULL;
+                $ride->week_days = NULL;
                 $ride->repeats_until = NULL;
             }
         });
