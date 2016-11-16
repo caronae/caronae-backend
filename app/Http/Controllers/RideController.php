@@ -15,7 +15,6 @@ use DateTimeZone;
 use DB;
 use App\Services\PushNotificationService;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class RideController extends Controller
 {
