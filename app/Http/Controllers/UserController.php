@@ -12,14 +12,7 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    protected $siga;
-
-    public function __construct(SigaService $siga)
-    {
-        $this->siga = $siga;
-    }
-
-    public function signUpIntranet($idUFRJ, $token)
+    public function signUpIntranet($idUFRJ, $token, SigaService $siga)
     {
         if (User::where('token', $token)->count() > 0) {
             return response()->json(['error'=>'User token already exists.'], 409);
@@ -28,7 +21,7 @@ class UserController extends Controller
             return response()->json(['error'=>'User id_ufrj already exists.'], 409);
         }
 
-        $intranetUser = $this->siga->getProfileById($idUFRJ);
+        $intranetUser = $siga->getProfileById($idUFRJ);
         $user = new User();
 
         $user->name = mb_convert_case($intranetUser->nome, MB_CASE_TITLE, "UTF-8");
@@ -186,7 +179,7 @@ class UserController extends Controller
         return response($intranetResponseRaw)->header('Content-Type', 'image/jpg');
     }
 
-    public function getIntranetPhotoUrl(Request $request)
+    public function getIntranetPhotoUrl(Request $request, SigaService $siga)
     {
         $user = User::where('token', $request->header('token'))->first();
         if ($user == null) {
@@ -198,7 +191,7 @@ class UserController extends Controller
             return response()->json(['error'=>'User does not have an Intranet identification.'], 403);
         }
 
-        $picture = $this->siga->getProfilePictureById($idUFRJ);
+        $picture = $siga->getProfilePictureById($idUFRJ);
         return response()->json(['url' => $picture]);
     }
 

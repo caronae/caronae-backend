@@ -150,6 +150,7 @@ return [
         App\Providers\ValidatorServiceProvider::class,
 
         App\Providers\SigaRepositoryServiceProvider::class,
+        App\Providers\PushNotificationFirebaseServiceProvider::class,
 
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class

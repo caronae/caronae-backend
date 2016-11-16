@@ -14,11 +14,23 @@ class User extends Model
     protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at'];
     protected $dates = ['deleted_at'];
 
-    public function rides() {
+    public function rides()
+    {
         return $this->belongsToMany('App\Ride')->withPivot('status', 'feedback')->withTimestamps();
     }
 
-    public function banish(){
+    public function belongsToRide(Ride $ride)
+    {
+        return !is_null(
+            RideUser::where('ride_id', $ride->id)
+                 ->where('user_id', $this->id)
+                 ->whereIn('status', ['driver', 'accepted'])
+                 ->first()
+        );
+    }
+
+    public function banish()
+    {
         DB::transaction(function(){
             $ids = $this->rides()->where('done', false)->get()->pluck('id');
 
@@ -35,7 +47,8 @@ class User extends Model
         });
     }
 
-    public function unban(){
+    public function unban()
+    {
         $this->restore();
     }
 }

@@ -27,6 +27,8 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'api.v1.auth' => \App\Http\Middleware\ApiV1Authenticate::class,
+        'api.v1.userBelongsToRide' => \App\Http\Middleware\ApiV1AuthenticateRideUser::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'jwt.auth' => Tymon\JWTAuth\Middleware\GetUserFromToken::class,
         'jwt.refresh' => Tymon\JWTAuth\Middleware\RefreshToken::class,

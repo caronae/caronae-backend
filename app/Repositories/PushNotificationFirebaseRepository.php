@@ -1,11 +1,42 @@
 <?php
 
-namespace App\Http;
-use App\Exceptions\FirebaseException;
+namespace App\Repositories;
 
-class PostGCM
+use App\Exceptions\FirebaseException;
+use App\Services\PushNotificationService;
+
+class PushNotificationFirebaseRepository implements PushNotificationInterface
 {
-    public static function doPost($post)
+    public function sendNotificationToDevices($tokens, $data)
+    {
+        $body = [
+            'notification' 		=> ['body' => $data['message']],
+            'content_available' => true,
+            'data' 				=> $data
+        ];
+
+        if (is_array($tokens)) {
+            $body['registration_ids'] = $tokens;
+        } else {
+            $body['to'] = $tokens;
+        }
+
+        return $this->doPost($body);
+    }
+
+    public function sendDataToTopicId($topicId, $data)
+    {
+        $body = [
+            'to' 		        => '/topics/' . $topicId,
+            'priority'          => 'high',
+            'content_available' => true,
+            'data'              => $data
+        ];
+
+        return $this->doPost($body);
+    }
+
+    private function doPost($post)
     {
         //------------------------------
         // The FCM API key, generated using
@@ -44,32 +75,5 @@ class PostGCM
 
         curl_close($ch);
         return $result;
-    }
-
-    public static function sendNotification($gcmTokens, $data) {
-        $body = [
-            'notification' 		=> ['body' => $data['message']],
-            'content_available' => true,
-            'data' 				=> $data
-        ];
-
-        if (is_array($gcmTokens)) {
-            $body['registration_ids'] = $gcmTokens;
-        } else {
-            $body['to'] = $gcmTokens;
-        }
-
-        return self::doPost($body);
-    }
-
-    public static function sendDataToTopic($topic, $data) {
-        $body = [
-            'to' 		        => $topic,
-            'priority'          => 'high',
-            'content_available' => true,
-            'data'              => $data
-        ];
-
-        return self::doPost($body);
     }
 }

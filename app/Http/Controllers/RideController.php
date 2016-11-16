@@ -3,21 +3,37 @@
 namespace App\Http\Controllers;
 
 use App\ExcelExport\ExcelExporter;
-use App\Http\PostGCM;
 use App\Http\Requests;
 use App\Http\Requests\RankingRequest;
 use App\Ride;
 use App\RideUser;
 use App\User;
+use Carbon\Carbon;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
 use DB;
+use App\Services\PushNotificationService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class RideController extends Controller
 {
+    protected $push;
+
+    /**
+     * Instantiate a new RideController instance.
+     *
+     * @return void
+     */
+    public function __construct(PushNotificationService $push)
+    {
+        $this->push = $push;
+
+        $this->middleware('api.v1.auth', ['only' => ['sendChatMessage']]);
+        $this->middleware('api.v1.userBelongsToRide', ['only' => ['sendChatMessage']]);
+    }
+
     public function store(Request $request)
     {
         if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
@@ -97,7 +113,7 @@ class RideController extends Controller
         if (empty($rides_created)) {
             return response()->json(['error'=>'No rides were created.'], 204);
         }
-        
+
         return $rides_created;
     }
     
@@ -312,7 +328,7 @@ class RideController extends Controller
                 'rideId'  => $decode->rideId
             ];
 
-            $resultGcm = PostGCM::sendNotification($driver->gcm_token, $data);
+            $resultGcm = $this->push->sendNotificationToDevices($driver->gcm_token, $data);
 
             return response()->json(['message'=>'Request sent and driver notified.', 'gcmResponse'=>$resultGcm]);
         } else {
@@ -352,7 +368,7 @@ class RideController extends Controller
                 'msgType' => $decode->accepted ? 'accepted' : 'refused',
                 'rideId'  => $decode->rideId
             ];
-            $resultGcm = PostGCM::sendNotification($user->gcm_token, $data);
+            $resultGcm = $this->push->sendNotificationToDevices($user->gcm_token, $data);
             return response()->json(['message'=>'Request answered and user notified.', 'gcmResponse'=>$resultGcm]);
         } else {
             return response()->json(['message'=>'Request answered but user did not have GCM token']);
@@ -421,11 +437,11 @@ class RideController extends Controller
             ];
 
             if (count($ridersTokens) > 1) {
-                $resultGcm = PostGCM::sendNotification($ridersTokens, $data);
+                $resultGcm = $this->push->sendNotificationToDevices($ridersTokens, $data);
                 return response()->json(['message'=>'Left ride and users were notified.', 'gcmResponse'=>$resultGcm]);
             }
             if (count($ridersTokens) == 1) {
-                $resultGcm = PostGCM::sendNotification($ridersTokens[0], $data);
+                $resultGcm = $this->push->sendNotificationToDevices($ridersTokens[0], $data);
                 return response()->json(['message'=>'Left ride and users were notified.', 'gcmResponse'=>$resultGcm]);
             }
             //this doesn't handle the case where users' gcm tokens aren't null but are empty (''), they'll still be on the $ridersToken and will receive an error from gcm
@@ -442,7 +458,7 @@ class RideController extends Controller
                     'message' => 'Um caronista desistiu de sua carona',
                     'msgType' => 'quitter'
                 ];
-                $resultGcm = PostGCM::sendNotification($driver->gcm_token, $data);
+                $resultGcm = $this->push->sendNotificationToDevices($driver->gcm_token, $data);
                 return response()->json(['message'=>'Left ride and users were notified.', 'gcmResponse'=>$resultGcm]);
             } else {
                 return response()->json(['message'=>'Left ride but driver did not have gcm token.']);
@@ -483,11 +499,11 @@ class RideController extends Controller
         ];
 
         if (count($ridersTokens) > 1) {
-            $resultGcm = PostGCM::sendNotification($ridersTokens, $data);
+            $resultGcm = $this->push->sendNotificationToDevices($ridersTokens, $data);
             return response()->json(['message'=>'Ride finished and users were notified.', 'gcmResponse'=>$resultGcm]);
         }
         if (count($ridersTokens) == 1) {
-            $resultGcm = PostGCM::sendNotification($ridersTokens[0], $data);
+            $resultGcm = $this->push->sendNotificationToDevices($ridersTokens[0], $data);
             return response()->json(['message'=>'Ride finished and users were notified.', 'gcmResponse'=>$resultGcm]);
         }
         //this doesn't handle the case where users' gcm tokens aren't null but are empty (''), they'll still be on the $ridersToken and will receive an error from gcm
@@ -558,6 +574,27 @@ class RideController extends Controller
         $ride_user->feedback = $request->feedback;
         $ride_user->save();
     }
+
+    public function sendChatMessage(Request $request, Ride $ride)
+    {
+        $user = $request->get('user');
+        $message = $request->input('message');
+
+        $data = [
+            'message' => $message,
+            'rideId' => $ride->id,
+            'msgType' => 'chat',
+            'senderName' => $user->name,
+            'senderId' => $user->id,
+            'time' => Carbon::now()->toDateTimeString()
+        ];
+
+        $this->push->sendDataToRideMembers($ride, $data);
+        return response()->json(['message' => 'Message sent.']);
+    }
+
+
+    /// Helper methods
 
     protected function recurringDates($startDate, $endDate, $weekDaysString)
     {
