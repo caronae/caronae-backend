@@ -128,7 +128,7 @@ class RideController extends Controller
         $timeMax = $dateTime->copy()->addHours(2)->format('H:i:s'); // check for rides a few hours after the time
 
         $ridesFound = $user->rides()
-            ->where(['mydate' => $date])
+            ->where(['mydate' => $date, 'going' => $request->input('going')])
             ->whereBetween('mytime', [$timeMin, $timeMax])
             ->exists();
 
