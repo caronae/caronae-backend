@@ -15,7 +15,7 @@ class ApiV1AuthenticateRideUser extends ApiV1Authenticate
      */
     public function handle($request, Closure $next)
     {
-        if (!$request->get('user')->belongsToRide($request->ride)) {
+        if (!$request->user->belongsToRide($request->ride)) {
             return response()->json(['error' => 'User does not belong to ride.'], 403);
         }
 

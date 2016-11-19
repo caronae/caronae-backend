@@ -29,15 +29,23 @@ class RideController extends Controller
     {
         $this->push = $push;
 
-        $this->middleware('api.v1.auth', ['only' => ['validateDuplicate', 'sendChatMessage']]);
+        $this->middleware('api.v1.auth', ['only' => [
+            'store',
+            'validateDuplicate',
+            'delete', 'deleteAllFromRoutine', 'deleteAllFromUser',
+            'listAll', 'listFiltered',
+            'requestJoin',
+            'getMyActiveRides',
+            'leaveRide', 'finishRide',
+            'getRidesHistory',
+            'sendChatMessage'
+        ]]);
         $this->middleware('api.v1.userBelongsToRide', ['only' => ['sendChatMessage']]);
     }
 
     public function store(Request $request)
     {
-        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
-        }
+        $user = $request->user;
         $decode = json_decode($request->getContent());
 
         $rides_created = [];
@@ -159,10 +167,8 @@ class RideController extends Controller
     {
         DB::transaction(function() use ($request, $rideId) {
 
-            $user = User::where('token', $request->header('token'))->first();
-            if ($user == null) {
-                return response()->json(['error'=>'User token not authorized.'], 403);
-            }
+            $user = $request->user;
+
             $matchThese = ['ride_id' => $rideId, 'user_id' => $user->id, 'status' => 'driver'];
             if (RideUser::where($matchThese)->count() < 1) {
                 return response()->json(['error'=>'User is not the driver on this ride.'], 403);
@@ -183,10 +189,7 @@ class RideController extends Controller
     {
         DB::transaction(function()  use ($request, $going) {
 
-            $user = User::where('token', $request->header('token'))->first();
-            if ($user == null) {
-                return response()->json(['error'=>'User token not authorized.'], 403);
-            }
+            $user = $request->user;
 
             $matchThese = ['status' => 'driver', 'going' => $going, 'done' => false];
             $rideIdList = $user->rides()->where($matchThese)->lists('ride_id');
@@ -201,10 +204,7 @@ class RideController extends Controller
     {
         DB::transaction(function() use ($request, $routineId) {
 
-            $user = User::where('token', $request->header('token'))->first();
-            if ($user == null) {
-                return response()->json(['error'=>'User token not authorized.'], 403);
-            }
+            $user = $request->user;
 
             $matchThese = ['routine_id' => $routineId, 'done' => false];
             $rideIdList = Ride::where($matchThese)->lists('id');
@@ -225,10 +225,6 @@ class RideController extends Controller
 
     public function listAll(Request $request)
     {
-        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
-        }
-
         //query the rides
         $limit = 100;
         $timezone = new DateTimeZone('America/Sao_Paulo');
@@ -264,9 +260,6 @@ class RideController extends Controller
 
     public function listFiltered(Request $request)
     {
-        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
-        }
         $decode = json_decode($request->getContent());
 
         //locations will come as a string divided by ", ", explode the string into an array
@@ -308,9 +301,7 @@ class RideController extends Controller
 
     public function requestJoin(Request $request)
     {
-        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
-        }
+        $user = $request->user;
         $decode = json_decode($request->getContent());
 
         $matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
@@ -382,9 +373,7 @@ class RideController extends Controller
 
     public function getMyActiveRides(Request $request)
     {
-        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
-        }
+        $user = $request->user;
 
         //active rides have 'driver' or 'accepted' status
         $rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->where('done', false)->get();
@@ -418,9 +407,7 @@ class RideController extends Controller
 
     public function leaveRide(Request $request)
     {
-        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
-        }
+        $user = $request->user;
         $decode = json_decode($request->getContent());
 
         $matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
@@ -473,9 +460,7 @@ class RideController extends Controller
 
     public function finishRide(Request $request)
     {
-        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
-        }
+        $user = $request->user;
         $decode = json_decode($request->getContent());
 
         $ride = Ride::find($decode->rideId);
@@ -519,10 +504,7 @@ class RideController extends Controller
 
     public function getRidesHistory(Request $request)
     {
-        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
-        }
-
+        $user = $request->user;
         $rides = $user->rides()->where('done', true)->whereIn('status', ['driver', 'accepted'])->get();
 
         $resultJson = [];
