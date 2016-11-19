@@ -29,7 +29,7 @@ class RideController extends Controller
     {
         $this->push = $push;
 
-        $this->middleware('api.v1.auth', ['only' => ['sendChatMessage']]);
+        $this->middleware('api.v1.auth', ['only' => ['validateDuplicate', 'sendChatMessage']]);
         $this->middleware('api.v1.userBelongsToRide', ['only' => ['sendChatMessage']]);
     }
 
@@ -118,8 +118,14 @@ class RideController extends Controller
     
     public function validateDuplicate(Request $request)
     {
-        if (!$request->header('token') || ($user = User::where('token', $request->header('token'))->first()) == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
+        $validator = \Validator::make($request->all(), [
+            'date' => 'required|date_format:d/m/Y',
+            'time' => 'required|date_format:H:i:s',
+            'going' => 'required|boolean'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->messages(), 422);
         }
 
         $dateTime = Carbon::createFromFormat('d/m/Y H:i:s', $request->input('date') . $request->input('time'));
@@ -127,7 +133,7 @@ class RideController extends Controller
         $timeMin = $dateTime->copy()->subHours(2)->format('H:i:s'); // check for rides a few hours before the time
         $timeMax = $dateTime->copy()->addHours(2)->format('H:i:s'); // check for rides a few hours after the time
 
-        $ridesFound = $user->rides()
+        $ridesFound = $request->user->rides()
             ->where(['mydate' => $date, 'going' => $request->input('going')])
             ->whereBetween('mytime', [$timeMin, $timeMax])
             ->exists();
@@ -576,7 +582,7 @@ class RideController extends Controller
 
     public function sendChatMessage(Request $request, Ride $ride)
     {
-        $user = $request->get('user');
+        $user = $request->user;
         $message = $request->input('message');
 
         $data = [

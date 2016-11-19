@@ -20,7 +20,7 @@ class ApiV1Authenticate
             return response()->json(['error'=>'User token not authorized.'], 403);
         }
 
-        $request->attributes->add(['user' => $user]);
+        $request->user = $user;
         return $next($request);
     }
 }
