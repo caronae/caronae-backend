@@ -4,6 +4,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Environment
+    |--------------------------------------------------------------------------
+    |
+    | This value determines the "environment" your application is currently
+    | running in. This may determine how you prefer to configure various
+    | services your application utilizes. Set this in your ".env" file.
+    |
+    */
+    'env' => env('APP_ENV', 'production'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Debug Mode
     |--------------------------------------------------------------------------
     |
@@ -94,8 +106,8 @@ return [
     | Available Settings: "single", "daily", "syslog", "errorlog"
     |
     */
-
-    'log' => 'single',
+    'log' => env('APP_LOG', 'single'),
+    'log_level' => env('APP_LOG_LEVEL', 'debug'),
 
     /*
     |--------------------------------------------------------------------------
@@ -113,13 +125,11 @@ return [
         /*
          * Laravel Framework Service Providers...
          */
-        Illuminate\Foundation\Providers\ArtisanServiceProvider::class,
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
         Illuminate\Cache\CacheServiceProvider::class,
         Illuminate\Foundation\Providers\ConsoleSupportServiceProvider::class,
-        Illuminate\Routing\ControllerServiceProvider::class,
         Illuminate\Cookie\CookieServiceProvider::class,
         Illuminate\Database\DatabaseServiceProvider::class,
         Illuminate\Encryption\EncryptionServiceProvider::class,

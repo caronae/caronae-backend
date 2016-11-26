@@ -1,14 +1,11 @@
 <?php
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        Model::unguard();
-
         if (App::environment() == 'production') {
             throw new Exception('Seeder executado em ambiente de produção.');
         }
@@ -20,8 +17,6 @@ class DatabaseSeeder extends Seeder
         $this->call(UserRideTableSeeder::class);
 
         //$this->setForeignKeyChecks(true);
-
-        Model::reguard();
     }
 
     public function setForeignKeyChecks($value)
