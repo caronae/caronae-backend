@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" href="{{ asset('favicon-16x16.png') }}" sizes="16x16">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
     <link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/main.css') }}">
     <link rel="stylesheet" href="{{ asset('css/templates/login.css') }}">
