@@ -192,7 +192,7 @@ class RideController extends Controller
             $user = $request->user;
 
             $matchThese = ['status' => 'driver', 'going' => $going, 'done' => false];
-            $rideIdList = $user->rides()->where($matchThese)->lists('ride_id');
+            $rideIdList = $user->rides()->where($matchThese)->pluck('ride_id')->toArray();
 
             RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
             Ride::whereIn('id', $rideIdList)->forceDelete();
@@ -207,7 +207,7 @@ class RideController extends Controller
             $user = $request->user;
 
             $matchThese = ['routine_id' => $routineId, 'done' => false];
-            $rideIdList = Ride::where($matchThese)->lists('id');
+            $rideIdList = Ride::where($matchThese)->pluck('id')->toArray();
 
             if ($rideIdList == null || empty($rideIdList)) {
                 return response()->json(['error'=>'No rides found with this routine id.'], 400);
@@ -416,7 +416,7 @@ class RideController extends Controller
             $ride = Ride::find($decode->rideId);
 
             //get gcm tokens from users accepted on the ride
-            $ridersTokens = $ride->users()->where('status', 'accepted')->lists('gcm_token');
+            $ridersTokens = $ride->users()->where('status', 'accepted')->pluck('gcm_token')->toArray();
 
             RideUser::where('ride_id', $decode->rideId)->delete();//delete all relationships to this ride
             $ride->delete();
@@ -479,7 +479,7 @@ class RideController extends Controller
         $ride->save();
 
         //get gcm tokens from users accepted on the ride
-        $ridersTokens = $ride->users()->where('status', 'accepted')->lists('gcm_token');
+        $ridersTokens = $ride->users()->where('status', 'accepted')->pluck('gcm_token')->toArray();
 
         //send notification to riders on that ride
         $data = [
