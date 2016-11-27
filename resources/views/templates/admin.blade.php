@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-<head data-url="{{ url() }}" data-token="{{ csrf_token() }}">
+<head data-url="{{ url('/') }}" data-token="{{ csrf_token() }}">
 
     <title>Area Administrativa | Caronaê</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -76,7 +76,7 @@
                 </a>
             </li>
         </ul>
-        <a href="{{action('Auth\AuthController@getLogout')}}" class="navbar-text navbar-right">
+        <a href="{{action('Auth\LoginController@logout')}}" class="navbar-text navbar-right">
             <span class="glyphicon glyphicon-log-out"></span>
             Logout
         </a>
