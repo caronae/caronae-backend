@@ -18,38 +18,51 @@ sua máquina:
 - PHP 5.6 ou superior
 - PostgreSQL
 
-Outras configurações também são suportadas, porém é recomendado utilizar as 
-configurações acima, que são similares às do servidor de produção.
+Comece fazendo o **clone** deste repositório para seu computador e selecionando 
+o diretório dele. Todos os comandos abaixo serão executados dentro desse diretório.
 
-Comece fazendo o clone do repositório do backend (este repositório) para seu
-computador e selecionando o diretório dele. Todos os comandos abaixo serão
-executados dentro do diretório do backend.
+Verifique que o **PostgreSQL** está sendo executado e **crie uma tabela e um 
+usuário** para serem usados pelo backend.
 
-Verifique que o banco de dados está sendo executado e crie uma tabela e um 
-usuário para serem usados pelo backend. Em seguida, copie o arquivo `.env.example` 
-para `.env` e atualize os respectivos campos com as configurações de conexão com
-o banco de dados.
+```
+createuser caronae
+createdb -O caronae -E utf8 caronae
+```
 
-Caso vá testar notificações, configure também no arquivo `.env` a constante 
-`GCM_API_KEY`, que é a chave de acesso ao projeto do GCM, utilizado para envio 
-das notificações.
+Em seguida, copie o arquivo `.env.example` para `.env` e atualize os respectivos 
+campos com as configurações de conexão com o banco. Caso você tenha usado os dados
+acima para configurar o banco, basta copiar o arquivo.
 
-Agora, você precisará configurar as dependências do projeto, que podem ser 
-instaladas usando o **Composer**:
+```
+cp .env.example .env
+```
+
+OBS: Caso vá testar notificações, configure também no arquivo `.env` a constante 
+`FCM_API_KEY`, que é a chave de acesso ao projeto do Firebase.
+
+Configure as dependências do projeto usando o **[Composer](https://getcomposer.org)**:
 
 ```
 composer install
 ```
 
-Para executar a configuração do banco de dados, que está versionado na 
-forma de migrations, é necessário executar o *migrate* usando o **Artisan**:
+O comando acima já está configurado também para inicializar o banco de dados, 
+que está versionado na forma de migrations. No entando, caso precise executar as
+migrations manualmente, execute o *migrate* usando o **Artisan**:
 
 ```
 php artisan migrate
 ```
 
-Uma vez configuradas as dependências, banco de dados e as configurações do projeto,
-execute o seguinte comando para iniciar o servidor:
+É necessário gerar uma chave de segurança, que será usada para salvar as 
+informações sensíveis no banco de dados, como senhas. Para isso, execute o seguinte
+comando do Artisan:
+
+```
+php artisan key:generate
+```
+
+Agora basta executar o seguinte comando para iniciar o servidor:
 
 ```
 php artisan serve
@@ -66,7 +79,7 @@ vazio, ou seja, não há sequer um administrador cadastrado para acessar a área
 administrativa.
 
 Para popular o banco, execute o comando abaixo, que irá criar um administrador padrão,
-cadastrar as configurações dos bairros e criar alguns usuários de exemplo:
+cadastrar as configurações dos bairros e criar alguns usuários e caronas de exemplo:
 
 ```
 php artisan db:seed
@@ -80,7 +93,6 @@ padrão.
 | 1@1.com   | 1234     |
 
 
-
 ## Testes
 
 Parte do backend possui testes que garantem o correto funcionamento de sistema, 
@@ -91,22 +103,17 @@ Para executá-los, basta utilizar o **PHPUnit**, que vem instalado como uma das 
 
 ## Bibliotecas usadas
 
-Abaixo seguem as bibliotecas mais importantes usadas nesse projeto:
+Abaixo seguem algumas das bibliotecas usadas neste projeto:
 
-- Bootstrap 3 (http://getbootstrap.com/)
-  Para o front-end da parte administrativa.
+- [Laravel 5.3](https://laravel.com/docs/5.3):
+  Framework usada no backend
 
-- Laravel 5.1 LTS (https://laravel.com/docs/5.1)
-  Framework usada no back-end.
+- [Datatables](https://datatables.net/manual/index):
+  Para implementar todas as tabelas da área administrativa
 
-- Datatables 1.10.10 (https://datatables.net/manual/index)
-  Para implementar todas as tabelas da área administrativa.
+- [Laravel Excel](http://www.maatwebsite.nl/laravel-excel/docs):
+  Usada para a exportação das tabelas nos formatos ".xlsx" e ".csv"
 
-- Laravel Excel 2.1 (http://www.maatwebsite.nl/laravel-excel/docs)
-  Usada para a exportação das tabelas nos formatos ".xlsx" e ".csv".
-
-- JWT 0.5 (https://github.com/tymondesigns/jwt-auth)
-  Usada para realizar autenticação pelos apps mobile.
 
 ## Adicionando colunas novas na área administrativa
 
