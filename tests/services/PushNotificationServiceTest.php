@@ -17,8 +17,6 @@ class PushNotificationServiceTest extends TestCase
     */
     public function cleanDatabase()
     {
-        $this->beginDatabaseTransaction();
-
         DB::table('ride_user')->delete();
         DB::table('users')->delete();
         DB::table('rides')->delete();

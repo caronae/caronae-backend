@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\User;
 use App\Ride;
 use App\RideUser;
+use App\Services\PushNotificationService;
 
 class RideTest extends TestCase
 {
@@ -20,8 +21,6 @@ class RideTest extends TestCase
     */
     public function cleanDatabase()
     {
-        $this->beginDatabaseTransaction();
-
         DB::table('ride_user')->delete();
         DB::table('users')->delete();
         DB::table('rides')->delete();
@@ -286,7 +285,14 @@ class RideTest extends TestCase
     }
 
     public function testSendChatMessage()
-    {
+    {   
+        // Mock PushNotification interface
+        App::singleton(PushNotificationService::class, function($app) {
+            $pushMock = Mockery::mock(PushNotificationService::class);
+            $pushMock->shouldReceive('sendDataToRideMembers')->andReturn(array('ok'));
+            return $pushMock;
+        });
+
         // Create fake ride with the user as driver
         $ride = factory(Ride::class)->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
