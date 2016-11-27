@@ -1,5 +1,7 @@
 # Caronaê - Backend
 
+[![CircleCI](https://circleci.com/gh/macecchi/caronae-backend/tree/develop.svg?style=svg&circle-token=9c47c2e35ff1feee8355437fe8c1d1ae7fc326d3)](https://circleci.com/gh/macecchi/caronae-backend/tree/develop)
+
 Este é o backend no Caronaê, baseado no framework Laravel, em PHP. O backend é
 composto da API mobile e da área administrativa.
 
