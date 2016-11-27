@@ -1,0 +1,28 @@
+machine:
+  php:
+    version: 7.0.11
+  environment:
+    APP_ENV: testing
+    DB_CONNECTION: pgsql
+    DB_HOST: 127.0.0.1
+    DB_DATABASE: circle_test
+    DB_USERNAME: ubuntu
+
+dependencies:
+  override:
+    - composer install --no-interaction
+  post:
+    - echo "memory_limit = -1" > /opt/circleci/php/$(phpenv global)/etc/conf.d/memory.ini
+    - cp .env.example .env
+    - php artisan key:generate
+
+test:
+  override:
+    - phpunit
+
+deployment:
+  development:
+    branch: develop
+    owner: macecchi
+    commands:
+      - ssh caronae@dev.caronae.tic.ufrj.br "cd ~/backend && git pull && composer install"
