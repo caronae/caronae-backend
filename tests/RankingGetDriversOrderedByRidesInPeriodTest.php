@@ -3,7 +3,6 @@
 use App\Services\RankingService;
 use App\Ride;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\User;
 
@@ -11,18 +10,22 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 {
     use DatabaseTransactions;
 
+    public function setUp()
+    {
+        parent::setUp();
+
+        DB::table('neighborhoods')->delete();
+        $this->seed('BootstrapSeeder');
+    }
+
     /**
      * @before
      */
     public function cleanDatabase()
     {
-        $this->beginDatabaseTransaction();
-
         DB::table('ride_user')->delete();
         DB::table('users')->delete();
         DB::table('rides')->delete();
-
-        Model::unguard();
     }
 
     private function getDriver($firstTimeAsDriver = null){
@@ -54,7 +57,7 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
 
-        $this->assertTrue(count($users) == 1);
+        $this->assertEquals(1, count($users));
         $this->assertTrue($users[0]->caronas == 3);
         $this->assertTrue($users[0]->carbono_economizado == 9379.6);
     }

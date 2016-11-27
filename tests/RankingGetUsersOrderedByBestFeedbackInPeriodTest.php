@@ -3,7 +3,6 @@
 use App\Services\RankingService;
 use App\Ride;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\User;
 
@@ -16,13 +15,9 @@ class RankingGetUsersOrderedByBestFeedbackInPeriodTest extends TestCase
      */
     public function cleanDatabase()
     {
-        $this->beginDatabaseTransaction();
-
         DB::table('ride_user')->delete();
         DB::table('users')->delete();
         DB::table('rides')->delete();
-
-        Model::unguard();
     }
 
     public function createRideWithFeedback($user, $rideAttr, $feedbacks){
