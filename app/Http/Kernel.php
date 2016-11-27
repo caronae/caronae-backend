@@ -20,6 +20,26 @@ class Kernel extends HttpKernel
     ];
 
     /**
+     * The application's route middleware groups.
+     *
+     * @var array
+     */
+    protected $middlewareGroups = [
+        'web' => [
+            \App\Http\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \App\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            'csrf'
+        ],
+        'api.v1' => [
+            'bindings'
+        ]
+    ];
+
+    /**
      * The application's route middleware.
      *
      * @var array
@@ -29,9 +49,8 @@ class Kernel extends HttpKernel
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'api.v1.auth' => \App\Http\Middleware\ApiV1Authenticate::class,
         'api.v1.userBelongsToRide' => \App\Http\Middleware\ApiV1AuthenticateRideUser::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'jwt.auth' => Tymon\JWTAuth\Middleware\GetUserFromToken::class,
-        'jwt.refresh' => Tymon\JWTAuth\Middleware\RefreshToken::class,
         'csrf' => \App\Http\Middleware\VerifyCsrfToken::class
     ];
 }
