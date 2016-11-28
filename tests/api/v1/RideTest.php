@@ -303,7 +303,68 @@ class RideTest extends TestCase
 
     public function testGetHistory()
     {
+        $user2 = factory(User::class)->create();
+        $user2 = User::find($user2->id);
 
+        $ride1 = factory(Ride::class)->create(['done' => true]);
+        $ride2 = factory(Ride::class)->create(['done' => true]);
+        $ride3 = factory(Ride::class)->create(['done' => false]);
+        $ride4 = factory(Ride::class, 'next')->create(['done' => false]);
+        $ride5 = factory(Ride::class)->create(['done' => true]);
+        $ride6 = factory(Ride::class)->create(['done' => true]);
+
+        $ride1->users()->attach($this->user, ['status' => 'driver']);
+        $ride2->users()->attach($this->user, ['status' => 'accepted']);
+        $ride2->users()->attach($user2, ['status' => 'driver']);
+        $ride3->users()->attach($this->user, ['status' => 'driver']);
+        $ride4->users()->attach($this->user, ['status' => 'accepted']);
+        $ride5->users()->attach($user2, ['status' => 'driver']);
+        $ride6->users()->attach($this->user, ['status' => 'rejected']);
+
+        $response = $this->json('GET', 'ride/getRidesHistory', [], $this->headers);
+        $response->assertResponseOk();
+        $response->seeJsonEquals([
+            [
+                'id' => $ride1->id,
+                'myzone' => $ride1->myzone,
+                'neighborhood' => $ride1->neighborhood,
+                'going' => $ride1->going,
+                'place' => $ride1->place,
+                'route' => $ride1->route,
+                'routine_id' => $ride1->routine_id,
+                'hub' => $ride1->hub,
+                'slots' => $ride1->slots,
+                'mytime' => $ride1->mytime,
+                'mydate' => $ride1->mydate,
+                'description' => $ride1->description,
+                'week_days' => $ride1->week_days,
+                'repeats_until' => $ride1->repeats_until,
+                'done' => $ride1->done,
+                'driver' => $this->user->toArray(),
+                'riders' => [],
+                'feedback' => null
+            ],
+            [
+                'id' => $ride2->id,
+                'myzone' => $ride2->myzone,
+                'neighborhood' => $ride2->neighborhood,
+                'going' => $ride2->going,
+                'place' => $ride2->place,
+                'route' => $ride2->route,
+                'routine_id' => $ride2->routine_id,
+                'hub' => $ride2->hub,
+                'slots' => $ride2->slots,
+                'mytime' => $ride2->mytime,
+                'mydate' => $ride2->mydate,
+                'description' => $ride2->description,
+                'week_days' => $ride2->week_days,
+                'repeats_until' => $ride2->repeats_until,
+                'done' => $ride2->done,
+                'driver' => $user2->toArray(),
+                'riders' => [$this->user->toArray()],
+                'feedback' => null
+            ]
+        ]);
     }
 
     public function testGetHistoryCount()
