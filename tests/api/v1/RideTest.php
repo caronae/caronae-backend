@@ -240,7 +240,13 @@ class RideTest extends TestCase
 
     public function testDeleteAllFromRoutine()
     {
+        $ride = factory(Ride::class, 'next')->create(['done' => false]);
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+        $ride->routine_id = $ride->id;
+        $ride->save();
 
+        $response = $this->json('DELETE', 'ride/allFromRoutine/' . $ride->id, [], $this->headers);
+        $response->assertResponseOk();
     }
 
     public function testJoin()
@@ -262,7 +268,21 @@ class RideTest extends TestCase
 
     public function testAnswerJoinRequest()
     {
+        $ride = factory(Ride::class, 'next')->create(['done' => false]);
+        $ride->users()->attach($this->user, ['status' => 'driver']);
 
+        $user2 = factory(User::class)->create();
+        $ride->users()->attach($user2, ['status' => 'pending']);
+
+        $request = [
+            'rideId' => $ride->id,
+            'userId' => $user2->id,
+            'accepted' => true
+        ];
+
+        $response = $this->json('POST', 'ride/answerJoinRequest', $request, $this->headers);
+        $response->dump();
+        $response->assertResponseOk();
     }
 
     public function testLeave()
@@ -369,7 +389,36 @@ class RideTest extends TestCase
 
     public function testGetHistoryCount()
     {
+        $user2 = factory(User::class)->create();
 
+        $ride1 = factory(Ride::class)->create(['done' => true]); // offered
+        $ride1->users()->attach($this->user, ['status' => 'driver']);
+
+        $ride1 = factory(Ride::class)->create(['done' => true]); // offered
+        $ride1->users()->attach($this->user, ['status' => 'driver']);
+
+        $ride2 = factory(Ride::class)->create(['done' => true]); // taken
+        $ride2->users()->attach($this->user, ['status' => 'accepted']);
+        $ride2->users()->attach($user2, ['status' => 'driver']);
+
+        $ride3 = factory(Ride::class)->create(['done' => false]); // incomplete
+        $ride3->users()->attach($this->user, ['status' => 'driver']);
+
+        $ride4 = factory(Ride::class, 'next')->create(['done' => false]); // incomplete
+        $ride4->users()->attach($this->user, ['status' => 'accepted']);
+
+        $ride5 = factory(Ride::class)->create(['done' => true]); // from other user
+        $ride5->users()->attach($user2, ['status' => 'driver']);
+
+        $ride6 = factory(Ride::class)->create(['done' => true]); // rejected
+        $ride6->users()->attach($this->user, ['status' => 'rejected']);
+
+        $response = $this->json('GET', 'ride/getRidesHistoryCount/' . $this->user->id, [], $this->headers);
+        $response->assertResponseOk();
+        $response->seeJsonEquals([
+            'offeredCount' => 2,
+            'takenCount' => 1
+        ]);
     }
 
     public function testSendChatMessage()

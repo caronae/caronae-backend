@@ -164,7 +164,7 @@ class RideController extends Controller
 
     public function delete(Request $request, $rideId)
     {
-        DB::transaction(function() use ($request, $rideId) {
+        return DB::transaction(function() use ($request, $rideId) {
 
             $user = $request->user;
 
@@ -186,7 +186,7 @@ class RideController extends Controller
 
     public function deleteAllFromUser(Request $request, $userId, $going)
     {
-        DB::transaction(function()  use ($request, $going) {
+        return DB::transaction(function()  use ($request, $going) {
 
             $user = $request->user;
 
@@ -201,7 +201,7 @@ class RideController extends Controller
 
     public function deleteAllFromRoutine(Request $request, $routineId)
     {
-        DB::transaction(function() use ($request, $routineId) {
+        return DB::transaction(function() use ($request, $routineId) {
 
             $user = $request->user;
 
@@ -545,8 +545,8 @@ class RideController extends Controller
         $takenCount = $user->rides()->where('done', true)->where('status', 'accepted')->count();
 
         return [
-            "offeredCount" => $offeredCount,
-            "takenCount" => $takenCount
+            'offeredCount' => $offeredCount,
+            'takenCount' => $takenCount
         ];
     }
 
