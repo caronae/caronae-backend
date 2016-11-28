@@ -147,9 +147,9 @@ class RideTest extends TestCase
             'going' => false
         ]);
 
-        // $response->seeJsonStructure([
-        //     '*' => ['id']
-        // ]);
+        $response->seeJsonStructure([
+            '*' => ['id']
+        ]);
     }
 
     public function testCreateWithRoutine()
@@ -224,14 +224,18 @@ class RideTest extends TestCase
             'going' => true
         ]);
 
-        // $response->seeJsonStructure([
-        //     '*' => ['id', 'routine_id']
-        // ]);
+        $response->seeJsonStructure([
+            '*' => ['id', 'routine_id', 'week_days']
+        ]);
     }
 
     public function testDelete()
     {
+        $ride = factory(Ride::class, 'next')->create(['done' => false]);
+        $ride->users()->attach($this->user, ['status' => 'driver']);
 
+        $response = $this->json('DELETE', 'ride/' . $ride->id, [], $this->headers);
+        $response->assertResponseOk();
     }
 
     public function testDeleteAllFromRoutine()
@@ -241,7 +245,14 @@ class RideTest extends TestCase
 
     public function testJoin()
     {
+        $ride = factory(Ride::class, 'next')->create(['done' => false]);
 
+        $request = [
+            'rideId' => $ride->id
+        ];
+
+        $response = $this->json('POST', 'ride/requestJoin', $request, $this->headers);
+        $response->assertResponseOk();
     }
 
     public function testGetRequesters()
@@ -256,12 +267,28 @@ class RideTest extends TestCase
 
     public function testLeave()
     {
+        $ride = factory(Ride::class, 'next')->create(['done' => false]);
+        $ride->users()->attach($this->user, ['status' => 'accepted']);
 
+        $request = [
+            'rideId' => $ride->id
+        ];
+
+        $response = $this->json('POST', 'ride/leaveRide', $request, $this->headers);
+        $response->assertResponseOk();
     }
 
     public function testFinish()
     {
+        $ride = factory(Ride::class, 'next')->create(['done' => false]);
+        $ride->users()->attach($this->user, ['status' => 'driver']);
 
+        $request = [
+            'rideId' => $ride->id
+        ];
+
+        $response = $this->json('POST', 'ride/finishRide', $request, $this->headers);
+        $response->assertResponseOk();
     }
 
     public function testSaveFeedback()

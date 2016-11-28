@@ -49,6 +49,7 @@ class Kernel extends HttpKernel
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'api.v1.auth' => \App\Http\Middleware\ApiV1Authenticate::class,
         'api.v1.userBelongsToRide' => \App\Http\Middleware\ApiV1AuthenticateRideUser::class,
+        'api.v1.userOwnsRide' => \App\Http\Middleware\ApiV1AuthenticateRideDriver::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'csrf' => \App\Http\Middleware\VerifyCsrfToken::class

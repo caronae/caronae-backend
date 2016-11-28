@@ -3,13 +3,9 @@
 namespace App\Exceptions;
 
 use Exception;
-use App\Exceptions\FirebaseException;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use App\Exceptions\FirebaseException;
 
 class Handler extends ExceptionHandler
 {
@@ -19,10 +15,12 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        AuthorizationException::class,
-        HttpException::class,
-        ModelNotFoundException::class,
-        ValidationException::class,
+        \Illuminate\Auth\AuthenticationException::class,
+        \Illuminate\Auth\Access\AuthorizationException::class,
+        \Symfony\Component\HttpKernel\Exception\HttpException::class,
+        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
+        \Illuminate\Session\TokenMismatchException::class,
+        \Illuminate\Validation\ValidationException::class,
     ];
 
     /**
@@ -45,17 +43,17 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $e
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e)
+    public function render($request, Exception $exception)
     {
-        if ($e instanceof SigaException || $e instanceof FirebaseException) {
-            return response()->json(['error' => $e->getMessage()], 500);
+        if ($exception instanceof SigaException || $exception instanceof FirebaseException) {
+            return response()->json(['error' => $exception->getMessage()], 500);
         }
 
-        if ($e instanceof ModelNotFoundException) {
-            $e = new NotFoundHttpException($e->getMessage(), $e);
+        if ($exception instanceof ModelNotFoundException) {
+            $exception = new NotFoundHttpException($exception->getMessage(), $exception);
         }
 
-        return parent::render($request, $e);
+        return parent::render($request, $exception);
     }
 
     /**

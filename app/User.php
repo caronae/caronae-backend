@@ -29,6 +29,16 @@ class User extends Model
         );
     }
 
+    public function ownsRide(Ride $ride)
+    {
+        return !is_null(
+            RideUser::where('ride_id', $ride->id)
+                 ->where('user_id', $this->id)
+                 ->where('status', 'driver')
+                 ->first()
+        );
+    }
+
     public function banish()
     {
         DB::transaction(function(){

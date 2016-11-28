@@ -40,7 +40,10 @@ class RideController extends Controller
             'getRidesHistory',
             'sendChatMessage'
         ]]);
-        $this->middleware('api.v1.userBelongsToRide', ['only' => ['sendChatMessage']]);
+
+        $this->middleware('api.v1.userBelongsToRide', ['only' => [
+            'sendChatMessage'
+        ]]);
     }
 
     public function store(Request $request)
@@ -126,15 +129,11 @@ class RideController extends Controller
     
     public function validateDuplicate(Request $request)
     {
-        $validator = \Validator::make($request->all(), [
+        $this->validate($request, [
             'date' => 'required|date_format:d/m/Y',
             'time' => 'required|date_format:H:i:s',
             'going' => 'required|boolean'
         ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->messages(), 422);
-        }
 
         $dateTime = Carbon::createFromFormat('d/m/Y H:i:s', $request->input('date') . $request->input('time'));
         $date = $dateTime->format('Y-m-d');
@@ -301,10 +300,14 @@ class RideController extends Controller
 
     public function requestJoin(Request $request)
     {
-        $user = $request->user;
-        $decode = json_decode($request->getContent());
+        $this->validate($request, [
+            'rideId' => 'required|int'
+        ]);
 
-        $matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
+        $user = $request->user;
+        $rideID = $request->rideId;
+
+        $matchThese = ['ride_id' => $rideID, 'user_id' => $user->id];
         $ride_user = RideUser::where($matchThese)->first();
 
         //if a relationship already exists, do not create another one
@@ -313,15 +316,15 @@ class RideController extends Controller
         }
 
         //save relationship between ride and user
-        $user->rides()->attach($decode->rideId, ['status' => 'pending']);
+        $user->rides()->attach($rideID, ['status' => 'pending']);
 
         //if driver has gcm token, send notification
-        $driver = Ride::find($decode->rideId)->users()->where('status', 'driver')->first(); //get ride's driver
+        $driver = Ride::find($rideID)->users()->where('status', 'driver')->first(); //get ride's driver
         if (!empty($driver->gcm_token)) {
             $data = [
                 'message' => "Sua carona recebeu uma solicitação",
                 'msgType' => "joinRequest",
-                'rideId'  => $decode->rideId
+                'rideId'  => $rideID
             ];
 
             $resultGcm = $this->push->sendNotificationToDevices($driver->gcm_token, $data);
@@ -408,24 +411,24 @@ class RideController extends Controller
     public function leaveRide(Request $request)
     {
         $user = $request->user;
-        $decode = json_decode($request->getContent());
+        $rideID = $request->rideId;
 
-        $matchThese = ['ride_id' => $decode->rideId, 'user_id' => $user->id];
+        $matchThese = ['ride_id' => $rideID, 'user_id' => $user->id];
         $rideUser = RideUser::where($matchThese)->first();//get relationship
         if ($rideUser->status == 'driver') {//if user is the driver the ride needs to be deleted
-            $ride = Ride::find($decode->rideId);
+            $ride = Ride::find($rideID);
 
             //get gcm tokens from users accepted on the ride
             $ridersTokens = $ride->users()->where('status', 'accepted')->pluck('gcm_token')->toArray();
 
-            RideUser::where('ride_id', $decode->rideId)->delete();//delete all relationships to this ride
+            RideUser::where('ride_id', $rideID)->delete();//delete all relationships to this ride
             $ride->delete();
 
             //send notification to riders on that ride
             $data = [
                 'message' => 'Um motorista cancelou uma carona ativa sua',
                 'msgType' => 'cancelled',
-                'rideId'  => $decode->rideId
+                'rideId'  => $rideID
             ];
 
             if (count($ridersTokens) > 1) {
@@ -444,7 +447,7 @@ class RideController extends Controller
             $rideUser->status = 'quit';
             $rideUser->save();
 
-            $driver = Ride::find($decode->rideId)->users()->where('status', 'driver')->first();
+            $driver = Ride::find($rideID)->users()->where('status', 'driver')->first();
             if (!empty($driver->gcm_token)) { //if user has gcm token, send notification to him
                 $data = [
                     'message' => 'Um caronista desistiu de sua carona',
@@ -461,9 +464,8 @@ class RideController extends Controller
     public function finishRide(Request $request)
     {
         $user = $request->user;
-        $decode = json_decode($request->getContent());
 
-        $ride = Ride::find($decode->rideId);
+        $ride = Ride::find($request->rideId);
         if ($ride == null) {
             return response()->json(['error'=>'ride not found with id = ' . $rideId], 400);
         }
@@ -484,8 +486,8 @@ class RideController extends Controller
         //send notification to riders on that ride
         $data = [
             'message' => 'Um motorista concluiu uma carona ativa sua',
-            'msgType' => "finished",
-            'rideId' => $decode->rideId
+            'msgType' => 'finished',
+            'rideId' => $request->rideId
         ];
 
         if (count($ridersTokens) > 1) {
