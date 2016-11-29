@@ -281,7 +281,6 @@ class RideTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride/answerJoinRequest', $request, $this->headers);
-        $response->dump();
         $response->assertResponseOk();
     }
 
