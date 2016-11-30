@@ -3,8 +3,8 @@
 namespace Caronae\Services;
 
 use Caronae\Repositories\PushNotificationInterface;
-use Caronae\User;
-use Caronae\Ride;
+use Caronae\Models\User;
+use Caronae\Models\Ride;
 
 class PushNotificationService
 {

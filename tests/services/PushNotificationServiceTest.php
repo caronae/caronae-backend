@@ -4,8 +4,8 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use Caronae\Repositories\PushNotificationInterface;
 use Caronae\Services\PushNotificationService;
-use Caronae\Ride;
-use Caronae\User;
+use Caronae\Models\Ride;
+use Caronae\Models\User;
 
 class PushNotificationServiceTest extends TestCase
 {

@@ -3,7 +3,7 @@
 namespace Caronae\Http\Middleware;
 
 use Closure;
-use Caronae\User;
+use Caronae\Models\User;
 
 class ApiV1Authenticate
 {

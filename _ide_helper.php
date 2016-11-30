@@ -1399,7 +1399,7 @@ namespace {
         /**
          * Get the currently authenticated user.
          *
-         * @return \Caronae\Admin|null 
+         * @return \Caronae\Models\Admin|null 
          * @static 
          */
         public static function user(){
@@ -1503,7 +1503,7 @@ namespace {
          *
          * @param mixed $id
          * @param bool $remember
-         * @return \Caronae\Admin|false 
+         * @return \Caronae\Models\Admin|false 
          * @static 
          */
         public static function loginUsingId($id, $remember = false){
@@ -1514,7 +1514,7 @@ namespace {
          * Log the given user ID into the application without sessions or cookies.
          *
          * @param mixed $id
-         * @return \Caronae\Admin|false 
+         * @return \Caronae\Models\Admin|false 
          * @static 
          */
         public static function onceUsingId($id){
@@ -1608,7 +1608,7 @@ namespace {
         /**
          * Return the currently cached user.
          *
-         * @return \Caronae\Admin|null 
+         * @return \Caronae\Models\Admin|null 
          * @static 
          */
         public static function getUser(){
@@ -1650,7 +1650,7 @@ namespace {
         /**
          * Get the last user we attempted to authenticate.
          *
-         * @return \Caronae\Admin 
+         * @return \Caronae\Models\Admin 
          * @static 
          */
         public static function getLastAttempted(){
@@ -1710,7 +1710,7 @@ namespace {
         /**
          * Determine if the current user is authenticated.
          *
-         * @return \Caronae\Admin 
+         * @return \Caronae\Models\Admin 
          * @throws \Illuminate\Auth\AuthenticationException
          * @static 
          */

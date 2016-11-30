@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Caronae\Http\Requests;
 use Caronae\Http\Controllers\Controller;
-use Caronae\User;
+use Caronae\Models\User;
 
 class FalaeController extends Controller
 {

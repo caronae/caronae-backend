@@ -2,7 +2,7 @@
 
 namespace Caronae\Http\Controllers;
 
-use Caronae\Admin;
+use Caronae\Models\Admin;
 use Caronae\Http\Requests;
 use Caronae\Http\Requests\AdminEditRequest;
 

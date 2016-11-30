@@ -1,6 +1,6 @@
 <?php
 
-namespace Caronae;
+namespace Caronae\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;

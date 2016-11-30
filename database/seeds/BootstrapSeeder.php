@@ -1,7 +1,7 @@
 <?php
 
-use Caronae\Admin;
-use Caronae\Neighborhood;
+use Caronae\Models\Admin;
+use Caronae\Models\Neighborhood;
 use Illuminate\Database\Seeder;
 
 /**

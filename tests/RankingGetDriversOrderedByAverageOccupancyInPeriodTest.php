@@ -1,10 +1,10 @@
 <?php
 
 use Caronae\Services\RankingService;
-use Caronae\Ride;
+use Caronae\Models\Ride;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Caronae\User;
+use Caronae\Models\User;
 
 class RankingGetDriversOrderedByAverageOccupancyInPeriodTest extends TestCase
 {

@@ -4,7 +4,7 @@ namespace Caronae\Http\Controllers;
 
 use Caronae\ExcelExport\ExcelExporter;
 use Caronae\Http\Requests;
-use Caronae\User;
+use Caronae\Models\User;
 use Caronae\Exception\SigaException;
 use Caronae\Services\SigaService;
 use Facebook;

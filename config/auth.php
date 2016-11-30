@@ -59,7 +59,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => Caronae\Admin::class,
+            'model' => Caronae\Models\Admin::class,
         ]
     ],
     /*

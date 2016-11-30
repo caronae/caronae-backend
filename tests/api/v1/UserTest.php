@@ -4,8 +4,8 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-use Caronae\User;
-use Caronae\Ride;
+use Caronae\Models\User;
+use Caronae\Models\Ride;
 use Caronae\Repositories\SigaInterface;
 
 class UserTest extends TestCase

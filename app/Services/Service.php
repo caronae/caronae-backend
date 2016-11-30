@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Caronae\Services;
 
 use Carbon\Carbon;

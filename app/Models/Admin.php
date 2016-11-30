@@ -1,6 +1,6 @@
 <?php
 
-namespace Caronae;
+namespace Caronae\Models;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Notifications\Notifiable;
