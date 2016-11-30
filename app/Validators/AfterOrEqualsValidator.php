@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Validators;
+namespace Caronae\Validators;
 
 
 use Carbon\Carbon;

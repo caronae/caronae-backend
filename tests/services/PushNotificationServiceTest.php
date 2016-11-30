@@ -1,12 +1,11 @@
 <?php
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-// use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-use App\Repositories\PushNotificationInterface;
-use App\Services\PushNotificationService;
-use App\Ride;
-use App\User;
+use Caronae\Repositories\PushNotificationInterface;
+use Caronae\Services\PushNotificationService;
+use Caronae\Ride;
+use Caronae\User;
 
 class PushNotificationServiceTest extends TestCase
 {

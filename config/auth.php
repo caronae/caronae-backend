@@ -59,12 +59,8 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Admin::class,
-        ],
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+            'model' => Caronae\Admin::class,
+        ]
     ],
     /*
     |--------------------------------------------------------------------------

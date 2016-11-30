@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http;
+namespace Caronae\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -13,7 +13,7 @@ class Kernel extends HttpKernel
      */
     protected $middleware = [
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
-        \App\Http\Middleware\EncryptCookies::class,
+        \Caronae\Http\Middleware\EncryptCookies::class,
         \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
         \Illuminate\Session\Middleware\StartSession::class,
         \Illuminate\View\Middleware\ShareErrorsFromSession::class,
@@ -26,11 +26,11 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            \App\Http\Middleware\EncryptCookies::class,
+            \Caronae\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \App\Http\Middleware\VerifyCsrfToken::class,
+            \Caronae\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             'csrf'
         ],
@@ -45,13 +45,13 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth' => \Caronae\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'api.v1.auth' => \App\Http\Middleware\ApiV1Authenticate::class,
-        'api.v1.userBelongsToRide' => \App\Http\Middleware\ApiV1AuthenticateRideUser::class,
-        'api.v1.userOwnsRide' => \App\Http\Middleware\ApiV1AuthenticateRideDriver::class,
+        'api.v1.auth' => \Caronae\Http\Middleware\ApiV1Authenticate::class,
+        'api.v1.userBelongsToRide' => \Caronae\Http\Middleware\ApiV1AuthenticateRideUser::class,
+        'api.v1.userOwnsRide' => \Caronae\Http\Middleware\ApiV1AuthenticateRideDriver::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'csrf' => \App\Http\Middleware\VerifyCsrfToken::class
+        'guest' => \Caronae\Http\Middleware\RedirectIfAuthenticated::class,
+        'csrf' => \Caronae\Http\Middleware\VerifyCsrfToken::class
     ];
 }

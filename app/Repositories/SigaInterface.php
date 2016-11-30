@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace Caronae\Repositories;
 
 interface SigaInterface
 {

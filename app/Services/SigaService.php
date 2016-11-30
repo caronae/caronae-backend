@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace Caronae\Services;
 
-use App\Repositories\SigaInterface;
-use App\Exceptions\SigaException;
+use Caronae\Repositories\SigaInterface;
+use Caronae\Exceptions\SigaException;
 
 class SigaService
 {

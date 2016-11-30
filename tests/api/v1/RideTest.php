@@ -4,10 +4,10 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-use App\User;
-use App\Ride;
-use App\RideUser;
-use App\Services\PushNotificationService;
+use Caronae\User;
+use Caronae\Ride;
+use Caronae\RideUser;
+use Caronae\Services\PushNotificationService;
 
 class RideTest extends TestCase
 {

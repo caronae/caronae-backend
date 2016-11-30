@@ -1,7 +1,7 @@
 <?php
 
-use App\Admin;
-use App\Neighborhood;
+use Caronae\Admin;
+use Caronae\Neighborhood;
 use Illuminate\Database\Seeder;
 
 /**

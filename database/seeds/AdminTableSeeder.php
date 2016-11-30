@@ -1,6 +1,6 @@
 <?php
 
-use App\Admin;
+use Caronae\Admin;
 use Illuminate\Database\Seeder;
 
 class AdminTableSeeder extends Seeder

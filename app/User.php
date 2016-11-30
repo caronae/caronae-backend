@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Caronae;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -16,7 +16,7 @@ class User extends Model
 
     public function rides()
     {
-        return $this->belongsToMany('App\Ride')->withPivot('status', 'feedback')->withTimestamps();
+        return $this->belongsToMany('Caronae\Ride')->withPivot('status', 'feedback')->withTimestamps();
     }
 
     public function belongsToRide(Ride $ride)

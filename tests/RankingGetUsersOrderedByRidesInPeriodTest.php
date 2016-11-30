@@ -1,10 +1,10 @@
 <?php
 
-use App\Services\RankingService;
-use App\Ride;
+use Caronae\Services\RankingService;
+use Caronae\Ride;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use App\User;
+use Caronae\User;
 
 class RankingGetUsersOrderedByRidesInPeriodTest extends TestCase
 {

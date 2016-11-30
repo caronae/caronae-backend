@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ExcelExport;
+namespace Caronae\ExcelExport;
 
 use Maatwebsite\Excel\Writers\LaravelExcelWriter;
 

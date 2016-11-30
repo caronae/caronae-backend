@@ -151,17 +151,17 @@ return [
         /*
          * Application Service Providers...
          */
-        App\Providers\AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
-        App\Providers\BroadcastServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
+        Caronae\Providers\AppServiceProvider::class,
+        Caronae\Providers\AuthServiceProvider::class,
+        Caronae\Providers\BroadcastServiceProvider::class,
+        Caronae\Providers\EventServiceProvider::class,
+        Caronae\Providers\RouteServiceProvider::class,
 
-        App\Providers\ViewComposerServiceProvider::class,
-        App\Providers\ValidatorServiceProvider::class,
+        Caronae\Providers\ViewComposerServiceProvider::class,
+        Caronae\Providers\ValidatorServiceProvider::class,
 
-        App\Providers\SigaRepositoryServiceProvider::class,
-        App\Providers\PushNotificationFirebaseServiceProvider::class,
+        Caronae\Providers\SigaRepositoryServiceProvider::class,
+        Caronae\Providers\PushNotificationFirebaseServiceProvider::class,
 
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class

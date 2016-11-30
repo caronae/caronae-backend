@@ -1,8 +1,8 @@
 <?php
-use App\Neighborhood;
-use App\User;
-use App\Ride;
-use App\RideUser;
+use Caronae\Neighborhood;
+use Caronae\User;
+use Caronae\Ride;
+use Caronae\RideUser;
 
 /*
 |--------------------------------------------------------------------------
@@ -230,7 +230,7 @@ $factory->defineAs(User::class, 'driver', function (Faker\Generator $faker) use 
 });
 
 $factory->define(Ride::class, function (Faker\Generator $faker) {
-    $neighborhood = factory(App\Neighborhood::class)->make();
+    $neighborhood = factory(Caronae\Neighborhood::class)->make();
 
     $going = $faker->boolean();
     if ($going) {

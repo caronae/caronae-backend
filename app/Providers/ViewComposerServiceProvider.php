@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Providers;
+namespace Caronae\Providers;
 
-use App\ViewComposers\AllViewComposer;
+use Caronae\ViewComposers\AllViewComposer;
 use Illuminate\Support\ServiceProvider;
-use App\ViewComposers\ErrorViewComposer;
+use Caronae\ViewComposers\ErrorViewComposer;
 
 class ViewComposerServiceProvider extends ServiceProvider
 {

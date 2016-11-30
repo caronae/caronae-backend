@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace Caronae\Services;
 
-use App\Repositories\PushNotificationInterface;
-use App\User;
-use App\Ride;
+use Caronae\Repositories\PushNotificationInterface;
+use Caronae\User;
+use Caronae\Ride;
 
 class PushNotificationService
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Caronae\Http\Controllers;
 
-use App\Admin;
-use App\Http\Requests;
-use App\Http\Requests\AdminEditRequest;
+use Caronae\Admin;
+use Caronae\Http\Requests;
+use Caronae\Http\Requests\AdminEditRequest;
 
 class AdminController extends Controller
 {

@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Caronae\Http\Controllers;
 
-use App\ExcelExport\ExcelExporter;
-use App\Http\Requests;
-use App\Http\Requests\RankingRequest;
-use App\Ride;
-use App\RideUser;
-use App\User;
+use Caronae\ExcelExport\ExcelExporter;
+use Caronae\Http\Requests;
+use Caronae\Http\Requests\RankingRequest;
+use Caronae\Ride;
+use Caronae\RideUser;
+use Caronae\User;
 use Carbon\Carbon;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
 use DB;
-use App\Services\PushNotificationService;
+use Caronae\Services\PushNotificationService;
 use Illuminate\Http\Request;
 
 class RideController extends Controller

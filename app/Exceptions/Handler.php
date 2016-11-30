@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Exceptions;
+namespace Caronae\Exceptions;
 
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use App\Exceptions\FirebaseException;
+use Caronae\Exceptions\FirebaseException;
 
 class Handler extends ExceptionHandler
 {

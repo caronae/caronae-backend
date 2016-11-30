@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Repositories;
+namespace Caronae\Repositories;
 
-use App\Exceptions\FirebaseException;
-use App\Services\PushNotificationService;
+use Caronae\Exceptions\FirebaseException;
+use Caronae\Services\PushNotificationService;
 
 class PushNotificationFirebaseRepository implements PushNotificationInterface
 {

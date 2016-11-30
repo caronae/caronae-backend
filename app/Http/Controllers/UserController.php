@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Caronae\Http\Controllers;
 
-use App\ExcelExport\ExcelExporter;
-use App\Http\Requests;
-use App\User;
-use App\Exception\SigaException;
-use App\Services\SigaService;
+use Caronae\ExcelExport\ExcelExporter;
+use Caronae\Http\Requests;
+use Caronae\User;
+use Caronae\Exception\SigaException;
+use Caronae\Services\SigaService;
 use Facebook;
 use Illuminate\Http\Request;
 

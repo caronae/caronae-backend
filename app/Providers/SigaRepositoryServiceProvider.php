@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Providers;
+namespace Caronae\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Repositories\SigaInterface;
-use App\Repositories\SigaRemoteRepository;
+use Caronae\Repositories\SigaInterface;
+use Caronae\Repositories\SigaRemoteRepository;
 
 class SigaRepositoryServiceProvider extends ServiceProvider
 {

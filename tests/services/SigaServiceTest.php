@@ -1,8 +1,8 @@
 <?php
 
-use App\Services\SigaService;
-use App\Repositories\SigaInterface;
-use App\Exceptions\SigaException;
+use Caronae\Services\SigaService;
+use Caronae\Repositories\SigaInterface;
+use Caronae\Exceptions\SigaException;
 
 class SigaServiceTest extends TestCase
 {

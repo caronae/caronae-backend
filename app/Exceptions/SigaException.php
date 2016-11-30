@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions;
+namespace Caronae\Exceptions;
 
 class SigaException extends \Exception {
     

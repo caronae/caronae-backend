@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace Caronae\Http\Middleware;
 
 use Closure;
-use App\User;
+use Caronae\User;
 
 class ApiV1Authenticate
 {

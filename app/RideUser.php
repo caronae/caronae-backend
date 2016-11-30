@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Caronae;
 
 use Illuminate\Database\Eloquent\Model;
 

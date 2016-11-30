@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Caronae\Services;
 
 use Carbon\Carbon;
 use DB;

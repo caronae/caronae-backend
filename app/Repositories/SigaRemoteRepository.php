@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace Caronae\Repositories;
 
-use App\Exceptions\SigaException;
+use Caronae\Exceptions\SigaException;
 
 class SigaRemoteRepository implements SigaInterface
 {

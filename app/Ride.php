@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Caronae;
 
 use Carbon\Carbon;
 use DB;
@@ -15,7 +15,7 @@ class Ride extends Model
     protected $dates = ['deleted_at'];
 
     public function users() {
-        return $this->belongsToMany('App\User')->withPivot('status', 'feedback')->withTimestamps();
+        return $this->belongsToMany('Caronae\User')->withPivot('status', 'feedback')->withTimestamps();
     }
 
     private static function userStats($periodStart, $periodEnd){

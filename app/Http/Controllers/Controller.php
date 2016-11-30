@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Caronae\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;

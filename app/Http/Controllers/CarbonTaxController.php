@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Caronae\Http\Controllers;
 
-use App\Http\Requests\CarbonTaxRequest;
-use App\Services\CarbonTaxService;
+use Caronae\Http\Requests\CarbonTaxRequest;
+use Caronae\Services\CarbonTaxService;
 use Carbon\Carbon;
 
 class CarbonTaxController extends Controller

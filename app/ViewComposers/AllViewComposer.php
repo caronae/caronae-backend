@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ViewComposers;
+namespace Caronae\ViewComposers;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;

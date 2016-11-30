@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Providers;
+namespace Caronae\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Repositories\PushNotificationInterface;
-use App\Repositories\PushNotificationFirebaseRepository;
+use Caronae\Repositories\PushNotificationInterface;
+use Caronae\Repositories\PushNotificationFirebaseRepository;
 
 class PushNotificationFirebaseServiceProvider extends ServiceProvider
 {

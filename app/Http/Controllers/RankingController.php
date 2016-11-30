@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Caronae\Http\Controllers;
 
-use App\ExcelExport\ExcelExporter;
-use App\Http\Requests\RankingRequest;
-use App\Services\RankingService;
+use Caronae\ExcelExport\ExcelExporter;
+use Caronae\Http\Requests\RankingRequest;
+use Caronae\Services\RankingService;
 
 class RankingController extends Controller
 {

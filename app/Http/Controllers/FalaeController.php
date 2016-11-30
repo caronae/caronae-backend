@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Caronae\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\User;
+use Caronae\Http\Requests;
+use Caronae\Http\Controllers\Controller;
+use Caronae\User;
 
 class FalaeController extends Controller
 {

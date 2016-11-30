@@ -1,7 +1,7 @@
 <?php
 
-use App\User;
-use App\Ride;
+use Caronae\User;
+use Caronae\Ride;
 use Illuminate\Database\Seeder;
 
 class UserRideTableSeeder extends Seeder
