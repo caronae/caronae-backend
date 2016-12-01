@@ -24,10 +24,22 @@ class PushNotificationFirebaseRepository implements PushNotificationInterface
         return $this->doPost($body);
     }
 
+    public function sendNotificationToTopicId($topicId, $data)
+    {
+        $body = [
+            'to'                => '/topics/' . $topicId,
+            'content_available' => true,
+            'notification'      => ['body' => $data['message']],
+            'data'              => $data
+        ];
+
+        return $this->doPost($body);
+    }
+
     public function sendDataToTopicId($topicId, $data)
     {
         $body = [
-            'to' 		        => '/topics/' . $topicId,
+            'to'                => '/topics/' . $topicId,
             'priority'          => 'high',
             'content_available' => true,
             'data'              => $data
@@ -46,7 +58,6 @@ class PushNotificationFirebaseRepository implements PushNotificationInterface
 
         $apiKey = env('FCM_API_KEY');
 
-        // $url = 'https://gcm-http.googleapis.com/gcm/send';
         $url = 'https://fcm.googleapis.com/fcm/send';
 
         $headers = [

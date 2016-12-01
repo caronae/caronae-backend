@@ -11,16 +11,6 @@ class PushNotificationServiceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /**
-    * @before
-    */
-    public function cleanDatabase()
-    {
-        DB::table('ride_user')->delete();
-        DB::table('users')->delete();
-        DB::table('rides')->delete();
-    }
-
     public function testSendNotificationToDevices()
     {
         $mockResult = array('notification');
@@ -47,6 +37,22 @@ class PushNotificationServiceTest extends TestCase
 
         $push = new PushNotificationService($mock);
         $result = $push->sendDataToRideMembers($ride, $data);
+        $this->assertEquals($mockResult, $result);
+    }
+
+    public function testSendNotificationToUser()
+    {
+        $mockResult = array('notification');
+        $user = factory(User::class)->create(['gcm_token' => 'token']);
+        $topicId = 'user-' . $user->id;
+        $data = array('data');
+
+        $mock = Mockery::mock(PushNotificationInterface::class);
+        $mock->shouldReceive('sendNotificationToTopicId')->with($topicId, $data)->once()->andReturn($mockResult);
+        $mock->shouldReceive('sendNotificationToDevices')->with('token', $data)->once()->andReturn();
+
+        $push = new PushNotificationService($mock);
+        $result = $push->sendNotificationToUser($user, $data);
         $this->assertEquals($mockResult, $result);
     }
 

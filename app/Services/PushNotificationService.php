@@ -20,15 +20,29 @@ class PushNotificationService
         return $this->push->sendNotificationToDevices($tokens, $data);
     }
 
+    public function sendNotificationToUser(User $user, $data)
+    {
+        // TODO: Deprecate
+        if (!empty($user->gcm_token)) {
+            $this->push->sendNotificationToDevices($user->gcm_token, $data);
+        }
+
+        return $this->push->sendNotificationToTopicId($this->topicForUser($user), $data);
+    }
+
     public function sendDataToUser(User $user, $data)
     {
-        $topic = 'user-' . $user->id;
-        return $this->push->sendDataToTopicId($topic, $data);
+        return $this->push->sendDataToTopicId($this->topicForUser($user), $data);
     }
 
     public function sendDataToRideMembers(Ride $ride, $data)
     {
         $topic = $ride->id;
         return $this->push->sendDataToTopicId($topic, $data);
+    }
+
+    private function topicForUser(User $user) 
+    {
+        return 'user-' . $user->id;
     }
 }

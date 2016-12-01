@@ -250,6 +250,13 @@ class RideTest extends TestCase
 
     public function testJoin()
     {
+        // App::singleton(PushNotificationService::class, function($app) {
+            $push = Mockery::mock(PushNotificationService::class);
+            $push->shouldReceive('sendNotificationToUser')->once()->andReturn(array('ok'));
+            App::instance(PushNotificationService::class, $push);
+            // return $push;
+        // });
+
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
@@ -453,7 +460,7 @@ class RideTest extends TestCase
         // Mock PushNotification interface
         App::singleton(PushNotificationService::class, function($app) {
             $pushMock = Mockery::mock(PushNotificationService::class);
-            $pushMock->shouldReceive('sendDataToRideMembers')->andReturn(array('ok'));
+            $pushMock->shouldReceive('sendDataToRideMembers')->once()->andReturn(array('ok'));
             return $pushMock;
         });
 

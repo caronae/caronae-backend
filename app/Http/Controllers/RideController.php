@@ -318,21 +318,16 @@ class RideController extends Controller
         //save relationship between ride and user
         $user->rides()->attach($rideID, ['status' => 'pending']);
 
-        //if driver has gcm token, send notification
-        $driver = Ride::find($rideID)->users()->where('status', 'driver')->first(); //get ride's driver
-        if (!empty($driver->gcm_token)) {
-            $data = [
-                'message' => "Sua carona recebeu uma solicitação",
-                'msgType' => "joinRequest",
-                'rideId'  => $rideID
-            ];
+        //send notification
+        $notification = [
+            'message' => 'Sua carona recebeu uma solicitação',
+            'msgType' => 'joinRequest',
+            'rideId'  => $rideID
+        ];
+        $driver = Ride::find($rideID)->driver();
+        $this->push->sendNotificationToUser($driver, $notification);
 
-            $resultGcm = $this->push->sendNotificationToDevices($driver->gcm_token, $data);
-
-            return response()->json(['message'=>'Request sent and driver notified.', 'gcmResponse'=>$resultGcm]);
-        } else {
-            return response()->json(['message'=>'Request sent but driver did not have GCM token']);
-        }
+        return response()->json(['message'=>'Request sent.']);
     }
 
     public function getRequesters($rideId)
