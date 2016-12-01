@@ -14,11 +14,18 @@ class Ride extends Model
     protected $hidden = ['pivot', 'created_at', 'deleted_at', 'updated_at'];
     protected $dates = ['deleted_at'];
 
-    public function users() {
+    public function users()
+    {
         return $this->belongsToMany(User::class)->withPivot('status', 'feedback')->withTimestamps();
     }
 
-    private static function userStats($periodStart, $periodEnd){
+    public function driver()
+    {
+        return $this->belongsToMany(User::class)->wherePivot('status', 'driver')->first();
+    }
+
+    private static function userStats($periodStart, $periodEnd)
+    {
         return DB::table('users')
             ->join('ride_user', function($join){
                 $join->on('ride_user.user_id', '=', 'users.id');
@@ -45,7 +52,8 @@ class Ride extends Model
             );
     }
 
-    public static function getInPeriodWithUserInfo(Carbon $periodStart, Carbon $periodEnd){
+    public static function getInPeriodWithUserInfo(Carbon $periodStart, Carbon $periodEnd)
+    {
         $join = self::userStats($periodStart, $periodEnd);
 
         return Ride::leftJoin('neighborhoods', function($join){
