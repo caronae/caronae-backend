@@ -39,7 +39,7 @@ class RideTest extends TestCase
     {
         $user = $this->user;
         $rideIds = [];
-        $rides = factory(Ride::class, 'next', 2)->create(['done' => false])->each(function($ride) use ($user, &$rideIds) {
+        $rides = factory(Ride::class, 'next', 2)->create()->each(function($ride) use ($user, &$rideIds) {
             $ride->users()->attach($user, ['status' => 'driver']);
             $rideIds[] = $ride->id;
         });
@@ -230,7 +230,7 @@ class RideTest extends TestCase
 
     public function testDelete()
     {
-        $ride = factory(Ride::class, 'next')->create(['done' => false]);
+        $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
         $response = $this->json('DELETE', 'ride/' . $ride->id, [], $this->headers);
@@ -239,7 +239,7 @@ class RideTest extends TestCase
 
     public function testDeleteAllFromRoutine()
     {
-        $ride = factory(Ride::class, 'next')->create(['done' => false]);
+        $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
         $ride->routine_id = $ride->id;
         $ride->save();
@@ -250,7 +250,8 @@ class RideTest extends TestCase
 
     public function testJoin()
     {
-        $ride = factory(Ride::class, 'next')->create(['done' => false]);
+        $ride = factory(Ride::class, 'next')->create();
+        $ride->users()->attach($this->user, ['status' => 'driver']);
 
         $request = [
             'rideId' => $ride->id
@@ -262,12 +263,40 @@ class RideTest extends TestCase
 
     public function testGetRequesters()
     {
+        $ride = factory(Ride::class, 'next')->create();
+        $ride->users()->attach($this->user, ['status' => 'driver']);
 
+        $user = factory(User::class)->create();
+        $ride->users()->attach($user, ['status' => 'pending']);
+
+        $ride->users()->attach(factory(User::class)->create(), ['status' => 'accepted']);
+        $ride->users()->attach(factory(User::class)->create(), ['status' => 'rejected']);
+
+        $response = $this->json('GET', 'ride/getRequesters/' . $ride->id, [], $this->headers);
+        $response->assertResponseOk();
+        $response->seeJsonEquals([
+            [
+                'id' => $user->id,
+                'name' => $user->name,
+                'profile' => $user->profile,
+                'course' => $user->course,
+                'phone_number' => $user->phone_number,
+                'email' => $user->email,
+                'car_owner' => $user->car_owner,
+                'car_model' => $user->car_model,
+                'car_color' => $user->car_color,
+                'car_plate' => $user->car_plate,
+                'created_at' => $user->created_at->format('Y-m-d H:i:s'),
+                'location' => $user->location,
+                'face_id' => $user->face_id,
+                'profile_pic_url' => $user->profile_pic_url
+            ]
+        ]);
     }
 
     public function testAnswerJoinRequest()
     {
-        $ride = factory(Ride::class, 'next')->create(['done' => false]);
+        $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
         $user2 = factory(User::class)->create();
@@ -285,7 +314,7 @@ class RideTest extends TestCase
 
     public function testLeave()
     {
-        $ride = factory(Ride::class, 'next')->create(['done' => false]);
+        $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'accepted']);
 
         $request = [
@@ -298,7 +327,7 @@ class RideTest extends TestCase
 
     public function testFinish()
     {
-        $ride = factory(Ride::class, 'next')->create(['done' => false]);
+        $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
         $request = [
@@ -327,7 +356,7 @@ class RideTest extends TestCase
         $ride1 = factory(Ride::class)->create(['done' => true]);
         $ride2 = factory(Ride::class)->create(['done' => true]);
         $ride3 = factory(Ride::class)->create(['done' => false]);
-        $ride4 = factory(Ride::class, 'next')->create(['done' => false]);
+        $ride4 = factory(Ride::class, 'next')->create();
         $ride5 = factory(Ride::class)->create(['done' => true]);
         $ride6 = factory(Ride::class)->create(['done' => true]);
 
@@ -402,7 +431,7 @@ class RideTest extends TestCase
         $ride3 = factory(Ride::class)->create(['done' => false]); // incomplete
         $ride3->users()->attach($this->user, ['status' => 'driver']);
 
-        $ride4 = factory(Ride::class, 'next')->create(['done' => false]); // incomplete
+        $ride4 = factory(Ride::class, 'next')->create(); // incomplete
         $ride4->users()->attach($this->user, ['status' => 'accepted']);
 
         $ride5 = factory(Ride::class)->create(['done' => true]); // from other user

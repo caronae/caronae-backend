@@ -7,7 +7,7 @@ use Caronae\Models\User;
 use Caronae\Models\Ride;
 use Caronae\Services\PushNotificationService;
 
-class RideTest extends TestCase
+class RideModelTest extends TestCase
 {
     use DatabaseTransactions;
 

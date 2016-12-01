@@ -258,6 +258,7 @@ $factory->defineAs(Ride::class, 'next', function (Faker\Generator $faker) use ($
     $date = $faker->dateTimeBetween('+1 hour', 'tomorrow 23:59:59');
     return array_merge($ride, [
         'mydate' => $date->format('Y-m-d'),
-        'mytime' => $date->format('H:i:00')
+        'mytime' => $date->format('H:i:00'),
+        'done' => false
     ]);
 });
