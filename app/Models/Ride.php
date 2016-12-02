@@ -24,6 +24,11 @@ class Ride extends Model
         return $this->belongsToMany(User::class)->wherePivot('status', 'driver')->first();
     }
 
+    public function riders()
+    {
+        return $this->belongsToMany(User::class)->wherePivot('status', 'accepted')->get();
+    }
+
     private static function userStats($periodStart, $periodEnd)
     {
         return DB::table('users')

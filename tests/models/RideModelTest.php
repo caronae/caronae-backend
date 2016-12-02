@@ -23,12 +23,31 @@ class RideModelTest extends TestCase
 
     public function testGetDriver()
     {
-        $user = factory(User::class)->create();
-
         $ride = factory(Ride::class)->create();
+
+        $user = factory(User::class)->create();
         $ride->users()->attach($user, ['status' => 'driver']);
 
         $this->assertEquals($user->id, $ride->driver()->id);
+    }
+
+    public function testGetRiders()
+    {
+        $ride = factory(Ride::class)->create();
+
+        $driver = factory(User::class)->create();
+        $ride->users()->attach($driver, ['status' => 'driver']);
+
+        $pending = factory(User::class)->create();
+        $ride->users()->attach($pending, ['status' => 'pending']);
+
+        $rejected = factory(User::class)->create();
+        $ride->users()->attach($rejected, ['status' => 'rejected']);
+
+        $accepted = factory(User::class)->create();
+        $ride->users()->attach($accepted, ['status' => 'accepted']);
+
+        $this->assertEquals([$accepted->toArray()], $ride->riders()->toArray());
     }
 
 }

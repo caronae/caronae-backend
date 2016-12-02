@@ -419,7 +419,7 @@ class RideController extends Controller
                 'rideId'  => $rideID
             ];
 
-            foreach ($ride->users()->where('status', 'accepted') as $user) {
+            foreach ($ride->riders() as $user) {
                 $this->push->sendNotificationToUser($user, $notification);
             }
 
@@ -460,7 +460,7 @@ class RideController extends Controller
             'rideId' => $request->rideId
         ];
 
-        foreach ($ride->users()->where('status', 'accepted') as $user) {
+        foreach ($ride->riders() as $user) {
             $this->push->sendNotificationToUser($user, $notification);
         }
 
@@ -609,8 +609,6 @@ class RideController extends Controller
 
     public function riders($rideId)
     {
-        $ride = Ride::find($rideId);
-
-        return $ride->users()->where('status', 'accepted')->get();
+        return Ride::find($rideId)->riders();
     }
 }

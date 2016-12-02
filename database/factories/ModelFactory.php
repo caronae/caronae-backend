@@ -214,7 +214,8 @@ $factory->define(User::class, function (Faker\Generator $faker) {
         'car_plate' => NULL,
         'token' => strtoupper(str_random(6)),
         'id_ufrj' => $faker->cpf(false),
-        'profile_pic_url' => $faker->imageUrl(500, 500, 'people')
+        'profile_pic_url' => $faker->imageUrl(500, 500, 'people'),
+        'face_id' => NULL
     ];
 });
 
