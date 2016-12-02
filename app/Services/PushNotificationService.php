@@ -15,11 +15,6 @@ class PushNotificationService
         $this->push = $push;
     }
 
-    public function sendNotificationToDevices($tokens, $data)
-    {
-        return $this->push->sendNotificationToDevices($tokens, $data);
-    }
-
     public function sendNotificationToUser(User $user, $data)
     {
         // TODO: Deprecate after users have migrated to topic-based notifications

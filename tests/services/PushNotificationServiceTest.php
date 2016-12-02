@@ -11,20 +11,6 @@ class PushNotificationServiceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testSendNotificationToDevices()
-    {
-        $mockResult = array('notification');
-        $devices = [str_random(50), str_random(50)];
-        $data = array('data');
-
-        $mock = Mockery::mock(PushNotificationInterface::class);
-        $mock->shouldReceive('sendNotificationToDevices')->with($devices, $data)->once()->andReturn($mockResult);
-
-        $push = new PushNotificationService($mock);
-        $result = $push->sendNotificationToDevices($devices, $data);
-        $this->assertEquals($mockResult, $result);
-    }
-
     public function testSendDataToRideMembers()
     {
         $mockResult = array('notification');
