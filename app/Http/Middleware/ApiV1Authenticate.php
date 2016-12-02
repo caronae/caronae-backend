@@ -4,6 +4,7 @@ namespace Caronae\Http\Middleware;
 
 use Closure;
 use Caronae\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class ApiV1Authenticate
 {
@@ -21,6 +22,30 @@ class ApiV1Authenticate
         }
 
         $request->user = $user;
+
+        $this->updateUserAppInfo($request);
+
         return $next($request);
+    }
+
+    private function updateUserAppInfo($request)
+    {
+        $userAgent = $request->header('User-Agent');
+        $appVersionRegex = '(\d+\.)?(\d+\.)?(\*|\d+)';
+        
+        Log::info('Call from user ' . $request->user->id . ' with User-Agent: ' . $userAgent);
+
+        if (preg_match('/Caronae\/(?P<version>' . $appVersionRegex . ') .*(?P<platform>(iOS|Android))/', $userAgent, $matches)) {
+            $platform = $matches['platform'];
+            $version = $matches['version'];
+
+            if ($platform == 'iOS' || $platform == 'Android') {
+                $request->user->app_platform = $platform;
+                $request->user->app_version = $version;
+                $request->user->save();
+            }
+        }
+
+        Log::info('User ' . $request->user->id . ' platform is: ' . $request->user->app_platform . ' - ' . $request->user->app_version);
     }
 }
