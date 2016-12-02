@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use Caronae\Models\User;
@@ -14,6 +12,7 @@ class RideTest extends TestCase
 
     protected $user;
     protected $headers;
+    protected $push;
 
     /**
     * @before
@@ -34,6 +33,16 @@ class RideTest extends TestCase
         $this->user = User::find($user->id);
         $this->headers = ['token' => $this->user->token];
     }
+
+    /**
+    * @before
+    */
+    public function mockPushNotificationService()
+    {
+        $this->push = Mockery::mock(PushNotificationService::class);
+        App::instance(PushNotificationService::class, $this->push);
+    }
+
 
     public function testGetAll()
     {
@@ -250,15 +259,11 @@ class RideTest extends TestCase
 
     public function testJoin()
     {
-        // App::singleton(PushNotificationService::class, function($app) {
-            $push = Mockery::mock(PushNotificationService::class);
-            $push->shouldReceive('sendNotificationToUser')->once()->andReturn(array('ok'));
-            App::instance(PushNotificationService::class, $push);
-            // return $push;
-        // });
+        $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
 
         $ride = factory(Ride::class, 'next')->create();
-        $ride->users()->attach($this->user, ['status' => 'driver']);
+        $user = factory(User::class)->create();
+        $ride->users()->attach($user, ['status' => 'driver']);
 
         $request = [
             'rideId' => $ride->id
@@ -266,6 +271,9 @@ class RideTest extends TestCase
 
         $response = $this->json('POST', 'ride/requestJoin', $request, $this->headers);
         $response->assertResponseOk();
+        $response->seeJsonEquals([
+            'message' => 'Request sent.'
+        ]);
     }
 
     public function testGetRequesters()
@@ -303,6 +311,8 @@ class RideTest extends TestCase
 
     public function testAnswerJoinRequest()
     {
+        $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
+
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
@@ -317,11 +327,19 @@ class RideTest extends TestCase
 
         $response = $this->json('POST', 'ride/answerJoinRequest', $request, $this->headers);
         $response->assertResponseOk();
+        $response->seeJsonEquals([
+            'message' => 'Request answered.'
+        ]);
     }
 
     public function testLeave()
     {
+        $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
+
         $ride = factory(Ride::class, 'next')->create();
+        $driver = factory(User::class)->create();
+        $ride->users()->attach($driver, ['status' => 'driver']);
+
         $ride->users()->attach($this->user, ['status' => 'accepted']);
 
         $request = [
@@ -330,6 +348,9 @@ class RideTest extends TestCase
 
         $response = $this->json('POST', 'ride/leaveRide', $request, $this->headers);
         $response->assertResponseOk();
+        $response->seeJsonEquals([
+            'message' => 'Left ride.'
+        ]);
     }
 
     public function testFinish()
@@ -343,6 +364,9 @@ class RideTest extends TestCase
 
         $response = $this->json('POST', 'ride/finishRide', $request, $this->headers);
         $response->assertResponseOk();
+        $response->seeJsonEquals([
+            'message' => 'Ride finished.'
+        ]);
     }
 
     public function testSaveFeedback()
@@ -456,13 +480,8 @@ class RideTest extends TestCase
     }
 
     public function testSendChatMessage()
-    {   
-        // Mock PushNotification interface
-        App::singleton(PushNotificationService::class, function($app) {
-            $pushMock = Mockery::mock(PushNotificationService::class);
-            $pushMock->shouldReceive('sendDataToRideMembers')->once()->andReturn(array('ok'));
-            return $pushMock;
-        });
+    {
+        $this->push->shouldReceive('sendDataToRideMembers')->once();
 
         // Create fake ride with the user as driver
         $ride = factory(Ride::class)->create();

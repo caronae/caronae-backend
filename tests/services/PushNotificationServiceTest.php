@@ -49,7 +49,7 @@ class PushNotificationServiceTest extends TestCase
 
         $mock = Mockery::mock(PushNotificationInterface::class);
         $mock->shouldReceive('sendNotificationToTopicId')->with($topicId, $data)->once()->andReturn($mockResult);
-        $mock->shouldReceive('sendNotificationToDevices')->never();
+        $mock->shouldNotReceive('sendNotificationToDevices');
 
         $push = new PushNotificationService($mock);
         $result = $push->sendNotificationToUser($user, $data);
@@ -64,7 +64,7 @@ class PushNotificationServiceTest extends TestCase
 
         $mock = Mockery::mock(PushNotificationInterface::class);
         $mock->shouldReceive('sendNotificationToDevices')->with('token', $data)->once()->andReturn($mockResult);
-        $mock->shouldReceive('sendNotificationToTopicId')->never();
+        $mock->shouldNotReceive('sendNotificationToTopicId');
 
         $push = new PushNotificationService($mock);
         $result = $push->sendNotificationToUser($user, $data);
