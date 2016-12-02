@@ -43,13 +43,28 @@ class PushNotificationServiceTest extends TestCase
     public function testSendNotificationToUser()
     {
         $mockResult = array('notification');
-        $user = factory(User::class)->create(['gcm_token' => 'token']);
+        $user = factory(User::class)->create(['gcm_token' => NULL]);
         $topicId = 'user-' . $user->id;
         $data = array('data');
 
         $mock = Mockery::mock(PushNotificationInterface::class);
         $mock->shouldReceive('sendNotificationToTopicId')->with($topicId, $data)->once()->andReturn($mockResult);
-        $mock->shouldReceive('sendNotificationToDevices')->with('token', $data)->once()->andReturn();
+        $mock->shouldReceive('sendNotificationToDevices')->never();
+
+        $push = new PushNotificationService($mock);
+        $result = $push->sendNotificationToUser($user, $data);
+        $this->assertEquals($mockResult, $result);
+    }
+
+    public function testSendNotificationToUserWithTokenNotifications()
+    {
+        $mockResult = array('notification');
+        $user = factory(User::class)->create(['gcm_token' => 'token']);
+        $data = array('data');
+
+        $mock = Mockery::mock(PushNotificationInterface::class);
+        $mock->shouldReceive('sendNotificationToDevices')->with('token', $data)->once()->andReturn($mockResult);
+        $mock->shouldReceive('sendNotificationToTopicId')->never();
 
         $push = new PushNotificationService($mock);
         $result = $push->sendNotificationToUser($user, $data);

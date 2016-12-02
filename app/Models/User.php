@@ -11,7 +11,7 @@ class User extends Model
     use SoftDeletes;
 
     protected $fillable = ['name', 'email', 'profile', 'id_ufrj', 'token'];
-    protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at'];
+    protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version'];
     protected $dates = ['deleted_at'];
 
     public function rides()
@@ -60,5 +60,17 @@ class User extends Model
     public function unban()
     {
         $this->restore();
+    }
+
+    public function usesNotificationsWithToken()
+    {
+        if (empty($this->gcm_token)) return false;
+
+        if (empty($this->app_platform) || empty($this->app_version)) return true;
+
+        return (
+            ($this->app_platform == 'iOS' && preg_match('/1\.0(\.[0-2])?$/', $this->app_version))
+            || ($this->app_platform == 'Android' && preg_match('/1\.0(\.[0-2])?$/', $this->app_version))
+        );
     }
 }

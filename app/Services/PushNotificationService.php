@@ -22,9 +22,9 @@ class PushNotificationService
 
     public function sendNotificationToUser(User $user, $data)
     {
-        // TODO: Deprecate
-        if (!empty($user->gcm_token)) {
-            $this->push->sendNotificationToDevices($user->gcm_token, $data);
+        // TODO: Deprecate after users have migrated to topic-based notifications
+        if ($user->usesNotificationsWithToken()) {
+            return $this->push->sendNotificationToDevices($user->gcm_token, $data);
         }
 
         return $this->push->sendNotificationToTopicId($this->topicForUser($user), $data);
