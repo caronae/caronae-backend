@@ -53,10 +53,12 @@ class RideTest extends TestCase
             $rideIds[] = $ride->id;
         });
 
+        $rideOld = factory(Ride::class)->create(['mydate' => '1990-01-01']);
+        $rideOld->users()->attach($user, ['status' => 'driver']);
+
         $rides = Ride::findMany($rideIds);
         foreach ($rides as $ride) {
             $ride->driver = $user->toArray();
-            unset($ride->done);
         }
 
         $response = $this->json('GET', 'ride/all', [], $this->headers);

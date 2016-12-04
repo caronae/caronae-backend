@@ -48,32 +48,25 @@ class RideController extends Controller
 
     public function index()
     {
-        $limit = 100;
+        $limit = 50;
         $timezone = new DateTimeZone('America/Sao_Paulo');
         $minDate = (new DateTime('now', $timezone))->format('Y-m-d H:i:s');
-        $maxDate = (new DateTime('tomorrow', $timezone))->format('Y-m-d');
 
-        $rides = DB::select("
-        SELECT ride.*, (SELECT user_id FROM ride_user WHERE ride_id = ride.id AND status = 'driver') AS driver_id
-        FROM ride_user AS ru
-        LEFT JOIN rides AS ride ON ride.id = ru.ride_id
-        WHERE (ride.mydate + ride.mytime) >= :minDate
-        AND ride.mydate <= :maxDate
-        AND ride.done=FALSE
-        AND ru.status IN ('pending','accepted','driver')
-        GROUP BY ride.id
-        HAVING count(ru.user_id)-1 < ride.slots
-        ORDER BY (ride.mydate + ride.mytime) ASC
-        LIMIT :limit
-        ", ['minDate' => $minDate, 'maxDate' => $maxDate, 'limit' => $limit]);
+        $rides = Ride::leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
+            ->select('rides.*')
+            ->where(DB::raw('(rides.mydate + rides.mytime)'), '>=', $minDate)
+            ->where('rides.done', 'false')
+            ->whereIn('ride_user.status', ['pending','accepted','driver'])
+            ->groupBy('rides.id')
+            ->having(DB::raw('count(ride_user.user_id)-1'), '<', DB::raw('rides.slots'))
+            ->orderBy('rides.mydate')
+            ->orderBy('rides.mytime')
+            ->paginate($limit);
 
         $results = [];
         foreach($rides as $ride) {
-            $driver = User::where('id', $ride->driver_id)->first();
-
-            $ride->driver = $driver;
-            unset($ride->driver_id, $ride->created_at, $ride->updated_at, $ride->deleted_at, $ride->done);
-
+            unset($ride->done);
+            $ride->driver = $ride->driver();
             $results[] = $ride;
         }
 
