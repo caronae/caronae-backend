@@ -46,6 +46,40 @@ class RideController extends Controller
         ]]);
     }
 
+    public function index()
+    {
+        $limit = 100;
+        $timezone = new DateTimeZone('America/Sao_Paulo');
+        $minDate = (new DateTime('now', $timezone))->format('Y-m-d H:i:s');
+        $maxDate = (new DateTime('tomorrow', $timezone))->format('Y-m-d');
+
+        $rides = DB::select("
+        SELECT ride.*, (SELECT user_id FROM ride_user WHERE ride_id = ride.id AND status = 'driver') AS driver_id
+        FROM ride_user AS ru
+        LEFT JOIN rides AS ride ON ride.id = ru.ride_id
+        WHERE (ride.mydate + ride.mytime) >= :minDate
+        AND ride.mydate <= :maxDate
+        AND ride.done=FALSE
+        AND ru.status IN ('pending','accepted','driver')
+        GROUP BY ride.id
+        HAVING count(ru.user_id)-1 < ride.slots
+        ORDER BY (ride.mydate + ride.mytime) ASC
+        LIMIT :limit
+        ", ['minDate' => $minDate, 'maxDate' => $maxDate, 'limit' => $limit]);
+
+        $results = [];
+        foreach($rides as $ride) {
+            $driver = User::where('id', $ride->driver_id)->first();
+
+            $ride->driver = $driver;
+            unset($ride->driver_id, $ride->created_at, $ride->updated_at, $ride->deleted_at, $ride->done);
+
+            $results[] = $ride;
+        }
+
+        return $results;
+    }
+
     public function store(Request $request)
     {
         $user = $request->user;
@@ -220,41 +254,6 @@ class RideController extends Controller
             Ride::where($matchThese)->forceDelete();
 
         });
-    }
-
-    public function listAll(Request $request)
-    {
-        //query the rides
-        $limit = 100;
-        $timezone = new DateTimeZone('America/Sao_Paulo');
-        $minDate = (new DateTime('now', $timezone))->format('Y-m-d H:i:s');
-        $maxDate = (new DateTime('tomorrow', $timezone))->format('Y-m-d');
-
-        $rides = DB::select("
-        SELECT ride.*, (SELECT user_id FROM ride_user WHERE ride_id = ride.id AND status = 'driver') AS driver_id
-        FROM ride_user AS ru
-        LEFT JOIN rides AS ride ON ride.id = ru.ride_id
-        WHERE (ride.mydate + ride.mytime) >= :minDate
-        AND ride.mydate <= :maxDate
-        AND ride.done=FALSE
-        AND ru.status IN ('pending','accepted','driver')
-        GROUP BY ride.id
-        HAVING count(ru.user_id)-1 < ride.slots
-        ORDER BY (ride.mydate + ride.mytime) ASC
-        LIMIT :limit
-        ", ['minDate' => $minDate, 'maxDate' => $maxDate, 'limit' => $limit]);
-
-        $results = [];
-        foreach($rides as $ride) {
-            $driver = User::where('id', $ride->driver_id)->first();
-
-            $ride->driver = $driver;
-            unset($ride->driver_id, $ride->created_at, $ride->updated_at, $ride->deleted_at, $ride->done);
-
-            $results[] = $ride;
-        }
-
-        return $results;
     }
 
     public function listFiltered(Request $request)
@@ -585,30 +584,4 @@ class RideController extends Controller
         return $weekDays;
     }
 
-    /// Desktop
-
-    public function index()
-    {
-        return view('rides.index');
-    }
-
-    public function indexJson(RankingRequest $request)
-    {
-        // o RankingRequest está sendo usado para reutilizar código, mas isso tecnicamente não é um ranking
-        return Ride::getInPeriodWithUserInfo($request->getDate('start'), $request->getDate('end'));
-    }
-
-    public function indexExcel(RankingRequest $request)
-    {
-        $data = Ride::getInPeriodWithUserInfo($request->getDate('start'), $request->getDate('end'));
-
-        (new ExcelExporter())->exportWithBlade('caronas-dadas', 'rides.excel-export-sheet',
-        ['Motorista', 'Curso', 'Data', 'Hora', 'Origem', 'Destino', 'Distancia', 'Distancia Total', 'Total de Caronas', 'Distancia Média'],
-        $data->toArray(), $request->get('type', 'xlsx'));
-    }
-
-    public function riders($rideId)
-    {
-        return Ride::find($rideId)->riders();
-    }
 }

@@ -50,5 +50,3 @@ Route::get('rides.excel', 'RideController@indexExcel');
 Route::get('riders/{ride_id}', 'RideController@riders');
 
 Route::get('carbonTax', 'CarbonTaxController@carbonTax');
-
-Route::get('logout', 'Auth\LoginController@logout');

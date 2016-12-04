@@ -1,20 +1,20 @@
 <?php
 
-namespace Caronae\Http\Controllers;
+namespace Caronae\Http\Controllers\Admin;
 
+use Caronae\Http\Controllers\Controller;
 use Caronae\Models\Admin;
-use Caronae\Http\Requests;
 use Caronae\Http\Requests\AdminEditRequest;
 
 class AdminController extends Controller
 {
-
     public function getIndex()
     {
         return view('admin.index');
     }
 
-    public function getEdit(){
+    public function getEdit()
+    {
         $data['admin'] = Admin::first();
         return view('admin.edit')->with($data);
     }
@@ -32,6 +32,5 @@ class AdminController extends Controller
         $admin->save();
 
         return back()->with('message', 'Administrador editado com sucesso.');
-
     }
 }

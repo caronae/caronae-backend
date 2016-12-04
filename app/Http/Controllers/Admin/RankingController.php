@@ -1,7 +1,8 @@
 <?php
 
-namespace Caronae\Http\Controllers;
+namespace Caronae\Http\Controllers\Admin;
 
+use Caronae\Http\Controllers\Controller;
 use Caronae\ExcelExport\ExcelExporter;
 use Caronae\Http\Requests\RankingRequest;
 use Caronae\Services\RankingService;

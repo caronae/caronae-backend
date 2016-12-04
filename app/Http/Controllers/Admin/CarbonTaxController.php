@@ -1,7 +1,8 @@
 <?php
 
-namespace Caronae\Http\Controllers;
+namespace Caronae\Http\Controllers\Admin;
 
+use Caronae\Http\Controllers\Controller;
 use Caronae\Http\Requests\CarbonTaxRequest;
 use Caronae\Services\CarbonTaxService;
 use Carbon\Carbon;
