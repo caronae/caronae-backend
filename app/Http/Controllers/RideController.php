@@ -192,29 +192,20 @@ class RideController extends Controller
     public function delete(Request $request, $rideId)
     {
         return DB::transaction(function() use ($request, $rideId) {
-
             $user = $request->user;
-
-            $matchThese = ['ride_id' => $rideId, 'user_id' => $user->id, 'status' => 'driver'];
-            if (RideUser::where($matchThese)->count() < 1) {
-                return response()->json(['error'=>'User is not the driver on this ride.'], 403);
-            }
-
-            $ride = Ride::find($rideId);
+            $ride = $user->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
             if ($ride == null) {
-                return response()->json(['error'=>'ride not found with id = ' . $rideId], 400);
+                return response()->json(['error'=>'User is not the driver on this ride or ride does not exist.'], 403);
             }
 
             RideUser::where('ride_id', $rideId)->delete(); //delete all relationships with this ride first
             $ride->forceDelete();
-
         });
     }
 
     public function deleteAllFromUser(Request $request, $userId, $going)
     {
         return DB::transaction(function() use ($request, $going) {
-
             $user = $request->user;
 
             $matchThese = ['status' => 'driver', 'going' => $going, 'done' => false];
@@ -222,14 +213,12 @@ class RideController extends Controller
 
             RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
             Ride::whereIn('id', $rideIdList)->forceDelete();
-
         });
     }
 
     public function deleteAllFromRoutine(Request $request, $routineId)
     {
         return DB::transaction(function() use ($request, $routineId) {
-
             $user = $request->user;
 
             $matchThese = ['routine_id' => $routineId, 'done' => false];
@@ -299,12 +288,10 @@ class RideController extends Controller
         $user = $request->user;
         $rideID = $request->rideId;
 
-        $matchThese = ['ride_id' => $rideID, 'user_id' => $user->id];
-        $ride_user = RideUser::where($matchThese)->first();
-
         //if a relationship already exists, do not create another one
-        if ($ride_user != null) {
-            return response()->json(['message' => 'Relationship between user and ride already exists as ' . $ride_user->status]);
+        $previousRequest = $user->rides()->where('rides.id', $rideID)->first();
+        if ($previousRequest != null) {
+            return response()->json(['message' => 'Relationship between user and ride already exists as ' . $previousRequest->pivot->status]);
         }
 
         //save relationship between ride and user
@@ -432,13 +419,9 @@ class RideController extends Controller
 
     public function finishRide(Request $request)
     {
-        $user = $request->user;
-        $ride = Ride::find($request->rideId);
-
-        //find existing relationship which should be driver
-        $matchThese = ['ride_id' => $ride->id, 'user_id' => $user->id, 'status' => 'driver'];
-        $rideUser = RideUser::where($matchThese)->first();
-        if ($rideUser == null) {
+        //check if the current user is the driver of the ride
+        $ride = $request->user->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
+        if ($ride == null) {
             return response()->json(['error' => 'User is not the driver of this ride'], 403);
         }
 
