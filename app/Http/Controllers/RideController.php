@@ -71,21 +71,20 @@ class RideController extends Controller
     public function store(Request $request)
     {
         $user = $request->user;
-        $decode = json_decode($request->getContent());
 
         $rides_created = [];
-        DB::transaction(function() use ($decode, $user, &$rides_created) {
+        DB::transaction(function() use ($request, $user, &$rides_created) {
             //create new ride and save it
             $ride = new Ride();
-            $ride->myzone = $decode->myzone;
-            $ride->neighborhood = $decode->neighborhood;
-            $ride->place = $decode->place;
-            $ride->route = $decode->route;
-            $ride->date = Carbon::createFromFormat('d/m/Y H:i', $decode->mydate . ' ' . substr($decode->mytime, 0, 5));
-            $ride->slots = $decode->slots;
-            $ride->hub = $decode->hub;
-            $ride->description = $decode->description;
-            $ride->going = $decode->going;
+            $ride->myzone = $request->myzone;
+            $ride->neighborhood = $request->neighborhood;
+            $ride->place = $request->place;
+            $ride->route = $request->route;
+            $ride->date = Carbon::createFromFormat('d/m/Y H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
+            $ride->slots = $request->slots;
+            $ride->hub = $request->hub;
+            $ride->description = $request->description;
+            $ride->going = $request->going;
 
             $ride->save();
             $rides_created[] = $ride;
@@ -95,10 +94,10 @@ class RideController extends Controller
 
             // check if the ride is recurring. if so, there will be a field 'repeats_until'
             // and a field 'week_days' with the repeating days (1->monday, 2->tuesday, ..., 7->sunday)
-            if (!empty($decode->repeats_until) && is_string($decode->repeats_until)) {
-                $repeats_until = Carbon::createFromFormat('d/m/Y', $decode->repeats_until)->setTime(23,59,59);
+            if (!empty($request->repeats_until) && is_string($request->repeats_until)) {
+                $repeats_until = Carbon::createFromFormat('d/m/Y', $request->repeats_until)->setTime(23,59,59);
                 $ride->repeats_until = $repeats_until->format('Y-m-d');
-                $ride->week_days = $decode->week_days;
+                $ride->week_days = $request->week_days;
 
                 $repeating_dates = $this->recurringDates($ride->date, $repeats_until, $ride->week_days);
 
@@ -231,10 +230,8 @@ class RideController extends Controller
 
     public function listFiltered(Request $request)
     {
-        $decode = json_decode($request->getContent());
-
         //locations will come as a string divided by ", ", explode the string into an array
-        $locations = explode(", ", $decode->location);
+        $locations = explode(", ", $request->location);
 
         //location can be zones or neighborhoods, check if first array position is a zone or a neighborhood
         if ($locations[0] == 'Centro' || $locations[0] == 'Zona Sul' || $locations[0] == 'Zona Oeste' || $locations[0] == 'Zona Norte' || $locations[0] == 'Baixada' || $locations[0] == 'Grande Niterói' || $locations[0] == 'Outros') {
@@ -243,16 +240,16 @@ class RideController extends Controller
             $locationColumn = 'neighborhood';//if location is filtered by neighborhood, query by 'neighborhood' column
         }
 
-        $minDate = $decode->date . ' ' . $decode->time;
-        $maxDate = $decode->date . ' 23:59:59';
+        $minDate = $request->date . ' ' . $request->time;
+        $maxDate = $request->date . ' 23:59:59';
 
-        $rides = Ride::whereBetween('date', [$minDate, $maxDate])->where('done', false)->where('going', $decode->go)->whereIn($locationColumn, $locations);
+        $rides = Ride::whereBetween('date', [$minDate, $maxDate])->where('done', false)->where('going', $request->go)->whereIn($locationColumn, $locations);
 
         //query the rides
-        if (empty($decode->center)) {
+        if (empty($request->center)) {
             $rides = $rides->get();
         } else {
-            $rides = $rides->where('hub', 'LIKE', "$decode->center%")->get();
+            $rides = $rides->where('hub', 'LIKE', "$request->center%")->get();
         }
 
         $results = [];
