@@ -121,7 +121,7 @@ class RideTest extends TestCase
 
     public function testSearch()
     {
-
+        // TODO: test search with zone, search with neighborhood, search with/without center
     }
 
     public function testCreateWithoutRoutine()

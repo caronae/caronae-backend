@@ -9,9 +9,6 @@ use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
 use Caronae\Models\User;
 use Carbon\Carbon;
-use DateInterval;
-use DateTime;
-use DateTimeZone;
 use DB;
 use Caronae\Services\PushNotificationService;
 use Illuminate\Http\Request;
@@ -49,8 +46,7 @@ class RideController extends Controller
     public function index()
     {
         $limit = 50;
-        $timezone = new DateTimeZone('America/Sao_Paulo');
-        $minDate = (new DateTime('now', $timezone))->format('Y-m-d H:i:s');
+        $minDate = Carbon::now('America/Sao_Paulo');
 
         $rides = Ride::leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
             ->select('rides.*')
@@ -100,7 +96,7 @@ class RideController extends Controller
             // check if the ride is recurring. if so, there will be a field 'repeats_until'
             // and a field 'week_days' with the repeating days (1->monday, 2->tuesday, ..., 7->sunday)
             if (!empty($decode->repeats_until) && is_string($decode->repeats_until)) {
-                $repeats_until = DateTime::createFromFormat('d/m/Y', $decode->repeats_until);
+                $repeats_until = Carbon::createFromFormat('d/m/Y', $decode->repeats_until)->setTime(23,59,59);
                 $ride->repeats_until = $repeats_until->format('Y-m-d');
                 $ride->week_days = $decode->week_days;
 
@@ -159,13 +155,12 @@ class RideController extends Controller
         ]);
 
         $dateTime = Carbon::createFromFormat('d/m/Y H:i:s', $request->input('date') . ' ' . $request->input('time'));
-        $date = $dateTime->format('Y-m-d');
-        $timeMin = $dateTime->copy()->subHours(2)->format('H:i:s'); // check for rides a few hours before the time
-        $timeMax = $dateTime->copy()->addHours(2)->format('H:i:s'); // check for rides a few hours after the time
+        $dateMin = $dateTime->copy()->subHours(2); // check for rides a few hours before the time
+        $dateMax = $dateTime->copy()->addHours(2); // check for rides a few hours after the time
 
         $ridesFound = $request->user->rides()
-            ->where([DB::raw('date::DATE') => $date, 'going' => $request->input('going')])
-            ->whereBetween(DB::raw('date::TIME'), [$timeMin, $timeMax])
+            ->where('going', $request->input('going'))
+            ->whereBetween('date', [$dateMin, $dateMax])
             ->exists();
 
         if ($ridesFound) {
@@ -242,18 +237,22 @@ class RideController extends Controller
         $locations = explode(", ", $decode->location);
 
         //location can be zones or neighborhoods, check if first array position is a zone or a neighborhood
-        if ($locations[0] == "Centro" || $locations[0] == "Zona Sul" || $locations[0] == "Zona Oeste" || $locations[0] == "Zona Norte" || $locations[0] == "Baixada" || $locations[0] == "Grande Niterói" || $locations[0] == "Outros") {
+        if ($locations[0] == 'Centro' || $locations[0] == 'Zona Sul' || $locations[0] == 'Zona Oeste' || $locations[0] == 'Zona Norte' || $locations[0] == 'Baixada' || $locations[0] == 'Grande Niterói' || $locations[0] == 'Outros') {
             $locationColumn = 'myzone';//if location is filtered by zone, query by 'myzone' column
         } else {
             $locationColumn = 'neighborhood';//if location is filtered by neighborhood, query by 'neighborhood' column
         }
-        $matchThese = ['going' => $decode->go, DB::raw('date::DATE') => $decode->date, 'done' => false];
+
+        $minDate = $decode->date . ' ' . $decode->time;
+        $maxDate = $decode->date . ' 23:59:59';
+
+        $rides = Ride::whereBetween('date', [$minDate, $maxDate])->where('done', false)->where('going', $decode->go)->whereIn($locationColumn, $locations);
 
         //query the rides
         if (empty($decode->center)) {
-            $rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where(DB::raw('date::TIME'), '>=', $decode->time)->get();
+            $rides = $rides->get();
         } else {
-            $rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where(DB::raw('date::TIME'), '>=', $decode->time)->where('hub', 'LIKE', "$decode->center%")->get();
+            $rides = $rides->where('hub', 'LIKE', "$decode->center%")->get();
         }
 
         $results = [];
