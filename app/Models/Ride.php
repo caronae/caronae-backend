@@ -11,8 +11,9 @@ class Ride extends Model
 {
     use SoftDeletes;
 
-    protected $hidden = ['pivot', 'created_at', 'deleted_at', 'updated_at'];
-    protected $dates = ['deleted_at'];
+    protected $hidden = ['pivot', 'created_at', 'deleted_at', 'updated_at', 'date'];
+    protected $dates = ['date', 'created_at', 'updated_at', 'deleted_at'];
+    protected $appends = ['mydate', 'mytime'];
 
     public function users()
     {
@@ -27,6 +28,16 @@ class Ride extends Model
     public function riders()
     {
         return $this->belongsToMany(User::class)->wherePivot('status', 'accepted')->get();
+    }
+
+    public function getMyDateAttribute()
+    {
+        return $this->date->format('Y-m-d');
+    }
+
+    public function getMyTimeAttribute()
+    {
+        return $this->date->format('H:i:s');
     }
 
     private static function userStats($periodStart, $periodEnd)
@@ -44,8 +55,8 @@ class Ride extends Model
             })
             ->where('ride_user.status', '=', 'driver')
             ->where('done', '=', true)
-            ->where('rides.mydate', '>=', $periodStart)
-            ->where('rides.mydate', '<=', $periodEnd)
+            ->where('rides.date', '>=', $periodStart)
+            ->where('rides.date', '<=', $periodEnd)
 
             ->groupBy('users.id')
 
@@ -77,15 +88,14 @@ class Ride extends Model
             ->mergeBindings($join)
             ->where('ride_user.status', '=', 'driver')
             ->where('done', '=', true)
-            ->where('rides.mydate', '>=', $periodStart)
-            ->where('rides.mydate', '<=', $periodEnd)
-            ->select('users.name as driver', 'users.course', 'rides.id', 'mydate', 'mytime', 'myzone', 'neighborhood', 'going', 'hub', 'distance',
+            ->where('rides.date', '>=', $periodStart)
+            ->where('rides.date', '<=', $periodEnd)
+            ->select('users.name as driver', 'users.course', 'rides.id', 'date', 'myzone', 'neighborhood', 'going', 'hub', 'distance',
                 't1.distancia_total',
                 't1.numero_de_caronas',
                 't1.distancia_media'
             )
-            ->orderBy('mydate', 'DESC')
-            ->orderBy('mytime', 'DESC')
+            ->orderBy('date', 'DESC')
             ->get();
     }
 }

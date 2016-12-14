@@ -82,18 +82,19 @@ class RankingGetDriversOrderedByAverageOccupancyInPeriodTest extends TestCase
     public function testOnlyConsiderInsidePeriod()
     {
         $user = factory(User::class)->create();
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-08'], 3);
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-08'], 5);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-08'], 3);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-08'], 5);
 
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-10'], 3);
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-10'], 3);
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-10'], 2);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-10'], 3);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-10'], 3);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-10'], 2);
 
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-12'], 3);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-12'], 3);
 
         $users = with(new RankingService)->getDriversOrderedByAverageOccupancyInPeriod(
             Carbon::createFromDate(2015, 1, 9),
-            Carbon::createFromDate(2015, 1, 11));
+            Carbon::createFromDate(2015, 1, 11)
+        );
 
         $this->assertTrue(count($users) == 1);
         $this->assertTrue($users[0]->caronas == 3);
@@ -104,14 +105,14 @@ class RankingGetDriversOrderedByAverageOccupancyInPeriodTest extends TestCase
     public function testOnlyConsiderInsidePeriodInclusive()
     {
         $user = factory(User::class)->create();
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-08'], 3);
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-08'], 4);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-08'], 3);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-08'], 4);
 
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-10'], 3);
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-10'], 3);
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-10'], 2);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-10'], 3);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-10'], 3);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-10'], 2);
 
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-12'], 3);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-12'], 3);
 
         $users = with(new RankingService)->getDriversOrderedByAverageOccupancyInPeriod(
             Carbon::createFromDate(2015, 1, 8),
@@ -126,14 +127,14 @@ class RankingGetDriversOrderedByAverageOccupancyInPeriodTest extends TestCase
     public function testCanSelectOneDayPeriod()
     {
         $user = factory(User::class)->create();
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-08'], 3);
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-08'], 4);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-08'], 3);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-08'], 4);
 
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-10'], 3);
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-10'], 3);
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-10'], 2);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-10'], 3);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-10'], 3);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-10'], 2);
 
-        $this->createRide($user, ['done' => true, 'mydate' => '2015-01-12'], 3);
+        $this->createRide($user, ['done' => true, 'date' => '2015-01-12'], 3);
 
         $users = with(new RankingService)->getDriversOrderedByAverageOccupancyInPeriod(
             Carbon::createFromDate(2015, 1, 10),

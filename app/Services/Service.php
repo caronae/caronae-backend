@@ -27,8 +27,8 @@ class Service
                 $join->on('ride_user.ride_id', '=', 'rides.id');
             })
             ->where('rides.done', '=', true)
-            ->where('rides.mydate', '>=', $periodStart->format("Y-m-d"))
-            ->where('rides.mydate', '<=', $periodEnd->format("Y-m-d"));
+            ->where('rides.date', '>=', $periodStart->format("Y-m-d"))
+            ->where('rides.date', '<=', $periodEnd->format("Y-m-d"));
     }
 
     protected function baseQuery(Carbon $periodStart, Carbon $periodEnd){
@@ -43,14 +43,14 @@ class Service
      */
     protected function whenUserBecameADriver(){
         return DB::raw("
-                (SELECT mydate
+                (SELECT date
                  FROM users as u
                  JOIN ride_user ON users.id = ride_user.user_id
                  JOIN rides ON rides.id = ride_user.ride_id
                  WHERE u.id = users.id AND
                        ride_user.status = 'driver' AND
                        rides.done = true
-                 ORDER BY mydate ASC
+                 ORDER BY date ASC
                  LIMIT 1
                  )");
     }

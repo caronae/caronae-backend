@@ -31,7 +31,7 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
     private function getDriver($firstTimeAsDriver = null){
         $firstTimeAsDriver = $firstTimeAsDriver ?: Carbon::minValue()->format('Y-m-d');
         $user = factory(User::class)->create();
-        $ride = factory(Ride::class)->create(['done' => true, 'mydate' => $firstTimeAsDriver]);
+        $ride = factory(Ride::class)->create(['done' => true, 'date' => $firstTimeAsDriver]);
         $user->rides()->save($ride, ['status' => 'driver']);
 
         return $user;
@@ -45,7 +45,7 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
         });
     }
 
-    public function testCaronasHaveCorrectValue()
+    public function testRidesHaveCorrectValue()
     {
         $user = $this->getDriver();
 
@@ -86,10 +86,10 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
         $user = $this->getDriver();
 
         $this->createRides($user, [
-            ['done' => true, 'mydate' => '2015-01-08', 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
-            ['done' => true, 'mydate' => '2015-01-10', 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
-            ['done' => true, 'mydate' => '2015-01-10', 'myzone' => 'Zona Sul', 'neighborhood' => 'Catete'],
-            ['done' => true, 'mydate' => '2015-01-12', 'myzone' => 'Baixada', 'neighborhood' => 'Magé']
+            ['done' => true, 'date' => '2015-01-08', 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
+            ['done' => true, 'date' => '2015-01-10', 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
+            ['done' => true, 'date' => '2015-01-10', 'myzone' => 'Zona Sul', 'neighborhood' => 'Catete'],
+            ['done' => true, 'date' => '2015-01-12', 'myzone' => 'Baixada', 'neighborhood' => 'Magé']
         ]);
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::createFromDate(2015, 1, 9), Carbon::createFromDate(2015, 1, 11));
@@ -104,9 +104,9 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
         $user = $this->getDriver();
 
         $this->createRides($user, [
-            ['done' => true, 'mydate' => '2015-01-08', 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
-            ['done' => true, 'mydate' => '2015-01-10', 'myzone' => 'Zona Sul', 'neighborhood' => 'Catete'],
-            ['done' => true, 'mydate' => '2015-01-12', 'myzone' => 'Baixada', 'neighborhood' => 'Magé']
+            ['done' => true, 'date' => '2015-01-08', 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
+            ['done' => true, 'date' => '2015-01-10', 'myzone' => 'Zona Sul', 'neighborhood' => 'Catete'],
+            ['done' => true, 'date' => '2015-01-12', 'myzone' => 'Baixada', 'neighborhood' => 'Magé']
         ]);
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::createFromDate(2015, 1, 8), Carbon::createFromDate(2015, 1, 10));
@@ -121,9 +121,9 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
         $user = $this->getDriver();
 
         $this->createRides($user, [
-            ['done' => true, 'mydate' => '2015-01-08', 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
-            ['done' => true, 'mydate' => '2015-01-10', 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
-            ['done' => true, 'mydate' => '2015-01-10', 'myzone' => 'Zona Sul', 'neighborhood' => 'Catete'],
+            ['done' => true, 'date' => '2015-01-08', 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
+            ['done' => true, 'date' => '2015-01-10', 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
+            ['done' => true, 'date' => '2015-01-10', 'myzone' => 'Zona Sul', 'neighborhood' => 'Catete'],
         ]);
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::createFromDate(2015, 1, 10), Carbon::createFromDate(2015, 1, 10));
@@ -267,12 +267,12 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
         $user = $this->getDriver('2015-06-21');
 
         $this->createRides($user, [
-            ['done' => true, 'mydate' => '2015-06-20', 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
-            ['done' => true, 'mydate' => '2015-06-20', 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
-            ['done' => true, 'mydate' => '2015-06-21', 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
-            ['done' => true, 'mydate' => '2015-06-21', 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
-            ['done' => true, 'mydate' => '2015-06-21', 'myzone' => 'Baixada', 'neighborhood' => 'Magé'],
-            ['done' => true, 'mydate' => '2015-06-21', 'myzone' => 'Zona Sul', 'neighborhood' => 'Catete'],
+            ['done' => true, 'date' => '2015-06-20', 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
+            ['done' => true, 'date' => '2015-06-20', 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
+            ['done' => true, 'date' => '2015-06-21', 'myzone' => 'Centro', 'neighborhood' => 'São Cristóvão'],
+            ['done' => true, 'date' => '2015-06-21', 'myzone' => 'Zona Norte', 'neighborhood' => 'Tijuca'],
+            ['done' => true, 'date' => '2015-06-21', 'myzone' => 'Baixada', 'neighborhood' => 'Magé'],
+            ['done' => true, 'date' => '2015-06-21', 'myzone' => 'Zona Sul', 'neighborhood' => 'Catete'],
         ]);
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());

@@ -65,11 +65,11 @@ class RankingGetUsersOrderedByBestFeedbackInPeriodTest extends TestCase
     public function testOnlyConsiderInsidePeriod()
     {
         $user = factory(User::class)->create();
-        $this->createRideWithFeedback($user, ['done' => true, 'mydate' => '2015-01-08'], ['good', 'good', 'bad']);
+        $this->createRideWithFeedback($user, ['done' => true, 'date' => '2015-01-08'], ['good', 'good', 'bad']);
 
-        $this->createRideWithFeedback($user, ['done' => true, 'mydate' => '2015-01-10'], ['good', 'bad', 'bad']);
+        $this->createRideWithFeedback($user, ['done' => true, 'date' => '2015-01-10'], ['good', 'bad', 'bad']);
 
-        $this->createRideWithFeedback($user, ['done' => true, 'mydate' => '2015-01-12'], ['good', 'good', 'bad']);
+        $this->createRideWithFeedback($user, ['done' => true, 'date' => '2015-01-12'], ['good', 'good', 'bad']);
 
         $users = with(new RankingService)->getUsersOrderedByBestFeedbackInPeriod(
             Carbon::createFromDate(2015, 1, 9),
@@ -85,11 +85,11 @@ class RankingGetUsersOrderedByBestFeedbackInPeriodTest extends TestCase
     public function testOnlyConsiderInsidePeriodInclusive()
     {
         $user = factory(User::class)->create();
-        $this->createRideWithFeedback($user, ['done' => true, 'mydate' => '2015-01-09'], ['good', 'good', 'bad']);
+        $this->createRideWithFeedback($user, ['done' => true, 'date' => '2015-01-09'], ['good', 'good', 'bad']);
 
-        $this->createRideWithFeedback($user, ['done' => true, 'mydate' => '2015-01-10'], ['good', 'bad', 'bad']);
+        $this->createRideWithFeedback($user, ['done' => true, 'date' => '2015-01-10'], ['good', 'bad', 'bad']);
 
-        $this->createRideWithFeedback($user, ['done' => true, 'mydate' => '2015-01-12'], ['good', 'good', 'bad']);
+        $this->createRideWithFeedback($user, ['done' => true, 'date' => '2015-01-12'], ['good', 'good', 'bad']);
 
         $users = with(new RankingService)->getUsersOrderedByBestFeedbackInPeriod(
             Carbon::createFromDate(2015, 1, 9),
@@ -105,11 +105,11 @@ class RankingGetUsersOrderedByBestFeedbackInPeriodTest extends TestCase
     public function testCanSelectOneDayPeriod()
     {
         $user = factory(User::class)->create();
-        $this->createRideWithFeedback($user, ['done' => true, 'mydate' => '2015-01-08'], ['good', 'good', 'bad']);
+        $this->createRideWithFeedback($user, ['done' => true, 'date' => '2015-01-08'], ['good', 'good', 'bad']);
 
-        $this->createRideWithFeedback($user, ['done' => true, 'mydate' => '2015-01-10'], ['good', 'bad', 'bad']);
+        $this->createRideWithFeedback($user, ['done' => true, 'date' => '2015-01-10'], ['good', 'bad', 'bad']);
 
-        $this->createRideWithFeedback($user, ['done' => true, 'mydate' => '2015-01-12'], ['good', 'good', 'bad']);
+        $this->createRideWithFeedback($user, ['done' => true, 'date' => '2015-01-12'], ['good', 'good', 'bad']);
 
         $users = with(new RankingService)->getUsersOrderedByBestFeedbackInPeriod(
             Carbon::createFromDate(2015, 1, 10),

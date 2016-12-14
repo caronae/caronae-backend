@@ -33,7 +33,9 @@ class RankingGetUsersOrderedByRidesInPeriodTest extends TestCase
         $user = factory(User::class)->create();
 
         $this->createRides($user, [
-            ['done' => true], ['done' => true], ['done' => true]
+            ['done' => true], 
+            ['done' => true], 
+            ['done' => true]
         ]);
 
         $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
@@ -47,7 +49,9 @@ class RankingGetUsersOrderedByRidesInPeriodTest extends TestCase
         $user = factory(User::class)->create();
 
         $this->createRides($user, [
-            ['done' => true], ['done' => true], ['done' => false]
+            ['done' => true], 
+            ['done' => true], 
+            ['done' => false]
         ]);
 
         $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
@@ -61,7 +65,9 @@ class RankingGetUsersOrderedByRidesInPeriodTest extends TestCase
         $user = factory(User::class)->create();
 
         $this->createRides($user, [
-            ['done' => true, 'mydate' => '2015-01-08'], ['done' => true, 'mydate' => '2015-01-10'], ['done' => true, 'mydate' => '2015-01-12']
+            ['done' => true, 'date' => '2015-01-08'],
+            ['done' => true, 'date' => '2015-01-10'],
+            ['done' => true, 'date' => '2015-01-12']
         ]);
 
         $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::createFromDate(2015, 1, 9), Carbon::createFromDate(2015, 1, 11));
@@ -75,7 +81,9 @@ class RankingGetUsersOrderedByRidesInPeriodTest extends TestCase
         $user = factory(User::class)->create();
 
         $this->createRides($user, [
-            ['done' => true, 'mydate' => '2015-01-09'], ['done' => true, 'mydate' => '2015-01-10'], ['done' => true, 'mydate' => '2015-01-12']
+            ['done' => true, 'date' => '2015-01-09'],
+            ['done' => true, 'date' => '2015-01-10'],
+            ['done' => true, 'date' => '2015-01-12']
         ]);
 
         $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::createFromDate(2015, 1, 9), Carbon::createFromDate(2015, 1, 10));
@@ -89,7 +97,9 @@ class RankingGetUsersOrderedByRidesInPeriodTest extends TestCase
         $user = factory(User::class)->create();
 
         $this->createRides($user, [
-            ['done' => true, 'mydate' => '2015-01-08'], ['done' => true, 'mydate' => '2015-01-10'], ['done' => true, 'mydate' => '2015-01-12']
+            ['done' => true, 'date' => '2015-01-08'],
+            ['done' => true, 'date' => '2015-01-10'],
+            ['done' => true, 'date' => '2015-01-12']
         ]);
 
         $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::createFromDate(2015, 1, 10), Carbon::createFromDate(2015, 1, 10));
@@ -103,13 +113,18 @@ class RankingGetUsersOrderedByRidesInPeriodTest extends TestCase
         $user = factory(User::class)->create();
 
         $this->createRides($user, [
-            ['done' => true], ['done' => true], ['done' => true]
+            ['done' => true], 
+            ['done' => true], 
+            ['done' => true]
         ]);
 
         $user2 = factory(User::class)->create();
 
         $this->createRides($user2, [
-            ['done' => true], ['done' => true], ['done' => true], ['done' => true]
+            ['done' => true], 
+            ['done' => true], 
+            ['done' => true], 
+            ['done' => true]
         ]);
 
         $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
@@ -124,13 +139,18 @@ class RankingGetUsersOrderedByRidesInPeriodTest extends TestCase
         $user = factory(User::class)->create(['deleted_at' => '2015-01-23']);
 
         $this->createRides($user, [
-            ['done' => true], ['done' => true], ['done' => true]
+            ['done' => true], 
+            ['done' => true], 
+            ['done' => true]
         ]);
 
         $user2 = factory(User::class)->create();
 
         $this->createRides($user2, [
-            ['done' => true], ['done' => true], ['done' => true], ['done' => true]
+            ['done' => true], 
+            ['done' => true], 
+            ['done' => true], 
+            ['done' => true]
         ]);
 
         $users = with(new RankingService)->getUsersOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());

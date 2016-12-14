@@ -54,13 +54,12 @@ class RideController extends Controller
 
         $rides = Ride::leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
             ->select('rides.*')
-            ->where(DB::raw('(rides.mydate + rides.mytime)'), '>=', $minDate)
+            ->where('rides.date', '>=', $minDate)
             ->where('rides.done', 'false')
             ->whereIn('ride_user.status', ['pending','accepted','driver'])
             ->groupBy('rides.id')
             ->having(DB::raw('count(ride_user.user_id)-1'), '<', DB::raw('rides.slots'))
-            ->orderBy('rides.mydate')
-            ->orderBy('rides.mytime')
+            ->orderBy('rides.date')
             ->paginate($limit);
 
         $results = [];
@@ -86,9 +85,7 @@ class RideController extends Controller
             $ride->neighborhood = $decode->neighborhood;
             $ride->place = $decode->place;
             $ride->route = $decode->route;
-            $ride_date = DateTime::createFromFormat('d/m/Y', $decode->mydate);
-            $ride->mydate = $ride_date->format('Y-m-d');
-            $ride->mytime = $decode->mytime;
+            $ride->date = Carbon::createFromFormat('d/m/Y H:i', $decode->mydate . ' ' . substr($decode->mytime, 0, 5));
             $ride->slots = $decode->slots;
             $ride->hub = $decode->hub;
             $ride->description = $decode->description;
@@ -107,11 +104,11 @@ class RideController extends Controller
                 $ride->repeats_until = $repeats_until->format('Y-m-d');
                 $ride->week_days = $decode->week_days;
 
-                $repeating_dates = $this->recurringDates($ride_date, $repeats_until, $ride->week_days);
+                $repeating_dates = $this->recurringDates($ride->date, $repeats_until, $ride->week_days);
 
                 foreach ($repeating_dates as $date) {
                     // Skip if it's the date of the original Ride
-                    if ($date == $ride_date) continue;
+                    if ($date == $ride->date) continue;
 
                     // Creating repeating Ride objects. All fields are the same except for
                     // the date - which will have a new generated date - and a foreign key
@@ -121,8 +118,7 @@ class RideController extends Controller
                     $repeating_ride->neighborhood = $ride->neighborhood;
                     $repeating_ride->place = $ride->place;
                     $repeating_ride->route = $ride->route;
-                    $repeating_ride->mydate = $date->format('Y-m-d'); // New date
-                    $repeating_ride->mytime = $ride->mytime;
+                    $repeating_ride->date = $date; // New date
                     $repeating_ride->slots = $ride->slots;
                     $repeating_ride->hub = $ride->hub;
                     $repeating_ride->description = $ride->description;
@@ -162,14 +158,14 @@ class RideController extends Controller
             'going' => 'required|boolean'
         ]);
 
-        $dateTime = Carbon::createFromFormat('d/m/Y H:i:s', $request->input('date') . $request->input('time'));
+        $dateTime = Carbon::createFromFormat('d/m/Y H:i:s', $request->input('date') . ' ' . $request->input('time'));
         $date = $dateTime->format('Y-m-d');
         $timeMin = $dateTime->copy()->subHours(2)->format('H:i:s'); // check for rides a few hours before the time
         $timeMax = $dateTime->copy()->addHours(2)->format('H:i:s'); // check for rides a few hours after the time
 
         $ridesFound = $request->user->rides()
-            ->where(['mydate' => $date, 'going' => $request->input('going')])
-            ->whereBetween('mytime', [$timeMin, $timeMax])
+            ->where([DB::raw('date::DATE') => $date, 'going' => $request->input('going')])
+            ->whereBetween(DB::raw('date::TIME'), [$timeMin, $timeMax])
             ->exists();
 
         if ($ridesFound) {
@@ -251,13 +247,13 @@ class RideController extends Controller
         } else {
             $locationColumn = 'neighborhood';//if location is filtered by neighborhood, query by 'neighborhood' column
         }
-        $matchThese = ['going' => $decode->go, 'mydate' => $decode->date, 'done' => false];
+        $matchThese = ['going' => $decode->go, DB::raw('date::DATE') => $decode->date, 'done' => false];
 
         //query the rides
         if (empty($decode->center)) {
-            $rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('mytime', '>=', $decode->time)->get();
+            $rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where(DB::raw('date::TIME'), '>=', $decode->time)->get();
         } else {
-            $rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where('mytime', '>=', $decode->time)->where('hub', 'LIKE', "$decode->center%")->get();
+            $rides = Ride::where($matchThese)->whereIn($locationColumn, $locations)->where(DB::raw('date::TIME'), '>=', $decode->time)->where('hub', 'LIKE', "$decode->center%")->get();
         }
 
         $results = [];

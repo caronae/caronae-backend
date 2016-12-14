@@ -248,8 +248,7 @@ $factory->define(Ride::class, function (Faker\Generator $faker) {
         'description' => $faker->realText(100),
         'hub' => $hub,
         'slots' => $faker->numberBetween(1, 4),
-        'mytime' => $faker->time(),
-        'mydate' => $faker->date(),
+        'date' => $faker->dateTime(),
         'done' => $faker->boolean()
     ];
 });
@@ -258,8 +257,7 @@ $factory->defineAs(Ride::class, 'next', function (Faker\Generator $faker) use ($
     $ride = $factory->raw(Ride::class);
     $date = $faker->dateTimeBetween('+1 hour', 'tomorrow 23:59:59');
     return array_merge($ride, [
-        'mydate' => $date->format('Y-m-d'),
-        'mytime' => $date->format('H:i:00'),
+        'date' => $date,
         'done' => false
     ]);
 });
