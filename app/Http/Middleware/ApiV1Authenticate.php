@@ -21,7 +21,6 @@ class ApiV1Authenticate
             return response()->json(['error' => 'User token not authorized.'], 403);
         }
 
-        // $request->user = $user;
         $request->currentUser = $user;
 
         $this->updateUserAppInfo($request);

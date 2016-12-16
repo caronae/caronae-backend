@@ -59,9 +59,8 @@ class UserTest extends TestCase
 
         // add unfinished rides, which should be returned
         $rideIds = [];
-        $ride = factory(Ride::class)->create(['done' => false]);
+        $ride = factory(Ride::class)->create(['done' => false])->fresh();
         $user->rides()->attach($ride, ['status' => 'driver']);
-        $ride = Ride::find($ride->id);
 
         // add finished ride, which shouldn't be returned
         $rideFinished = factory(Ride::class)->create(['done' => true]);
@@ -149,7 +148,7 @@ class UserTest extends TestCase
         $response = $this->json('PUT', 'user', $user->toArray(), $headers);
         $response->assertResponseOk();
 
-        $savedUser = User::find($user->id);
+        $savedUser = $user->fresh();
         $this->assertEquals($user->toArray(), $savedUser->toArray());
     }
 
@@ -161,9 +160,8 @@ class UserTest extends TestCase
 
         // add unfinished rides, which should be returned
         $rideIds = [];
-        $ride = factory(Ride::class)->create(['done' => false]);
+        $ride = factory(Ride::class)->create(['done' => false])->fresh();
         $user->rides()->attach($ride, ['status' => 'driver']);
-        $ride = Ride::find($ride->id);
 
         // add finishe ride, which shouldn't be returned
         $rideFinished = factory(Ride::class)->create(['done' => true]);
@@ -211,7 +209,7 @@ class UserTest extends TestCase
         $response = $this->json('GET', 'user/' . $user2->id . '/offeredRides', [], [
             'token' => $user->token
         ]);
-        
+
         $response->assertResponseStatus(403);
     }
 
@@ -226,7 +224,7 @@ class UserTest extends TestCase
         ], $headers);
         $response->assertResponseOk();
 
-        $savedUser = User::find($user->id);
+        $savedUser = $user->fresh();
         $this->assertEquals($newToken, $savedUser->gcm_token);
     }
 
@@ -241,7 +239,7 @@ class UserTest extends TestCase
         ], $headers);
         $response->assertResponseOk();
 
-        $savedUser = User::find($user->id);
+        $savedUser = $user->fresh();
         $this->assertEquals($newId, $savedUser->face_id);
     }
 
@@ -256,7 +254,7 @@ class UserTest extends TestCase
         ], $headers);
         $response->assertResponseOk();
 
-        $savedUser = User::find($user->id);
+        $savedUser = $user->fresh();
         $this->assertEquals($newURL, $savedUser->profile_pic_url);
     }
 

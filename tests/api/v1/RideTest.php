@@ -382,8 +382,7 @@ class RideTest extends TestCase
 
     public function testGetHistory()
     {
-        $user2 = factory(User::class)->create();
-        $user2 = User::find($user2->id);
+        $user2 = factory(User::class)->create()->fresh();
 
         $ride1 = factory(Ride::class)->create(['done' => true]);
         $ride2 = factory(Ride::class)->create(['done' => true]);
