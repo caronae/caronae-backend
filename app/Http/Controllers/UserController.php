@@ -12,13 +12,25 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    /**
+     * Instantiate a new UserController instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('api.v1.auth', ['only' => [
+            'getOfferedRides'
+        ]]);
+    }
+
     public function signUpIntranet($idUFRJ, $token, SigaService $siga)
     {
         if (User::where('token', $token)->count() > 0) {
-            return response()->json(['error'=>'User token already exists.'], 409);
+            return response()->json(['error' => 'User token already exists.'], 409);
         }
         if (User::where('id_ufrj', $idUFRJ)->count() > 0) {
-            return response()->json(['error'=>'User id_ufrj already exists.'], 409);
+            return response()->json(['error' => 'User id_ufrj already exists.'], 409);
         }
 
         $intranetUser = $siga->getProfileById($idUFRJ);
@@ -49,17 +61,21 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $decode = json_decode($request->getContent());
-        $matchThese = ['token' => $decode->token, 'id_ufrj' => $decode->id_ufrj];
-        $user = User::where($matchThese)->first();
+        $user = User::where(['token' => $decode->token, 'id_ufrj' => $decode->id_ufrj])->first();
         if ($user == null) {
-            return response()->json(['error'=>'User not found with provided credentials.'], 403);
+            return response()->json(['error' => 'User not found with provided credentials.'], 403);
         }
 
-        //get user's rides as driver
-        $matchThese = ['status' => 'driver', 'done' => false];
-        $drivingRides = $user->rides()->where($matchThese)->get();
+        // get user's rides as driver
+        $drivingRides = $user->rides()->where(['status' => 'driver', 'done' => false])->get();
 
-        return array("user" => $user, "rides" => $drivingRides);
+        return ['user' => $user, 'rides' => $drivingRides];
+    }
+
+    public function getOfferedRides(User $user, Request $request)
+    {
+        $rides = $user->rides()->where(['status' => 'driver', 'done' => false])->get();
+        return ['rides' => $rides];
     }
 
     public function update(Request $request)
@@ -67,7 +83,7 @@ class UserController extends Controller
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
         if (empty($request->header('token')) || $user == NULL) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
+            return response()->json(['error' => 'User token not authorized.'], 403);
         }
 
         $user->profile = $decode->profile;
@@ -79,7 +95,7 @@ class UserController extends Controller
         $user->car_model = $decode->car_model;
         $user->car_color = $decode->car_color;
         $user->car_plate = $decode->car_plate;
-        if (@$decode->profile_pic_url != "") {
+        if (@$decode->profile_pic_url != '') {
             $user->profile_pic_url = $decode->profile_pic_url;
         }
 
@@ -91,7 +107,7 @@ class UserController extends Controller
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
         if ($user == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
+            return response()->json(['error' => 'User token not authorized.'], 403);
         }
 
         $user->gcm_token = $decode->token;
@@ -104,7 +120,7 @@ class UserController extends Controller
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
         if ($user == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
+            return response()->json(['error' => 'User token not authorized.'], 403);
         }
 
         if ($decode->id) $user->face_id = $decode->id;
@@ -117,7 +133,7 @@ class UserController extends Controller
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
         if ($user == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
+            return response()->json(['error' => 'User token not authorized.'], 403);
         }
 
         $user->profile_pic_url = $decode->url;
@@ -129,12 +145,12 @@ class UserController extends Controller
     {
         $user = User::where('token', $request->header('token'))->first();
         if ($user == null) {
-            return response()->json(['error'=>'User ' . $request->header('token') . ' token not authorized.'], 403);
+            return response()->json(['error' => 'User ' . $request->header('token') . ' token not authorized.'], 403);
         }
 
         $fbtoken = $request->header('Facebook-Token');
         if ($fbtoken == null) {
-            return response()->json(['error'=>'User\'s Facebook token missing.'], 403);
+            return response()->json(['error' => 'User\'s Facebook token missing.'], 403);
         }
 
         $fb = new Facebook\Facebook([
@@ -147,10 +163,10 @@ class UserController extends Controller
             $response = $fb->get('/' . $fbid . '?fields=context.fields(mutual_friends)', $fbtoken);
         } catch(Facebook\Exceptions\FacebookResponseException $e) {
             // When Graph returns an error
-            return response()->json(['error'=>'Facebook Graph returned an error: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Facebook Graph returned an error: ' . $e->getMessage()], 500);
         } catch(Facebook\Exceptions\FacebookSDKException $e) {
             // When validation fails or other local issues
-            return response()->json(['error'=>'Facebook SDK returned an error: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Facebook SDK returned an error: ' . $e->getMessage()], 500);
         }
 
         $mutualFriendsFB = $response->getGraphObject()['context']['mutual_friends'];
@@ -173,7 +189,7 @@ class UserController extends Controller
 
         // Check if the connection was successful
         if ($intranetResponseRaw == false) {
-            return response()->json(['error'=>'Failed to connect to Intranet photos database.'], 500);
+            return response()->json(['error' => 'Failed to connect to Intranet photos database.'], 500);
         }
 
         return response($intranetResponseRaw)->header('Content-Type', 'image/jpg');
@@ -183,12 +199,12 @@ class UserController extends Controller
     {
         $user = User::where('token', $request->header('token'))->first();
         if ($user == null) {
-            return response()->json(['error'=>'User ' . $request->header('token') . ' token not authorized.'], 403);
+            return response()->json(['error' => 'User ' . $request->header('token') . ' token not authorized.'], 403);
         }
 
         $idUFRJ = $user->id_ufrj;
         if ($idUFRJ == null || $idUFRJ == '') {
-            return response()->json(['error'=>'User does not have an Intranet identification.'], 403);
+            return response()->json(['error' => 'User does not have an Intranet identification.'], 403);
         }
 
         $picture = $siga->getProfilePictureById($idUFRJ);

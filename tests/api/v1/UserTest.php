@@ -51,11 +51,11 @@ class UserTest extends TestCase
         // ]);
     }
 
-    public function testLoginWithValidUser()
+    public function testSignInWithValidUser()
     {
         // create user with some rides
         $user = factory(User::class)->create();
-        $user = User::find($user->id);
+        $user = $user->fresh();
 
         // add unfinished rides, which should be returned
         $rideIds = [];
@@ -63,10 +63,12 @@ class UserTest extends TestCase
         $user->rides()->attach($ride, ['status' => 'driver']);
         $ride = Ride::find($ride->id);
 
-        // add finished rides, which shouldn't be returned
-        factory(Ride::class, 3)->create(['done' => true])->each(function($ride) use ($user) {
-            $user->rides()->attach($ride, ['status' => 'driver']);
-        });
+        // add finished ride, which shouldn't be returned
+        $rideFinished = factory(Ride::class)->create(['done' => true]);
+        $user->rides()->attach($rideFinished, ['status' => 'driver']);
+
+        // add random ride from another user
+        factory(Ride::class)->create();
 
         $response = $this->json('POST', 'user/login', [
             'id_ufrj' => $user->id_ufrj,
@@ -113,7 +115,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    public function testLoginWithInvalidUser()
+    public function testSignInWithInvalidUser()
     {
         $response = $this->json('POST', 'user/login', [
             'id_ufrj' => str_random(11),
@@ -149,6 +151,53 @@ class UserTest extends TestCase
 
         $savedUser = User::find($user->id);
         $this->assertEquals($user->toArray(), $savedUser->toArray());
+    }
+
+    public function testGetOfferedRides()
+    {
+        // create user with some rides
+        $user = factory(User::class)->create();
+        $user = $user->fresh();
+
+        // add unfinished rides, which should be returned
+        $rideIds = [];
+        $ride = factory(Ride::class)->create(['done' => false]);
+        $user->rides()->attach($ride, ['status' => 'driver']);
+        $ride = Ride::find($ride->id);
+
+        // add finishe ride, which shouldn't be returned
+        $rideFinished = factory(Ride::class)->create(['done' => true]);
+        $user->rides()->attach($rideFinished, ['status' => 'driver']);
+
+        // add random ride from another user
+        factory(Ride::class)->create();
+
+        $response = $this->json('GET', 'user/' . $user->id . '/offeredRides', [], [
+            'token' => $user->token
+        ]);
+
+        $response->assertResponseOk();
+        $response->seeJsonEquals([
+            'rides' => [
+                [
+                    'id' => $ride->id,
+                    'myzone' => $ride->myzone,
+                    'neighborhood' => $ride->neighborhood,
+                    'going' => $ride->going,
+                    'place' => $ride->place,
+                    'route' => $ride->route,
+                    'routine_id' => $ride->routine_id,
+                    'hub' => $ride->hub,
+                    'slots' => $ride->slots,
+                    'mytime' => $ride->date->format('H:i:s'),
+                    'mydate' => $ride->date->format('Y-m-d'),
+                    'description' => $ride->description,
+                    'week_days' => $ride->week_days,
+                    'repeats_until' => $ride->repeats_until,
+                    'done' => $ride->done
+                ]
+            ]
+        ]);
     }
 
     public function testSaveGcmToken()
