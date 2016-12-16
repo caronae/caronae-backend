@@ -18,10 +18,10 @@ class ApiV1Authenticate
     public function handle($request, Closure $next)
     {
         if (empty($request->header('token')) || ($user = User::where('token', $request->header('token'))->first()) == NULL) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
+            return response()->json(['error' => 'User token not authorized.'], 403);
         }
 
-        $request->user = $user;
+        $request->currentUser = $user;
 
         $this->updateUserAppInfo($request);
 
@@ -33,19 +33,19 @@ class ApiV1Authenticate
         $userAgent = $request->header('User-Agent');
         $appVersionRegex = '(\d+\.)?(\d+\.)?(\*|\d+)';
         
-        Log::info('Call from user ' . $request->user->id . ' with User-Agent: ' . $userAgent);
+        Log::info('Call from user ' . $request->currentUser->id . ' with User-Agent: ' . $userAgent);
 
         if (preg_match('/Caronae\/(?P<version>' . $appVersionRegex . ') .*(?P<platform>(iOS|Android))/', $userAgent, $matches)) {
             $platform = $matches['platform'];
             $version = $matches['version'];
 
             if ($platform == 'iOS' || $platform == 'Android') {
-                $request->user->app_platform = $platform;
-                $request->user->app_version = $version;
-                $request->user->save();
+                $request->currentUser->app_platform = $platform;
+                $request->currentUser->app_version = $version;
+                $request->currentUser->save();
             }
         }
 
-        Log::info('User ' . $request->user->id . ' platform is: ' . $request->user->app_platform . ' - ' . $request->user->app_version);
+        Log::info('User ' . $request->currentUser->id . ' platform is: ' . $request->currentUser->app_platform . ' - ' . $request->currentUser->app_version);
     }
 }

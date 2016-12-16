@@ -48,6 +48,7 @@ class Kernel extends HttpKernel
         'auth' => \Caronae\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'api.v1.auth' => \Caronae\Http\Middleware\ApiV1Authenticate::class,
+        'api.v1.userMatchesRequestedUser' => \Caronae\Http\Middleware\ApiV1AuthenticateRequestedUser::class,
         'api.v1.userBelongsToRide' => \Caronae\Http\Middleware\ApiV1AuthenticateRideUser::class,
         'api.v1.userOwnsRide' => \Caronae\Http\Middleware\ApiV1AuthenticateRideDriver::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,

@@ -4,7 +4,7 @@ namespace Caronae\Http\Middleware;
 
 use Closure;
 
-class ApiV1AuthenticateRideDriver extends ApiV1Authenticate
+class ApiV1AuthenticateRequestedUser extends ApiV1Authenticate
 {
     /**
      * Handle an incoming request.
@@ -15,8 +15,8 @@ class ApiV1AuthenticateRideDriver extends ApiV1Authenticate
      */
     public function handle($request, Closure $next)
     {
-        if (!$request->currentUser->ownsRide($request->ride)) {
-            return response()->json(['error' => 'User is not the driver of the ride.'], 403);
+        if ($request->user != $request->currentUser) {
+            return response()->json(['error' => 'You are not authorized.'], 403);
         }
 
         return $next($request);

@@ -29,8 +29,7 @@ class RideTest extends TestCase
     */
     public function createFakeUserHeaders()
     {
-        $user = factory(User::class)->create();
-        $this->user = User::find($user->id);
+        $this->user = factory(User::class)->create()->fresh();
         $this->headers = ['token' => $this->user->token];
     }
 
@@ -383,8 +382,7 @@ class RideTest extends TestCase
 
     public function testGetHistory()
     {
-        $user2 = factory(User::class)->create();
-        $user2 = User::find($user2->id);
+        $user2 = factory(User::class)->create()->fresh();
 
         $ride1 = factory(Ride::class)->create(['done' => true]);
         $ride2 = factory(Ride::class)->create(['done' => true]);
