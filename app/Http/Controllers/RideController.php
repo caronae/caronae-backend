@@ -70,7 +70,7 @@ class RideController extends Controller
 
     public function store(Request $request)
     {
-        $user = $request->user;
+        $user = $request->currentUser;
 
         $rides_created = [];
         DB::transaction(function() use ($request, $user, &$rides_created) {
@@ -157,7 +157,7 @@ class RideController extends Controller
         $dateMin = $dateTime->copy()->subHours(2); // check for rides a few hours before the time
         $dateMax = $dateTime->copy()->addHours(2); // check for rides a few hours after the time
 
-        $ridesFound = $request->user->rides()
+        $ridesFound = $request->currentUser->rides()
             ->where('going', $request->input('going'))
             ->whereBetween('date', [$dateMin, $dateMax])
             ->exists();
@@ -182,7 +182,7 @@ class RideController extends Controller
     public function delete(Request $request, $rideId)
     {
         return DB::transaction(function() use ($request, $rideId) {
-            $user = $request->user;
+            $user = $request->currentUser;
             $ride = $user->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
             if ($ride == null) {
                 return response()->json(['error'=>'User is not the driver on this ride or ride does not exist.'], 403);
@@ -196,7 +196,7 @@ class RideController extends Controller
     public function deleteAllFromUser(Request $request, $userId, $going)
     {
         return DB::transaction(function() use ($request, $going) {
-            $user = $request->user;
+            $user = $request->currentUser;
 
             $matchThese = ['status' => 'driver', 'going' => $going, 'done' => false];
             $rideIdList = $user->rides()->where($matchThese)->pluck('ride_id')->toArray();
@@ -209,7 +209,7 @@ class RideController extends Controller
     public function deleteAllFromRoutine(Request $request, $routineId)
     {
         return DB::transaction(function() use ($request, $routineId) {
-            $user = $request->user;
+            $user = $request->currentUser;
 
             $matchThese = ['routine_id' => $routineId, 'done' => false];
             $rideIdList = Ride::where($matchThese)->pluck('id')->toArray();
@@ -277,7 +277,7 @@ class RideController extends Controller
             'rideId' => 'required|int'
         ]);
 
-        $user = $request->user;
+        $user = $request->currentUser;
         $rideID = $request->rideId;
 
         //if a relationship already exists, do not create another one
@@ -338,7 +338,7 @@ class RideController extends Controller
 
     public function getMyActiveRides(Request $request)
     {
-        $user = $request->user;
+        $user = $request->currentUser;
 
         //active rides have 'driver' or 'accepted' status
         $rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->where('done', false)->get();
@@ -372,7 +372,7 @@ class RideController extends Controller
 
     public function leaveRide(Request $request)
     {
-        $user = $request->user;
+        $user = $request->currentUser;
         $rideID = $request->rideId;
 
         $matchThese = ['ride_id' => $rideID, 'user_id' => $user->id];
@@ -412,7 +412,7 @@ class RideController extends Controller
     public function finishRide(Request $request)
     {
         //check if the current user is the driver of the ride
-        $ride = $request->user->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
+        $ride = $request->currentUser->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
         if ($ride == null) {
             return response()->json(['error' => 'User is not the driver of this ride'], 403);
         }
@@ -436,7 +436,7 @@ class RideController extends Controller
 
     public function getRidesHistory(Request $request)
     {
-        $user = $request->user;
+        $user = $request->currentUser;
         $rides = $user->rides()->where('done', true)->whereIn('status', ['driver', 'accepted'])->get();
 
         $resultJson = [];
@@ -491,7 +491,7 @@ class RideController extends Controller
 
     public function sendChatMessage(Request $request, Ride $ride)
     {
-        $user = $request->user;
+        $user = $request->currentUser;
         $message = $request->input('message');
 
         $data = [

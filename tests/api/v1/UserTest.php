@@ -200,6 +200,21 @@ class UserTest extends TestCase
         ]);
     }
 
+    public function testGetOfferedRidesFromAnotherUserShouldError()
+    {
+        // create user
+        $user = factory(User::class)->create()->fresh();
+
+        // create another user
+        $user2 = factory(User::class)->create()->fresh();
+
+        $response = $this->json('GET', 'user/' . $user2->id . '/offeredRides', [], [
+            'token' => $user->token
+        ]);
+        
+        $response->assertResponseStatus(403);
+    }
+
     public function testSaveGcmToken()
     {
         $user = factory(User::class)->create();

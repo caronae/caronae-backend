@@ -22,6 +22,10 @@ class UserController extends Controller
         $this->middleware('api.v1.auth', ['only' => [
             'getOfferedRides'
         ]]);
+
+        $this->middleware('api.v1.userMatchesRequestedUser', ['only' => [
+            'getOfferedRides'
+        ]]);
     }
 
     public function signUpIntranet($idUFRJ, $token, SigaService $siga)
