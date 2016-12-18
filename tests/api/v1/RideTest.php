@@ -123,6 +123,63 @@ class RideTest extends TestCase
         // TODO: test search with zone, search with neighborhood, search with/without center
     }
 
+    public function testValidateValidRide()
+    {
+        $ride = factory(Ride::class)->create(['date' => '2016-12-18 16:00:00', 'going' => false]);
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $parameters = [
+            'date' => '18/12/2016',
+            'time' => '16:00:00',
+            'going' => 1
+        ];
+        $response = $this->json('GET', 'ride/validateDuplicate', $parameters, $this->headers);
+        $response->assertResponseOk();
+        $response->seeJsonEquals([
+            'valid' => true,
+            'status' => 'valid',
+            'message' => 'No conflicting rides were found close to the specified date.'
+        ]);
+    }
+
+    public function testValidatePossibleDuplicate()
+    {
+        $ride = factory(Ride::class)->create(['date' => '2016-12-18 10:00:00', 'going' => true]);
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $parameters = [
+            'date' => '18/12/2016',
+            'time' => '16:00:00',
+            'going' => 1
+        ];
+        $response = $this->json('GET', 'ride/validateDuplicate', $parameters, $this->headers);
+        $response->assertResponseOk();
+        $response->seeJsonEquals([
+            'valid' => false,
+            'status' => 'possible_duplicate',
+            'message' => 'The user has already offered a ride too close to the specified date.'
+        ]);
+    }
+
+    public function testValidateDuplicate()
+    {
+        $ride = factory(Ride::class)->create(['date' => '2016-12-18 16:20:00', 'going' => true]);
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $parameters = [
+            'date' => '18/12/2016',
+            'time' => '16:00:00',
+            'going' => 1
+        ];
+        $response = $this->json('GET', 'ride/validateDuplicate', $parameters, $this->headers);
+        $response->assertResponseOk();
+        $response->seeJsonEquals([
+            'valid' => false,
+            'status' => 'duplicate',
+            'message' => 'The user has already offered a ride on the specified date.'
+        ]);
+    }
+
     public function testCreateWithoutRoutine()
     {
         $request = [
@@ -372,12 +429,12 @@ class RideTest extends TestCase
 
     public function testSaveFeedback()
     {
-
+        // TODO
     }
 
     public function testGetActiveRides()
     {
-
+        // TODO
     }
 
     public function testGetHistory()

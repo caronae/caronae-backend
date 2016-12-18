@@ -154,18 +154,32 @@ class RideController extends Controller
         ]);
 
         $dateTime = Carbon::createFromFormat('d/m/Y H:i:s', $request->input('date') . ' ' . $request->input('time'));
-        $dateMin = $dateTime->copy()->subHours(2); // check for rides a few hours before the time
-        $dateMax = $dateTime->copy()->addHours(2); // check for rides a few hours after the time
+        $dateMin = $dateTime->copy()->setTime(0,0,0);
+        $dateMax = $dateTime->copy()->setTime(23,59,59);
 
         $ridesFound = $request->currentUser->rides()
-            ->where('going', $request->input('going'))
             ->whereBetween('date', [$dateMin, $dateMax])
-            ->exists();
+            ->where('going', $request->input('going'))
+            ->get();
 
-        if ($ridesFound) {
+        if (count($ridesFound) > 0) {
             $valid = false;
-            $status = 'possible_duplicate';
-            $message = 'The user has already offered a ride too close to the specified date.';
+
+            $duplicated = false;
+            $ridesFound->each(function ($ride) use ($dateTime, &$duplicated) {
+                if (abs($dateTime->diffInMinutes($ride->date)) <= 30) {
+                    $duplicated = true;
+                    return false;
+                }
+            });
+
+            if ($duplicated) {
+                $status = 'duplicate';
+                $message = 'The user has already offered a ride on the specified date.';
+            } else {
+                $status = 'possible_duplicate';
+                $message = 'The user has already offered a ride too close to the specified date.';
+            }
         } else {
             $valid = true;
             $status = 'valid';
