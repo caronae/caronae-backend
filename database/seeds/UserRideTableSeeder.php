@@ -18,15 +18,14 @@ class UserRideTableSeeder extends Seeder
 
     public function run()
     {
-        DatabaseSeeder::emptyTable('users');
-        DatabaseSeeder::emptyTable('rides');
-        DatabaseSeeder::emptyTable('ride_user');
-
         $this->createDrivers();
         echo "Created " . count($this->drivers) . " drivers offering " . count($this->rides) . " rides.\n";
 
         $this->createRiders();
 	    echo "Created " . count($this->riders) . " riders.\n";
+
+	    echo "Users table size: " . User::count() . "\n";
+	    echo "Rides table size: " . Ride::count() . "\n";
     }
 
     protected function createDrivers()
