@@ -8,6 +8,7 @@ use Caronae\Http\Requests\RankingRequest;
 use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
 use Caronae\Models\User;
+use Caronae\Notifications\RideJoinRequested;
 use Carbon\Carbon;
 use DB;
 use Caronae\Services\PushNotificationService;
@@ -304,12 +305,14 @@ class RideController extends Controller
         $user->rides()->attach($rideID, ['status' => 'pending']);
 
         //send notification
+        $ride = Ride::find($rideID);
+        $driver = $ride->driver();
+        $driver->notify(new RideJoinRequested($ride, $user));
         $notification = [
             'message' => 'Sua carona recebeu uma solicitação',
             'msgType' => 'joinRequest',
             'rideId'  => $rideID
         ];
-        $driver = Ride::find($rideID)->driver();
         $this->push->sendNotificationToUser($driver, $notification);
 
         return response()->json(['message' => 'Request sent.']);

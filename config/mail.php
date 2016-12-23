@@ -54,7 +54,7 @@ return [
     |
     */
 
-    'from' => ['address' => null, 'name' => null],
+    'from' => ['address' => 'caronae@fundoverde.com.br', 'name' => 'Caronaê'],
 
     /*
     |--------------------------------------------------------------------------
