@@ -75,6 +75,17 @@ return [
             'schema'   => 'public',
         ],
 
+        'pgsql_testing' => [
+            'driver'   => 'pgsql',
+            'host'     => env('TESTING_DB_HOST', 'localhost'),
+            'database' => env('TESTING_DB_DATABASE', 'forge'),
+            'username' => env('TESTING_DB_USERNAME', 'forge'),
+            'password' => env('TESTING_DB_PASSWORD', ''),
+            'charset'  => 'utf8',
+            'prefix'   => '',
+            'schema'   => 'public',
+        ],
+
         'sqlsrv' => [
             'driver'   => 'sqlsrv',
             'host'     => env('DB_HOST', 'localhost'),
