@@ -39,6 +39,22 @@ class RideJoinRequested extends Notification
     }
 
     /**
+     * Get the mobile push representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+    public function toPush($notifiable)
+    {
+        // TODO: Include the requester's name in the notification
+        return [
+            'message' => 'Sua carona recebeu uma solicitação',
+            'msgType' => 'joinRequest',
+            'rideId'  => $this->ride->id
+        ];
+    }
+
+    /**
      * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
