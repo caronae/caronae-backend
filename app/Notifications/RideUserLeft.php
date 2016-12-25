@@ -39,15 +39,32 @@ class RideUserLeft extends Notification
     }
 
     /**
+     * Get the mobile push representation of the notification.
+     *
+     * @param  User  $notifiable
+     * @return array
+     */
+    public function toPush($notifiable)
+    {
+        // TODO: Include the rider's name in the notification
+        return [
+            'message' => 'Um caronista desistiu de sua carona',
+            'msgType' => 'quitter',
+            'rideId'  => $this->ride->id
+        ];
+    }
+
+    /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param  User  $notifiable
      * @return array
      */
     public function toArray($notifiable)
     {
         return [
-            //
+            'rideID' => $this->ride->id,
+            'userID' => $this->user->id
         ];
     }
 }

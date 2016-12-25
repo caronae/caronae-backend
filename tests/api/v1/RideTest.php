@@ -397,8 +397,6 @@ class RideTest extends TestCase
 
     public function testLeaveAsUser()
     {
-        $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
-
         $ride = factory(Ride::class, 'next')->create();
         $driver = factory(User::class)->create();
         $ride->users()->attach($driver, ['status' => 'driver']);
@@ -420,8 +418,6 @@ class RideTest extends TestCase
 
     public function testLeaveAsDriver()
     {
-        $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
-
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 

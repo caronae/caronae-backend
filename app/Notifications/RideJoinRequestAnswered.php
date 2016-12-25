@@ -14,7 +14,6 @@ class RideJoinRequestAnswered extends Notification
     use Queueable;
 
     protected $ride;
-    protected $requester;
     protected $accepted;
 
     /**
@@ -22,10 +21,9 @@ class RideJoinRequestAnswered extends Notification
      *
      * @return void
      */
-    public function __construct(Ride $ride, User $requester, bool $accepted)
+    public function __construct(Ride $ride, bool $accepted)
     {
         $this->ride = $ride;
-        $this->requester = $requester;
         $this->accepted = $accepted;
     }
 
@@ -65,7 +63,6 @@ class RideJoinRequestAnswered extends Notification
     {
         return [
             'rideID' => $this->ride->id,
-            'userID' => $this->requester->id,
             'status' => $this->accepted ? 'accepted' : 'refused'
         ];
     }

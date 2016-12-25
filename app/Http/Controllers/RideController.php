@@ -8,8 +8,11 @@ use Caronae\Http\Requests\RankingRequest;
 use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
 use Caronae\Models\User;
+use Caronae\Notifications\RideCanceled;
+use Caronae\Notifications\RideFinished;
 use Caronae\Notifications\RideJoinRequestAnswered;
 use Caronae\Notifications\RideJoinRequested;
+use Caronae\Notifications\RideUserLeft;
 use Carbon\Carbon;
 use DB;
 use Caronae\Services\PushNotificationService;
@@ -338,7 +341,7 @@ class RideController extends Controller
         //send notification
         $ride = Ride::find($request->rideId);
         $user = User::find($request->userId);
-        $user->notify(new RideJoinRequestAnswered($ride, $user, $request->accepted));
+        $user->notify(new RideJoinRequestAnswered($ride, $request->accepted));
 
         return response()->json(['message' => 'Request answered.']);
     }
@@ -382,35 +385,28 @@ class RideController extends Controller
         $user = $request->currentUser;
         $rideID = $request->rideId;
 
-        $matchThese = ['ride_id' => $rideID, 'user_id' => $user->id];
-        $rideUser = RideUser::where($matchThese)->first();//get relationship
-        if ($rideUser->status == 'driver') {//if user is the driver the ride needs to be deleted
-            $ride = Ride::find($rideID);
+        $rideUser = RideUser::where(['ride_id' => $rideID, 'user_id' => $user->id])->first();
+        $ride = Ride::find($rideID);
 
-            RideUser::where('ride_id', $rideID)->delete();//delete all relationships to this ride
-            $ride->delete();
-
+        if ($rideUser->status == 'driver') {
             //send notification to riders on that ride
-            $notification = [
-                'message' => 'Um motorista cancelou uma carona ativa sua',
-                'msgType' => 'cancelled',
-                'rideId'  => $rideID
-            ];
-
-            foreach ($ride->riders() as $user) {
-                $this->push->sendNotificationToUser($user, $notification);
+            $rideCanceledNotification = new RideCanceled($ride);
+            foreach ($ride->riders() as $rider) {
+                $rider->notify($rideCanceledNotification);
             }
 
-        } else {//if user is not the driver, just set relationship as quit
+            // delete all relationships to this ride
+            RideUser::where('ride_id', $rideID)->delete();
+
+            // delete ride
+            $ride->delete();
+        } else {
+            // if user is not the driver, just set relationship as quit
             $rideUser->status = 'quit';
             $rideUser->save();
 
-            $notification = [
-                'message' => 'Um caronista desistiu de sua carona',
-                'msgType' => 'quitter'
-            ];
-            $driver = Ride::find($rideID)->driver();
-            $this->push->sendNotificationToUser($driver, $notification);
+            // send notification to driver
+            $ride->driver()->notify(new RideUserLeft($ride, $user));
         }
 
         return response()->json(['message' => 'Left ride.']);
