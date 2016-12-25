@@ -414,7 +414,7 @@ class RideController extends Controller
 
     public function finishRide(Request $request)
     {
-        //check if the current user is the driver of the ride
+        // check if the current user is the driver of the ride
         $ride = $request->currentUser->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
         if ($ride == null) {
             return response()->json(['error' => 'User is not the driver of this ride'], 403);
@@ -423,15 +423,10 @@ class RideController extends Controller
         $ride->done = true;
         $ride->save();
 
-        //send notification to riders on that ride
-        $notification = [
-            'message' => 'Um motorista concluiu uma carona ativa sua',
-            'msgType' => 'finished',
-            'rideId' => $request->rideId
-        ];
-
-        foreach ($ride->riders() as $user) {
-            $this->push->sendNotificationToUser($user, $notification);
+        // send notification to riders on that ride
+        $rideFinishedNotification = new RideFinished($ride);
+        foreach ($ride->riders() as $rider) {
+            $rider->notify($rideFinishedNotification);
         }
 
         return response()->json(['message' => 'Ride finished.']);

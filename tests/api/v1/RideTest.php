@@ -439,8 +439,6 @@ class RideTest extends TestCase
 
     public function testFinish()
     {
-        $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
-
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 

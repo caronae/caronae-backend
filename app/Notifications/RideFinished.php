@@ -37,15 +37,31 @@ class RideFinished extends Notification
     }
 
     /**
+     * Get the mobile push representation of the notification.
+     *
+     * @param  User  $notifiable
+     * @return array
+     */
+    public function toPush($notifiable)
+    {
+        // TODO: Include the driver's name in the notification
+        return [
+            'message' => 'Um motorista concluiu uma carona ativa sua',
+            'msgType' => 'finished',
+            'rideId'  => $this->ride->id
+        ];
+    }
+
+    /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param  User  $notifiable
      * @return array
      */
     public function toArray($notifiable)
     {
         return [
-            //
+            'rideID' => $this->ride->id
         ];
     }
 }
