@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class RideJoinRequested extends Notification
+class RideJoinRequestAnswered extends Notification
 {
     use Queueable;
 
@@ -39,32 +39,15 @@ class RideJoinRequested extends Notification
     }
 
     /**
-     * Get the mobile push representation of the notification.
-     *
-     * @param  User  $notifiable
-     * @return array
-     */
-    public function toPush($notifiable)
-    {
-        // TODO: Include the requester's name in the notification
-        return [
-            'message' => 'Sua carona recebeu uma solicitação',
-            'msgType' => 'joinRequest',
-            'rideId'  => $this->ride->id
-        ];
-    }
-
-    /**
      * Get the array representation of the notification.
      *
-     * @param  User  $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
     {
         return [
-            'rideID' => $this->ride->id,
-            'userID' => $this->requester->id
+            //
         ];
     }
 }

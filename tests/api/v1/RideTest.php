@@ -4,6 +4,11 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use Caronae\Models\User;
 use Caronae\Models\Ride;
+use Caronae\Notifications\RideCanceled;
+use Caronae\Notifications\RideFinished;
+use Caronae\Notifications\RideJoinRequestAnswered;
+use Caronae\Notifications\RideJoinRequested;
+use Caronae\Notifications\RideUserLeft;
 use Caronae\Services\PushNotificationService;
 
 class RideTest extends TestCase
@@ -323,6 +328,8 @@ class RideTest extends TestCase
         $user = factory(User::class)->create();
         $ride->users()->attach($user, ['status' => 'driver']);
 
+        $this->expectsNotification($user, RideJoinRequested::class);
+
         $request = [
             'rideId' => $ride->id
         ];
@@ -377,6 +384,8 @@ class RideTest extends TestCase
         $user2 = factory(User::class)->create();
         $ride->users()->attach($user2, ['status' => 'pending']);
 
+        $this->expectsNotification($user2, RideJoinRequestAnswered::class);
+
         $request = [
             'rideId' => $ride->id,
             'userId' => $user2->id,
@@ -390,7 +399,7 @@ class RideTest extends TestCase
         ]);
     }
 
-    public function testLeave()
+    public function testLeaveAsUser()
     {
         $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
 
@@ -399,6 +408,31 @@ class RideTest extends TestCase
         $ride->users()->attach($driver, ['status' => 'driver']);
 
         $ride->users()->attach($this->user, ['status' => 'accepted']);
+
+        $this->expectsNotification($driver, RideUserLeft::class);
+
+        $request = [
+            'rideId' => $ride->id
+        ];
+
+        $response = $this->json('POST', 'ride/leaveRide', $request, $this->headers);
+        $response->assertResponseOk();
+        $response->seeJsonEquals([
+            'message' => 'Left ride.'
+        ]);
+    }
+
+    public function testLeaveAsDriver()
+    {
+        $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
+
+        $ride = factory(Ride::class, 'next')->create();
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $rider = factory(User::class)->create();
+        $ride->users()->attach($rider, ['status' => 'accepted']);
+
+        $this->expectsNotification($ride, RideCanceled::class);
 
         $request = [
             'rideId' => $ride->id
@@ -413,8 +447,15 @@ class RideTest extends TestCase
 
     public function testFinish()
     {
+        $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
+
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $rider = factory(User::class)->create();
+        $ride->users()->attach($rider, ['status' => 'accepted']);
+
+        $this->expectsNotification($ride, RideFinished::class);
 
         $request = [
             'rideId' => $ride->id
