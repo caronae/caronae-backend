@@ -8,6 +8,7 @@ use Caronae\Http\Requests\RankingRequest;
 use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
 use Caronae\Models\User;
+use Caronae\Notifications\RideJoinRequestAnswered;
 use Caronae\Notifications\RideJoinRequested;
 use Carbon\Carbon;
 use DB;
@@ -308,12 +309,6 @@ class RideController extends Controller
         $ride = Ride::find($rideID);
         $driver = $ride->driver();
         $driver->notify(new RideJoinRequested($ride, $user));
-        $notification = [
-            'message' => 'Sua carona recebeu uma solicitação',
-            'msgType' => 'joinRequest',
-            'rideId'  => $rideID
-        ];
-        $this->push->sendNotificationToUser($driver, $notification);
 
         return response()->json(['message' => 'Request sent.']);
     }
@@ -341,14 +336,9 @@ class RideController extends Controller
         $rideUser->save();
 
         //send notification
+        $ride = Ride::find($request->rideId);
         $user = User::find($request->userId);
-        $notification = [
-            'message' => $request->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(',
-            'msgType' => $request->accepted ? 'accepted' : 'refused',
-            'rideId'  => $request->rideId
-        ];
-        if ($user == null) die('err');
-        $this->push->sendNotificationToUser($user, $notification);
+        $user->notify(new RideJoinRequestAnswered($ride, $user, $request->accepted));
 
         return response()->json(['message' => 'Request answered.']);
     }

@@ -15,16 +15,18 @@ class RideJoinRequestAnswered extends Notification
 
     protected $ride;
     protected $requester;
+    protected $accepted;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(Ride $ride, User $requester)
+    public function __construct(Ride $ride, User $requester, bool $accepted)
     {
         $this->ride = $ride;
         $this->requester = $requester;
+        $this->accepted = $accepted;
     }
 
     /**
@@ -39,15 +41,32 @@ class RideJoinRequestAnswered extends Notification
     }
 
     /**
+     * Get the mobile push representation of the notification.
+     *
+     * @param  User  $notifiable
+     * @return array
+     */
+    public function toPush($notifiable)
+    {
+        return [
+            'message' => $this->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(',
+            'msgType' => $this->accepted ? 'accepted' : 'refused',
+            'rideId'  => $this->ride->id
+        ];
+    }
+
+    /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param  User  $notifiable
      * @return array
      */
     public function toArray($notifiable)
     {
         return [
-            //
+            'rideID' => $this->ride->id,
+            'userID' => $this->requester->id,
+            'status' => $this->accepted ? 'accepted' : 'refused'
         ];
     }
 }

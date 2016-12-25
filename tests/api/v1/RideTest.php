@@ -322,8 +322,6 @@ class RideTest extends TestCase
 
     public function testJoin()
     {
-        $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
-
         $ride = factory(Ride::class, 'next')->create();
         $user = factory(User::class)->create();
         $ride->users()->attach($user, ['status' => 'driver']);
@@ -376,19 +374,17 @@ class RideTest extends TestCase
 
     public function testAnswerJoinRequest()
     {
-        $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
-
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
-        $user2 = factory(User::class)->create();
-        $ride->users()->attach($user2, ['status' => 'pending']);
+        $rider = factory(User::class)->create();
+        $ride->users()->attach($rider, ['status' => 'pending']);
 
-        $this->expectsNotification($user2, RideJoinRequestAnswered::class);
+        $this->expectsNotification($rider, RideJoinRequestAnswered::class);
 
         $request = [
             'rideId' => $ride->id,
-            'userId' => $user2->id,
+            'userId' => $rider->id,
             'accepted' => true
         ];
 
@@ -432,7 +428,7 @@ class RideTest extends TestCase
         $rider = factory(User::class)->create();
         $ride->users()->attach($rider, ['status' => 'accepted']);
 
-        $this->expectsNotification($ride, RideCanceled::class);
+        $this->expectsNotification($rider, RideCanceled::class);
 
         $request = [
             'rideId' => $ride->id
@@ -455,7 +451,7 @@ class RideTest extends TestCase
         $rider = factory(User::class)->create();
         $ride->users()->attach($rider, ['status' => 'accepted']);
 
-        $this->expectsNotification($ride, RideFinished::class);
+        $this->expectsNotification($rider, RideFinished::class);
 
         $request = [
             'rideId' => $ride->id

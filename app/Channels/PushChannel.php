@@ -24,8 +24,7 @@ class PushChannel
         } else if ($notifiable instanceof Ride) {
             $this->push->sendDataToRideMembers($notifiable, $message);
         } else {
-            throw new Exception("Error Processing Request", 1);
-            
+            throw new Exception("Invalid notifiable instance to notify via mobile push.");
         }
     }
 }
