@@ -569,11 +569,11 @@ class RideTest extends TestCase
 
     public function testSendChatMessage()
     {
-        $this->push->shouldReceive('sendDataToRideMembers')->once();
-
         // Create fake ride with the user as driver
         $ride = factory(Ride::class)->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $this->push->shouldReceive('sendDataToRideMembers')->once();
 
         $request = [
             'message' => str_random(255)

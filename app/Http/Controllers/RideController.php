@@ -5,6 +5,7 @@ namespace Caronae\Http\Controllers;
 use Caronae\ExcelExport\ExcelExporter;
 use Caronae\Http\Requests;
 use Caronae\Http\Requests\RankingRequest;
+use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
 use Caronae\Models\User;
@@ -20,17 +21,13 @@ use Illuminate\Http\Request;
 
 class RideController extends Controller
 {
-    protected $push;
-
     /**
      * Instantiate a new RideController instance.
      *
      * @return void
      */
-    public function __construct(PushNotificationService $push)
+    public function __construct()
     {
-        $this->push = $push;
-
         $this->middleware('api.v1.auth', ['only' => [
             'store',
             'validateDuplicate',
@@ -487,21 +484,28 @@ class RideController extends Controller
         $ride_user->save();
     }
 
-    public function sendChatMessage(Request $request, Ride $ride)
+    public function sendChatMessage(Request $request, Ride $ride, PushNotificationService $push)
     {
-        $user = $request->currentUser;
-        $message = $request->input('message');
+        $this->validate($request, [
+            'message' => 'required'
+        ]);
+
+        $message = Message::create([
+            'ride_id' => $ride->id,
+            'user_id' => $request->currentUser->id,
+            'body' => $request->message
+        ]);
 
         $data = [
-            'message' => $message,
-            'rideId' => $ride->id,
+            'message' => $message->body,
+            'rideId' => $message->ride_id,
             'msgType' => 'chat',
-            'senderName' => $user->name,
-            'senderId' => $user->id,
-            'time' => Carbon::now()->toDateTimeString()
+            'senderName' => $message->user->name,
+            'senderId' => $message->user->id,
+            'time' => $message->date->toDateTimeString()
         ];
 
-        $this->push->sendDataToRideMembers($ride, $data);
+        $push->sendDataToRideMembers($ride, $data);
         return response()->json(['message' => 'Message sent.']);
     }
 
