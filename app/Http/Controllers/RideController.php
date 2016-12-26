@@ -37,10 +37,12 @@ class RideController extends Controller
             'getMyActiveRides',
             'leaveRide', 'finishRide',
             'getRidesHistory',
+            'getChatMessages',
             'sendChatMessage'
         ]]);
 
         $this->middleware('api.v1.userBelongsToRide', ['only' => [
+            'getChatMessages',
             'sendChatMessage'
         ]]);
     }
@@ -482,6 +484,36 @@ class RideController extends Controller
 
         $ride_user->feedback = $request->feedback;
         $ride_user->save();
+    }
+
+    public function getChatMessages(Request $request, Ride $ride)
+    {
+        $this->validate($request, [
+            'since' => 'date'
+        ]);
+
+        if ($request->since) {
+            $messages = $ride->messages()->where('created_at', '>', $request->since)->get();
+        } else {
+            $messages = $ride->messages;
+        }
+
+        $messages = $messages->map(function ($message) {
+            $user = $message->user;
+            return [
+                'id' => $message->id,
+                'body' => $message->body,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name
+                ],
+                'date' => $message->date->toDateTimeString()
+            ];
+        });
+
+        return [
+            'messages' => $messages
+        ];
     }
 
     public function sendChatMessage(Request $request, Ride $ride, PushNotificationService $push)
