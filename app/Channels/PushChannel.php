@@ -4,10 +4,17 @@ namespace Caronae\Channels;
 
 use Caronae\Models\User;
 use Caronae\Models\Ride;
+use Caronae\Services\PushNotificationService;
 use Illuminate\Notifications\Notification;
 
 class PushChannel
 {
+    protected $push;
+    
+    public function __construct(PushNotificationService $push)
+    {
+        $this->push = $push;
+    }
     /**
      * Send the given notification.
      *

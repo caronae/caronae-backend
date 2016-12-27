@@ -2,6 +2,7 @@
 
 namespace Caronae\Notifications;
 
+use Caronae\Channels\PushChannel;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
 use Illuminate\Bus\Queueable;
@@ -33,7 +34,7 @@ class RideFinished extends Notification
      */
     public function via($notifiable)
     {
-        return ['database', 'push'];
+        return ['database', PushChannel::class];
     }
 
     /**
