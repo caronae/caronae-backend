@@ -84,11 +84,16 @@ class RideController extends Controller
             $ride->neighborhood = $request->neighborhood;
             $ride->place = $request->place;
             $ride->route = $request->route;
-            $ride->date = Carbon::createFromFormat('d/m/Y H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
             $ride->slots = $request->slots;
             $ride->hub = $request->hub;
             $ride->description = $request->description;
             $ride->going = $request->going;
+
+            try {
+                $ride->date = Carbon::createFromFormat('d/m/Y H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
+            } catch(\InvalidArgumentException $error) {
+                $ride->date = Carbon::createFromFormat('Y-m-d H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
+            }
 
             $ride->save();
             $rides_created[] = $ride;
