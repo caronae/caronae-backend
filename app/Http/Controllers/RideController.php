@@ -195,11 +195,11 @@ class RideController extends Controller
             $message = 'No conflicting rides were found close to the specified date.';
         }
 
-        return response()->json([
+        return [
             'valid' => $valid,
             'status' => $status,
             'message' => $message
-        ]);
+        ];
     }
 
     public function delete(Request $request, $rideId)
@@ -306,7 +306,7 @@ class RideController extends Controller
         //if a relationship already exists, do not create another one
         $previousRequest = $user->rides()->where('rides.id', $rideID)->first();
         if ($previousRequest != null) {
-            return response()->json(['message' => 'Relationship between user and ride already exists as ' . $previousRequest->pivot->status]);
+            return ['message' => 'Relationship between user and ride already exists as ' . $previousRequest->pivot->status];
         }
 
         //save relationship between ride and user
@@ -317,7 +317,7 @@ class RideController extends Controller
         $driver = $ride->driver();
         $driver->notify(new RideJoinRequested($ride, $user));
 
-        return response()->json(['message' => 'Request sent.']);
+        return ['message' => 'Request sent.'];
     }
 
     public function getRequesters($rideId)
@@ -347,7 +347,7 @@ class RideController extends Controller
         $user = User::find($request->userId);
         $user->notify(new RideJoinRequestAnswered($ride, $request->accepted));
 
-        return response()->json(['message' => 'Request answered.']);
+        return ['message' => 'Request answered.'];
     }
 
     public function getMyActiveRides(Request $request)
@@ -413,7 +413,7 @@ class RideController extends Controller
             $ride->driver()->notify(new RideUserLeft($ride, $user));
         }
 
-        return response()->json(['message' => 'Left ride.']);
+        return ['message' => 'Left ride.'];
     }
 
     public function finishRide(Request $request)
@@ -433,7 +433,7 @@ class RideController extends Controller
             $rider->notify($rideFinishedNotification);
         }
 
-        return response()->json(['message' => 'Ride finished.']);
+        return ['message' => 'Ride finished.'];
     }
 
     public function getRidesHistory(Request $request)
