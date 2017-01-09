@@ -543,7 +543,10 @@ class RideController extends Controller
         ];
 
         $push->sendDataToRideMembers($ride, $data);
-        return response()->json(['message' => 'Message sent.']);
+        return response()->json([
+            'message' => 'Message sent.',
+            'id' => $message->id
+        ], 201);
     }
 
 
