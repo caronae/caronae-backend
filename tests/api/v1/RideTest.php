@@ -580,6 +580,6 @@ class RideTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride/' . $ride->id . '/chat', $request, $this->headers);
-        $response->assertResponseOk();
+        $response->assertResponseStatus(201);
     }
 }
