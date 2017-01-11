@@ -5,9 +5,15 @@ namespace Caronae\Http\Controllers;
 use Caronae\ExcelExport\ExcelExporter;
 use Caronae\Http\Requests;
 use Caronae\Http\Requests\RankingRequest;
+use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
 use Caronae\Models\User;
+use Caronae\Notifications\RideCanceled;
+use Caronae\Notifications\RideFinished;
+use Caronae\Notifications\RideJoinRequestAnswered;
+use Caronae\Notifications\RideJoinRequested;
+use Caronae\Notifications\RideUserLeft;
 use Carbon\Carbon;
 use DB;
 use Caronae\Services\PushNotificationService;
@@ -15,17 +21,13 @@ use Illuminate\Http\Request;
 
 class RideController extends Controller
 {
-    protected $push;
-
     /**
      * Instantiate a new RideController instance.
      *
      * @return void
      */
-    public function __construct(PushNotificationService $push)
+    public function __construct()
     {
-        $this->push = $push;
-
         $this->middleware('api.v1.auth', ['only' => [
             'store',
             'validateDuplicate',
@@ -35,10 +37,12 @@ class RideController extends Controller
             'getMyActiveRides',
             'leaveRide', 'finishRide',
             'getRidesHistory',
+            'getChatMessages',
             'sendChatMessage'
         ]]);
 
         $this->middleware('api.v1.userBelongsToRide', ['only' => [
+            'getChatMessages',
             'sendChatMessage'
         ]]);
     }
@@ -191,11 +195,11 @@ class RideController extends Controller
             $message = 'No conflicting rides were found close to the specified date.';
         }
 
-        return response()->json([
+        return [
             'valid' => $valid,
             'status' => $status,
             'message' => $message
-        ]);
+        ];
     }
 
     public function delete(Request $request, $rideId)
@@ -302,22 +306,18 @@ class RideController extends Controller
         //if a relationship already exists, do not create another one
         $previousRequest = $user->rides()->where('rides.id', $rideID)->first();
         if ($previousRequest != null) {
-            return response()->json(['message' => 'Relationship between user and ride already exists as ' . $previousRequest->pivot->status]);
+            return ['message' => 'Relationship between user and ride already exists as ' . $previousRequest->pivot->status];
         }
 
         //save relationship between ride and user
         $user->rides()->attach($rideID, ['status' => 'pending']);
 
         //send notification
-        $notification = [
-            'message' => 'Sua carona recebeu uma solicitação',
-            'msgType' => 'joinRequest',
-            'rideId'  => $rideID
-        ];
-        $driver = Ride::find($rideID)->driver();
-        $this->push->sendNotificationToUser($driver, $notification);
+        $ride = Ride::find($rideID);
+        $driver = $ride->driver();
+        $driver->notify(new RideJoinRequested($ride, $user));
 
-        return response()->json(['message' => 'Request sent.']);
+        return ['message' => 'Request sent.'];
     }
 
     public function getRequesters($rideId)
@@ -343,16 +343,11 @@ class RideController extends Controller
         $rideUser->save();
 
         //send notification
+        $ride = Ride::find($request->rideId);
         $user = User::find($request->userId);
-        $notification = [
-            'message' => $request->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(',
-            'msgType' => $request->accepted ? 'accepted' : 'refused',
-            'rideId'  => $request->rideId
-        ];
-        if ($user == null) die('err');
-        $this->push->sendNotificationToUser($user, $notification);
+        $user->notify(new RideJoinRequestAnswered($ride, $request->accepted));
 
-        return response()->json(['message' => 'Request answered.']);
+        return ['message' => 'Request answered.'];
     }
 
     public function getMyActiveRides(Request $request)
@@ -394,43 +389,36 @@ class RideController extends Controller
         $user = $request->currentUser;
         $rideID = $request->rideId;
 
-        $matchThese = ['ride_id' => $rideID, 'user_id' => $user->id];
-        $rideUser = RideUser::where($matchThese)->first();//get relationship
-        if ($rideUser->status == 'driver') {//if user is the driver the ride needs to be deleted
-            $ride = Ride::find($rideID);
+        $rideUser = RideUser::where(['ride_id' => $rideID, 'user_id' => $user->id])->first();
+        $ride = Ride::find($rideID);
 
-            RideUser::where('ride_id', $rideID)->delete();//delete all relationships to this ride
-            $ride->delete();
-
+        if ($rideUser->status == 'driver') {
             //send notification to riders on that ride
-            $notification = [
-                'message' => 'Um motorista cancelou uma carona ativa sua',
-                'msgType' => 'cancelled',
-                'rideId'  => $rideID
-            ];
-
-            foreach ($ride->riders() as $user) {
-                $this->push->sendNotificationToUser($user, $notification);
+            $rideCanceledNotification = new RideCanceled($ride);
+            foreach ($ride->riders() as $rider) {
+                $rider->notify($rideCanceledNotification);
             }
 
-        } else {//if user is not the driver, just set relationship as quit
+            // delete all relationships to this ride
+            RideUser::where('ride_id', $rideID)->delete();
+
+            // delete ride
+            $ride->delete();
+        } else {
+            // if user is not the driver, just set relationship as quit
             $rideUser->status = 'quit';
             $rideUser->save();
 
-            $notification = [
-                'message' => 'Um caronista desistiu de sua carona',
-                'msgType' => 'quitter'
-            ];
-            $driver = Ride::find($rideID)->driver();
-            $this->push->sendNotificationToUser($driver, $notification);
+            // send notification to driver
+            $ride->driver()->notify(new RideUserLeft($ride, $user));
         }
 
-        return response()->json(['message' => 'Left ride.']);
+        return ['message' => 'Left ride.'];
     }
 
     public function finishRide(Request $request)
     {
-        //check if the current user is the driver of the ride
+        // check if the current user is the driver of the ride
         $ride = $request->currentUser->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
         if ($ride == null) {
             return response()->json(['error' => 'User is not the driver of this ride'], 403);
@@ -439,18 +427,13 @@ class RideController extends Controller
         $ride->done = true;
         $ride->save();
 
-        //send notification to riders on that ride
-        $notification = [
-            'message' => 'Um motorista concluiu uma carona ativa sua',
-            'msgType' => 'finished',
-            'rideId' => $request->rideId
-        ];
-
-        foreach ($ride->riders() as $user) {
-            $this->push->sendNotificationToUser($user, $notification);
+        // send notification to riders on that ride
+        $rideFinishedNotification = new RideFinished($ride);
+        foreach ($ride->riders() as $rider) {
+            $rider->notify($rideFinishedNotification);
         }
 
-        return response()->json(['message' => 'Ride finished.']);
+        return ['message' => 'Ride finished.'];
     }
 
     public function getRidesHistory(Request $request)
@@ -508,22 +491,62 @@ class RideController extends Controller
         $ride_user->save();
     }
 
-    public function sendChatMessage(Request $request, Ride $ride)
+    public function getChatMessages(Request $request, Ride $ride)
     {
-        $user = $request->currentUser;
-        $message = $request->input('message');
+        $this->validate($request, [
+            'since' => 'date'
+        ]);
+
+        if ($request->since) {
+            $messages = $ride->messages()->where('created_at', '>', $request->since)->get();
+        } else {
+            $messages = $ride->messages;
+        }
+
+        $messages = $messages->map(function ($message) {
+            $user = $message->user;
+            return [
+                'id' => $message->id,
+                'body' => $message->body,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name
+                ],
+                'date' => $message->date->toDateTimeString()
+            ];
+        });
+
+        return [
+            'messages' => $messages
+        ];
+    }
+
+    public function sendChatMessage(Request $request, Ride $ride, PushNotificationService $push)
+    {
+        $this->validate($request, [
+            'message' => 'required'
+        ]);
+
+        $message = Message::create([
+            'ride_id' => $ride->id,
+            'user_id' => $request->currentUser->id,
+            'body' => $request->message
+        ]);
 
         $data = [
-            'message' => $message,
-            'rideId' => $ride->id,
+            'message' => $message->body,
+            'rideId' => $message->ride_id,
             'msgType' => 'chat',
-            'senderName' => $user->name,
-            'senderId' => $user->id,
-            'time' => Carbon::now()->toDateTimeString()
+            'senderName' => $message->user->name,
+            'senderId' => $message->user->id,
+            'time' => $message->date->toDateTimeString()
         ];
 
-        $this->push->sendDataToRideMembers($ride, $data);
-        return response()->json(['message' => 'Message sent.']);
+        $push->sendDataToRideMembers($ride, $data);
+        return response()->json([
+            'message' => 'Message sent.',
+            'id' => $message->id
+        ], 201);
     }
 
 

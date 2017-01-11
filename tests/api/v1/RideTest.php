@@ -4,6 +4,11 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use Caronae\Models\User;
 use Caronae\Models\Ride;
+use Caronae\Notifications\RideCanceled;
+use Caronae\Notifications\RideFinished;
+use Caronae\Notifications\RideJoinRequestAnswered;
+use Caronae\Notifications\RideJoinRequested;
+use Caronae\Notifications\RideUserLeft;
 use Caronae\Services\PushNotificationService;
 
 class RideTest extends TestCase
@@ -317,11 +322,11 @@ class RideTest extends TestCase
 
     public function testJoin()
     {
-        $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
-
         $ride = factory(Ride::class, 'next')->create();
         $user = factory(User::class)->create();
         $ride->users()->attach($user, ['status' => 'driver']);
+
+        $this->expectsNotification($user, RideJoinRequested::class);
 
         $request = [
             'rideId' => $ride->id
@@ -369,17 +374,17 @@ class RideTest extends TestCase
 
     public function testAnswerJoinRequest()
     {
-        $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
-
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
-        $user2 = factory(User::class)->create();
-        $ride->users()->attach($user2, ['status' => 'pending']);
+        $rider = factory(User::class)->create();
+        $ride->users()->attach($rider, ['status' => 'pending']);
+
+        $this->expectsNotification($rider, RideJoinRequestAnswered::class);
 
         $request = [
             'rideId' => $ride->id,
-            'userId' => $user2->id,
+            'userId' => $rider->id,
             'accepted' => true
         ];
 
@@ -390,15 +395,36 @@ class RideTest extends TestCase
         ]);
     }
 
-    public function testLeave()
+    public function testLeaveAsUser()
     {
-        $this->push->shouldReceive('sendNotificationToUser')->once()->andReturn();
-
         $ride = factory(Ride::class, 'next')->create();
         $driver = factory(User::class)->create();
         $ride->users()->attach($driver, ['status' => 'driver']);
 
         $ride->users()->attach($this->user, ['status' => 'accepted']);
+
+        $this->expectsNotification($driver, RideUserLeft::class);
+
+        $request = [
+            'rideId' => $ride->id
+        ];
+
+        $response = $this->json('POST', 'ride/leaveRide', $request, $this->headers);
+        $response->assertResponseOk();
+        $response->seeJsonEquals([
+            'message' => 'Left ride.'
+        ]);
+    }
+
+    public function testLeaveAsDriver()
+    {
+        $ride = factory(Ride::class, 'next')->create();
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $rider = factory(User::class)->create();
+        $ride->users()->attach($rider, ['status' => 'accepted']);
+
+        $this->expectsNotification($rider, RideCanceled::class);
 
         $request = [
             'rideId' => $ride->id
@@ -415,6 +441,11 @@ class RideTest extends TestCase
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $rider = factory(User::class)->create();
+        $ride->users()->attach($rider, ['status' => 'accepted']);
+
+        $this->expectsNotification($rider, RideFinished::class);
 
         $request = [
             'rideId' => $ride->id
@@ -538,17 +569,17 @@ class RideTest extends TestCase
 
     public function testSendChatMessage()
     {
-        $this->push->shouldReceive('sendDataToRideMembers')->once();
-
         // Create fake ride with the user as driver
         $ride = factory(Ride::class)->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $this->push->shouldReceive('sendDataToRideMembers')->once();
 
         $request = [
             'message' => str_random(255)
         ];
 
         $response = $this->json('POST', 'ride/' . $ride->id . '/chat', $request, $this->headers);
-        $response->assertResponseOk();
+        $response->assertResponseStatus(201);
     }
 }

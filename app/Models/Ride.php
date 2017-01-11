@@ -30,6 +30,11 @@ class Ride extends Model
         return $this->belongsToMany(User::class)->wherePivot('status', 'accepted')->get();
     }
 
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+
     public function getMyDateAttribute()
     {
         return $this->date->format('Y-m-d');
