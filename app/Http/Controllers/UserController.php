@@ -7,7 +7,6 @@ use Caronae\Http\Requests;
 use Caronae\Models\User;
 use Caronae\Exception\SigaException;
 use Caronae\Services\SigaService;
-use Facebook;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -145,30 +144,24 @@ class UserController extends Controller
         $user->save();
     }
 
-    public function getMutualFriends(Request $request, $fbid)
+    public function getMutualFriends(Request $request, \Facebook\Facebook $fb, $fbID)
     {
         $user = User::where('token', $request->header('token'))->first();
         if ($user == null) {
             return response()->json(['error' => 'User ' . $request->header('token') . ' token not authorized.'], 403);
         }
 
-        $fbtoken = $request->header('Facebook-Token');
-        if ($fbtoken == null) {
+        $fbToken = $request->header('Facebook-Token');
+        if ($fbToken == null) {
             return response()->json(['error' => 'User\'s Facebook token missing.'], 403);
         }
 
-        $fb = new Facebook\Facebook([
-            'app_id' => '933455893356973',
-            'app_secret' => '007b9930ed5a15c407c44768edcbfebd',
-            'default_graph_version' => 'v2.5'
-        ]);
-
         try {
-            $response = $fb->get('/' . $fbid . '?fields=context.fields(mutual_friends)', $fbtoken);
-        } catch(Facebook\Exceptions\FacebookResponseException $e) {
+            $response = $fb->get('/' . $fbID . '?fields=context.fields(mutual_friends)', $fbToken);
+        } catch(\Facebook\Exceptions\FacebookResponseException $e) {
             // When Graph returns an error
             return response()->json(['error' => 'Facebook Graph returned an error: ' . $e->getMessage()], 500);
-        } catch(Facebook\Exceptions\FacebookSDKException $e) {
+        } catch(\Facebook\Exceptions\FacebookSDKException $e) {
             // When validation fails or other local issues
             return response()->json(['error' => 'Facebook SDK returned an error: ' . $e->getMessage()], 500);
         }
