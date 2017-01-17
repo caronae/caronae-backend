@@ -29,7 +29,7 @@ class PushChannel
         if ($notifiable instanceof User) {
             $this->push->sendNotificationToUser($notifiable, $message);
         } else if ($notifiable instanceof Ride) {
-            $this->push->sendDataToRideMembers($notifiable, $message);
+            $this->push->sendNotificationToRideMembers($notifiable, $message);
         } else {
             throw new Exception("Invalid notifiable instance to notify via mobile push.");
         }

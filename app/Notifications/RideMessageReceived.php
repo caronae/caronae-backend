@@ -3,29 +3,25 @@
 namespace Caronae\Notifications;
 
 use Caronae\Channels\PushChannel;
-use Caronae\Models\Ride;
-use Caronae\Models\User;
+use Caronae\Models\Message;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 
-class RideJoinRequested extends Notification
+class RideMessageReceived extends Notification
 {
     use Queueable;
 
-    protected $ride;
-    protected $requester;
+    protected $message;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(Ride $ride, User $requester)
+    public function __construct(Message $message)
     {
-        $this->ride = $ride;
-        $this->requester = $requester;
+        $this->message = $message;
     }
 
     /**
@@ -36,24 +32,23 @@ class RideJoinRequested extends Notification
      */
     public function via($notifiable)
     {
-        return ['database', PushChannel::class];
+        return [PushChannel::class];
     }
 
     /**
      * Get the mobile push representation of the notification.
      *
-     * @param  User  $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toPush($notifiable)
     {
+        $alertMessage = $this->message->user->name . ': ' . $this->message->body;
         return [
-            'message' => $this->message->body,
+            'message' => $alertMessage,
             'rideId' => $this->message->ride_id,
-            'msgType' => 'chat',
-            'senderName' => $this->message->user->name,
             'senderId' => $this->message->user->id,
-            'time' => $this->message->date->toDateTimeString()
+            'msgType' => 'chat'
         ];
     }
 }

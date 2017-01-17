@@ -30,10 +30,10 @@ class PushNotificationService
         return $this->push->sendDataToTopicId($this->topicForUser($user), $data);
     }
 
-    public function sendDataToRideMembers(Ride $ride, $data)
+    public function sendNotificationToRideMembers(Ride $ride, $data)
     {
         $topic = $ride->id;
-        return $this->push->sendDataToTopicId($topic, $data);
+        return $this->push->sendNotificationToTopicId($topic, $data, true);
     }
 
     private function topicForUser(User $user) 

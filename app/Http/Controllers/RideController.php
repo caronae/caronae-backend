@@ -13,10 +13,10 @@ use Caronae\Notifications\RideCanceled;
 use Caronae\Notifications\RideFinished;
 use Caronae\Notifications\RideJoinRequestAnswered;
 use Caronae\Notifications\RideJoinRequested;
+use Caronae\Notifications\RideMessageReceived;
 use Caronae\Notifications\RideUserLeft;
 use Carbon\Carbon;
 use DB;
-use Caronae\Services\PushNotificationService;
 use Illuminate\Http\Request;
 
 class RideController extends Controller
@@ -521,7 +521,7 @@ class RideController extends Controller
         ];
     }
 
-    public function sendChatMessage(Request $request, Ride $ride, PushNotificationService $push)
+    public function sendChatMessage(Request $request, Ride $ride)
     {
         $this->validate($request, [
             'message' => 'required'
@@ -533,16 +533,8 @@ class RideController extends Controller
             'body' => $request->message
         ]);
 
-        $data = [
-            'message' => $message->body,
-            'rideId' => $message->ride_id,
-            'msgType' => 'chat',
-            'senderName' => $message->user->name,
-            'senderId' => $message->user->id,
-            'time' => $message->date->toDateTimeString()
-        ];
+        $ride->notify(new RideMessageReceived($message));
 
-        $push->sendDataToRideMembers($ride, $data);
         return response()->json([
             'message' => 'Message sent.',
             'id' => $message->id

@@ -8,6 +8,7 @@ use Caronae\Notifications\RideCanceled;
 use Caronae\Notifications\RideFinished;
 use Caronae\Notifications\RideJoinRequestAnswered;
 use Caronae\Notifications\RideJoinRequested;
+use Caronae\Notifications\RideMessageReceived;
 use Caronae\Notifications\RideUserLeft;
 use Caronae\Services\PushNotificationService;
 
@@ -573,11 +574,11 @@ class RideTest extends TestCase
         $ride = factory(Ride::class)->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
-        $this->push->shouldReceive('sendDataToRideMembers')->once();
-
         $request = [
             'message' => str_random(255)
         ];
+
+        $this->expectsNotification($ride, RideMessageReceived::class);
 
         $response = $this->json('POST', 'ride/' . $ride->id . '/chat', $request, $this->headers);
         $response->assertResponseStatus(201);

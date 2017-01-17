@@ -10,7 +10,7 @@ class PushNotificationServiceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testSendDataToRideMembers()
+    public function testSendNotificationToRideMembers()
     {
         $mockResult = array('notification');
         $ride = factory(Ride::class)->create();
@@ -18,10 +18,10 @@ class PushNotificationServiceTest extends TestCase
         $data = array('data');
 
         $mock = Mockery::mock(PushNotificationInterface::class);
-        $mock->shouldReceive('sendDataToTopicId')->with($topicId, $data)->once()->andReturn($mockResult);
+        $mock->shouldReceive('sendNotificationToTopicId')->with($topicId, $data, true)->once()->andReturn($mockResult);
 
         $push = new PushNotificationService($mock);
-        $result = $push->sendDataToRideMembers($ride, $data);
+        $result = $push->sendNotificationToRideMembers($ride, $data);
         $this->assertEquals($mockResult, $result);
     }
 

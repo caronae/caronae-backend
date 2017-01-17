@@ -6,9 +6,11 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
 
 class Ride extends Model
 {
+    use Notifiable;
     use SoftDeletes;
 
     protected $hidden = ['pivot', 'created_at', 'deleted_at', 'updated_at', 'date'];
