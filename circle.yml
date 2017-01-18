@@ -25,7 +25,7 @@ deployment:
     branch: develop
     owner: macecchi
     commands:
-      - ssh caronae@dev.caronae.tic.ufrj.br "cd ~/backend && git pull && composer install --no-interaction"
+      - ssh caronae@54.243.7.207 "cd ~/backend && git pull && composer install --no-interaction"
 
 experimental:
   notify:
