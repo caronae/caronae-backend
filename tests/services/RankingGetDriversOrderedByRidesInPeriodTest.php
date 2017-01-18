@@ -58,8 +58,8 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
 
         $this->assertEquals(1, count($users));
-        $this->assertTrue($users[0]->caronas == 3);
-        $this->assertTrue($users[0]->carbono_economizado == 9379.6);
+        $this->assertEquals(3, $users[0]->caronas);
+        $this->assertEquals(9379.6, $users[0]->carbono_economizado);
     }
 
     public function testOnlyConsiderDoneRides()
@@ -75,9 +75,9 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
 
-        $this->assertTrue(count($users) == 1);
-        $this->assertTrue($users[0]->caronas == 3);
-        $this->assertTrue($users[0]->carbono_economizado == 9379.6);
+        $this->assertEquals(1, count($users));
+        $this->assertEquals(3, $users[0]->caronas);
+        $this->assertEquals(9379.6, $users[0]->carbono_economizado);
 
     }
 
@@ -94,9 +94,9 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::createFromDate(2015, 1, 9), Carbon::createFromDate(2015, 1, 11));
 
-        $this->assertTrue(count($users) == 1);
-        $this->assertTrue($users[0]->caronas == 2);
-        $this->assertTrue($users[0]->carbono_economizado == 3576.3);
+        $this->assertEquals(1, count($users));
+        $this->assertEquals(2, $users[0]->caronas);
+        $this->assertEquals(3576.3, $users[0]->carbono_economizado);
     }
 
     public function testOnlyConsiderInsidePeriodInclusive()
@@ -111,9 +111,9 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::createFromDate(2015, 1, 8), Carbon::createFromDate(2015, 1, 10));
 
-        $this->assertTrue(count($users) == 1);
-        $this->assertTrue($users[0]->caronas == 2);
-        $this->assertTrue($users[0]->carbono_economizado == 3576.3);
+        $this->assertEquals(1, count($users));
+        $this->assertEquals(2, $users[0]->caronas);
+        $this->assertEquals(3576.3, $users[0]->carbono_economizado);
     }
 
     public function testCanSelectOneDayPeriod()
@@ -128,9 +128,9 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::createFromDate(2015, 1, 10), Carbon::createFromDate(2015, 1, 10));
 
-        $this->assertTrue(count($users) == 1);
-        $this->assertTrue($users[0]->caronas == 2);
-        $this->assertTrue($users[0]->carbono_economizado == 3576.3);
+        $this->assertEquals(1, count($users));
+        $this->assertEquals(2, $users[0]->caronas);
+        $this->assertEquals(3576.3, $users[0]->carbono_economizado);
     }
 
     public function testOrderCorrectly()
@@ -154,12 +154,12 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
 
-        $this->assertTrue(count($users) == 2);
-        $this->assertTrue($users[0]->caronas == 4);
-        $this->assertTrue($users[0]->carbono_economizado == 11266);
+        $this->assertEquals(2, count($users));
+        $this->assertEquals(4, $users[0]->caronas);
+        $this->assertEquals(11266, $users[0]->carbono_economizado);
 
-        $this->assertTrue($users[1]->caronas == 3);
-        $this->assertTrue($users[1]->carbono_economizado == 9379.6);
+        $this->assertEquals(3, $users[1]->caronas);
+        $this->assertEquals(9379.6, $users[1]->carbono_economizado);
 
     }
 
@@ -186,9 +186,9 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
 
-        $this->assertTrue(count($users) == 1);
-        $this->assertTrue($users[0]->caronas == 4);
-        $this->assertTrue($users[0]->carbono_economizado == 11266);
+        $this->assertEquals(1, count($users));
+        $this->assertEquals(4, $users[0]->caronas);
+        $this->assertEquals(11266, $users[0]->carbono_economizado);
     }
 
     public function testConsiderOnlyDrivers()
@@ -212,9 +212,9 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
 
-        $this->assertTrue(count($users) == 1);
-        $this->assertTrue($users[0]->caronas == 4);
-        $this->assertTrue($users[0]->carbono_economizado == 11266);
+        $this->assertEquals(1, count($users));
+        $this->assertEquals(4, $users[0]->caronas);
+        $this->assertEquals(11266, $users[0]->carbono_economizado);
     }
 
     public function testConsiderRidesToUndefinedPlaces()
@@ -231,9 +231,9 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
 
-        $this->assertTrue(count($users) == 1);
-        $this->assertTrue($users[0]->caronas == 5);
-        $this->assertTrue($users[0]->carbono_economizado == 11266);
+        $this->assertEquals(1, count($users));
+        $this->assertEquals(5, $users[0]->caronas);
+        $this->assertEquals(11266, $users[0]->carbono_economizado);
     }
 
     public function testConsiderOnlyDriversInPeriod()
@@ -257,9 +257,9 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::minValue(), Carbon::createFromFormat('Y-m-d', '2015-01-23'));
 
-        $this->assertTrue(count($users) == 1);
-        $this->assertTrue($users[0]->caronas == 4);
-        $this->assertTrue($users[0]->carbono_economizado == 11266);
+        $this->assertEquals(1, count($users));
+        $this->assertEquals(4, $users[0]->caronas);
+        $this->assertEquals(11266, $users[0]->carbono_economizado);
     }
 
     public function testConsiderOnlyRidesAfterBecomingADriver()
@@ -277,9 +277,9 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 
         $users = with(new RankingService)->getDriversOrderedByRidesInPeriod(Carbon::minValue(), Carbon::maxValue());
 
-        $this->assertTrue(count($users) == 1);
-        $this->assertTrue($users[0]->caronas == 4);
-        $this->assertTrue($users[0]->carbono_economizado == 11266);
+        $this->assertEquals(1, count($users));
+        $this->assertEquals(4, $users[0]->caronas);
+        $this->assertEquals(11266, $users[0]->carbono_economizado);
     }
 
 }
