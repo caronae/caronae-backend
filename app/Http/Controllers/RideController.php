@@ -498,9 +498,9 @@ class RideController extends Controller
         ]);
 
         if ($request->since) {
-            $messages = $ride->messages()->where('created_at', '>', $request->since)->get();
+            $messages = $ride->messages()->where('created_at', '>', $request->since)->orderBy('created_at')->get();
         } else {
-            $messages = $ride->messages;
+            $messages = $ride->messages()->orderBy('created_at')->get();
         }
 
         $messages = $messages->map(function ($message) {
@@ -510,7 +510,8 @@ class RideController extends Controller
                 'body' => $message->body,
                 'user' => [
                     'id' => $user->id,
-                    'name' => $user->name
+                    'name' => $user->name,
+                    'profile_pic_url' => $user->profile_pic_url
                 ],
                 'date' => $message->date->toDateTimeString()
             ];

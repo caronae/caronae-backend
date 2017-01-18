@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
+use Caronae\Models\Message;
 use Caronae\Models\User;
 use Caronae\Models\Ride;
 use Caronae\Notifications\RideCanceled;
@@ -565,6 +566,35 @@ class RideTest extends TestCase
         $response->seeJsonEquals([
             'offeredCount' => 2,
             'takenCount' => 1
+        ]);
+    }
+
+    public function testGetChatMessages()
+    {
+        // Create fake ride with the user as driver
+        $ride = factory(Ride::class)->create()->fresh();
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $messages = factory(Message::class, 3)->create([
+            'ride_id' => $ride->id,
+            'user_id' => $this->user->id
+        ])->sortBy('created_at')->values()->map(function ($message) {
+            return [
+                'id' => $message->id,
+                'body' => $message->body,
+                'user' => [
+                    'id' => $message->user->id,
+                    'name' => $message->user->name,
+                    'profile_pic_url' => $message->user->profile_pic_url
+                ],
+                'date' => $message->date->toDateTimeString(),
+            ];
+        })->all();
+
+        $response = $this->json('GET', 'ride/' . $ride->id . '/chat', [], $this->headers);
+        $response->assertResponseOk();
+        $response->seeJsonEquals([
+            'messages' => $messages
         ]);
     }
 

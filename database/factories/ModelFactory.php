@@ -1,4 +1,5 @@
 <?php
+use Caronae\Models\Message;
 use Caronae\Models\Neighborhood;
 use Caronae\Models\User;
 use Caronae\Models\Ride;
@@ -260,4 +261,11 @@ $factory->defineAs(Ride::class, 'next', function (Faker\Generator $faker) use ($
         'date' => $date,
         'done' => false
     ]);
+});
+
+$factory->define(Message::class, function (Faker\Generator $faker) {
+    return [
+        'body' => $faker->realText(50),
+        'created_at' => $faker->dateTime()
+    ];
 });
