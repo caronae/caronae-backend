@@ -29,7 +29,10 @@ class PushNotificationFirebaseRepository implements PushNotificationInterface
         $body = [
             'to'                => '/topics/' . $topicId,
             'content_available' => true,
-            'notification'      => ['body' => $data['message']],
+            'notification'      => [
+                'body' => $data['message'],
+                'icon' => 'ic_stat_name'
+            ],
             'data'              => $data
         ];
 
