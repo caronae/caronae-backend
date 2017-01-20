@@ -47,13 +47,25 @@ class RideJoinRequested extends Notification
      */
     public function toPush($notifiable)
     {
+        // TODO: Include the requester's name in the notification
         return [
-            'message' => $this->message->body,
-            'rideId' => $this->message->ride_id,
-            'msgType' => 'chat',
-            'senderName' => $this->message->user->name,
-            'senderId' => $this->message->user->id,
-            'time' => $this->message->date->toDateTimeString()
+            'message' => 'Sua carona recebeu uma solicitação',
+            'msgType' => 'joinRequest',
+            'rideId'  => $this->ride->id
+        ];
+    }
+
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param  User  $notifiable
+     * @return array
+     */
+    public function toArray($notifiable)
+    {
+        return [
+            'rideID' => $this->ride->id,
+            'userID' => $this->requester->id
         ];
     }
 }
