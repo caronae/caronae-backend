@@ -9,38 +9,46 @@ class PushNotificationFirebaseRepository implements PushNotificationInterface
 {
     public function sendNotificationToDevices($tokens, $data)
     {
-        $body = [
-            'notification' 		=> ['body' => $data['message']],
-            'content_available' => true,
-            'data' 				=> $data
-        ];
+        $payload = $this->payloadWithData($data);
 
         if (is_array($tokens)) {
-            $body['registration_ids'] = $tokens;
+            $payload['registration_ids'] = $tokens;
         } else {
-            $body['to'] = $tokens;
+            $payload['to'] = $tokens;
         }
 
-        return $this->doPost($body);
+        return $this->doPost($payload);
     }
 
     public function sendNotificationToTopicId($topicId, $data, $highPriority = NULL)
     {
-        $body = [
-            'to'                => '/topics/' . $topicId,
-            'content_available' => true,
-            'notification'      => [
-                'body' => $data['message'],
-                'icon' => 'ic_stat_name'
-            ],
-            'data'              => $data
-        ];
+        $payload = $this->payloadWithData($data);
+        $payload['to'] = '/topics/' . $topicId;
 
         if ($highPriority) {
-            $body['priority'] = 'high';
+            $payload['priority'] = 'high';
         }
 
-        return $this->doPost($body);
+        return $this->doPost($payload);
+    }
+
+    private function payloadWithData($data)
+    {
+        $notification = [
+            'body' => $data['message'],
+            'icon' => 'ic_stat_name',
+            'sound' => 'beep-beep.caf'
+        ];
+
+        if (!empty($data['title'])) {
+            $notification['title'] = $data['title'];
+        }
+
+        return [
+            'content_available' => true,
+            'notification' => $notification,
+            'data' => $data
+        ];
     }
 
     private function doPost($post)
