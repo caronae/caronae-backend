@@ -104,11 +104,16 @@ class RideController extends Controller
             // check if the ride is recurring. if so, there will be a field 'repeats_until'
             // and a field 'week_days' with the repeating days (1->monday, 2->tuesday, ..., 7->sunday)
             if (!empty($request->repeats_until) && is_string($request->repeats_until)) {
-                $repeats_until = Carbon::createFromFormat('d/m/Y', $request->repeats_until)->setTime(23,59,59);
-                $ride->repeats_until = $repeats_until->format('Y-m-d');
+               try {
+                    $repeats_until = Carbon::createFromFormat('d/m/Y', $request->repeats_until);
+                } catch(\InvalidArgumentException $error) {
+                    $repeats_until = Carbon::createFromFormat('Y-m-d', $request->repeats_until);
+                }
+
+                $ride->repeats_until = $repeats_until;
                 $ride->week_days = $request->week_days;
 
-                $repeating_dates = $this->recurringDates($ride->date, $repeats_until, $ride->week_days);
+                $repeating_dates = $this->recurringDates($ride->date, $repeats_until->setTime(23,59,59), $ride->week_days);
 
                 foreach ($repeating_dates as $date) {
                     // Skip if it's the date of the original Ride
