@@ -32,8 +32,6 @@ class ApiV1Authenticate
     {
         $userAgent = $request->header('User-Agent');
         $appVersionRegex = '(\d+\.)?(\d+\.)?(\*|\d+)';
-        
-        Log::info('Call from user ' . $request->currentUser->id . ' with User-Agent: ' . $userAgent);
 
         if (preg_match('/Caronae\/(?P<version>' . $appVersionRegex . ') .*(?P<platform>(iOS|Android))/', $userAgent, $matches)) {
             $platform = $matches['platform'];
@@ -45,7 +43,5 @@ class ApiV1Authenticate
                 $request->currentUser->save();
             }
         }
-
-        Log::info('User ' . $request->currentUser->id . ' platform is: ' . $request->currentUser->app_platform . ' - ' . $request->currentUser->app_version);
     }
 }
