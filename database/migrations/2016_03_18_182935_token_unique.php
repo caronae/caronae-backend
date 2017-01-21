@@ -12,6 +12,7 @@ class TokenUnique extends Migration
      */
     public function up()
     {
+        $this->fixUsersWithoutToken();
         Schema::table('users', function (Blueprint $table) {
             $table->unique('token');
         });
@@ -27,5 +28,15 @@ class TokenUnique extends Migration
         Schema::table('users', function ($table) {
             $table->dropUnique('users_token_unique');
         });
+    }
+
+    private function fixUsersWithoutToken()
+    {
+        // Add a random token to each user with an empty token
+        DB::connection()->getPdo()->exec("
+            UPDATE users
+            SET token = upper(substring(md5(id || name || id_ufrj), 1, 6))
+            WHERE token = ''
+        ");
     }
 }
