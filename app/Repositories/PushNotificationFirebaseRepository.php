@@ -43,18 +43,6 @@ class PushNotificationFirebaseRepository implements PushNotificationInterface
         return $this->doPost($body);
     }
 
-    public function sendDataToTopicId($topicId, $data)
-    {
-        $body = [
-            'to'                => '/topics/' . $topicId,
-            'priority'          => 'high',
-            'content_available' => true,
-            'data'              => $data
-        ];
-
-        return $this->doPost($body);
-    }
-
     private function doPost($post)
     {
         //------------------------------

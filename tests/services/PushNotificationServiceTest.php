@@ -55,19 +55,4 @@ class PushNotificationServiceTest extends TestCase
         $result = $push->sendNotificationToUser($user, $data);
         $this->assertEquals($mockResult, $result);
     }
-
-    public function testSendDataToUser()
-    {
-        $mockResult = array('notification');
-        $user = factory(User::class)->create();
-        $topicId = 'user-' . $user->id;
-        $data = array('data');
-
-        $mock = Mockery::mock(PushNotificationInterface::class);
-        $mock->shouldReceive('sendDataToTopicId')->with($topicId, $data)->once()->andReturn($mockResult);
-
-        $push = new PushNotificationService($mock);
-        $result = $push->sendDataToUser($user, $data);
-        $this->assertEquals($mockResult, $result);
-    }
 }
