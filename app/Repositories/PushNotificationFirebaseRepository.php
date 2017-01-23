@@ -37,7 +37,7 @@ class PushNotificationFirebaseRepository implements PushNotificationInterface
         $notification = [
             'body' => $data['message'],
             'icon' => 'ic_stat_name',
-            'sound' => 'beep-beep.caf'
+            'sound' => 'beep_beep.wav'
         ];
 
         if (!empty($data['title'])) {
