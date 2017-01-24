@@ -80,6 +80,11 @@ return [
             'url_type'  => 'publicURL',
         ],
 
+        'uploads' => [
+            'driver' => 'local',
+            'root' => public_path('uploads'),
+        ],
+
     ],
 
 ];

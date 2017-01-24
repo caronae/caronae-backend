@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
+use Backpack\CRUD\CrudTrait;
 
 class User extends Model
 {
     use Notifiable;
     use SoftDeletes;
+    use CrudTrait;
 
     protected $fillable = ['name', 'email', 'profile', 'id_ufrj', 'token'];
     protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version'];
