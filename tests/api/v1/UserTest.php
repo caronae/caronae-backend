@@ -51,7 +51,7 @@ class UserTest extends TestCase
         // ]);
     }
 
-    public function testSignInWithValidUser()
+    public function testSignInWithValidUserSucceeds()
     {
         // create user with some rides
         $user = factory(User::class)->create();
@@ -114,7 +114,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    public function testSignInWithInvalidUser()
+    public function testSignInWithInvalidUserFails()
     {
         $response = $this->json('POST', 'user/login', [
             'id_ufrj' => str_random(11),
@@ -126,30 +126,51 @@ class UserTest extends TestCase
         ]);
     }
 
-    public function testUpdate()
+    public function testUpdateWithValidUserSucceeds()
     {
-        $faker = Faker\Factory::create();
         $user = factory(User::class)->create();
         $headers = ['token' => $user->token];
+        $body = [
+            'phone_number' => '021998781890',
+            'email' => 'test@example.com',
+            'location' => 'Madureira',
+            'car_owner' => true,
+            'car_model' => 'Fiat Uno',
+            'car_color' => 'azul',
+            'car_plate' => 'ABC-1234',
+            'profile_pic_url' => 'http://example.com/image.jpg'
+        ];
 
-        $user->face_id = NULL;
-        $user->profile = $faker->titleMale;
-        $user->course = $faker->company;
-        $user->phone_number = $faker->regexify('[0-9]{10-11}');
-        $user->email = $faker->email;
-        $user->email = $faker->email;
-        $user->location = $faker->city;
-        $user->car_owner = !$user->car_owner;
-        $user->car_model = $user->car_owner ? $faker->company : NULL;
-        $user->car_color = $user->car_owner ? $faker->colorName : NULL;
-        $user->car_plate = $user->car_owner ? 'ABC-1234' : NULL;
-        $user->profile_pic_url = $faker->url;
-
-        $response = $this->json('PUT', 'user', $user->toArray(), $headers);
+        $response = $this->json('PUT', 'user', $body, $headers);
         $response->assertResponseOk();
 
-        $savedUser = $user->fresh();
-        $this->assertEquals($user->toArray(), $savedUser->toArray());
+        $user = $user->fresh();
+        $this->assertEquals($body['phone_number'], $user->phone_number);
+        $this->assertEquals($body['email'], $user->email);
+        $this->assertEquals($body['location'], $user->location);
+        $this->assertEquals($body['car_owner'], $user->car_owner);
+        $this->assertEquals($body['car_model'], $user->car_model);
+        $this->assertEquals($body['car_plate'], $user->car_plate);
+        $this->assertEquals($body['profile_pic_url'], $user->profile_pic_url);
+    }
+
+    public function testUpdateWithInvalidUserFails()
+    {
+        $user = factory(User::class)->create();
+        $headers = ['token' => ''];
+        $body = [
+            'phone_number' => '021999999999',
+            'email' => 'test@example.com',
+            'location' => 'Somewhere',
+            'car_owner' => true,
+            'car_model' => 'Car',
+            'car_color' => 'color',
+            'car_plate' => 'ABC-1234',
+            'profile_pic_url' => 'http://example.com/image.jpg'
+        ];
+
+        $response = $this->json('PUT', 'user', $body, $headers);
+        $response->assertResponseStatus(403);
     }
 
     public function testGetOfferedRides()

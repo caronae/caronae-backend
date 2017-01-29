@@ -21,11 +21,6 @@ use Illuminate\Http\Request;
 
 class RideController extends Controller
 {
-    /**
-     * Instantiate a new RideController instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('api.v1.auth', ['only' => [
