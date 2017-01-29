@@ -429,6 +429,11 @@ class RideController extends Controller
             return response()->json(['error' => 'User is not the driver of this ride'], 403);
         }
 
+        // check if the ride is in the past, otherwise it cannot be marked as finished
+        if ($ride->date->isFuture()) {
+            return response()->json(['error' => 'A ride in the future cannot be marked as finished'], 403);
+        }
+
         $ride->done = true;
         $ride->save();
 

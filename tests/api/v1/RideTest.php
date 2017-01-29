@@ -439,9 +439,9 @@ class RideTest extends TestCase
         ]);
     }
 
-    public function testFinish()
+    public function testFinishOldRideSucceeds()
     {
-        $ride = factory(Ride::class, 'next')->create();
+        $ride = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00']);
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
         $rider = factory(User::class)->create();
@@ -458,6 +458,19 @@ class RideTest extends TestCase
         $response->seeJsonEquals([
             'message' => 'Ride finished.'
         ]);
+    }
+
+    public function testFinishFutureRideFails()
+    {
+        $ride = factory(Ride::class, 'next')->create();
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $request = [
+            'rideId' => $ride->id
+        ];
+
+        $response = $this->json('POST', 'ride/finishRide', $request, $this->headers);
+        $response->assertResponseStatus(403);
     }
 
     public function testSaveFeedback()
