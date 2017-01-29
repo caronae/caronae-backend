@@ -8,9 +8,8 @@ use Caronae\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 
-class RideCanceled extends Notification
+class RideCanceled extends Notification implements ShouldQueue
 {
     use Queueable;
 
