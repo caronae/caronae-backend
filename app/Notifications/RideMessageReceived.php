@@ -8,7 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class RideMessageReceived extends Notification
+class RideMessageReceived extends Notification implements ShouldQueue
 {
     use Queueable;
 
