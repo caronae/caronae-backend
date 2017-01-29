@@ -49,4 +49,26 @@ class RideModelTest extends TestCase
         $this->assertEquals([$accepted->toArray()], $ride->riders()->toArray());
     }
 
+    public function testTitleGoing()
+    {
+        $ride = factory(Ride::class)->create([
+            'going' => true,
+            'neighborhood' => 'Ipanema',
+            'hub' => 'CCS',
+            'date' => Carbon\Carbon::createFromDate(2017, 01, 29)
+        ]);
+        $this->assertEquals('Ipanema → CCS | 29/01', $ride->title);
+    }
+
+    public function testTitleReturning()
+    {
+        $ride = factory(Ride::class)->create([
+            'going' => false,
+            'neighborhood' => 'Ipanema',
+            'hub' => 'CCS',
+            'date' => Carbon\Carbon::createFromDate(2017, 01, 29)
+        ]);
+        $this->assertEquals('CCS → Ipanema | 29/01', $ride->title);
+    }
+
 }

@@ -47,6 +47,16 @@ class Ride extends Model
         return $this->date->format('H:i:s');
     }
 
+    public function getTitleAttribute()
+    {
+        if ($this->going) {
+            $route = $this->neighborhood . ' → ' . $this->hub;
+        } else {
+            $route = $this->hub . ' → ' . $this->neighborhood;
+        }
+        return $route . ' | ' . $this->date->format('d/m');
+    }
+
     private static function userStats($periodStart, $periodEnd)
     {
         return DB::table('users')
