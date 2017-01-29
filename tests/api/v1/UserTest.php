@@ -160,12 +160,16 @@ class UserTest extends TestCase
 
         // add unfinished rides, which should be returned
         $rideIds = [];
-        $ride = factory(Ride::class)->create(['done' => false])->fresh();
+        $ride = factory(Ride::class, 'next')->create(['done' => false])->fresh();
         $user->rides()->attach($ride, ['status' => 'driver']);
 
-        // add finishe ride, which shouldn't be returned
+        // add finished ride, which shouldn't be returned
         $rideFinished = factory(Ride::class)->create(['done' => true]);
         $user->rides()->attach($rideFinished, ['status' => 'driver']);
+
+        // add old ride, which shouldn't be returned
+        $rideOld = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00']);
+        $user->rides()->attach($rideOld, ['status' => 'driver']);
 
         // add random ride from another user
         factory(Ride::class)->create();

@@ -77,7 +77,7 @@ class UserController extends Controller
 
     public function getOfferedRides(User $user, Request $request)
     {
-        $rides = $user->rides()->where(['status' => 'driver', 'done' => false])->get();
+        $rides = $user->rides()->where('date', '>', 'NOW()')->where(['done' => false, 'status' => 'driver'])->get();
         return ['rides' => $rides];
     }
 
