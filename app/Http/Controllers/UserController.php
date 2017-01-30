@@ -70,7 +70,7 @@ class UserController extends Controller
 
         $user = User::where(['id_ufrj' => $request->id_ufrj, 'token' => $request->token])->first();
         if ($user == null) {
-            return response()->json(['error' => 'User not found with provided credentials.'], 403);
+            return response()->json(['error' => 'User not found with provided credentials.'], 401);
         }
 
         // get user's rides as driver
@@ -191,8 +191,8 @@ class UserController extends Controller
     public function getIntranetPhotoUrl(Request $request, SigaService $siga)
     {
         $idUFRJ = $request->currentUser->id_ufrj;
-        if ($idUFRJ == null || $idUFRJ == '') {
-            return response()->json(['error' => 'User does not have an Intranet identification.'], 403);
+        if (empty($idUFRJ)) {
+            return response()->json(['error' => 'User does not have an Intranet identification.'], 404);
         }
 
         $picture = $siga->getProfilePictureById($idUFRJ);

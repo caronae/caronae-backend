@@ -120,7 +120,7 @@ class UserTest extends TestCase
             'id_ufrj' => str_random(11),
             'token' => str_random(6)
         ]);
-        $response->assertResponseStatus(403);
+        $response->assertResponseStatus(401);
         $response->seeJsonEquals([
             'error' => 'User not found with provided credentials.'
         ]);
@@ -170,7 +170,7 @@ class UserTest extends TestCase
         ];
 
         $response = $this->json('PUT', 'user', $body, $headers);
-        $response->assertResponseStatus(403);
+        $response->assertResponseStatus(401);
     }
 
     public function testGetOfferedRides()

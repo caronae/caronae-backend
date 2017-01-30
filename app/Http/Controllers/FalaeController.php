@@ -15,7 +15,7 @@ class FalaeController extends Controller
         $decode = json_decode($request->getContent());
         $user = User::where('token', $request->header('token'))->first();
         if ($user == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
+            return response()->json(['error'=>'User token not authorized.'], 401);
         }
 
         $to = "caronae@fundoverde.ufrj.br";
