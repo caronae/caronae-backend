@@ -1,4 +1,4 @@
-@if (Auth::check())
+  @if (Auth::check())
     <!-- Left side column. contains the sidebar -->
     <aside class="main-sidebar">
       <!-- sidebar: style can be found in sidebar.less -->
@@ -6,7 +6,7 @@
         <!-- Sidebar user panel -->
         <div class="user-panel">
           <div class="pull-left image">
-            <img src="https://placehold.it/160x160/00a65a/ffffff/&text={{ mb_substr(Auth::user()->name, 0, 1) }}" class="img-circle" alt="User Image">
+            <img src="{{ asset('images/logo_caronae.png') }}" class="img-circle" alt="">
           </div>
           <div class="pull-left info">
             <p>{{ Auth::user()->name }}</p>
@@ -20,7 +20,7 @@
           <!-- ==== Recommended place for admin menu items ==== -->
           <!-- ================================================ -->
           <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/dashboard') }}"><i class="fa fa-dashboard"></i> <span>{{ trans('backpack::base.dashboard') }}</span></a></li>
-          <li><a href="{{ url('admin/user') }}"><i class="fa fa-user"></i> <span>Users</span></li>
+          <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/users') }}"><i class="fa fa-user"></i> <span>{{ trans('backpack::base.users') }}</span></a></li>
 
 
           <!-- ======================================= -->

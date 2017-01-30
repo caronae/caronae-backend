@@ -21,8 +21,6 @@ Route::get('/', [
 Route::get('edit', 'AdminController@getEdit');
 Route::post('edit', 'AdminController@postEdit');
 
-CRUD::resource('user', 'UserCrudController');
-
 Route::get('users', 'UserController@index');
 Route::get('users.json', 'UserController@indexJson');
 Route::get('users.excel', 'UserController@indexExcel');

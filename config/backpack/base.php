@@ -16,7 +16,7 @@ return [
 
     // Menu logos
     'logo_lg'   => '<b>Caronaê</b> UFRJ',
-    'logo_mini' => '<b>C</b>',
+    'logo_mini' => '',
 
     // Developer or company name. Shown in footer.
     'developer_name' => 'Caronaê',
@@ -56,7 +56,7 @@ return [
     */
 
     // The prefix used in all base routes (the 'admin' in admin/dashboard)
-    'route_prefix' => 'admin',
+    'route_prefix' => 'admin2',
 
     // Set this to false if you would like to use your own AuthController and PasswordController
     // (you then need to setup your auth routes manually in your routes.php file)
