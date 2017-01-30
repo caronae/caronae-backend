@@ -69,11 +69,34 @@ class RideController extends Controller
 
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'myzone' => 'required|string',
+            'neighborhood' => 'required|string',
+            'place' => 'string|max:255',
+            'route' => 'string|max:255',
+            'slots' => 'numeric|max:10',
+            'hub' => 'string|max:255',
+            'description' => 'string|max:255',
+            'going' => 'required|boolean',
+            'mydate' => 'required|string',
+            'mytime' => 'required|string'
+        ]);
+
+        try {
+            $date = Carbon::createFromFormat('d/m/Y H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
+        } catch(\InvalidArgumentException $error) {
+            $date = Carbon::createFromFormat('Y-m-d H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
+        }
+
+        // check if the ride is in the future
+        if ($date->isPast()) {
+            return response()->json(['error' => 'You cannot create a ride in the past.'], 403);
+        }
+
         $user = $request->currentUser;
 
-        $rides_created = [];
-        DB::transaction(function() use ($request, $user, &$rides_created) {
-            //create new ride and save it
+        $ridesCreated = [];
+        DB::transaction(function() use ($request, $date, $user, &$ridesCreated) {
             $ride = new Ride();
             $ride->myzone = $request->myzone;
             $ride->neighborhood = $request->neighborhood;
@@ -83,15 +106,9 @@ class RideController extends Controller
             $ride->hub = $request->hub;
             $ride->description = $request->description;
             $ride->going = $request->going;
-
-            try {
-                $ride->date = Carbon::createFromFormat('d/m/Y H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
-            } catch(\InvalidArgumentException $error) {
-                $ride->date = Carbon::createFromFormat('Y-m-d H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
-            }
-
+            $ride->date = $date;
             $ride->save();
-            $rides_created[] = $ride;
+            $ridesCreated[] = $ride;
 
             // save relationship between ride and user
             $ride->users()->attach($user->id, ['status' => 'driver']);
@@ -132,7 +149,7 @@ class RideController extends Controller
 
                     $repeating_ride->save();
 
-                    $rides_created[] = $repeating_ride;
+                    $ridesCreated[] = $repeating_ride;
 
                     // Saving the relationship between ride and user
                     $repeating_ride->users()->attach($user->id, ['status' => 'driver']);
@@ -147,11 +164,11 @@ class RideController extends Controller
             }
         });
 
-        if (empty($rides_created)) {
+        if (empty($ridesCreated)) {
             return response()->json(['error'=>'No rides were created.'], 204);
         }
 
-        return $rides_created;
+        return response()->json($ridesCreated, 201);
     }
     
     public function validateDuplicate(Request $request)

@@ -189,13 +189,14 @@ class RideTest extends TestCase
 
     public function testCreateWithoutRoutine()
     {
+        $date = \Carbon\Carbon::now()->addDays(5);
         $request = [
             'myzone' => 'Norte',
             'neighborhood' => 'Jardim Guanabara',
             'place' => 'Praia da bica',
             'route' => 'Linha Vermelha',
-            'mydate' => '20/10/2016',
-            'mytime' => '10:00:00',
+            'mydate' => $date->format('d/m/Y'),
+            'mytime' => $date->format('H:i:s'),
             'week_days' => NULL,
             'repeats_until' => NULL,
             'slots' => '4',
@@ -205,15 +206,15 @@ class RideTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride', $request, $this->headers);
-        $response->assertResponseOk();
+        $response->assertResponseStatus(201);
 
         $response->seeJsonContains([
             'myzone' => 'Norte',
             'neighborhood' => 'Jardim Guanabara',
             'place' => 'Praia da bica',
             'route' => 'Linha Vermelha',
-            'mydate' => '2016-10-20',
-            'mytime' => '10:00:00',
+            'mydate' => $date->format('Y-m-d'),
+            'mytime' => $date->format('H:i:00'),
             'slots' => '4',
             'hub' => 'A',
             'description' => 'Lorem ipsum dolor',
@@ -227,15 +228,17 @@ class RideTest extends TestCase
 
     public function testCreateWithRoutine()
     {
+        $date = \Carbon\Carbon::now()->addDays(5);
+        $repeatsUntil = $date->copy()->addWeek();
         $request = [
             'myzone' => 'Norte',
             'neighborhood' => 'Jardim Guanabara',
             'place' => 'Praia da bica',
             'route' => 'Linha Vermelha',
-            'mydate' => '24/10/2016',
-            'mytime' => '16:40:00',
-            'week_days' => '2,4', // tuesday, thursday
-            'repeats_until' => '01/11/2016',
+            'mydate' => $date->format('d/m/Y'),
+            'mytime' => $date->format('H:i:s'),
+            'week_days' => $date->dayOfWeek,
+            'repeats_until' => $repeatsUntil->format('d/m/Y'),
             'slots' => '4',
             'hub' => 'A',
             'description' => 'Lorem ipsum dolor',
@@ -243,18 +246,18 @@ class RideTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride', $request, $this->headers);
-        $response->assertResponseOk();
+        $response->assertResponseStatus(201);
 
         $jsonContent = json_decode($this->response->getContent());
-        $this->assertEquals(4, count($jsonContent), "Should create exactly 4 rides.");
+        $this->assertEquals(2, count($jsonContent), "Should create exactly 2 rides.");
 
         $response->seeJsonContains([
             'myzone' => 'Norte',
             'neighborhood' => 'Jardim Guanabara',
             'place' => 'Praia da bica',
             'route' => 'Linha Vermelha',
-            'mydate' => '2016-10-24',
-            'mytime' => '16:40:00',
+            'mydate' => $date->format('Y-m-d'),
+            'mytime' => $date->format('H:i:00'),
             'slots' => '4',
             'hub' => 'A',
             'description' => 'Lorem ipsum dolor',
@@ -265,32 +268,8 @@ class RideTest extends TestCase
             'neighborhood' => 'Jardim Guanabara',
             'place' => 'Praia da bica',
             'route' => 'Linha Vermelha',
-            'mydate' => '2016-10-25',
-            'mytime' => '16:40:00',
-            'slots' => '4',
-            'hub' => 'A',
-            'description' => 'Lorem ipsum dolor',
-            'going' => true
-        ]);
-        $response->seeJsonContains([
-            'myzone' => 'Norte',
-            'neighborhood' => 'Jardim Guanabara',
-            'place' => 'Praia da bica',
-            'route' => 'Linha Vermelha',
-            'mydate' => '2016-10-27',
-            'mytime' => '16:40:00',
-            'slots' => '4',
-            'hub' => 'A',
-            'description' => 'Lorem ipsum dolor',
-            'going' => true
-        ]);
-        $response->seeJsonContains([
-            'myzone' => 'Norte',
-            'neighborhood' => 'Jardim Guanabara',
-            'place' => 'Praia da bica',
-            'route' => 'Linha Vermelha',
-            'mydate' => '2016-11-01',
-            'mytime' => '16:40:00',
+            'mydate' => $repeatsUntil->format('Y-m-d'),
+            'mytime' => $date->format('H:i:00'),
             'slots' => '4',
             'hub' => 'A',
             'description' => 'Lorem ipsum dolor',
@@ -299,6 +278,31 @@ class RideTest extends TestCase
 
         $response->seeJsonStructure([
             '*' => ['id', 'routine_id', 'week_days']
+        ]);
+    }
+
+    public function testCreateRideInThePastShouldFail()
+    {
+        $date = \Carbon\Carbon::yesterday();
+        $request = [
+            'myzone' => 'Norte',
+            'neighborhood' => 'Jardim Guanabara',
+            'place' => 'Praia da bica',
+            'route' => 'Linha Vermelha',
+            'mydate' => $date->format('d/m/Y'),
+            'mytime' => $date->format('H:i:s'),
+            'week_days' => NULL,
+            'repeats_until' => NULL,
+            'slots' => '4',
+            'hub' => 'A',
+            'description' => 'Lorem ipsum dolor',
+            'going' => false
+        ];
+
+        $response = $this->json('POST', 'ride', $request, $this->headers);
+        $response->assertResponseStatus(403);
+        $response->seeJsonEquals([
+            'error' => 'You cannot create a ride in the past.'
         ]);
     }
 
@@ -471,6 +475,9 @@ class RideTest extends TestCase
 
         $response = $this->json('POST', 'ride/finishRide', $request, $this->headers);
         $response->assertResponseStatus(403);
+        $response->seeJsonEquals([
+            'error' => 'A ride in the future cannot be marked as finished'
+        ]);
     }
 
     public function testSaveFeedback()
