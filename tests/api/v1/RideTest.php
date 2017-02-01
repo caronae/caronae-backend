@@ -40,16 +40,6 @@ class RideTest extends TestCase
         $this->headers = ['token' => $this->user->token];
     }
 
-    /**
-    * @before
-    */
-    public function mockPushNotificationService()
-    {
-        $this->push = Mockery::mock(PushNotificationService::class);
-        App::instance(PushNotificationService::class, $this->push);
-    }
-
-
     public function testGetAll()
     {
         $user = $this->user;
@@ -622,13 +612,20 @@ class RideTest extends TestCase
     {
         // Create fake ride with the user as driver
         $ride = factory(Ride::class)->create();
-        $ride->users()->attach($this->user, ['status' => 'driver']);
+        $ride->users()->attach($this->user, ['status' => 'accepted']);
+
+        $user2 = factory(User::class)->create();
+        $ride->users()->attach($user2, ['status' => 'accepted']);
+        $user3 = factory(User::class)->create();
+        $ride->users()->attach($user3, ['status' => 'driver']);
 
         $request = [
             'message' => str_random(255)
         ];
 
-        $this->expectsNotification($ride, RideMessageReceived::class);
+        // all users should be notificated except the sender
+        $this->expectsNotification($user2, RideMessageReceived::class);
+        $this->expectsNotification($user3, RideMessageReceived::class);
 
         $response = $this->json('POST', 'ride/' . $ride->id . '/chat', $request, $this->headers);
         $response->assertResponseStatus(201);

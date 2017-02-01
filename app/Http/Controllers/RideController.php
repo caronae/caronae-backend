@@ -555,8 +555,15 @@ class RideController extends Controller
             'user_id' => $request->currentUser->id,
             'body' => $request->message
         ]);
-
-        $ride->notify(new RideMessageReceived($message));
+        $notification = new RideMessageReceived($message);
+        
+        $subscribers = $ride->users()
+            ->whereIn('status', ['accepted', 'driver'])
+            ->where('user_id', '!=', $request->currentUser->id)
+            ->get();
+        $subscribers->each(function($user) use ($notification) {
+            $user->notify($notification);
+        });
 
         return response()->json([
             'message' => 'Message sent.',
