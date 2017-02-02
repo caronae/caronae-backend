@@ -13,9 +13,7 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-
-        DB::table('neighborhoods')->delete();
-        $this->seed('BootstrapSeeder');
+        $this->seed('NeighborhoodSeeder');
     }
 
     /**

@@ -4,24 +4,11 @@ use Caronae\Models\Admin;
 use Caronae\Models\Neighborhood;
 use Illuminate\Database\Seeder;
 
-/**
- * Class BootstrapSeeder
- *
- * Esse seeder tem a função de adicionar ao banco os dados essenciais da aplicação.
- *
- */
-class BootstrapSeeder extends Seeder
+class NeighborhoodSeeder extends Seeder
 {
     public function run()
     {
-        DatabaseSeeder::emptyTable('admins');
         DatabaseSeeder::emptyTable('neighborhoods');
-
-        Admin::create([
-            'name' => 'Administrador',
-            'email' => 'admin@caronae.ufrj.br',
-            'password' => bcrypt('secure.password.for.admin.need.to.be.long1A$')
-        ]);
 
         collect([
             ['zone' => 'Centro', 'name' => 'São Cristóvão', 'distance' => 6.0],
