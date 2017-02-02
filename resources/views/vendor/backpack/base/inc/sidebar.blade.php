@@ -21,7 +21,7 @@
           <!-- ================================================ -->
           <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/dashboard') }}"><i class="fa fa-dashboard"></i> <span>{{ trans('backpack::base.dashboard') }}</span></a></li>
           <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/users') }}"><i class="fa fa-user"></i> <span>{{ trans('backpack::base.users') }}</span></a></li>
-
+          <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/log') }}"><i class="fa fa-terminal"></i> <span>Logs</span></a></li>
 
           <!-- ======================================= -->
           <li class="header">{{ trans('backpack::base.user') }}</li>

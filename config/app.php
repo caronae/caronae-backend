@@ -172,6 +172,7 @@ return [
         */
         Backpack\Base\BaseServiceProvider::class,
         Backpack\CRUD\CrudServiceProvider::class,
+        Backpack\LogManager\LogManagerServiceProvider::class,
     ],
 
     /*
