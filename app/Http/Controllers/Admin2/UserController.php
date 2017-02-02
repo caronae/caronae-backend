@@ -14,6 +14,7 @@ class UserController extends CrudController {
         $this->crud->enableAjaxTable();
         $this->crud->enableDetailsRow();
         $this->crud->removeButton('delete');
+        $this->crud->addButtonFromView('line', 'Banir', 'ban', 1);
 
         $this->crud->setColumns([
         	[ 'name' => 'name', 'label' => 'Nome' ],
