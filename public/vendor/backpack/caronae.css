@@ -1,0 +1,32 @@
+.user-details {
+	margin: 15px;
+	text-align: left;
+}
+
+.user-details .properties {
+	display: inline-block;
+	vertical-align: top;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.user-details .image {
+	display: inline-block;
+	width: 150px;
+	height: auto;
+	margin-right: 20px;
+}
+
+.user-details .property {
+	margin: 10px 0;
+}
+
+.user-details .column-name {
+	font-weight: bold;
+}
+
+.user-details .column-name::after {
+	content: ':';
+	margin-right: 5px;
+}

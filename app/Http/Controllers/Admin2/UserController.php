@@ -2,12 +2,8 @@
 namespace Caronae\Http\Controllers\Admin2;
 
 use Backpack\CRUD\App\Http\Controllers\CrudController;
-
 use Caronae\Models\User;
-
-// VALIDATION: change the requests to match your own file names if you need form validation
-use Caronae\Http\Requests\TagCrudRequest as StoreRequest;
-use Caronae\Http\Requests\TagCrudRequest as UpdateRequest;
+use Illuminate\Http\Request;
 
 class UserController extends CrudController {
 
@@ -16,13 +12,30 @@ class UserController extends CrudController {
         $this->crud->setRoute('admin2/users');
         $this->crud->setEntityNameStrings('usuário', 'usuários');
         $this->crud->enableAjaxTable();
-        $this->crud->enableDetailsRow();	
+        $this->crud->enableDetailsRow();
+        $this->crud->removeButton('delete');
 
-        // $this->crud->setFromDb();
-        $this->crud->setColumns(['name']);
-        $this->crud->addField([
-			'name' => 'name',
-			'label' => 'Nome'
+        $this->crud->setColumns([
+        	[ 'name' => 'name', 'label' => 'Nome' ],
+        	[ 'name' => 'profile', 'label' => 'Perfil' ],
+        	[ 'name' => 'course', 'label' => 'Curso' ],
+        	[ 'name' => 'location', 'label' => 'Bairro' ],
+        	[ 'name' => 'id_ufrj', 'label' => 'ID UFRJ' ],
+        ]);
+        $this->crud->addFields([
+        	[ 'name' => 'profile_pic_url', 'label' => 'Foto', 'type' => 'image' ],
+        	[ 'name' => 'name', 'label' => 'Nome' ],
+        	[ 'name' => 'email', 'label' => 'E-mail', 'type' => 'email' ],
+        	[ 'name' => 'phone_number', 'label' => 'Telefone' ],
+        	[ 'name' => 'profile', 'label' => 'Perfil' ],
+        	[ 'name' => 'course', 'label' => 'Curso' ],
+        	[ 'name' => 'location', 'label' => 'Bairro' ],
+        	[ 'name' => 'id_ufrj', 'label' => 'ID UFRJ' ],
+        	[ 'name' => 'token', 'label' => 'Chave', 'type' => 'password' ],
+        	[ 'name' => 'car_owner', 'label' => 'Possui carro', 'type' => 'checkbox' ],
+        	[ 'name' => 'car_model', 'label' => 'Modelo do carro' ],
+        	[ 'name' => 'car_plate', 'label' => 'Placa do carro' ],
+        	[ 'name' => 'car_color', 'label' => 'Cor do carro' ],
 		]);
     }
 
@@ -39,6 +52,6 @@ class UserController extends CrudController {
 	public function showDetailsRow($id)
 	{
 		$user = User::find($id);
-		return $user->name;
+		return view('vendor.backpack.crud.inc.user', ['u' => $user]);
 	}
 }
