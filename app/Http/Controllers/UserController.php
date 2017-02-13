@@ -1,5 +1,4 @@
 <?php
-
 namespace Caronae\Http\Controllers;
 
 use Caronae\ExcelExport\ExcelExporter;
@@ -7,6 +6,7 @@ use Caronae\Http\Requests;
 use Caronae\Models\User;
 use Caronae\Exception\SigaException;
 use Caronae\Services\SigaService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -81,7 +81,11 @@ class UserController extends Controller
 
     public function getOfferedRides(User $user, Request $request)
     {
-        $rides = $user->rides()->where('date', '>', 'NOW()')->where(['done' => false, 'status' => 'driver'])->get();
+        $rides = $user->rides()
+            ->where('date', '>=', Carbon::now())
+            ->where(['done' => false, 'status' => 'driver'])
+            ->get();
+        
         return ['rides' => $rides];
     }
 

@@ -45,11 +45,10 @@ class RideController extends Controller
     public function index()
     {
         $limit = 50;
-        $minDate = Carbon::now('America/Sao_Paulo');
 
         $rides = Ride::leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
             ->select('rides.*')
-            ->where('rides.date', '>=', $minDate)
+            ->where('rides.date', '>=', Carbon::now())
             ->where('rides.done', 'false')
             ->whereIn('ride_user.status', ['pending','accepted','driver'])
             ->groupBy('rides.id')
