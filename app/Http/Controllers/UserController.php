@@ -85,6 +85,11 @@ class UserController extends Controller
             ->where('date', '>=', Carbon::now())
             ->where(['done' => false, 'status' => 'driver'])
             ->get();
+
+        $rides = $rides->map(function($ride) {
+            $ride->riders = $ride->riders();
+            return $ride;
+        });
         
         return ['rides' => $rides];
     }

@@ -176,13 +176,14 @@ class UserTest extends TestCase
     public function testGetOfferedRides()
     {
         // create user with some rides
-        $user = factory(User::class)->create();
-        $user = $user->fresh();
+        $user = factory(User::class)->create()->fresh();
 
         // add unfinished rides, which should be returned
         $rideIds = [];
         $ride = factory(Ride::class, 'next')->create(['done' => false])->fresh();
-        $user->rides()->attach($ride, ['status' => 'driver']);
+        $ride->users()->attach($user, ['status' => 'driver']);
+        $rider = factory(User::class)->create()->fresh();
+        $ride->users()->attach($rider, ['status' => 'accepted']);
 
         // add finished ride, which shouldn't be returned
         $rideFinished = factory(Ride::class)->create(['done' => true]);
@@ -217,7 +218,25 @@ class UserTest extends TestCase
                     'description' => $ride->description,
                     'week_days' => $ride->week_days,
                     'repeats_until' => $ride->repeats_until,
-                    'done' => $ride->done
+                    'done' => $ride->done,
+                    'riders' => [
+                        [
+                            'id' => $rider->id,
+                            'name' => $rider->name,
+                            'profile' => $rider->profile,
+                            'course' => $rider->course,
+                            'phone_number' => $rider->phone_number,
+                            'email' => $rider->email,
+                            'car_owner' => $rider->car_owner,
+                            'car_model' => $rider->car_model,
+                            'car_color' => $rider->car_color,
+                            'car_plate' => $rider->car_plate,
+                            'created_at' => $rider->created_at->format('Y-m-d H:i:s'),
+                            'location' => $rider->location,
+                            'face_id' => $rider->face_id,
+                            'profile_pic_url' => $rider->profile_pic_url
+                        ]
+                    ]
                 ]
             ]
         ]);
