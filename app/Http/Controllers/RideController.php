@@ -597,6 +597,7 @@ class RideController extends Controller
     protected function weekDaysStringToRecurrString($weekDaysString)
     {
         $weekDaysTable = [
+            '0' => 'SU',
             '1' => 'MO',
             '2' => 'TU',
             '3' => 'WE',
