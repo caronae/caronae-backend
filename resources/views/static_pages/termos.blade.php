@@ -1,11 +1,12 @@
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
   <title>Termos de Uso</title>
   <link rel="stylesheet" type="text/css" href="{{ asset("css/normalize.css") }}">
   <link rel="stylesheet" type="text/css" href="{{ asset("css/webflow.css") }}">
   <link rel="stylesheet" type="text/css" href="{{ asset("css/caronae.webflow.css") }}">
 </head>
-<body class="landing-page" style="margin:0;padding:30">
+<body class="landing-page">
     <div class="w-row lines-container">
       <div class="w-col w-col-2 w-col-small-2 w-col-tiny-2 header-line brown"></div>
       <div class="w-col w-col-2 w-col-small-2 w-col-tiny-2 header-line blue"></div>
@@ -25,7 +26,7 @@
     <br><br>
     Reservamo-nos o direito, por nosso exclusivo critério, de mudar, modificar, excluir ou adicionar qualquer parte das políticas e termos e condições de uso do sistema sem que se faça necessário qualquer notificação. Se fizermos mudanças nos Termos e Condições de Uso indicaremos no topo desta página a data da última revisão. O usuário que continuar a acessar o sistema ou continuar utilizando de suas facilidades após qualquer modificação de política constitui na sua aceitação aos novos Termos e Condições de uso do sistema Caronaê UFRJ. Se o usuário não concordar em aceitar isso ou qualquer futura alteração deste Termos e Condições de Uso, o mesmo não deve acessar ou usar o sistema Caronaê UFRJ. É sua responsabilidade checar regularmente se houve mudanças e revisar as mudanças dos Termos e Condições de uso do sistema Caronaê UFRJ.
     <br><br>
-    <center><h3><a href="https://docs.google.com/viewerng/viewer?url=https://caronae.ufrj.br/termos_de_uso.pdf">Clique aqui para ler na íntegra.</a></h3><br><br><br></center>
+    <center><h3><a href="https://docs.google.com/viewerng/viewer?url=https://caronae.ufrj.br/termos_de_uso.pdf">Clique aqui para ler na íntegra</a></h3><br><br><br></center>
     </div>
 </body>
 </html>

@@ -1,11 +1,12 @@
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
   <title>Sobre o Caronaê</title>
   <link rel="stylesheet" type="text/css" href="{{ asset("css/normalize.css") }}">
   <link rel="stylesheet" type="text/css" href="{{ asset("css/webflow.css") }}">
   <link rel="stylesheet" type="text/css" href="{{ asset("css/caronae.webflow.css") }}">
 </head>
-<body class="landing-page" style="margin:0;padding:30">
+<body class="landing-page">
     <div class="w-row lines-container">
       <div class="w-col w-col-2 w-col-small-2 w-col-tiny-2 header-line brown"></div>
       <div class="w-col w-col-2 w-col-small-2 w-col-tiny-2 header-line blue"></div>
