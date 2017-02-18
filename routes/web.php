@@ -31,3 +31,14 @@ $this->post('password/reset', 'Auth\ResetPasswordController@reset');
 Route::get('/', function() {
     return redirect()->route('home');
 });
+
+
+// Static pages
+
+Route::get('static_pages/sobre.html', function(){
+    return view('static_pages/sobre');
+});
+
+Route::get('static_pages/termos.html', function(){
+    return view('static_pages/termos');
+});
