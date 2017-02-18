@@ -5,7 +5,7 @@
   <link rel="stylesheet" type="text/css" href="{{ asset("css/webflow.css") }}">
   <link rel="stylesheet" type="text/css" href="{{ asset("css/caronae.webflow.css") }}">
 </head>
-<body class="landing-page">
+<body class="landing-page" style="margin:0;padding:30">
     <div class="w-row lines-container">
       <div class="w-col w-col-2 w-col-small-2 w-col-tiny-2 header-line brown"></div>
       <div class="w-col w-col-2 w-col-small-2 w-col-tiny-2 header-line blue"></div>
@@ -35,3 +35,4 @@
     </div>
 </body>
 </html>
+
