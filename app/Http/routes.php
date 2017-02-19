@@ -45,6 +45,9 @@ Route::get('static_pages/sobre.html', function(){
 Route::get('static_pages/termos.html', function(){
     return view('static_pages/termos');
 });
+Route::get('static_pages/faq.html', function(){
+    return view('static_pages/faq');
+});
 
 Route::group(['middleware' => 'csrf'], function(){
 
