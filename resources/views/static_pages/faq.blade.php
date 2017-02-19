@@ -1,7 +1,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <title>Termos de Uso</title>
+  <title>FAQ</title>
   <link rel="stylesheet" type="text/css" href="{{ asset("css/normalize.css") }}">
   <link rel="stylesheet" type="text/css" href="{{ asset("css/webflow.css") }}">
   <link rel="stylesheet" type="text/css" href="{{ asset("css/caronae.webflow.css") }}">
@@ -96,5 +96,14 @@
       </li>
     </ul>
   </div>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script type="text/javascript" src="js/webflow.js"></script>
+  <script>
+    $( document ).ready(function() {
+        $('.pergunta-title').click(function(){
+            $(this).parent().find('.resposta').slideToggle(300);
+        });
+    });
+  </script>
 </body>
 </html>
