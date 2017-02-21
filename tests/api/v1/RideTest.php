@@ -592,11 +592,7 @@ class RideTest extends TestCase
             return [
                 'id' => $message->id,
                 'body' => $message->body,
-                'user' => [
-                    'id' => $message->user->id,
-                    'name' => $message->user->name,
-                    'profile_pic_url' => $message->user->profile_pic_url
-                ],
+                'user' => $message->user->toArray(),
                 'date' => $message->date->toDateTimeString(),
             ];
         })->all();

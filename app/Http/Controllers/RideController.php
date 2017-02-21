@@ -525,15 +525,10 @@ class RideController extends Controller
         }
 
         $messages = $messages->map(function ($message) {
-            $user = $message->user;
             return [
                 'id' => $message->id,
                 'body' => $message->body,
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'profile_pic_url' => $user->profile_pic_url
-                ],
+                'user' => $message->user,
                 'date' => $message->date->toDateTimeString()
             ];
         });
