@@ -24,7 +24,9 @@ Route::put('user/saveFaceId', 'UserController@saveFaceId');
 Route::put('user/saveProfilePicUrl', 'UserController@saveProfilePicUrl');
 Route::get('user/{id}/mutualFriends', 'UserController@getMutualFriends');
 Route::get('user/intranetPhotoUrl', 'UserController@getIntranetPhotoUrl');
-Route::get('user/intranetPhoto/{hash}', 'UserController@loadIntranetPhoto');
+Route::get('user/intranetPhoto/{hash}', function($hash) {
+	return redirect()->away('https://sigadocker.ufrj.br:8090/' . $hash, 308);
+});
 
 
 // Ride
