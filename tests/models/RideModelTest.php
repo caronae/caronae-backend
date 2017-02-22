@@ -4,7 +4,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use Caronae\Models\User;
 use Caronae\Models\Ride;
-use Caronae\Services\PushNotificationService;
 
 class RideModelTest extends TestCase
 {

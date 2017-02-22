@@ -71,8 +71,8 @@ class User extends Model
         if (empty($this->app_platform) || empty($this->app_version)) return true;
 
         return (
-            ($this->app_platform == 'iOS' && preg_match('/1\.0(\.[0-2])?$/', $this->app_version))
-            || ($this->app_platform == 'Android' && preg_match('/1\.0(\.[0-2])?$/', $this->app_version))
+            ($this->app_platform == 'iOS' && preg_match('/^1\.0(\.[0-9]+)?$/', $this->app_version))
+            || ($this->app_platform == 'Android' && preg_match('/^1\.0(\.[0-9]+)?$/', $this->app_version))
         );
     }
 }
