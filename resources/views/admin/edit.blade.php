@@ -1,7 +1,7 @@
 @extends('templates.admin')
 
 @section('conteudo')
-    <form action="{{action('AdminController@postEdit')}}" method='post'>
+    <form action="{{action('Admin\AdminController@postEdit')}}" method='post'>
         {!! csrf_field() !!}
         <div class="panel panel-default">
             <div class="panel-heading">

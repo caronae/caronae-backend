@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Requests;
+namespace Caronae\Http\Requests;
 
-use App\Http\Requests\Request;
+use Caronae\Http\Requests\Request;
 
 class AdminEditRequest extends Request
 {

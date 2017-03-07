@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace Caronae\Events;
 
 abstract class Event
 {

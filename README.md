@@ -1,29 +1,121 @@
-## Sobre o projeto
+# Caronaê - Backend
+
+[![CircleCI](https://circleci.com/gh/macecchi/caronae-backend/tree/develop.svg?style=svg&circle-token=9c47c2e35ff1feee8355437fe8c1d1ae7fc326d3)](https://circleci.com/gh/macecchi/caronae-backend/tree/develop)
+
+Este é o backend no Caronaê, baseado no framework Laravel, em PHP. O backend é
+composto da API mobile e da área administrativa.
 
 Abaixo estão algumas informações importantes sobre o projeto,
 que devem ser lidas para que modificações no projeto sejam
 mais fáceis.
 
-# Bibliotecas usadas
 
-Abaixo seguem as bibliotecas mais importantes usadas nesse projeto:
+## Instalação
 
-- Bootstrap 3 (http://getbootstrap.com/)
-  Para o front-end da parte administrativa.
+Para instalar o ambiente de desenvolvimento, você precisa ter configurado na 
+sua máquina:
 
-- Laravel 5.1 LTS (https://laravel.com/docs/5.1)
-  Framework usada no back-end.
+- PHP 5.6 ou superior
+- PostgreSQL
 
-- Datatables 1.10.10 (https://datatables.net/manual/index)
-  Para implementar todas as tabelas da área administrativa.
+Comece fazendo o **clone** deste repositório para seu computador e selecionando 
+o diretório dele. Todos os comandos abaixo serão executados dentro desse diretório.
 
-- Laravel Excel 2.1 (http://www.maatwebsite.nl/laravel-excel/docs)
-  Usada para a exportação das tabelas nos formatos ".xlsx" e ".csv".
+Verifique que o **PostgreSQL** está sendo executado e **crie uma tabela e um 
+usuário** para serem usados pelo backend.
 
-- JWT 0.5 (https://github.com/tymondesigns/jwt-auth)
-  Usada para realizar autenticação pelos apps mobile.
+```
+createuser caronae
+createdb -O caronae -E utf8 caronae
+```
 
-# Adicionando colunas novas na área administrativa
+Em seguida, copie o arquivo `.env.example` para `.env` e atualize os respectivos 
+campos com as configurações de conexão com o banco. Caso você tenha usado os dados
+acima para configurar o banco, basta copiar o arquivo.
+
+```
+cp .env.example .env
+```
+
+OBS: Caso vá testar notificações, configure também no arquivo `.env` a constante 
+`FCM_API_KEY`, que é a chave de acesso ao projeto do Firebase.
+
+Configure as dependências do projeto usando o **[Composer](https://getcomposer.org)**:
+
+```
+composer install
+```
+
+O comando acima já está configurado também para inicializar o banco de dados, 
+que está versionado na forma de migrations. No entando, caso precise executar as
+migrations manualmente, execute o *migrate* usando o **Artisan**:
+
+```
+php artisan migrate
+```
+
+É necessário gerar uma chave de segurança, que será usada para salvar as 
+informações sensíveis no banco de dados, como senhas. Para isso, execute o seguinte
+comando do Artisan:
+
+```
+php artisan key:generate
+```
+
+Agora basta executar o seguinte comando para iniciar o servidor:
+
+```
+php artisan serve
+```
+
+Pronto! Você já deve conseguir acessar o projeto localmente através do endereço
+mostrado ao executar o comando acima.
+
+
+### Populando o banco de dados
+
+Apesar de o servidor já estar funcionando, o banco de dados encontra-se inicialmente
+vazio, ou seja, não há sequer um administrador cadastrado para acessar a área 
+administrativa.
+
+Para popular o banco, execute o comando abaixo, que irá criar um administrador padrão,
+cadastrar as configurações dos bairros e criar alguns usuários e caronas de exemplo:
+
+```
+php artisan db:seed
+```
+
+Pronto! Agora você já pode fazer login na área administrativa utilizando o usuário
+padrão.
+
+| E-mail    | Senha    |
+|-----------|----------|
+| 1@1.com   | 1234     |
+
+
+## Testes
+
+Parte do backend possui testes que garantem o correto funcionamento de sistema, 
+que ficam dentro da pasta **tests**.
+
+Para executá-los, basta utilizar o **PHPUnit**, que vem instalado como uma das dependências do projeto. Basta executar o comando `vendor/bin/phpunit`.
+
+
+## Bibliotecas usadas
+
+Abaixo seguem algumas das bibliotecas usadas neste projeto:
+
+- [Laravel 5.3](https://laravel.com/docs/5.3):
+  Framework usada no backend
+
+- [Datatables](https://datatables.net/manual/index):
+  Para implementar todas as tabelas da área administrativa
+
+- [Laravel Excel](http://www.maatwebsite.nl/laravel-excel/docs):
+  Usada para a exportação das tabelas nos formatos ".xlsx" e ".csv"
+
+
+## Adicionando colunas novas na área administrativa
 
 O Datatables cria a tabela baseado em um request AJAX feito ao sistema.
 Veja as rotas cujas URLs terminam em ".json" para saber que rota corresponde
@@ -37,15 +129,18 @@ Ver: "views/resources/users/index.blade.php" para um exemplo.
 Se quer que a nova coluna seja exportada via excel, olhe as rotas que terminam
 com ".excel". Veja o metodo "indexExcel" na classe "UserController" para um exemplo.
 
-# Banco de Dados
 
-/!\ Atenção /!\
+## Banco de Dados
+
+**Atenção!**
 
 Não altere o banco diretamente. Use o sistema de migrations presente
-na Laravel para realizar mudanças. Assim, elas ficam documentadas e
+no Laravel para realizar mudanças. Assim, elas ficam documentadas e
 podem ser facilmente replicadas no caso de fazer deploy em outros servidores.
+
 Cuidado também ao modificar o banco via migrations e apagar os dados já presentes
-acidentalmente. Sempre faça um backup antes.
+acidentalmente. Sempre faça um backup antes e verifique antes de comittar 
+qualquer modificação se não está sobrescrevendo outras migrations.
 
 --
 

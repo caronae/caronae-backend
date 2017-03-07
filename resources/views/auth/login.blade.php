@@ -25,7 +25,7 @@
         <button type="submit" class="btn">Login</button>
     </form>
     <p class="text-center">
-        <a href="{{ action('Auth\PasswordController@getEmail') }}">Esqueci minha senha</a>
+        <a href="{{ action('Auth\ForgotPasswordController@showLinkRequestForm') }}">Esqueci minha senha</a>
     </p>
 </div>
 @endsection

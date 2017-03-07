@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\ExcelExport;
+namespace Caronae\ExcelExport;
 
 use Maatwebsite\Excel\Classes\PHPExcel;
 use Maatwebsite\Excel\Excel;

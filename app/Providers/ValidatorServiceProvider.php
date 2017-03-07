@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Providers;
+namespace Caronae\Providers;
 
-use App\Validators\AfterOrEqualsValidator;
+use Caronae\Validators\AfterOrEqualsValidator;
 use Illuminate\Support\ServiceProvider;
 use Validator;
 

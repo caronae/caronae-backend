@@ -75,6 +75,17 @@ return [
             'schema'   => 'public',
         ],
 
+        'pgsql_testing' => [
+            'driver'   => 'pgsql',
+            'host'     => env('TESTING_DB_HOST', 'localhost'),
+            'database' => env('TESTING_DB_DATABASE', 'forge'),
+            'username' => env('TESTING_DB_USERNAME', 'forge'),
+            'password' => env('TESTING_DB_PASSWORD', ''),
+            'charset'  => 'utf8',
+            'prefix'   => '',
+            'schema'   => 'public',
+        ],
+
         'sqlsrv' => [
             'driver'   => 'sqlsrv',
             'host'     => env('DB_HOST', 'localhost'),
@@ -113,11 +124,14 @@ return [
 
     'redis' => [
 
+        'client' => 'predis',
+
         'cluster' => false,
 
         'default' => [
-            'host'     => '127.0.0.1',
-            'port'     => 6379,
+            'host' => env('REDIS_HOST', 'localhost'),
+            'password' => env('REDIS_PASSWORD', null),
+            'port' => env('REDIS_PORT', 6379),
             'database' => 0,
         ],
 

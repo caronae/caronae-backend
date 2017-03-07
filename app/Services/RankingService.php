@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Caronae\Services;
 
 use Carbon\Carbon;
 use DB;
@@ -67,7 +67,7 @@ class RankingService extends Service
                 $join->on('rides.neighborhood', '=', 'neighborhoods.name');
             })
 
-            ->where('rides.mydate', '>=', $this->whenUserBecameADriver())
+            ->where('rides.date', '>=', $this->whenUserBecameADriver())
 
             ->where('ride_user.status', '=', 'accepted')
 

@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
-<head data-url="{{ url() }}" data-token="{{ csrf_token() }}">
+<head data-url="{{ url('/') }}" data-token="{{ csrf_token() }}">
 
-    <title>Area Administrativa | Caronaê</title>
+    <title>Área Administrativa | Caronaê</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
@@ -22,14 +22,14 @@
 <nav class="navbar navbar-default">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="{{action('AdminController@getIndex')}}">
+            <a class="navbar-brand" href="{{action('Admin\AdminController@getIndex')}}">
                 <img alt="Brand" src="{{ asset('images/logo_caronae.png') }}">
             </a>
             <p class="navbar-text">Caronaê</p>
         </div>
         <ul class="nav navbar-nav">
             <li>
-                <a href="{{ action('UserController@index') }}">
+                <a href="{{ action('Admin\UserController@index') }}">
                     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                     Usuários
                 </a>
@@ -37,50 +37,50 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
-                    Rankings de Usuarios
+                    Rankings de Usuários
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="{{ action('RankingController@betterFeedback') }}">
+                        <a href="{{ action('Admin\RankingController@betterFeedback') }}">
                             Motoristas melhor avaliados
                         </a>
                     </li>
                     <li>
-                        <a href="{{ action('RankingController@greaterRiders') }}">
+                        <a href="{{ action('Admin\RankingController@greaterRiders') }}">
                             Caronistas que pegam mais caronas
                         </a>
                     </li>
                     <li>
-                        <a href="{{ action('RankingController@greaterDriversRiders') }}">
+                        <a href="{{ action('Admin\RankingController@greaterDriversRiders') }}">
                             Motoristas que pegam mais caronas
                         </a>
                     </li>
                     <li>
-                        <a href="{{ action('RankingController@greaterAverageOccupancy') }}">
+                        <a href="{{ action('Admin\RankingController@greaterAverageOccupancy') }}">
                             Motoristas com maior ocupação média
                         </a>
                     </li>
                 </ul>
             </li>
             <li>
-                <a href="{{ action('RideController@index') }}">
+                <a href="{{ action('Admin\RideController@index') }}">
                     <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
                     Caronas
                 </a>
             </li>
             <li>
-                <a href="{{ action('CarbonTaxController@carbonTax') }}">
+                <a href="{{ action('Admin\CarbonTaxController@carbonTax') }}">
                     <span class="glyphicon glyphicon-leaf" aria-hidden="true"></span>
                     Taxa de Carbono
                 </a>
             </li>
         </ul>
-        <a href="{{action('Auth\AuthController@getLogout')}}" class="navbar-text navbar-right">
+        <a href="{{action('Auth\LoginController@logout')}}" class="navbar-text navbar-right">
             <span class="glyphicon glyphicon-log-out"></span>
             Logout
         </a>
-        <a href="{{action('AdminController@getEdit')}}" class="navbar-text navbar-right">
+        <a href="{{action('Admin\AdminController@getEdit')}}" class="navbar-text navbar-right">
             <span class="glyphicon glyphicon-pencil"></span>
             Editar
         </a>

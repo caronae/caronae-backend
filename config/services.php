@@ -30,7 +30,7 @@ return [
     ],
 
     'stripe' => [
-        'model'  => App\User::class,
+        'model'  => Caronae\Models\User::class,
         'key'    => '',
         'secret' => '',
     ],

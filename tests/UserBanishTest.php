@@ -1,10 +1,10 @@
 <?php
 
-use App\Ride;
-use App\RideUser;
+use Caronae\Models\Ride;
+use Caronae\Models\RideUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use App\User;
+use Caronae\Models\User;
 
 class UserBanishTest extends TestCase
 {
@@ -15,13 +15,9 @@ class UserBanishTest extends TestCase
      */
     public function cleanDatabase()
     {
-        $this->beginDatabaseTransaction();
-
         DB::table('ride_user')->delete();
         DB::table('users')->delete();
         DB::table('rides')->delete();
-
-        Model::unguard();
     }
 
     public function createRidesAsCaronista($user, $rideAttrs){

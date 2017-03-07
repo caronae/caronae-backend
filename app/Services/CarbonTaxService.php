@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Caronae\Services;
 
 use DB;
 
@@ -14,10 +14,8 @@ class CarbonTaxService extends Service
                 $join->on('rides.neighborhood', '=', 'neighborhoods.name');
             })
 
-            ->where('rides.mydate', '>=', $this->whenUserBecameADriver())
-
+            ->where('rides.date', '>=', $this->whenUserBecameADriver())
             ->where('ride_user.status', '=', 'accepted')
-
             ->select(
                 // 131 é um valor mágico. É a taxa media de carbono emitido por um carro no Brasil
                 DB::raw('SUM(neighborhoods.distance * 131) as carbono_economizado')

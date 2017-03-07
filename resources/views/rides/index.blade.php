@@ -14,10 +14,10 @@
             <th style="width: 30px">Hora</th>
             <th>Origem</th>
             <th>Destino</th>
-            <th style="width: 60px">Distancia</th>
-            <th style="width: 60px">Distancia Total</th>
+            <th style="width: 60px">Distância</th>
+            <th style="width: 60px">Distância Total</th>
             <th style="width: 60px">Total de Caronas</th>
-            <th style="width: 60px">Distancia Média</th>
+            <th style="width: 60px">Distância Média</th>
         </tr>
         </thead>
     </table>

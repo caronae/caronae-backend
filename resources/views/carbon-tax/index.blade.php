@@ -9,7 +9,7 @@
 
             @include('includes.period-search-form', [
                 'formMethod' => 'get',
-                'formAction' => action("CarbonTaxController@carbonTax"),
+                'formAction' => action("Admin\CarbonTaxController@carbonTax"),
                 'defaultStart' => old('start', $start),
                 'defaultEnd' => old('end', $end)
             ])

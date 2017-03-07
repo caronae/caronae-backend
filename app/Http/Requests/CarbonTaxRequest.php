@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace Caronae\Http\Requests;
 
 class CarbonTaxRequest extends Request
 {
