@@ -12,7 +12,8 @@
         "maatwebsite/excel": "~2.1.0",
         "simshaun/recurr": "^1.2",
         "facebook/graph-sdk": "^5.4",
-        "predis/predis": "^1.1"
+        "predis/predis": "^1.1",
+        "graylog2/gelf-php": "^1.5"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -26,7 +27,8 @@
             "database"
         ],
         "psr-4": {
-            "Caronae\\": "app/"
+            "Caronae\\": "app/",
+            "Bootstrap\\": "bootstrap/"
         }
     },
     "autoload-dev": {
