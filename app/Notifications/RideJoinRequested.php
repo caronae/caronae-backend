@@ -48,9 +48,10 @@ class RideJoinRequested extends Notification implements ShouldQueue
     {
         // TODO: Include the requester's name in the notification
         return [
-            'message' => 'Sua carona recebeu uma solicitação',
-            'msgType' => 'joinRequest',
-            'rideId'  => $this->ride->id
+            'message'  => 'Sua carona recebeu uma solicitação',
+            'msgType'  => 'joinRequest',
+            'rideId'   => $this->ride->id,
+            'senderId' => $this->requester->id
         ];
     }
 

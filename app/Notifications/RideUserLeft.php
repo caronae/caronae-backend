@@ -48,9 +48,10 @@ class RideUserLeft extends Notification implements ShouldQueue
     {
         // TODO: Include the rider's name in the notification
         return [
-            'message' => 'Um caronista desistiu de sua carona',
-            'msgType' => 'quitter',
-            'rideId'  => $this->ride->id
+            'message'  => 'Um caronista desistiu de sua carona',
+            'msgType'  => 'quitter',
+            'rideId'   => $this->ride->id,
+            'senderId' => $this->user->id
         ];
     }
 
