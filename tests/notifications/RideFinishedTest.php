@@ -9,21 +9,22 @@ use Caronae\Models\Ride;
 
 class RideFinishedTest extends TestCase
 {
-	protected $ride;
+	protected $notification;
 
-	public function setUp() {
-        $this->ride = Mockery::mock(Ride::class);
-    	$this->ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
-	}
-
-	public function testPushNotificationArrayShouldContainAllFields()
+	public function setUp()
     {
-    	$notification = new RideFinished($this->ride);
+        $ride = Mockery::mock(Ride::class);
+    	$ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
+    	$this->notification = new RideFinished($ride);
+    }
+
+    public function testPushNotificationArrayShouldContainAllFields()
+    {
 
         $this->assertEquals([
             'message' => 'Um motorista concluiu uma carona ativa sua',
             'msgType' => 'finished',
             'rideId'   => 1
-        ], $notification->toPush(Mockery::mock(User::class)));
+        ], $this->notification->toPush(Mockery::mock(User::class)));
     }
 }

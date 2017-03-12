@@ -11,9 +11,10 @@ use Caronae\Models\Message;
 
 class RideMessageReceivedTest extends TestCase
 {
-	protected $message;
+	protected $notification;
 
-	public function setUp() {
+	public function setUp()
+    {
         $ride = Mockery::mock(Ride::class);
     	$ride->shouldReceive('getAttribute')->with('title')->andReturn('ride title');
 
@@ -21,23 +22,23 @@ class RideMessageReceivedTest extends TestCase
     	$user->shouldReceive('getAttribute')->with('id')->andReturn(2);
     	$user->shouldReceive('getAttribute')->with('name')->andReturn('Foo');
 
-    	$this->message = Mockery::mock(Message::class);
-    	$this->message->shouldReceive('getAttribute')->with('user')->andReturn($user);
-    	$this->message->shouldReceive('getAttribute')->with('ride')->andReturn($ride);
-    	$this->message->shouldReceive('getAttribute')->with('ride_id')->andReturn(1);
-    	$this->message->shouldReceive('getAttribute')->with('body')->andReturn('bar');
+    	$message = Mockery::mock(Message::class);
+    	$message->shouldReceive('getAttribute')->with('user')->andReturn($user);
+    	$message->shouldReceive('getAttribute')->with('ride')->andReturn($ride);
+    	$message->shouldReceive('getAttribute')->with('ride_id')->andReturn(1);
+    	$message->shouldReceive('getAttribute')->with('body')->andReturn('bar');
+
+        $this->notification = new RideMessageReceived($message);
 	}
 
 	public function testPushNotificationArrayShouldContainAllFields()
     {
-    	$notification = new RideMessageReceived($this->message);
-
         $this->assertEquals([
             'title' => 'ride title',
             'message' => 'Foo: bar',
             'rideId' => 1,
             'senderId' => 2,
             'msgType' => 'chat'
-        ], $notification->toPush(Mockery::mock(User::class)));
+        ], $this->notification->toPush(Mockery::mock(User::class)));
     }
 }

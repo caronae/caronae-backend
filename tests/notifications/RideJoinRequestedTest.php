@@ -10,19 +10,24 @@ use Caronae\Models\User;
 
 class RideJoinRequestedTest extends TestCase
 {
+    protected $notification;
+
+    public function setUp()
+    {
+        $ride = Mockery::mock(Ride::class);
+        $ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $user = Mockery::mock(User::class);
+        $user->shouldReceive('getAttribute')->with('id')->andReturn(2);
+        $this->notification = new RideJoinRequested($ride, $user);
+    }
+
     public function testPushNotificationArrayShouldContainAllFields()
     {
-    	$ride = Mockery::mock(Ride::class);
-    	$ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
-    	$user = Mockery::mock(User::class);
-    	$user->shouldReceive('getAttribute')->with('id')->andReturn(2);
-    	$notification = new RideJoinRequested($ride, $user);
-
         $this->assertEquals([
     		'message'  => 'Sua carona recebeu uma solicitação',
             'msgType'  => 'joinRequest',
             'rideId'   => 1,
             'senderId' => 2
-        ], $notification->toPush(Mockery::mock(User::class)));
+        ], $this->notification->toPush(Mockery::mock(User::class)));
     }
 }

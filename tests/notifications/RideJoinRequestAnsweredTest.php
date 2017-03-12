@@ -12,7 +12,8 @@ class RideJoinRequestAnsweredTest extends TestCase
 {
 	private $ride;
 
-	public function setUp() {
+	public function setUp()
+    {
         $this->ride = Mockery::mock(Ride::class);
     	$this->ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
 

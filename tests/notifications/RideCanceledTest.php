@@ -9,21 +9,21 @@ use Caronae\Models\Ride;
 
 class RideCanceledTest extends TestCase
 {
-	protected $ride;
+	protected $notification;
 
-	public function setUp() {
-        $this->ride = Mockery::mock(Ride::class);
-    	$this->ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
-	}
-
-	public function testPushNotificationArrayShouldContainAllFields()
+	public function setUp()
     {
-    	$notification = new RideCanceled($this->ride);
+        $ride = Mockery::mock(Ride::class);
+    	$ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
+    	$this->notification = new RideCanceled($ride);
+    }
 
+    public function testPushNotificationArrayShouldContainAllFields()
+    {
         $this->assertEquals([
             'message' => 'Um motorista cancelou uma carona ativa sua',
             'msgType' => 'cancelled',
             'rideId'   => 1
-        ], $notification->toPush(Mockery::mock(User::class)));
+        ], $this->notification->toPush(Mockery::mock(User::class)));
     }
 }

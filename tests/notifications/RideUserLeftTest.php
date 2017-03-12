@@ -10,26 +10,26 @@ use Caronae\Models\User;
 
 class RideUserLeftTest extends TestCase
 {
-	protected $ride;
-	protected $user;
+	protected $notification;
 
-	public function setUp() {
-        $this->ride = Mockery::mock(Ride::class);
-    	$this->ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
+	public function setUp()
+    {
+        $ride = Mockery::mock(Ride::class);
+    	$ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
 
-    	$this->user = Mockery::mock(User::class);
-    	$this->user->shouldReceive('getAttribute')->with('id')->andReturn(2);
+    	$user = Mockery::mock(User::class);
+    	$user->shouldReceive('getAttribute')->with('id')->andReturn(2);
+
+        $this->notification = new RideUserLeft($ride, $user);
 	}
 
 	public function testPushNotificationArrayShouldContainAllFields()
     {
-    	$notification = new RideUserLeft($this->ride, $this->user);
-
         $this->assertEquals([
             'message'  => 'Um caronista desistiu de sua carona',
             'msgType'  => 'quitter',
             'rideId'   => 1,
             'senderId' => 2
-        ], $notification->toPush(Mockery::mock(User::class)));
+        ], $this->notification->toPush(Mockery::mock(User::class)));
     }
 }
