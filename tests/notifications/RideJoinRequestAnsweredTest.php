@@ -25,8 +25,10 @@ class RideJoinRequestAnsweredTest extends TestCase
     public function testPushNotificationArrayShouldContainAllFields_whenAccepted()
     {
     	$notification = new RideJoinRequestAnswered($this->ride, true);
+        $notification->id = uniqid();
 
-        $this->assertEquals([
+        $this->assertSame([
+            'id'       => $notification->id,
             'message'  => 'Você foi aceito em uma carona =)',
             'msgType'  => 'accepted',
             'rideId'   => 1,
@@ -37,8 +39,10 @@ class RideJoinRequestAnsweredTest extends TestCase
     public function testPushNotificationArrayShouldContainAllFields_whenRejected()
     {
     	$notification = new RideJoinRequestAnswered($this->ride, false);
+        $notification->id = uniqid();
 
         $this->assertEquals([
+            'id'       => $notification->id,
             'message'  => 'Você foi recusado em uma carona =(',
             'msgType'  => 'refused',
             'rideId'   => 1,

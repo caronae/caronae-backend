@@ -44,11 +44,12 @@ class RideMessageReceived extends Notification implements ShouldQueue
     public function toPush($notifiable)
     {
         return [
-            'title' => $this->message->ride->title,
-            'message' => $this->message->user->name . ': ' . $this->message->body,
-            'rideId' => $this->message->ride_id,
+            'id'       => (string)$this->message->id,
+            'title'    => $this->message->ride->title,
+            'message'  => $this->message->user->name . ': ' . $this->message->body,
+            'rideId'   => $this->message->ride_id,
             'senderId' => $this->message->user->id,
-            'msgType' => 'chat'
+            'msgType'  => 'chat'
         ];
     }
 }

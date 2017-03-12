@@ -47,6 +47,7 @@ class RideJoinRequestAnswered extends Notification implements ShouldQueue
     public function toPush($notifiable)
     {
         return [
+            'id'       => $this->id,
             'message'  => $this->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(',
             'msgType'  => $this->accepted ? 'accepted' : 'refused',
             'rideId'   => $this->ride->id,

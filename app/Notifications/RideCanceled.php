@@ -46,6 +46,7 @@ class RideCanceled extends Notification implements ShouldQueue
     {
         // TODO: Include the driver's name in the notification
         return [
+            'id'      => $this->id,
             'message' => 'Um motorista cancelou uma carona ativa sua',
             'msgType' => 'cancelled',
             'rideId'  => $this->ride->id

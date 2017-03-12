@@ -21,11 +21,13 @@ class RideUserLeftTest extends TestCase
     	$user->shouldReceive('getAttribute')->with('id')->andReturn(2);
 
         $this->notification = new RideUserLeft($ride, $user);
+        $this->notification->id = uniqid();
 	}
 
 	public function testPushNotificationArrayShouldContainAllFields()
     {
-        $this->assertEquals([
+        $this->assertSame([
+            'id'       => $this->notification->id,
             'message'  => 'Um caronista desistiu de sua carona',
             'msgType'  => 'quitter',
             'rideId'   => 1,

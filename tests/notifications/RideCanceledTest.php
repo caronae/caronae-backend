@@ -16,14 +16,16 @@ class RideCanceledTest extends TestCase
         $ride = Mockery::mock(Ride::class);
     	$ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
     	$this->notification = new RideCanceled($ride);
+        $this->notification->id = uniqid();
     }
 
     public function testPushNotificationArrayShouldContainAllFields()
     {
-        $this->assertEquals([
+        $this->assertSame([
+            'id'      => $this->notification->id,
             'message' => 'Um motorista cancelou uma carona ativa sua',
             'msgType' => 'cancelled',
-            'rideId'   => 1
+            'rideId'  => 1
         ], $this->notification->toPush(Mockery::mock(User::class)));
     }
 }

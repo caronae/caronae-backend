@@ -46,6 +46,7 @@ class RideFinished extends Notification implements ShouldQueue
     {
         // TODO: Include the driver's name in the notification
         return [
+            'id'      => $this->id,
             'message' => 'Um motorista concluiu uma carona ativa sua',
             'msgType' => 'finished',
             'rideId'  => $this->ride->id

@@ -23,6 +23,7 @@ class RideMessageReceivedTest extends TestCase
     	$user->shouldReceive('getAttribute')->with('name')->andReturn('Foo');
 
     	$message = Mockery::mock(Message::class);
+        $message->shouldReceive('getAttribute')->with('id')->andReturn(123);
     	$message->shouldReceive('getAttribute')->with('user')->andReturn($user);
     	$message->shouldReceive('getAttribute')->with('ride')->andReturn($ride);
     	$message->shouldReceive('getAttribute')->with('ride_id')->andReturn(1);
@@ -33,7 +34,8 @@ class RideMessageReceivedTest extends TestCase
 
 	public function testPushNotificationArrayShouldContainAllFields()
     {
-        $this->assertEquals([
+        $this->assertSame([
+            'id' => '123',
             'title' => 'ride title',
             'message' => 'Foo: bar',
             'rideId' => 1,
