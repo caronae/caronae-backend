@@ -24,10 +24,11 @@ class RideController extends Controller
     public function __construct()
     {
         $this->middleware('api.v1.auth', ['only' => [
+            'index',
             'store',
             'validateDuplicate',
             'delete', 'deleteAllFromRoutine', 'deleteAllFromUser',
-            'listAll', 'listFiltered',
+            'listFiltered',
             'requestJoin',
             'getMyActiveRides',
             'leaveRide', 'finishRide',

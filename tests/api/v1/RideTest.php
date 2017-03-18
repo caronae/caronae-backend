@@ -115,6 +115,12 @@ class RideTest extends TestCase
         ]);
     }
 
+    public function testGetAllFailsWithoutToken()
+    {
+        $response = $this->json('GET', 'ride/all');
+        $response->assertResponseStatus(401);
+    }
+
     public function testSearch()
     {
         // TODO: test search with zone, search with neighborhood, search with/without center
