@@ -25,6 +25,7 @@ class RideController extends Controller
     {
         $this->middleware('api.v1.auth', ['only' => [
             'index',
+            'listAll',
             'store',
             'validateDuplicate',
             'delete', 'deleteAllFromRoutine', 'deleteAllFromUser',
@@ -45,6 +46,26 @@ class RideController extends Controller
 
     public function index()
     {
+        $limit = 20;
+        $rides = Ride::leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
+            ->select('rides.*')
+            ->where('rides.date', '>=', Carbon::now())
+            ->where('rides.done', 'false')
+            ->whereIn('ride_user.status', ['pending','accepted','driver'])
+            ->groupBy('rides.id')
+            ->having(DB::raw('count(ride_user.user_id)-1'), '<', DB::raw('rides.slots'))
+            ->orderBy('rides.date')
+            ->paginate($limit);
+
+        $rides->each(function ($ride) {
+            $ride->driver = $ride->driver();
+        });
+
+        return $rides;
+    }
+
+    public function listAll()
+    {
         $limit = 50;
 
         $rides = Ride::leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
@@ -59,7 +80,6 @@ class RideController extends Controller
 
         $results = [];
         foreach($rides as $ride) {
-            unset($ride->done);
             $ride->driver = $ride->driver();
             $results[] = $ride;
         }

@@ -13,7 +13,7 @@ class Ride extends Model
     use Notifiable;
     use SoftDeletes;
 
-    protected $hidden = ['pivot', 'created_at', 'deleted_at', 'updated_at', 'date'];
+    protected $hidden = ['pivot', 'created_at', 'deleted_at', 'updated_at', 'date', 'done'];
     protected $dates = ['date', 'created_at', 'updated_at', 'deleted_at'];
     protected $appends = ['mydate', 'mytime'];
 

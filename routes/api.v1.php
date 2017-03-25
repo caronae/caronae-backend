@@ -31,7 +31,8 @@ Route::get('user/intranetPhoto/{hash}', function($hash) {
 
 // Ride
 
-Route::get('ride/all', 'RideController@index');
+Route::get('ride/all', 'RideController@listAll');
+Route::get('ride', 'RideController@index');
 Route::post('ride', 'RideController@store');
 Route::delete('ride/{rideId}', 'RideController@delete');
 Route::delete('ride/allFromUser/{userId}/{going}', 'RideController@deleteAllFromUser');

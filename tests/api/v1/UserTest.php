@@ -107,8 +107,7 @@ class UserTest extends TestCase
                     'mydate' => $ride->date->format('Y-m-d'),
                     'description' => $ride->description,
                     'week_days' => $ride->week_days,
-                    'repeats_until' => $ride->repeats_until,
-                    'done' => $ride->done
+                    'repeats_until' => $ride->repeats_until
                 ]
             ]
         ]);
@@ -218,7 +217,6 @@ class UserTest extends TestCase
                     'description' => $ride->description,
                     'week_days' => $ride->week_days,
                     'repeats_until' => $ride->repeats_until,
-                    'done' => $ride->done,
                     'riders' => [
                         [
                             'id' => $rider->id,

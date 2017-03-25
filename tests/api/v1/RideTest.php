@@ -40,6 +40,77 @@ class RideTest extends TestCase
         $this->headers = ['token' => $this->user->token];
     }
 
+    public function testIndexShouldReturnNextRides()
+    {
+        $user = $this->user;
+        $rides = factory(Ride::class, 'next', 2)->create()->each(function($ride) use ($user) {
+            $ride->users()->attach($user, ['status' => 'driver']);
+            $rideIds[] = $ride->id;
+            $ride->fresh();
+            // $ride->driver = $ride-;
+        });
+
+        $rideOld = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00']);
+        $rideOld->users()->attach($user, ['status' => 'driver']);
+
+        $response = $this->json('GET', 'ride', [], $this->headers);
+        $response->assertResponseOk();
+
+        $driverArray = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'profile' => $user->profile,
+            'course' => $user->course,
+            'phone_number' => $user->phone_number,
+            'email' => $user->email,
+            'car_owner' => $user->car_owner,
+            'car_model' => $user->car_model,
+            'car_color' => $user->car_color,
+            'car_plate' => $user->car_plate,
+            'created_at' => $user->created_at->format('Y-m-d H:i:s'),
+            'location' => $user->location,
+            'face_id' => $user->face_id,
+            'profile_pic_url' => $user->profile_pic_url
+        ];
+
+        $response->seeJson(['data' => [
+            [
+                'id' => $rides[0]->id,
+                'myzone' => $rides[0]->myzone,
+                'neighborhood' => $rides[0]->neighborhood,
+                'going' => $rides[0]->going,
+                'place' => $rides[0]->place,
+                'route' => $rides[0]->route,
+                'routine_id' => $rides[0]->routine_id,
+                'hub' => $rides[0]->hub,
+                'slots' => $rides[0]->slots,
+                'mydate' => $rides[0]->date->format('Y-m-d'),
+                'mytime' => $rides[0]->date->format('H:i:s'),
+                'description' => $rides[0]->description,
+                'week_days' => $rides[0]->week_days,
+                'repeats_until' => $rides[0]->repeats_until,
+                'driver' => $driverArray
+            ],
+            [
+                'id' => $rides[1]->id,
+                'myzone' => $rides[1]->myzone,
+                'neighborhood' => $rides[1]->neighborhood,
+                'going' => $rides[1]->going,
+                'place' => $rides[1]->place,
+                'route' => $rides[1]->route,
+                'routine_id' => $rides[1]->routine_id,
+                'hub' => $rides[1]->hub,
+                'slots' => $rides[1]->slots,
+                'mydate' => $rides[1]->date->format('Y-m-d'),
+                'mytime' => $rides[1]->date->format('H:i:s'),
+                'description' => $rides[1]->description,
+                'week_days' => $rides[1]->week_days,
+                'repeats_until' => $rides[1]->repeats_until,
+                'driver' => $driverArray
+            ]
+        ]]);
+    }
+
     public function testGetAll()
     {
         $user = $this->user;
@@ -523,7 +594,6 @@ class RideTest extends TestCase
                 'description' => $ride1->description,
                 'week_days' => $ride1->week_days,
                 'repeats_until' => $ride1->repeats_until,
-                'done' => $ride1->done,
                 'driver' => $this->user->toArray(),
                 'riders' => [],
                 'feedback' => null
@@ -543,7 +613,6 @@ class RideTest extends TestCase
                 'description' => $ride2->description,
                 'week_days' => $ride2->week_days,
                 'repeats_until' => $ride2->repeats_until,
-                'done' => $ride2->done,
                 'driver' => $user2->toArray(),
                 'riders' => [$this->user->toArray()],
                 'feedback' => null
