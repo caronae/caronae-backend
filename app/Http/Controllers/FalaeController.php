@@ -25,6 +25,7 @@ class FalaeController extends Controller
         Mail::raw($body, function ($message) use ($user, $subject) {
             $message->to('caronae@fundoverde.ufrj.br');
             $message->from($user->email, $user->name);
+            $message->replyTo($user->email, $user->name);
             $message->subject($subject);
         });
         
