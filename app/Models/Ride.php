@@ -57,6 +57,28 @@ class Ride extends Model
         return $route . ' | ' . $this->date->format('d/m');
     }
 
+    public static function nextRides(array $filters = [])
+    {
+        $query = Ride::leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
+            ->select('rides.*')
+            ->where('rides.date', '>=', Carbon::now())
+            ->where('rides.done', 'false')
+            ->whereIn('ride_user.status', ['pending','accepted','driver'])
+            ->groupBy('rides.id')
+            ->having(DB::raw('count(ride_user.user_id)-1'), '<', DB::raw('rides.slots'))
+            ->orderBy('rides.date');
+
+        collect($filters)->each(function ($value, $key) use (&$query) {
+            if ($key == 'hub') {
+                $query = $query->where('rides.' . $key, 'LIKE', $value . '%');
+            } else {
+                $query = $query->where('rides.' . $key, $value);
+            }
+        });
+
+        return $query;
+    }
+
     private static function userStats($periodStart, $periodEnd)
     {
         return DB::table('users')

@@ -44,39 +44,43 @@ class RideController extends Controller
         ]]);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $limit = 20;
-        $rides = Ride::leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
-            ->select('rides.*')
-            ->where('rides.date', '>=', Carbon::now())
-            ->where('rides.done', 'false')
-            ->whereIn('ride_user.status', ['pending','accepted','driver'])
-            ->groupBy('rides.id')
-            ->having(DB::raw('count(ride_user.user_id)-1'), '<', DB::raw('rides.slots'))
-            ->orderBy('rides.date')
-            ->paginate($limit);
+        $this->validate($request, [
+            'zone' => 'string',
+            'neighborhood' => 'string',
+            'place' => 'string|max:255',
+            'hub' => 'string|max:255',
+            'going' => 'boolean',
+            'date' => 'string',
+            'time' => 'string'
+        ]);
 
-        $rides->each(function ($ride) {
+        $filters = [];
+        if (isset($request->going))
+            $filters['going'] = $request->going;
+        if (!empty($request->neighborhood))
+            $filters['neighborhood'] = $request->neighborhood;
+        if (!empty($request->place))
+            $filters['myplace'] = $request->place;
+        if (!empty($request->zone))
+            $filters['myzone'] = $request->zone;
+        if (!empty($request->hub))
+            $filters['hub'] = $request->hub;
+
+        $limit = 20;
+        $results = Ride::nextRides($filters)->paginate($limit);
+        $results->each(function ($ride) {
             $ride->driver = $ride->driver();
         });
 
-        return $rides;
+        return $results;
     }
 
     public function listAll()
     {
         $limit = 50;
-
-        $rides = Ride::leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
-            ->select('rides.*')
-            ->where('rides.date', '>=', Carbon::now())
-            ->where('rides.done', 'false')
-            ->whereIn('ride_user.status', ['pending','accepted','driver'])
-            ->groupBy('rides.id')
-            ->having(DB::raw('count(ride_user.user_id)-1'), '<', DB::raw('rides.slots'))
-            ->orderBy('rides.date')
-            ->paginate($limit);
+        $rides = Ride::nextRides()->paginate($limit);
 
         $results = [];
         foreach($rides as $ride) {
@@ -300,10 +304,13 @@ class RideController extends Controller
             $locationColumn = 'neighborhood';//if location is filtered by neighborhood, query by 'neighborhood' column
         }
 
-        $minDate = $request->date . ' ' . $request->time;
-        $maxDate = $request->date . ' 23:59:59';
+        $dateMin = Carbon::createFromFormat('Y-m-d H:i', $request->date . ' ' . substr($request->time, 0, 5));
+        $dateMax = $dateMin->copy()->setTime(23,59,59);
 
-        $rides = Ride::whereBetween('date', [$minDate, $maxDate])->where('done', false)->where('going', $request->go)->whereIn($locationColumn, $locations);
+        $rides = Ride::whereBetween('date', [$dateMin, $dateMax])
+            ->where('done', false)
+            ->where('going', $request->go)
+            ->whereIn($locationColumn, $locations);
 
         //query the rides
         if (empty($request->center)) {

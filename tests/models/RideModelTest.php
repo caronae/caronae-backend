@@ -70,4 +70,29 @@ class RideModelTest extends TestCase
         $this->assertEquals('CCS → Ipanema | 29/01', $ride->title);
     }
 
+    public function testNextRidesReturnsRidesInTheFuture() 
+    {
+        $ride = factory(Ride::class, 'next')->create()->fresh();
+        $ride->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
+
+        $rideOld = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00']);
+        $rideOld->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
+
+        $results = Ride::nextRides()->get();
+        $this->assertTrue($results->contains($ride));
+        $this->assertFalse($results->contains($rideOld));
+    }
+
+    public function testNextRidesAppliesFilters() 
+    {
+        $ride1 = factory(Ride::class, 'next')->create(['neighborhood' => 'Ipanema'])->fresh();
+        $ride1->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
+
+        $ride2 = factory(Ride::class, 'next')->create(['neighborhood' => 'Niterói'])->fresh();
+        $ride2->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
+
+        $results = Ride::nextRides(['neighborhood' => 'Ipanema'])->get();
+        $this->assertTrue($results->contains($ride1));
+        $this->assertFalse($results->contains($ride2));
+    }
 }

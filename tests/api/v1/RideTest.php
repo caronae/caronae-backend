@@ -45,9 +45,7 @@ class RideTest extends TestCase
         $user = $this->user;
         $rides = factory(Ride::class, 'next', 2)->create()->each(function($ride) use ($user) {
             $ride->users()->attach($user, ['status' => 'driver']);
-            $rideIds[] = $ride->id;
             $ride->fresh();
-            // $ride->driver = $ride-;
         });
 
         $rideOld = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00']);
@@ -55,23 +53,6 @@ class RideTest extends TestCase
 
         $response = $this->json('GET', 'ride', [], $this->headers);
         $response->assertResponseOk();
-
-        $driverArray = [
-            'id' => $user->id,
-            'name' => $user->name,
-            'profile' => $user->profile,
-            'course' => $user->course,
-            'phone_number' => $user->phone_number,
-            'email' => $user->email,
-            'car_owner' => $user->car_owner,
-            'car_model' => $user->car_model,
-            'car_color' => $user->car_color,
-            'car_plate' => $user->car_plate,
-            'created_at' => $user->created_at->format('Y-m-d H:i:s'),
-            'location' => $user->location,
-            'face_id' => $user->face_id,
-            'profile_pic_url' => $user->profile_pic_url
-        ];
 
         $response->seeJson(['data' => [
             [
@@ -89,7 +70,7 @@ class RideTest extends TestCase
                 'description' => $rides[0]->description,
                 'week_days' => $rides[0]->week_days,
                 'repeats_until' => $rides[0]->repeats_until,
-                'driver' => $driverArray
+                'driver' => $rides[0]->driver()->toArray()
             ],
             [
                 'id' => $rides[1]->id,
@@ -106,7 +87,60 @@ class RideTest extends TestCase
                 'description' => $rides[1]->description,
                 'week_days' => $rides[1]->week_days,
                 'repeats_until' => $rides[1]->repeats_until,
-                'driver' => $driverArray
+                'driver' => $rides[1]->driver()->toArray()
+            ]
+        ]]);
+    }
+
+    public function testIndexShouldAllowFiltering()
+    {
+        $ride1 = factory(Ride::class, 'next')->create(['neighborhood' => 'Ipanema', 'going' => true])->fresh();
+        $ride1->users()->attach($this->user, ['status' => 'driver']);
+
+        $ride2 = factory(Ride::class, 'next')->create(['neighborhood' => 'Niterói', 'going' => false])->fresh();
+        $ride2->users()->attach($this->user, ['status' => 'driver']);
+
+        $response = $this->json('GET', 'ride', ['neighborhood' => 'Ipanema'], $this->headers);
+        $response->assertResponseOk();
+        $response->seeJson(['data' => [
+            [
+                'id' => $ride1->id,
+                'myzone' => $ride1->myzone,
+                'neighborhood' => $ride1->neighborhood,
+                'going' => $ride1->going,
+                'place' => $ride1->place,
+                'route' => $ride1->route,
+                'routine_id' => $ride1->routine_id,
+                'hub' => $ride1->hub,
+                'slots' => $ride1->slots,
+                'mydate' => $ride1->date->format('Y-m-d'),
+                'mytime' => $ride1->date->format('H:i:s'),
+                'description' => $ride1->description,
+                'week_days' => $ride1->week_days,
+                'repeats_until' => $ride1->repeats_until,
+                'driver' => $ride1->driver()->toArray()
+            ]
+        ]]);
+
+        $response = $this->json('GET', 'ride', ['going' => false], $this->headers);
+        $response->assertResponseOk();
+        $response->seeJson(['data' => [
+            [
+                'id' => $ride2->id,
+                'myzone' => $ride2->myzone,
+                'neighborhood' => $ride2->neighborhood,
+                'going' => $ride2->going,
+                'place' => $ride2->place,
+                'route' => $ride2->route,
+                'routine_id' => $ride2->routine_id,
+                'hub' => $ride2->hub,
+                'slots' => $ride2->slots,
+                'mydate' => $ride2->date->format('Y-m-d'),
+                'mytime' => $ride2->date->format('H:i:s'),
+                'description' => $ride2->description,
+                'week_days' => $ride2->week_days,
+                'repeats_until' => $ride2->repeats_until,
+                'driver' => $ride2->driver()->toArray()
             ]
         ]]);
     }
