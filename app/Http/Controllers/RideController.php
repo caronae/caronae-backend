@@ -48,7 +48,7 @@ class RideController extends Controller
     {
         $this->validate($request, [
             'zone' => 'string',
-            'neighborhood' => 'string',
+            'neighborhoods' => 'string',
             'place' => 'string|max:255',
             'hub' => 'string|max:255',
             'going' => 'boolean',
@@ -59,8 +59,8 @@ class RideController extends Controller
         $filters = [];
         if (isset($request->going))
             $filters['going'] = $request->going;
-        if (!empty($request->neighborhood))
-            $filters['neighborhood'] = $request->neighborhood;
+        if (!empty($request->neighborhoods))
+            $filters['neighborhoods'] = explode(', ', $request->neighborhoods);
         if (!empty($request->place))
             $filters['myplace'] = $request->place;
         if (!empty($request->zone))
@@ -294,14 +294,13 @@ class RideController extends Controller
 
     public function listFiltered(Request $request)
     {
-        //locations will come as a string divided by ", ", explode the string into an array
-        $locations = explode(", ", $request->location);
+        $locations = explode(', ', $request->location);
 
         //location can be zones or neighborhoods, check if first array position is a zone or a neighborhood
         if ($locations[0] == 'Centro' || $locations[0] == 'Zona Sul' || $locations[0] == 'Zona Oeste' || $locations[0] == 'Zona Norte' || $locations[0] == 'Baixada' || $locations[0] == 'Grande Niterói' || $locations[0] == 'Outros') {
-            $locationColumn = 'myzone';//if location is filtered by zone, query by 'myzone' column
+            $locationColumn = 'myzone';
         } else {
-            $locationColumn = 'neighborhood';//if location is filtered by neighborhood, query by 'neighborhood' column
+            $locationColumn = 'neighborhood';
         }
 
         $dateMin = Carbon::createFromFormat('Y-m-d H:i', $request->date . ' ' . substr($request->time, 0, 5));
@@ -312,7 +311,6 @@ class RideController extends Controller
             ->where('going', $request->go)
             ->whereIn($locationColumn, $locations);
 
-        //query the rides
         if (empty($request->center)) {
             $rides = $rides->get();
         } else {

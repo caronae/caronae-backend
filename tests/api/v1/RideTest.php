@@ -51,7 +51,7 @@ class RideTest extends TestCase
         $rideOld = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00']);
         $rideOld->users()->attach($user, ['status' => 'driver']);
 
-        $response = $this->json('GET', 'ride', [], $this->headers);
+        $response = $this->json('GET', 'rides', [], $this->headers);
         $response->assertResponseOk();
 
         $response->seeJson(['data' => [
@@ -100,7 +100,7 @@ class RideTest extends TestCase
         $ride2 = factory(Ride::class, 'next')->create(['neighborhood' => 'Niterói', 'going' => false])->fresh();
         $ride2->users()->attach($this->user, ['status' => 'driver']);
 
-        $response = $this->json('GET', 'ride', ['neighborhood' => 'Ipanema'], $this->headers);
+        $response = $this->json('GET', 'rides', ['neighborhoods' => 'Ipanema'], $this->headers);
         $response->assertResponseOk();
         $response->seeJson(['data' => [
             [
@@ -122,7 +122,7 @@ class RideTest extends TestCase
             ]
         ]]);
 
-        $response = $this->json('GET', 'ride', ['going' => false], $this->headers);
+        $response = $this->json('GET', 'rides', ['going' => false], $this->headers);
         $response->assertResponseOk();
         $response->seeJson(['data' => [
             [

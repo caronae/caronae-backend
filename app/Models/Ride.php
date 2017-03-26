@@ -69,7 +69,9 @@ class Ride extends Model
             ->orderBy('rides.date');
 
         collect($filters)->each(function ($value, $key) use (&$query) {
-            if ($key == 'hub') {
+            if ($key == 'neighborhoods') {
+                $query = $query->whereIn('rides.neighborhood', $value);
+            } else if ($key == 'hub') {
                 $query = $query->where('rides.' . $key, 'LIKE', $value . '%');
             } else {
                 $query = $query->where('rides.' . $key, $value);
