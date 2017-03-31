@@ -31,8 +31,12 @@ class UserController extends Controller
 
     public function store(SignUpRequest $request)
     {
-        $user = User::create($request->all())->fresh();
-        return response()->json($user, 201);
+        $user = new User;
+        $user->fill($request->all());
+        $user->token = strtoupper(substr(base_convert(sha1(uniqid() . rand()), 16, 36), 0, 6));
+        $user->save();
+
+        return response()->json($user->fresh(), 201);
     }
 
     public function signUpIntranet($idUFRJ, $token, SigaService $siga)
