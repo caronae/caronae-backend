@@ -26,6 +26,33 @@ class UserTest extends TestCase
         DB::table('rides')->delete();
     }
 
+    public function testStoreSavesUser()
+    {
+        $response = $this->json('POST', 'users', [
+            'name' => 'Foo Bar',
+            'profile' => 'Aluno',
+            'id_ufrj' => '111',
+            'course' => 'Course'
+        ]);
+        $response->assertResponseStatus(201);
+        $response->seeJsonStructure([ 'id' ]);
+    }
+
+    public function testStoreDoesNotAddDuplicatedUser()
+    {
+        $user = [
+            'name' => 'Foo Bar',
+            'profile' => 'Aluno',
+            'id_ufrj' => '666',
+            'course' => 'Course'
+        ];
+
+        User::create($user);
+
+        $response = $this->json('POST', 'users', $user);
+        $response->assertResponseStatus(422);
+    }
+
     public function testSignUpIntranet()
     {
         $id_ufrj = str_random(10);

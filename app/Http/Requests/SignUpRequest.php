@@ -1,0 +1,25 @@
+<?php
+
+namespace Caronae\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class SignUpRequest extends FormRequest
+{
+    public function authorize()
+    {
+        // TODO: Add verification  
+        return true;
+    }
+
+    public function rules()
+    {
+        return [
+            'name' => 'required|string',
+            'id_ufrj' => 'required|unique:users|string',
+            'course' => 'required|string',
+            'profile' => 'required|string',
+            'profile_pic_url' => 'nullable|string'
+        ];
+    }
+}

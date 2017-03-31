@@ -3,6 +3,7 @@ namespace Caronae\Http\Controllers;
 
 use Caronae\ExcelExport\ExcelExporter;
 use Caronae\Http\Requests;
+use Caronae\Http\Requests\SignUpRequest;
 use Caronae\Models\User;
 use Caronae\Exception\SigaException;
 use Caronae\Services\SigaService;
@@ -26,6 +27,12 @@ class UserController extends Controller
         $this->middleware('api.v1.userMatchesRequestedUser', ['only' => [
             'getOfferedRides'
         ]]);
+    }
+
+    public function store(SignUpRequest $request)
+    {
+        $user = User::create($request->all())->fresh();
+        return response()->json($user, 201);
     }
 
     public function signUpIntranet($idUFRJ, $token, SigaService $siga)

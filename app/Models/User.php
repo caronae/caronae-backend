@@ -14,7 +14,7 @@ class User extends Model
     use SoftDeletes;
     use CrudTrait;
 
-    protected $fillable = ['name', 'email', 'profile', 'id_ufrj', 'token'];
+    protected $fillable = ['name', 'email', 'profile', 'course', 'id_ufrj', 'profile_pic_url'];
     protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version', 'banned'];
     protected $dates = ['deleted_at'];
 
