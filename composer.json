@@ -6,15 +6,16 @@
     "type": "project",
     "require": {
         "php": ">=5.6.4",
-        "laravel/framework": "5.4.*",
-        "doctrine/dbal": "v2.4.2",
         "barryvdh/laravel-ide-helper": "^2.1",
-        "maatwebsite/excel": "~2.1.0",
-        "simshaun/recurr": "^1.2",
+        "doctrine/dbal": "v2.4.2",
         "facebook/graph-sdk": "^5.4",
-        "predis/predis": "^1.1",
         "graylog2/gelf-php": "^1.5",
-        "laravel/tinker": "^1.0"
+        "laravel/framework": "5.4.*",
+        "laravel/tinker": "^1.0",
+        "maatwebsite/excel": "~2.1.0",
+        "predis/predis": "^1.1",
+        "rap2hpoutre/laravel-log-viewer": "^0.8.1",
+        "simshaun/recurr": "^1.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

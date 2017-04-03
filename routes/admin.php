@@ -11,6 +11,10 @@
 |
 */
 
+// Logs interface
+
+Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+
 // Administrative pages
 
 Route::get('/', [
