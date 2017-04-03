@@ -10,7 +10,7 @@ machine:
 
 dependencies:
   override:
-    - composer install --no-interaction
+    - composer install --no-interaction --no-ansi
   post:
     - echo "memory_limit = -1" > /opt/circleci/php/$(phpenv global)/etc/conf.d/memory.ini
     - cp .env.example .env
