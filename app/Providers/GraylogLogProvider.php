@@ -18,7 +18,5 @@ class GraylogLogProvider extends ServiceProvider
             $monolog = $log->getMonolog();
             $monolog->pushHandler(new GelfHandler($publisher));
         }
-
-        \Log::info('Registered Graylog');
     }
 }
