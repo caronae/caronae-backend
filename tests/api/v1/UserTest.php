@@ -1,6 +1,12 @@
 <?php
 
+namespace Tests;
+
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use App;
+use Carbon;
+use DB;
+use Mockery;
 
 use Caronae\Models\User;
 use Caronae\Models\Ride;
@@ -27,28 +33,31 @@ class UserTest extends TestCase
 
         // Mock Siga interface
         App::singleton(SigaInterface::class, function($app) use ($id_ufrj) {
-            $mockProfile = new stdClass;
+            $mockProfile = new \stdClass;
             $mockProfile->nome = 'FULANO SILVA';
             $mockProfile->nomeCurso = 'Engenharia';
             $mockProfile->alunoServidor = '0';
             $mockProfile->nivel = 'Graduação';
-            $mockProfile->urlFoto = '146.164.2.117:8090/image.jpg';
+            $mockProfile->urlFoto = 'image.jpg';
             $sigaRepositoryMock = Mockery::mock(SigaInterface::class);
             $sigaRepositoryMock->shouldReceive('getProfileById')->once()->with($id_ufrj)->andReturn($mockProfile);
             return $sigaRepositoryMock;
         });
 
         $response = $this->json('GET', "user/signup/intranet/$id_ufrj/$token");
-        $response->assertResponseOk();
-        $response->seeJsonContains([
+        $response->assertStatus(200);
+        // $response->dump();
+        $response->assertJsonFragment([
             'name' => 'Fulano Silva',
             'course' => 'Engenharia',
             'profile' => 'Graduação',
-            'profile_pic_url' => 'https://api.caronae.ufrj.br/user/intranetPhoto/image.jpg'
+            'profile_pic_url' => 'image.jpg'
         ]);
-        // $response->seeJsonStructure([
-        //     '*' => ['id', 'created_at']
-        // ]);
+
+        $response->assertJsonStructure([
+            'id',
+            'created_at'
+        ]);
     }
 
     public function testSignInWithValidUserSucceeds()
@@ -74,8 +83,8 @@ class UserTest extends TestCase
             'token' => $user->token
         ]);
 
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -119,8 +128,8 @@ class UserTest extends TestCase
             'id_ufrj' => str_random(11),
             'token' => str_random(6)
         ]);
-        $response->assertResponseStatus(401);
-        $response->seeJsonEquals([
+        $response->assertStatus(401);
+        $response->assertExactJson([
             'error' => 'User not found with provided credentials.'
         ]);
     }
@@ -141,7 +150,7 @@ class UserTest extends TestCase
         ];
 
         $response = $this->json('PUT', 'user', $body, $headers);
-        $response->assertResponseOk();
+        $response->assertStatus(200);
 
         $user = $user->fresh();
         $this->assertEquals($body['phone_number'], $user->phone_number);
@@ -169,7 +178,7 @@ class UserTest extends TestCase
         ];
 
         $response = $this->json('PUT', 'user', $body, $headers);
-        $response->assertResponseStatus(401);
+        $response->assertStatus(401);
     }
 
     public function testGetOfferedRides()
@@ -199,8 +208,8 @@ class UserTest extends TestCase
             'token' => $user->token
         ]);
 
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             'rides' => [
                 [
                     'id' => $ride->id,
@@ -252,7 +261,7 @@ class UserTest extends TestCase
             'token' => $user->token
         ]);
 
-        $response->assertResponseStatus(403);
+        $response->assertStatus(403);
     }
 
     public function testSaveGcmToken()
@@ -264,7 +273,7 @@ class UserTest extends TestCase
         $response = $this->json('PUT', 'user/saveGcmToken', [
             'token' => $newToken
         ], $headers);
-        $response->assertResponseOk();
+        $response->assertStatus(200);
 
         $savedUser = $user->fresh();
         $this->assertEquals($newToken, $savedUser->gcm_token);
@@ -279,7 +288,7 @@ class UserTest extends TestCase
         $response = $this->json('PUT', 'user/saveFaceId', [
             'id' => $newId
         ], $headers);
-        $response->assertResponseOk();
+        $response->assertStatus(200);
 
         $savedUser = $user->fresh();
         $this->assertEquals($newId, $savedUser->face_id);
@@ -289,12 +298,12 @@ class UserTest extends TestCase
     {
         $user = factory(User::class)->create();
         $headers = ['token' => $user->token];
-        $newURL = Faker\Factory::create()->url;
+        $newURL = \Faker\Factory::create()->url;
 
         $response = $this->json('PUT', 'user/saveProfilePicUrl', [
             'url' => $newURL
         ], $headers);
-        $response->assertResponseOk();
+        $response->assertStatus(200);
 
         $savedUser = $user->fresh();
         $this->assertEquals($newURL, $savedUser->profile_pic_url);
@@ -317,17 +326,17 @@ class UserTest extends TestCase
 
         // Mock Siga interface
         App::singleton(SigaInterface::class, function($app) use ($user) {
-            $mockProfile = new stdClass;
-            $mockProfile->urlFoto = '146.164.2.117:8090/image.jpg';
+            $mockProfile = new \stdClass;
+            $mockProfile->urlFoto = 'image.jpg';
             $sigaRepositoryMock = Mockery::mock(SigaInterface::class);
             $sigaRepositoryMock->shouldReceive('getProfileById')->once()->with($user->id_ufrj)->andReturn($mockProfile);
             return $sigaRepositoryMock;
         });
 
         $response = $this->json('GET', 'user/intranetPhotoUrl', [], $headers);
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
-            'url' => 'https://api.caronae.ufrj.br/user/intranetPhoto/image.jpg'
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'url' => 'image.jpg'
         ]);
     }
 }

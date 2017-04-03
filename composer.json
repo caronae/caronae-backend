@@ -6,56 +6,53 @@
     "type": "project",
     "require": {
         "php": ">=5.6.4",
-        "laravel/framework": "5.3.*",
+        "laravel/framework": "5.4.*",
         "doctrine/dbal": "v2.4.2",
         "barryvdh/laravel-ide-helper": "^2.1",
         "maatwebsite/excel": "~2.1.0",
         "simshaun/recurr": "^1.2",
         "facebook/graph-sdk": "^5.4",
         "predis/predis": "^1.1",
-        "graylog2/gelf-php": "^1.5"
+        "graylog2/gelf-php": "^1.5",
+        "laravel/tinker": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~5.6",
-        "symfony/dom-crawler": "~3.1",
-        "symfony/css-selector": "~3.1"
+        "phpunit/phpunit": "~5.7"
     },
     "autoload": {
         "classmap": [
             "database"
         ],
         "psr-4": {
-            "Caronae\\": "app/",
-            "Bootstrap\\": "bootstrap/"
+            "Caronae\\": "app/"
         }
     },
     "autoload-dev": {
-        "classmap": [
-            "tests/TestCase.php"
-        ]
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
     },
     "scripts": {
-        "post-install-cmd": [
-            "php artisan clear-compiled",
-            "php artisan optimize"
-        ],
-        "pre-update-cmd": [
-            "php artisan clear-compiled"
-        ],
-        "post-update-cmd": [
-            "php artisan optimize"
-        ],
         "post-root-package-install": [
-            "php -r \"copy('.env.example', '.env');\""
+            "php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
             "php artisan key:generate"
         ],
-        "test": "phpunit"
+        "post-install-cmd": [
+            "Illuminate\\Foundation\\ComposerScripts::postInstall",
+            "php artisan optimize"
+        ],
+        "post-update-cmd": [
+            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
+            "php artisan optimize"
+        ]
     },
     "config": {
-        "preferred-install": "dist"
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true
     }
 }

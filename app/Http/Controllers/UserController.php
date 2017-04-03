@@ -50,11 +50,8 @@ class UserController extends Controller
             $user->profile = $intranetUser->nivel;
         }
 
-        if (isset($intranetUser->urlFoto) && $intranetUser->urlFoto != '') {
-            list($photoHost, $photoHash) = explode('/', $intranetUser->urlFoto);
-            if ($photoHost == '146.164.2.117:8090') {
-                $user->profile_pic_url = 'https://api.caronae.ufrj.br/user/intranetPhoto/' . $photoHash;
-            }
+        if (!empty($intranetUser->urlFoto)) {
+            $user->profile_pic_url = $intranetUser->urlFoto;
         }
 
         $user->save();

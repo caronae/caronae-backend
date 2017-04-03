@@ -1,8 +1,11 @@
 <?php
 
+namespace Tests;
+
 use Caronae\Services\SigaService;
 use Caronae\Repositories\SigaInterface;
 use Caronae\Exceptions\SigaException;
+use Mockery;
 
 class SigaServiceTest extends TestCase
 {
@@ -20,22 +23,22 @@ class SigaServiceTest extends TestCase
 
     public function testGetProfilePictureById()
     {
-        $mockResult = new stdClass;
-        $mockResult->urlFoto = '146.164.2.117:8090/image.jpg';
+        $mockResult = new \stdClass;
+        $mockResult->urlFoto = 'foto';
 
         $sigaRepositoryMock = Mockery::mock(SigaInterface::class);
         $sigaRepositoryMock->shouldReceive('getProfileById')->with('123')->once()->andReturn($mockResult);
 
         $siga = new SigaService($sigaRepositoryMock);
         $result = $siga->getProfilePictureById('123');
-        $this->assertEquals('https://api.caronae.ufrj.br/user/intranetPhoto/image.jpg', $result);
+        $this->assertEquals('foto', $result);
     }
 
     public function testGetProfilePictureByIdNotFound()
     {
         $this->setExpectedException(SigaException::class);
 
-        $mockResult = new stdClass;
+        $mockResult = new \stdClass;
         $mockResult->urlFoto = '';
 
         $sigaRepositoryMock = Mockery::mock(SigaInterface::class);
