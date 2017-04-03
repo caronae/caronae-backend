@@ -160,6 +160,7 @@ return [
         Caronae\Providers\ViewComposerServiceProvider::class,
         Caronae\Providers\ValidatorServiceProvider::class,
 
+        Caronae\Providers\GraylogLogProvider::class,
         Caronae\Providers\FacebookSDKServiceProvider::class,
         Caronae\Providers\SigaRepositoryServiceProvider::class,
         Caronae\Providers\PushNotificationFirebaseServiceProvider::class,
