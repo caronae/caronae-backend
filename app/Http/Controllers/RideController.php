@@ -69,7 +69,13 @@ class RideController extends Controller
             $filters['hub'] = $request->hub;
 
         $limit = 20;
-        $results = Ride::nextRides($filters)->paginate($limit);
+        $rides = Ride::withAvailableSlots()
+            ->inTheFuture()
+            ->notFinished()
+            ->orderBy('rides.date')
+            ->withFilters($filters);
+
+        $results = $rides->paginate($limit);
         $results->each(function ($ride) {
             $ride->driver = $ride->driver();
         });
@@ -77,10 +83,15 @@ class RideController extends Controller
         return $results;
     }
 
+    // DEPRECATED
     public function listAll()
     {
         $limit = 50;
-        $rides = Ride::nextRides()->paginate($limit);
+        $rides = Ride::withAvailableSlots()
+            ->inTheFuture()
+            ->notFinished()
+            ->orderBy('rides.date')
+            ->paginate($limit);
 
         $results = [];
         foreach($rides as $ride) {
@@ -111,8 +122,7 @@ class RideController extends Controller
         } catch(\InvalidArgumentException $error) {
             $date = Carbon::createFromFormat('Y-m-d H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
         }
-
-        // check if the ride is in the future
+        
         if ($date->isPast()) {
             return response()->json(['error' => 'You cannot create a ride in the past.'], 403);
         }

@@ -57,17 +57,28 @@ class Ride extends Model
         return $route . ' | ' . $this->date->format('d/m');
     }
 
-    public static function nextRides(array $filters = [])
+    public function scopeWithAvailableSlots($query)
     {
-        $query = Ride::leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
+        return $query
+            ->leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
             ->select('rides.*')
-            ->where('rides.date', '>=', Carbon::now())
-            ->where('rides.done', 'false')
             ->whereIn('ride_user.status', ['pending','accepted','driver'])
             ->groupBy('rides.id')
-            ->having(DB::raw('count(ride_user.user_id)-1'), '<', DB::raw('rides.slots'))
-            ->orderBy('rides.date');
+            ->having(DB::raw('count(ride_user.user_id)-1'), '<', DB::raw('rides.slots'));
+    }
 
+    public function scopeNotFinished($query)
+    {
+        return $query->where('rides.done', 'false');
+    }
+
+    public function scopeInTheFuture($query)
+    {
+        return $query->where('rides.date', '>=', Carbon::now());
+    }
+
+    public function scopeWithFilters($query, array $filters = [])
+    {
         collect($filters)->each(function ($value, $key) use (&$query) {
             if ($key == 'neighborhoods') {
                 $query = $query->whereIn('rides.neighborhood', $value);
