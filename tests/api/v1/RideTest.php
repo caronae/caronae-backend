@@ -1,6 +1,9 @@
 <?php
 
+namespace Tests;
+
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use DB;
 
 use Caronae\Models\Message;
 use Caronae\Models\User;
@@ -52,9 +55,9 @@ class RideTest extends TestCase
         $rideOld->users()->attach($user, ['status' => 'driver']);
 
         $response = $this->json('GET', 'rides', [], $this->headers);
-        $response->assertResponseOk();
+        $response->assertStatus(200);
 
-        $response->seeJson(['data' => [
+        $response->assertJsonFragment(['data' => [
             [
                 'id' => $rides[0]->id,
                 'myzone' => $rides[0]->myzone,
@@ -101,8 +104,8 @@ class RideTest extends TestCase
         $ride2->users()->attach($this->user, ['status' => 'driver']);
 
         $response = $this->json('GET', 'rides', ['neighborhoods' => 'Ipanema'], $this->headers);
-        $response->assertResponseOk();
-        $response->seeJson(['data' => [
+        $response->assertStatus(200);
+        $response->assertJson(['data' => [
             [
                 'id' => $ride1->id,
                 'myzone' => $ride1->myzone,
@@ -123,8 +126,8 @@ class RideTest extends TestCase
         ]]);
 
         $response = $this->json('GET', 'rides', ['going' => false], $this->headers);
-        $response->assertResponseOk();
-        $response->seeJson(['data' => [
+        $response->assertStatus(200);
+        $response->assertJson(['data' => [
             [
                 'id' => $ride2->id,
                 'myzone' => $ride2->myzone,
@@ -163,7 +166,7 @@ class RideTest extends TestCase
         }
 
         $response = $this->json('GET', 'ride/all', [], $this->headers);
-        $response->assertResponseOk();
+        $response->assertStatus(200);
 
         $driverArray = [
             'id' => $user->id,
@@ -182,7 +185,7 @@ class RideTest extends TestCase
             'profile_pic_url' => $user->profile_pic_url
         ];
 
-        $response->seeJsonEquals([
+        $response->assertExactJson([
             [
                 'id' => $rides[0]->id,
                 'myzone' => $rides[0]->myzone,
@@ -223,7 +226,7 @@ class RideTest extends TestCase
     public function testGetAllFailsWithoutToken()
     {
         $response = $this->json('GET', 'ride/all');
-        $response->assertResponseStatus(401);
+        $response->assertStatus(401);
     }
 
     public function testSearch()
@@ -242,8 +245,8 @@ class RideTest extends TestCase
             'going' => 1
         ];
         $response = $this->json('GET', 'ride/validateDuplicate', $parameters, $this->headers);
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             'valid' => true,
             'status' => 'valid',
             'message' => 'No conflicting rides were found close to the specified date.'
@@ -261,8 +264,8 @@ class RideTest extends TestCase
             'going' => 1
         ];
         $response = $this->json('GET', 'ride/validateDuplicate', $parameters, $this->headers);
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             'valid' => false,
             'status' => 'possible_duplicate',
             'message' => 'The user has already offered a ride too close to the specified date.'
@@ -280,8 +283,8 @@ class RideTest extends TestCase
             'going' => 1
         ];
         $response = $this->json('GET', 'ride/validateDuplicate', $parameters, $this->headers);
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             'valid' => false,
             'status' => 'duplicate',
             'message' => 'The user has already offered a ride on the specified date.'
@@ -307,9 +310,9 @@ class RideTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride', $request, $this->headers);
-        $response->assertResponseStatus(201);
+        $response->assertStatus(201);
 
-        $response->seeJsonContains([
+        $response->assertJsonFragment([
             'myzone' => 'Norte',
             'neighborhood' => 'Jardim Guanabara',
             'place' => 'Praia da bica',
@@ -322,7 +325,7 @@ class RideTest extends TestCase
             'going' => false
         ]);
 
-        $response->seeJsonStructure([
+        $response->assertJsonStructure([
             '*' => ['id']
         ]);
     }
@@ -347,12 +350,12 @@ class RideTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride', $request, $this->headers);
-        $response->assertResponseStatus(201);
+        $response->assertStatus(201);
 
-        $jsonContent = json_decode($this->response->getContent());
+        $jsonContent = json_decode($response->getContent());
         $this->assertEquals(2, count($jsonContent), "Should create exactly 2 rides.");
 
-        $response->seeJsonContains([
+        $response->assertJsonFragment([
             'myzone' => 'Norte',
             'neighborhood' => 'Jardim Guanabara',
             'place' => 'Praia da bica',
@@ -364,7 +367,7 @@ class RideTest extends TestCase
             'description' => 'Lorem ipsum dolor',
             'going' => true
         ]);
-        $response->seeJsonContains([
+        $response->assertJsonFragment([
             'myzone' => 'Norte',
             'neighborhood' => 'Jardim Guanabara',
             'place' => 'Praia da bica',
@@ -377,7 +380,7 @@ class RideTest extends TestCase
             'going' => true
         ]);
 
-        $response->seeJsonStructure([
+        $response->assertJsonStructure([
             '*' => ['id', 'routine_id', 'week_days']
         ]);
     }
@@ -401,8 +404,8 @@ class RideTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride', $request, $this->headers);
-        $response->assertResponseStatus(403);
-        $response->seeJsonEquals([
+        $response->assertStatus(403);
+        $response->assertExactJson([
             'error' => 'You cannot create a ride in the past.'
         ]);
     }
@@ -413,7 +416,7 @@ class RideTest extends TestCase
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
         $response = $this->json('DELETE', 'ride/' . $ride->id, [], $this->headers);
-        $response->assertResponseOk();
+        $response->assertStatus(200);
     }
 
     public function testDeleteAllFromRoutine()
@@ -424,7 +427,7 @@ class RideTest extends TestCase
         $ride->save();
 
         $response = $this->json('DELETE', 'ride/allFromRoutine/' . $ride->id, [], $this->headers);
-        $response->assertResponseOk();
+        $response->assertStatus(200);
     }
 
     public function testJoin()
@@ -440,8 +443,8 @@ class RideTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride/requestJoin', $request, $this->headers);
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             'message' => 'Request sent.'
         ]);
     }
@@ -458,8 +461,8 @@ class RideTest extends TestCase
         $ride->users()->attach(factory(User::class)->create(), ['status' => 'rejected']);
 
         $response = $this->json('GET', 'ride/getRequesters/' . $ride->id, [], $this->headers);
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -496,8 +499,8 @@ class RideTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride/answerJoinRequest', $request, $this->headers);
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             'message' => 'Request answered.'
         ]);
     }
@@ -517,8 +520,8 @@ class RideTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride/leaveRide', $request, $this->headers);
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             'message' => 'Left ride.'
         ]);
     }
@@ -538,8 +541,8 @@ class RideTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride/leaveRide', $request, $this->headers);
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             'message' => 'Left ride.'
         ]);
     }
@@ -559,8 +562,8 @@ class RideTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride/finishRide', $request, $this->headers);
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             'message' => 'Ride finished.'
         ]);
     }
@@ -575,8 +578,8 @@ class RideTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride/finishRide', $request, $this->headers);
-        $response->assertResponseStatus(403);
-        $response->seeJsonEquals([
+        $response->assertStatus(403);
+        $response->assertExactJson([
             'error' => 'A ride in the future cannot be marked as finished'
         ]);
     }
@@ -611,8 +614,8 @@ class RideTest extends TestCase
         $ride6->users()->attach($this->user, ['status' => 'rejected']);
 
         $response = $this->json('GET', 'ride/getRidesHistory', [], $this->headers);
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             [
                 'id' => $ride1->id,
                 'myzone' => $ride1->myzone,
@@ -681,8 +684,8 @@ class RideTest extends TestCase
         $ride6->users()->attach($this->user, ['status' => 'rejected']);
 
         $response = $this->json('GET', 'ride/getRidesHistoryCount/' . $this->user->id, [], $this->headers);
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             'offeredCount' => 2,
             'takenCount' => 1
         ]);
@@ -707,8 +710,8 @@ class RideTest extends TestCase
         })->all();
 
         $response = $this->json('GET', 'ride/' . $ride->id . '/chat', [], $this->headers);
-        $response->assertResponseOk();
-        $response->seeJsonEquals([
+        $response->assertStatus(200);
+        $response->assertExactJson([
             'messages' => $messages
         ]);
     }
@@ -733,6 +736,6 @@ class RideTest extends TestCase
         $this->expectsNotification($user3, RideMessageReceived::class);
 
         $response = $this->json('POST', 'ride/' . $ride->id . '/chat', $request, $this->headers);
-        $response->assertResponseStatus(201);
+        $response->assertStatus(201);
     }
 }

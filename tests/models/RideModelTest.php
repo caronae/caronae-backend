@@ -1,6 +1,10 @@
 <?php
 
+namespace Tests;
+
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Carbon;
+use DB;
 
 use Caronae\Models\User;
 use Caronae\Models\Ride;

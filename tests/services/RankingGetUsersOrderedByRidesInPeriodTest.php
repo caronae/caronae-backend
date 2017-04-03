@@ -1,10 +1,13 @@
 <?php
 
+namespace Tests;
+
 use Caronae\Services\RankingService;
 use Caronae\Models\Ride;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Caronae\Models\User;
+use DB;
 
 class RankingGetUsersOrderedByRidesInPeriodTest extends TestCase
 {

@@ -1,5 +1,9 @@
 <?php
+
+namespace Tests;
+
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Mockery;
 
 use Caronae\Repositories\PushNotificationInterface;
 use Caronae\Services\PushNotificationService;

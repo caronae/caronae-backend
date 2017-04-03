@@ -1,8 +1,11 @@
 <?php
 
+namespace Tests;
+
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Mockery;
 
 use Caronae\Notifications\RideMessageReceived;
 use Caronae\Models\Ride;
