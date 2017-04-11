@@ -19,7 +19,7 @@ dependencies:
 
 test:
   override:
-    - phpunit
+    - ./vendor/bin/phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml
 
 deployment:
   development:
