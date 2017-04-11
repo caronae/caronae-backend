@@ -26,7 +26,7 @@ deployment:
     branch: develop
     owner: macecchi
     commands:
-      - ssh caronae@54.243.7.207 "cd ~/backend && git pull && composer install --no-interaction --no-ansi --no-dev && php artisan migrate && supervisorctl restart laravel-worker:"
+      - ssh -A caronae@54.243.7.207 "cd ~/backend && git reset --hard && git pull && bash upgrade.sh"
 
 experimental:
   notify:
