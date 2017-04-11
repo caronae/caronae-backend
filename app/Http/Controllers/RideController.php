@@ -70,10 +70,23 @@ class RideController extends Controller
 
         $limit = 20;
         $rides = Ride::withAvailableSlots()
-            ->inTheFuture()
             ->notFinished()
             ->orderBy('rides.date')
             ->withFilters($filters);
+
+        if (!empty($request->date)) {
+            if (empty($request->time)) {
+                $dateMin = Carbon::createFromFormat('Y-m-d', $request->date)->setTime(0,0,0);
+            } else {
+                $dateTimeString = $request->date . ' ' . substr($request->time, 0, 5);
+                $dateMin = Carbon::createFromFormat('Y-m-d H:i', $dateTimeString);
+            }
+
+            $dateMax = $dateMin->copy()->setTime(23,59,59);
+            $rides = $rides->whereBetween('date', [$dateMin, $dateMax]);
+        } else {
+            $rides = $rides->inTheFuture();
+        }
 
         $results = $rides->paginate($limit);
         $results->each(function ($ride) {
