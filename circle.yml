@@ -27,6 +27,11 @@ deployment:
     owner: macecchi
     commands:
       - ssh -A caronae@54.243.7.207 "cd ~/backend && git reset --hard && git pull && bash upgrade.sh"
+  production:
+    branch: master
+    owner: macecchi
+    commands:
+      - ssh -A caronae@146.164.84.130 -p 22022 "cd ~/backend && git fetch origin master && git reset --hard origin/master && bash upgrade.sh"
 
 experimental:
   notify:
