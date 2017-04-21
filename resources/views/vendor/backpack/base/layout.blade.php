@@ -30,8 +30,6 @@
     <!-- BackPack Base CSS -->
     <link rel="stylesheet" href="{{ asset('vendor/backpack/backpack.base.css') }}">
 
-    <link rel="stylesheet" href="{{ asset('vendor/backpack/caronae.css') }}">
-
     @yield('after_styles')
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -91,7 +89,7 @@
       <footer class="main-footer">
         @if (config('backpack.base.show_powered_by'))
             <div class="pull-right hidden-xs">
-              {{ trans('backpack::base.powered_by') }} <a target="_blank" href="http://laravelbackpack.com">Laravel BackPack</a>
+              {{ trans('backpack::base.powered_by') }} <a target="_blank" href="http://backpackforlaravel.com?ref=panel_footer_link">Backpack for Laravel</a>
             </div>
         @endif
         {{ trans('backpack::base.handcrafted_by') }} <a target="_blank" href="{{ config('backpack.base.developer_link') }}">{{ config('backpack.base.developer_name') }}</a>.
@@ -125,12 +123,18 @@
             });
 
         // Set active state on menu element
-        var current_url = "{{ url(Route::current()->getUri()) }}";
+        var current_url = "{{ Request::url() }}";
         $("ul.sidebar-menu li a").each(function() {
           if ($(this).attr('href').startsWith(current_url) || current_url.startsWith($(this).attr('href')))
           {
             $(this).parents('li').addClass('active');
           }
+        });
+        {{-- Enable deep link to tab --}}
+        var activeTab = $('[href="' + location.hash.replace("#", "#tab_") + '"]');
+        activeTab && activeTab.tab('show');
+        $('.nav-tabs a').on('shown.bs.tab', function (e) {
+            location.hash = e.target.hash.replace("#tab_", "#");
         });
     </script>
 
