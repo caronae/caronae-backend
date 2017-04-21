@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4aeae07fc0b8a1f08ad751ad9ef67c26",
+    "content-hash": "e271d7c8d4a3c7ff4cc516b075943be9",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -168,63 +168,6 @@
                 "update"
             ],
             "time": "2017-04-21T16:15:29+00:00"
-        },
-        {
-            "name": "backpack/logmanager",
-            "version": "2.3.10",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Laravel-Backpack/LogManager.git",
-                "reference": "0f25a1163a994d832a6406b2f03b9f9e93bf9db2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Laravel-Backpack/LogManager/zipball/0f25a1163a994d832a6406b2f03b9f9e93bf9db2",
-                "reference": "0f25a1163a994d832a6406b2f03b9f9e93bf9db2",
-                "shasum": ""
-            },
-            "require": {
-                "backpack/base": "0.*",
-                "illuminate/support": "~5.1",
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "4.*",
-                "scrutinizer/ocular": "~1.1"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Backpack\\LogManager\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Cristian Tabacitu",
-                    "email": "hello@tabacitu.ro",
-                    "homepage": "http://tabacitu.ro",
-                    "role": "Developer"
-                }
-            ],
-            "description": "An interface to preview, download and delete Laravel log files.",
-            "homepage": "https://github.com/laravel-backpack/LogManager",
-            "keywords": [
-                "backpack",
-                "laravel",
-                "log interface",
-                "log manager",
-                "logs"
-            ],
-            "time": "2017-04-05T05:14:10+00:00"
         },
         {
             "name": "barryvdh/elfinder-flysystem-driver",
