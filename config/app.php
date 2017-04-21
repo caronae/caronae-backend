@@ -4,6 +4,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Name
+    |--------------------------------------------------------------------------
+    |
+    | This value is the name of your application. This value is used when the
+    | framework needs to place the application's name in a notification or
+    | any other location as required by the application or its packages.
+    */
+    'name' => 'Caronaê',
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
@@ -149,23 +160,30 @@ return [
         Illuminate\View\ViewServiceProvider::class,
 
         /*
+         * Package Service Providers...
+         */
+        Laravel\Tinker\TinkerServiceProvider::class,
+
+        /*
          * Application Service Providers...
          */
         Caronae\Providers\AppServiceProvider::class,
         Caronae\Providers\AuthServiceProvider::class,
-        Caronae\Providers\BroadcastServiceProvider::class,
+        // Caronae\Providers\BroadcastServiceProvider::class,
         Caronae\Providers\EventServiceProvider::class,
         Caronae\Providers\RouteServiceProvider::class,
 
         Caronae\Providers\ViewComposerServiceProvider::class,
         Caronae\Providers\ValidatorServiceProvider::class,
 
+        Caronae\Providers\GraylogLogProvider::class,
         Caronae\Providers\FacebookSDKServiceProvider::class,
         Caronae\Providers\SigaRepositoryServiceProvider::class,
         Caronae\Providers\PushNotificationFirebaseServiceProvider::class,
 
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
 
         /*
         * Backpack Service Providers...
@@ -192,6 +210,7 @@ return [
         'Artisan'   => Illuminate\Support\Facades\Artisan::class,
         'Auth'      => Illuminate\Support\Facades\Auth::class,
         'Blade'     => Illuminate\Support\Facades\Blade::class,
+        'Broadcast' => Illuminate\Support\Facades\Broadcast::class,
         'Bus'       => Illuminate\Support\Facades\Bus::class,
         'Cache'     => Illuminate\Support\Facades\Cache::class,
         'Config'    => Illuminate\Support\Facades\Config::class,
@@ -221,6 +240,7 @@ return [
         'URL'       => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
+
         'Excel'     => Maatwebsite\Excel\Facades\Excel::class,
     ],
 

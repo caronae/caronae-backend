@@ -13,7 +13,7 @@ class Ride extends Model
     use Notifiable;
     use SoftDeletes;
 
-    protected $hidden = ['pivot', 'created_at', 'deleted_at', 'updated_at', 'date'];
+    protected $hidden = ['pivot', 'created_at', 'deleted_at', 'updated_at', 'date', 'done'];
     protected $dates = ['date', 'created_at', 'updated_at', 'deleted_at'];
     protected $appends = ['mydate', 'mytime'];
 
@@ -45,6 +45,51 @@ class Ride extends Model
     public function getMyTimeAttribute()
     {
         return $this->date->format('H:i:s');
+    }
+
+    public function getTitleAttribute()
+    {
+        if ($this->going) {
+            $route = $this->neighborhood . ' → ' . $this->hub;
+        } else {
+            $route = $this->hub . ' → ' . $this->neighborhood;
+        }
+        return $route . ' | ' . $this->date->format('d/m');
+    }
+
+    public function scopeWithAvailableSlots($query)
+    {
+        return $query
+            ->leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
+            ->select('rides.*')
+            ->whereIn('ride_user.status', ['pending','accepted','driver'])
+            ->groupBy('rides.id')
+            ->having(DB::raw('count(ride_user.user_id)-1'), '<', DB::raw('rides.slots'));
+    }
+
+    public function scopeNotFinished($query)
+    {
+        return $query->where('rides.done', 'false');
+    }
+
+    public function scopeInTheFuture($query)
+    {
+        return $query->where('rides.date', '>=', Carbon::now());
+    }
+
+    public function scopeWithFilters($query, array $filters = [])
+    {
+        collect($filters)->each(function ($value, $key) use (&$query) {
+            if ($key == 'neighborhoods') {
+                $query = $query->whereIn('rides.neighborhood', $value);
+            } else if ($key == 'hub') {
+                $query = $query->where('rides.' . $key, 'LIKE', $value . '%');
+            } else {
+                $query = $query->where('rides.' . $key, $value);
+            }
+        });
+
+        return $query;
     }
 
     private static function userStats($periodStart, $periodEnd)

@@ -20,14 +20,10 @@ class PushNotificationFirebaseRepository implements PushNotificationInterface
         return $this->doPost($payload);
     }
 
-    public function sendNotificationToTopicId($topicId, $data, $highPriority = NULL)
+    public function sendNotificationToTopicId($topicId, $data)
     {
         $payload = $this->payloadWithData($data);
         $payload['to'] = '/topics/' . $topicId;
-
-        if ($highPriority) {
-            $payload['priority'] = 'high';
-        }
 
         return $this->doPost($payload);
     }
@@ -46,6 +42,7 @@ class PushNotificationFirebaseRepository implements PushNotificationInterface
 
         return [
             'content_available' => true,
+            'priority' => 'high',
             'notification' => $notification,
             'data' => $data
         ];

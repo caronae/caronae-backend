@@ -76,8 +76,14 @@ strong {
 }
 
 .landing-page {
+  padding: 30px;
   font-family: Varela, sans-serif;
   font-size: 16px;
+}
+
+.read-more {
+  margin: 20px auto;
+  text-align: center;
 }
 
 .about {

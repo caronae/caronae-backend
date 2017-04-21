@@ -1,5 +1,4 @@
 <?php
-
 namespace Caronae\Http\Controllers;
 
 use Caronae\ExcelExport\ExcelExporter;
@@ -7,19 +6,21 @@ use Caronae\Http\Requests;
 use Caronae\Models\User;
 use Caronae\Exception\SigaException;
 use Caronae\Services\SigaService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    /**
-     * Instantiate a new UserController instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('api.v1.auth', ['only' => [
-            'getOfferedRides'
+            'getOfferedRides',
+            'update',
+            'saveGcmToken',
+            'saveFaceId',
+            'saveProfilePicUrl',
+            'getMutualFriends',
+            'getIntranetPhotoUrl'
         ]]);
 
         $this->middleware('api.v1.userMatchesRequestedUser', ['only' => [
@@ -49,24 +50,24 @@ class UserController extends Controller
             $user->profile = $intranetUser->nivel;
         }
 
-        if (isset($intranetUser->urlFoto) && $intranetUser->urlFoto != '') {
-            list($photoHost, $photoHash) = explode('/', $intranetUser->urlFoto);
-            if ($photoHost == '146.164.2.117:8090') {
-                $user->profile_pic_url = 'https://api.caronae.ufrj.br/user/intranetPhoto/' . $photoHash;
-            }
+        if (!empty($intranetUser->urlFoto)) {
+            $user->profile_pic_url = $intranetUser->urlFoto;
         }
 
         $user->save();
-
         return $user;
     }
 
     public function login(Request $request)
     {
-        $decode = json_decode($request->getContent());
-        $user = User::where(['token' => $decode->token, 'id_ufrj' => $decode->id_ufrj])->first();
+        $this->validate($request, [
+            'id_ufrj' => 'required',
+            'token' => 'required'
+        ]);
+
+        $user = User::where(['id_ufrj' => $request->id_ufrj, 'token' => $request->token])->first();
         if ($user == null) {
-            return response()->json(['error' => 'User not found with provided credentials.'], 403);
+            return response()->json(['error' => 'User not found with provided credentials.'], 401);
         }
 
         // get user's rides as driver
@@ -77,29 +78,47 @@ class UserController extends Controller
 
     public function getOfferedRides(User $user, Request $request)
     {
-        $rides = $user->rides()->where(['status' => 'driver', 'done' => false])->get();
+        $rides = $user->rides()
+            ->where('date', '>=', Carbon::now())
+            ->where(['done' => false, 'status' => 'driver'])
+            ->get();
+
+        $rides = $rides->map(function($ride) {
+            $ride->riders = $ride->riders();
+            return $ride;
+        });
+        
         return ['rides' => $rides];
     }
 
     public function update(Request $request)
     {
-        $decode = json_decode($request->getContent());
-        $user = User::where('token', $request->header('token'))->first();
-        if (empty($request->header('token')) || $user == NULL) {
-            return response()->json(['error' => 'User token not authorized.'], 403);
+        $this->validate($request, [
+            'phone_number' => 'numeric|max:999999999999',
+            'email' => 'email',
+            'location' => 'string',
+            'car_owner' => 'boolean',
+            'car_model' => 'required_if:car_owner,true,1|string|max:25',
+            'car_color' => 'required_if:car_owner,true,1|string|max:25',
+            'car_plate' => 'required_if:car_owner,true,1|regex:/[a-zA-Z]{3}-?[0-9]{4}$/',
+            'profile_pic_url' => 'url'
+        ]);
+
+        $user = $request->currentUser;
+
+        $user->phone_number = $request->phone_number;
+        $user->email = strtolower($request->email);
+        $user->location = $request->location;
+
+        $user->car_owner = $request->car_owner;
+        if ($request->car_owner) {
+            $user->car_model = $request->car_model;
+            $user->car_color = $request->car_color;
+            $user->car_plate = strtoupper($request->car_plate);
         }
 
-        $user->profile = $decode->profile;
-        $user->course = $decode->course;
-        $user->phone_number = $decode->phone_number;
-        $user->email = $decode->email;
-        $user->location = $decode->location;
-        $user->car_owner = $decode->car_owner;
-        $user->car_model = $decode->car_model;
-        $user->car_color = $decode->car_color;
-        $user->car_plate = $decode->car_plate;
-        if (@$decode->profile_pic_url != '') {
-            $user->profile_pic_url = $decode->profile_pic_url;
+        if (isset($request->profile_pic_url)) {
+            $user->profile_pic_url = $request->profile_pic_url;
         }
 
         $user->save();
@@ -107,50 +126,33 @@ class UserController extends Controller
 
     public function saveGcmToken(Request $request)
     {
-        $decode = json_decode($request->getContent());
-        $user = User::where('token', $request->header('token'))->first();
-        if ($user == null) {
-            return response()->json(['error' => 'User token not authorized.'], 403);
-        }
-
-        $user->gcm_token = $decode->token;
-
-        $user->save();
+        // TODO: Deprecate
+        $request->currentUser->gcm_token = $request->token;
+        $request->currentUser->save();
     }
 
     public function saveFaceId(Request $request)
     {
-        $decode = json_decode($request->getContent());
-        $user = User::where('token', $request->header('token'))->first();
-        if ($user == null) {
-            return response()->json(['error' => 'User token not authorized.'], 403);
-        }
+        $this->validate($request, [
+            'id' => 'required'
+        ]);
 
-        if ($decode->id) $user->face_id = $decode->id;
-
-        $user->save();
+        $request->currentUser->face_id = $request->id;
+        $request->currentUser->save();
     }
 
     public function saveProfilePicUrl(Request $request)
     {
-        $decode = json_decode($request->getContent());
-        $user = User::where('token', $request->header('token'))->first();
-        if ($user == null) {
-            return response()->json(['error' => 'User token not authorized.'], 403);
-        }
+        $this->validate($request, [
+            'url' => 'required'
+        ]);
 
-        $user->profile_pic_url = $decode->url;
-
-        $user->save();
+        $request->currentUser->profile_pic_url = $request->url;
+        $request->currentUser->save();
     }
 
     public function getMutualFriends(Request $request, \Facebook\Facebook $fb, $fbID)
     {
-        $user = User::where('token', $request->header('token'))->first();
-        if ($user == null) {
-            return response()->json(['error' => 'User ' . $request->header('token') . ' token not authorized.'], 403);
-        }
-
         $fbToken = $request->header('Facebook-Token');
         if ($fbToken == null) {
             return response()->json(['error' => 'User\'s Facebook token missing.'], 403);
@@ -176,36 +178,17 @@ class UserController extends Controller
         }
 
         $mutualFriends = User::whereIn('face_id', $friendsFacebookIds)->get();
-        return response()->json(["total_count" => $totalFriendsCount, "mutual_friends" => $mutualFriends]);
-    }
-
-    public function loadIntranetPhoto($hash)
-    {
-        $context = stream_context_create(['http' => ['timeout' => 2]]);
-        $intranetResponseRaw = @file_get_contents('http://146.164.2.117:8090/' . $hash, FILE_BINARY, $context);
-
-        // Check if the connection was successful
-        if ($intranetResponseRaw == false) {
-            return response()->json(['error' => 'Failed to connect to Intranet photos database.'], 500);
-        }
-
-        return response($intranetResponseRaw)->header('Content-Type', 'image/jpg');
+        return response()->json(['total_count' => $totalFriendsCount, 'mutual_friends' => $mutualFriends]);
     }
 
     public function getIntranetPhotoUrl(Request $request, SigaService $siga)
     {
-        $user = User::where('token', $request->header('token'))->first();
-        if ($user == null) {
-            return response()->json(['error' => 'User ' . $request->header('token') . ' token not authorized.'], 403);
-        }
-
-        $idUFRJ = $user->id_ufrj;
-        if ($idUFRJ == null || $idUFRJ == '') {
-            return response()->json(['error' => 'User does not have an Intranet identification.'], 403);
+        $idUFRJ = $request->currentUser->id_ufrj;
+        if (empty($idUFRJ)) {
+            return response()->json(['error' => 'User does not have an Intranet identification.'], 404);
         }
 
         $picture = $siga->getProfilePictureById($idUFRJ);
         return response()->json(['url' => $picture]);
     }
-
 }

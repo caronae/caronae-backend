@@ -8,9 +8,8 @@ use Caronae\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 
-class RideUserLeft extends Notification
+class RideUserLeft extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -49,9 +48,11 @@ class RideUserLeft extends Notification
     {
         // TODO: Include the rider's name in the notification
         return [
-            'message' => 'Um caronista desistiu de sua carona',
-            'msgType' => 'quitter',
-            'rideId'  => $this->ride->id
+            'id'       => $this->id,
+            'message'  => 'Um caronista desistiu de sua carona',
+            'msgType'  => 'quitter',
+            'rideId'   => $this->ride->id,
+            'senderId' => $this->user->id
         ];
     }
 

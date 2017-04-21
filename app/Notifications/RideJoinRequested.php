@@ -8,9 +8,8 @@ use Caronae\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 
-class RideJoinRequested extends Notification
+class RideJoinRequested extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -49,9 +48,11 @@ class RideJoinRequested extends Notification
     {
         // TODO: Include the requester's name in the notification
         return [
-            'message' => 'Sua carona recebeu uma solicitação',
-            'msgType' => 'joinRequest',
-            'rideId'  => $this->ride->id
+            'id'       => $this->id,
+            'message'  => 'Sua carona recebeu uma solicitação',
+            'msgType'  => 'joinRequest',
+            'rideId'   => $this->ride->id,
+            'senderId' => $this->requester->id
         ];
     }
 

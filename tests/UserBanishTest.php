@@ -1,10 +1,13 @@
 <?php
 
+namespace Tests;
+
 use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
+use Caronae\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Caronae\Models\User;
+use DB;
 
 class UserBanishTest extends TestCase
 {

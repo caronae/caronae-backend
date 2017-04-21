@@ -9,10 +9,10 @@
         Um erro inesperado aconteceu.
     </h1>
     <p>
-        O endereço "{{ $url }}" que você tentou acessar gerou um erro inesperado no sistema. Por favor, informe os responsáveis do sistema sobre o erro.
+        O endereço que você tentou acessar gerou um erro inesperado no sistema. Por favor, informe os responsáveis do sistema sobre o erro.
     </p>
     <p>
-        <a href="{{ $returnURL }}">
+        <a href="{{ url('/') }}">
             Para voltar à página principal, clique aqui.
         </a>
     </p>

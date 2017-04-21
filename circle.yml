@@ -1,6 +1,6 @@
 machine:
   php:
-    version: 7.0.11
+    version: 7.1.3
   environment:
     APP_ENV: testing
     DB_CONNECTION: pgsql
@@ -10,22 +10,28 @@ machine:
 
 dependencies:
   override:
-    - composer install --no-interaction
+    - composer install --no-interaction --no-ansi
   post:
     - echo "memory_limit = -1" > /opt/circleci/php/$(phpenv global)/etc/conf.d/memory.ini
     - cp .env.example .env
+    - php artisan migrate
     - php artisan key:generate
 
 test:
   override:
-    - phpunit
+    - ./vendor/bin/phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml
 
 deployment:
   development:
     branch: develop
     owner: macecchi
     commands:
-      - ssh caronae@54.243.7.207 "cd ~/backend && git pull && composer install --no-interaction"
+      - ssh -A caronae@54.243.7.207 "cd ~/backend && git reset --hard && git pull && bash upgrade.sh"
+  production:
+    branch: master
+    owner: macecchi
+    commands:
+      - ssh -A caronae@146.164.84.130 -p 22022 "cd ~/backend && git fetch origin master && git reset --hard origin/master && bash upgrade.sh"
 
 experimental:
   notify:

@@ -3,6 +3,7 @@
 namespace Caronae\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Mail;
 
 use Caronae\Http\Requests;
 use Caronae\Http\Controllers\Controller;
@@ -10,28 +11,24 @@ use Caronae\Models\User;
 
 class FalaeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('api.v1.auth');
+    }
+
     public function sendMessage(Request $request)
     {
-        $decode = json_decode($request->getContent());
-        $user = User::where('token', $request->header('token'))->first();
-        if ($user == null) {
-            return response()->json(['error'=>'User token not authorized.'], 403);
-        }
+        $user = $request->currentUser;
+        $subject = $request->subject;
+        $body = $request->message . "\nID UFRJ: " . $user->id_ufrj;
 
-        $to = "caronae@fundoverde.ufrj.br";
-        $headers = [];
-        $headers[] = "Content-type: text/plain; charset=utf-8";
-        $headers[] = "From: {$user->name} <{$user->email}>";
-
-        $subject = $decode->subject;
-        $message = $decode->message . "\nID UFRJ: " . $user->id_ufrj;
-        $headers[] = "Subject: {$subject}";
-
-        $mailStatus = mail($to, $subject, $message, implode("\r\n", $headers));
-        if ($mailStatus) {
-            return response()->json(['status'=>'Message sent.', 'headers'=>$headers]);
-        } else {
-            return response()->json(['status'=>'Message failed to send.'], 500);
-        }
+        Mail::raw($body, function ($message) use ($user, $subject) {
+            $message->to('caronae@fundoverde.ufrj.br');
+            $message->from($user->email, $user->name);
+            $message->replyTo($user->email, $user->name);
+            $message->subject($subject);
+        });
+        
+        return response()->json(['status' => 'Message sent.']);
     }
 }

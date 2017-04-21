@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
 
         //$this->setForeignKeyChecks(false);
 
-        $this->call(BootstrapSeeder::class);
+        $this->call(NeighborhoodSeeder::class);
         $this->call(AdminTableSeeder::class);
         $this->call(UserRideTableSeeder::class);
 

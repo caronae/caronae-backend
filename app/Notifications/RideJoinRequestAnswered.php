@@ -8,9 +8,8 @@ use Caronae\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 
-class RideJoinRequestAnswered extends Notification
+class RideJoinRequestAnswered extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -48,9 +47,11 @@ class RideJoinRequestAnswered extends Notification
     public function toPush($notifiable)
     {
         return [
-            'message' => $this->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(',
-            'msgType' => $this->accepted ? 'accepted' : 'refused',
-            'rideId'  => $this->ride->id
+            'id'       => $this->id,
+            'message'  => $this->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(',
+            'msgType'  => $this->accepted ? 'accepted' : 'refused',
+            'rideId'   => $this->ride->id,
+            'senderId' => $this->ride->driver()->id
         ];
     }
 

@@ -27,14 +27,7 @@ class SigaService
             throw new SigaException("SIGA profile picture not found.");
         }
 
-        $pictureUrl = $profile->urlFoto;
-
-        // See if URL is a valid photo url from siga and proxy it to our server
-        if (preg_match('/(?:146\.164\.2\.117:8090\/)(?P<hash>.+)/', $pictureUrl, $matches)) {
-            $pictureUrl = 'https://api.caronae.ufrj.br/user/intranetPhoto/' . $matches['hash'];
-        }
-
-        return $pictureUrl;
+        return $profile->urlFoto;
     }
 
 }

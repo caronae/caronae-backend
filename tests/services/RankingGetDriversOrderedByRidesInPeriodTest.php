@@ -1,10 +1,13 @@
 <?php
 
+namespace Tests;
+
 use Caronae\Services\RankingService;
 use Caronae\Models\Ride;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Caronae\Models\User;
+use DB;
 
 class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
 {
@@ -13,9 +16,7 @@ class RankingGetDriversOrderedByRidesInPeriodTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-
-        DB::table('neighborhoods')->delete();
-        $this->seed('BootstrapSeeder');
+        $this->seed('NeighborhoodSeeder');
     }
 
     /**

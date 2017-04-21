@@ -8,7 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class RideMessageReceived extends Notification
+class RideMessageReceived extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -43,12 +43,13 @@ class RideMessageReceived extends Notification
      */
     public function toPush($notifiable)
     {
-        $alertMessage = $this->message->user->name . ': ' . $this->message->body;
         return [
-            'message' => $alertMessage,
-            'rideId' => $this->message->ride_id,
+            'id'       => (string)$this->message->id,
+            'title'    => $this->message->ride->title,
+            'message'  => $this->message->user->name . ': ' . $this->message->body,
+            'rideId'   => $this->message->ride_id,
             'senderId' => $this->message->user->id,
-            'msgType' => 'chat'
+            'msgType'  => 'chat'
         ];
     }
 }

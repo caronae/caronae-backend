@@ -21,18 +21,15 @@ use Illuminate\Http\Request;
 
 class RideController extends Controller
 {
-    /**
-     * Instantiate a new RideController instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('api.v1.auth', ['only' => [
+            'index',
+            'listAll',
             'store',
             'validateDuplicate',
             'delete', 'deleteAllFromRoutine', 'deleteAllFromUser',
-            'listAll', 'listFiltered',
+            'listFiltered',
             'requestJoin',
             'getMyActiveRides',
             'leaveRide', 'finishRide',
@@ -47,24 +44,70 @@ class RideController extends Controller
         ]]);
     }
 
-    public function index()
+    public function index(Request $request)
+    {
+        $this->validate($request, [
+            'zone' => 'string',
+            'neighborhoods' => 'string',
+            'place' => 'string|max:255',
+            'hub' => 'string|max:255',
+            'going' => 'boolean',
+            'date' => 'string',
+            'time' => 'string'
+        ]);
+
+        $filters = [];
+        if (isset($request->going))
+            $filters['going'] = $request->going;
+        if (!empty($request->neighborhoods))
+            $filters['neighborhoods'] = explode(', ', $request->neighborhoods);
+        if (!empty($request->place))
+            $filters['myplace'] = $request->place;
+        if (!empty($request->zone))
+            $filters['myzone'] = $request->zone;
+        if (!empty($request->hub))
+            $filters['hub'] = $request->hub;
+
+        $limit = 20;
+        $rides = Ride::withAvailableSlots()
+            ->notFinished()
+            ->orderBy('rides.date')
+            ->withFilters($filters);
+
+        if (!empty($request->date)) {
+            if (empty($request->time)) {
+                $dateMin = Carbon::createFromFormat('Y-m-d', $request->date)->setTime(0,0,0);
+            } else {
+                $dateTimeString = $request->date . ' ' . substr($request->time, 0, 5);
+                $dateMin = Carbon::createFromFormat('Y-m-d H:i', $dateTimeString);
+            }
+
+            $dateMax = $dateMin->copy()->setTime(23,59,59);
+            $rides = $rides->whereBetween('date', [$dateMin, $dateMax]);
+        } else {
+            $rides = $rides->inTheFuture();
+        }
+
+        $results = $rides->paginate($limit);
+        $results->each(function ($ride) {
+            $ride->driver = $ride->driver();
+        });
+
+        return $results;
+    }
+
+    // DEPRECATED
+    public function listAll()
     {
         $limit = 50;
-        $minDate = Carbon::now('America/Sao_Paulo');
-
-        $rides = Ride::leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
-            ->select('rides.*')
-            ->where('rides.date', '>=', $minDate)
-            ->where('rides.done', 'false')
-            ->whereIn('ride_user.status', ['pending','accepted','driver'])
-            ->groupBy('rides.id')
-            ->having(DB::raw('count(ride_user.user_id)-1'), '<', DB::raw('rides.slots'))
+        $rides = Ride::withAvailableSlots()
+            ->inTheFuture()
+            ->notFinished()
             ->orderBy('rides.date')
             ->paginate($limit);
 
         $results = [];
         foreach($rides as $ride) {
-            unset($ride->done);
             $ride->driver = $ride->driver();
             $results[] = $ride;
         }
@@ -74,11 +117,33 @@ class RideController extends Controller
 
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'myzone' => 'required|string',
+            'neighborhood' => 'required|string',
+            'place' => 'string|max:255',
+            'route' => 'string|max:255',
+            'slots' => 'numeric|max:10',
+            'hub' => 'string|max:255',
+            'description' => 'string|max:255',
+            'going' => 'required|boolean',
+            'mydate' => 'required|string',
+            'mytime' => 'required|string'
+        ]);
+
+        try {
+            $date = Carbon::createFromFormat('d/m/Y H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
+        } catch(\InvalidArgumentException $error) {
+            $date = Carbon::createFromFormat('Y-m-d H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
+        }
+        
+        if ($date->isPast()) {
+            return response()->json(['error' => 'You cannot create a ride in the past.'], 403);
+        }
+
         $user = $request->currentUser;
 
-        $rides_created = [];
-        DB::transaction(function() use ($request, $user, &$rides_created) {
-            //create new ride and save it
+        $ridesCreated = [];
+        DB::transaction(function() use ($request, $date, $user, &$ridesCreated) {
             $ride = new Ride();
             $ride->myzone = $request->myzone;
             $ride->neighborhood = $request->neighborhood;
@@ -88,15 +153,9 @@ class RideController extends Controller
             $ride->hub = $request->hub;
             $ride->description = $request->description;
             $ride->going = $request->going;
-
-            try {
-                $ride->date = Carbon::createFromFormat('d/m/Y H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
-            } catch(\InvalidArgumentException $error) {
-                $ride->date = Carbon::createFromFormat('Y-m-d H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
-            }
-
+            $ride->date = $date;
             $ride->save();
-            $rides_created[] = $ride;
+            $ridesCreated[] = $ride;
 
             // save relationship between ride and user
             $ride->users()->attach($user->id, ['status' => 'driver']);
@@ -137,7 +196,7 @@ class RideController extends Controller
 
                     $repeating_ride->save();
 
-                    $rides_created[] = $repeating_ride;
+                    $ridesCreated[] = $repeating_ride;
 
                     // Saving the relationship between ride and user
                     $repeating_ride->users()->attach($user->id, ['status' => 'driver']);
@@ -152,11 +211,11 @@ class RideController extends Controller
             }
         });
 
-        if (empty($rides_created)) {
+        if (empty($ridesCreated)) {
             return response()->json(['error'=>'No rides were created.'], 204);
         }
 
-        return $rides_created;
+        return response()->json($ridesCreated, 201);
     }
     
     public function validateDuplicate(Request $request)
@@ -258,22 +317,23 @@ class RideController extends Controller
 
     public function listFiltered(Request $request)
     {
-        //locations will come as a string divided by ", ", explode the string into an array
-        $locations = explode(", ", $request->location);
+        $locations = explode(', ', $request->location);
 
         //location can be zones or neighborhoods, check if first array position is a zone or a neighborhood
         if ($locations[0] == 'Centro' || $locations[0] == 'Zona Sul' || $locations[0] == 'Zona Oeste' || $locations[0] == 'Zona Norte' || $locations[0] == 'Baixada' || $locations[0] == 'Grande Niterói' || $locations[0] == 'Outros') {
-            $locationColumn = 'myzone';//if location is filtered by zone, query by 'myzone' column
+            $locationColumn = 'myzone';
         } else {
-            $locationColumn = 'neighborhood';//if location is filtered by neighborhood, query by 'neighborhood' column
+            $locationColumn = 'neighborhood';
         }
 
-        $minDate = $request->date . ' ' . $request->time;
-        $maxDate = $request->date . ' 23:59:59';
+        $dateMin = Carbon::createFromFormat('Y-m-d H:i', $request->date . ' ' . substr($request->time, 0, 5));
+        $dateMax = $dateMin->copy()->setTime(23,59,59);
 
-        $rides = Ride::whereBetween('date', [$minDate, $maxDate])->where('done', false)->where('going', $request->go)->whereIn($locationColumn, $locations);
+        $rides = Ride::whereBetween('date', [$dateMin, $dateMax])
+            ->where('done', false)
+            ->where('going', $request->go)
+            ->whereIn($locationColumn, $locations);
 
-        //query the rides
         if (empty($request->center)) {
             $rides = $rides->get();
         } else {
@@ -429,6 +489,11 @@ class RideController extends Controller
             return response()->json(['error' => 'User is not the driver of this ride'], 403);
         }
 
+        // check if the ride is in the past, otherwise it cannot be marked as finished
+        if ($ride->date->isFuture()) {
+            return response()->json(['error' => 'A ride in the future cannot be marked as finished'], 403);
+        }
+
         $ride->done = true;
         $ride->save();
 
@@ -509,15 +574,10 @@ class RideController extends Controller
         }
 
         $messages = $messages->map(function ($message) {
-            $user = $message->user;
             return [
                 'id' => $message->id,
                 'body' => $message->body,
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'profile_pic_url' => $user->profile_pic_url
-                ],
+                'user' => $message->user,
                 'date' => $message->date->toDateTimeString()
             ];
         });
@@ -538,8 +598,15 @@ class RideController extends Controller
             'user_id' => $request->currentUser->id,
             'body' => $request->message
         ]);
-
-        $ride->notify(new RideMessageReceived($message));
+        $notification = new RideMessageReceived($message);
+        
+        $subscribers = $ride->users()
+            ->whereIn('status', ['accepted', 'driver'])
+            ->where('user_id', '!=', $request->currentUser->id)
+            ->get();
+        $subscribers->each(function($user) use ($notification) {
+            $user->notify($notification);
+        });
 
         return response()->json([
             'message' => 'Message sent.',
@@ -574,6 +641,7 @@ class RideController extends Controller
     protected function weekDaysStringToRecurrString($weekDaysString)
     {
         $weekDaysTable = [
+            '0' => 'SU',
             '1' => 'MO',
             '2' => 'TU',
             '3' => 'WE',
