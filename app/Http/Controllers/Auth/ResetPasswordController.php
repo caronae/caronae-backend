@@ -22,9 +22,8 @@ class ResetPasswordController extends Controller
      * @var string
      */
 
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/admin';
 
-    protected $subject = "Caronaê - Criar nova senha";
     /**
      * Create a new controller instance.
      *
