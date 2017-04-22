@@ -17,7 +17,7 @@ class ApiV1Authenticate
      */
     public function handle($request, Closure $next)
     {
-        if (empty($request->header('token')) || ($user = User::where('token', $request->header('token'))->first()) == NULL) {
+        if (empty($request->header('token')) || ($user = User::where('token', $request->header('token'))->first()) == NULL || $user->banned) {
             return response()->json(['error' => 'User token not authorized.'], 401);
         }
 

@@ -3,8 +3,9 @@
 
 	<ul class="properties">
 		<li class="property"><span class="column-name">Nome</span> {{ $u->name }}</li>
+		<li class="property"><span class="column-name">Usuário desde</span> {{ $u->created_at }}</li>
 		<li class="property">
-			<span class="column-name">E-mail</span> 
+			<span class="column-name">E-mail</span>
 			@if ($u->email)
 			<a href="mailto:{{$u->email}}">{{$u->email}}</a>
 			@endif

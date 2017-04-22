@@ -15,13 +15,26 @@ class UserController extends CrudController {
         $this->crud->enableDetailsRow();
         $this->crud->removeButton('delete');
         $this->crud->addButtonFromView('line', 'Banir', 'ban', 1);
+        $this->crud->enableExportButtons();
+
+        $this->crud->addFilter(
+            [
+              'type' => 'simple',
+              'name' => 'banned',
+              'label' => 'Banidos'
+            ],
+            false,
+            function($values) {
+                $this->crud->query = $this->crud->query->where('banned', true);
+            }
+        );
 
         $this->crud->setColumns([
         	[ 'name' => 'name', 'label' => 'Nome' ],
         	[ 'name' => 'profile', 'label' => 'Perfil' ],
         	[ 'name' => 'course', 'label' => 'Curso' ],
         	[ 'name' => 'location', 'label' => 'Bairro' ],
-        	[ 'name' => 'id_ufrj', 'label' => 'ID UFRJ' ],
+            [ 'name' => 'id_ufrj', 'label' => 'ID UFRJ' ],
         ]);
         $this->crud->addFields([
         	[ 'name' => 'profile_pic_url', 'label' => 'Foto', 'type' => 'image' ],
@@ -55,4 +68,16 @@ class UserController extends CrudController {
 		$user = User::find($id);
 		return view('vendor.backpack.crud.inc.user', ['u' => $user]);
 	}
+
+    public function ban(Request $request, User $user)
+    {
+        $user->banish();
+        return response()->json(['message' => 'User banned']);
+    }
+
+    public function unban(Request $request, User $user)
+    {
+        $user->unban();
+        return response()->json(['message' => 'User unbanned']);
+    }
 }

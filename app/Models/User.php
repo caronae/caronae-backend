@@ -57,13 +57,15 @@ class User extends Model
             RideUser::whereIn('ride_id', $deadRides)->delete();
             Ride::whereIn('id', $deadRides)->delete();
 
-            $this->delete();
+            $this->banned = true;
+            $this->save();
         });
     }
 
     public function unban()
     {
-        $this->restore();
+        $this->banned = false;
+        $this->save();
     }
 
     public function usesNotificationsWithToken()
