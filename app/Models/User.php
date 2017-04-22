@@ -6,14 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
+use Backpack\CRUD\CrudTrait;
 
 class User extends Model
 {
     use Notifiable;
     use SoftDeletes;
+    use CrudTrait;
 
     protected $fillable = ['name', 'email', 'profile', 'id_ufrj', 'token'];
-    protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version'];
+    protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version', 'banned'];
     protected $dates = ['deleted_at'];
 
     public function setCarPlateAttribute($value)
@@ -60,13 +62,15 @@ class User extends Model
             RideUser::whereIn('ride_id', $deadRides)->delete();
             Ride::whereIn('id', $deadRides)->delete();
 
-            $this->delete();
+            $this->banned = true;
+            $this->save();
         });
     }
 
     public function unban()
     {
-        $this->restore();
+        $this->banned = false;
+        $this->save();
     }
 
     public function usesNotificationsWithToken()

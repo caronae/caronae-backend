@@ -67,6 +67,11 @@ class Ride extends Model
             ->having(DB::raw('count(ride_user.user_id)-1'), '<', DB::raw('rides.slots'));
     }
 
+    public function scopeFinished($query)
+    {
+        return $query->where('rides.done', 'true');
+    }
+
     public function scopeNotFinished($query)
     {
         return $query->where('rides.done', 'false');

@@ -1,0 +1,11 @@
+/*
+*
+* Backpack Crud / List
+*
+*/
+
+/* Removes the horizontal scroll (if the width allows it) */
+.box-body.table-responsive {
+    padding-left: 15px;
+    padding-right: 15px;
+}
