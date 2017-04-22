@@ -16,6 +16,11 @@ class User extends Model
     protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version'];
     protected $dates = ['deleted_at'];
 
+    public function setCarPlateAttribute($value)
+    {
+        $this->attributes['car_plate'] = strtoupper($value);
+    }
+
     public function rides()
     {
         return $this->belongsToMany(Ride::class)->withPivot('status', 'feedback')->withTimestamps();
