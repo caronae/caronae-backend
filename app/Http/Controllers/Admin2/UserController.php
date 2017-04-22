@@ -1,7 +1,7 @@
 <?php 
 namespace Caronae\Http\Controllers\Admin2;
 
-use Backpack\CRUD\App\Http\Controllers\CrudController;
+use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Caronae\Models\User;
 use Illuminate\Http\Request;
 
