@@ -14,10 +14,12 @@
         "graylog2/gelf-php": "^1.5",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "^1.0",
+        "league/flysystem-aws-s3-v3": "^1.0",
         "maatwebsite/excel": "~2.1.0",
         "predis/predis": "^1.1",
         "rap2hpoutre/laravel-log-viewer": "^0.8.1",
-        "simshaun/recurr": "^1.2"
+        "simshaun/recurr": "^1.2",
+        "spatie/laravel-backup": "^4.12"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
