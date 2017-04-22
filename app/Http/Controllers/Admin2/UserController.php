@@ -5,8 +5,8 @@ use Backpack\CRUD\App\Http\Controllers\CrudController;
 use Caronae\Models\User;
 use Illuminate\Http\Request;
 
-class UserController extends CrudController {
-
+class UserController extends CrudController
+{
     public function setup() {
         $this->crud->setModel('Caronae\Models\User');
         $this->crud->setRoute('admin2/users');
@@ -16,6 +16,7 @@ class UserController extends CrudController {
         $this->crud->removeButton('delete');
         $this->crud->addButtonFromView('line', 'Banir', 'ban', 1);
         $this->crud->enableExportButtons();
+        $this->crud->setDefaultPageLength(10);
 
         $this->crud->addFilter(
             [

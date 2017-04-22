@@ -3,7 +3,7 @@
 @section('header')
     <section class="content-header">
       <h1>
-        Caronas
+        Caronas <small>Todas as caronas concluídas no período selecionado</small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ url(config('backpack.base.route_prefix', 'admin')) }}">{{ config('backpack.base.project_name') }}</a></li>
@@ -43,6 +43,7 @@
                 <th style="width: 60px">Distância Total</th>
                 <th style="width: 60px">Total de Caronas</th>
                 <th style="width: 60px">Distância Média</th>
+                <th style="width: 60px">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -56,15 +57,13 @@
 
   </div>
 @endsection
+
 @section('after_styles')
   <!-- DATA TABLES -->
   <link href="{{ asset('vendor/adminlte/plugins/datatables/dataTables.bootstrap.css') }}" rel="stylesheet" type="text/css" />
   <link rel="stylesheet" href="{{ asset('vendor/backpack/crud/css/crud.css') }}">
   <link rel="stylesheet" href="{{ asset('vendor/backpack/crud/css/form.css') }}">
   <link rel="stylesheet" href="{{ asset('vendor/backpack/crud/css/list.css') }}">
-
-  <!-- CRUD LIST CONTENT - crud_list_styles stack -->
-  @stack('crud_list_styles')
 @endsection
 
 @section('after_scripts')
@@ -97,42 +96,6 @@
                 if(data === null) return '<span title="Zona e/ou bairro com distância desconhecida.">?</span>';
                 return Math.round(data * 10) / 10 + ' Km';
             };
-
-            var showModal = function(riders){
-                var $modal = $('.modal-riders');
-
-                var $modalBody = $modal.find('.modal-body');
-                $modalBody.html('');
-                for(var i=0; i < riders.length; i++){
-                    var rider = riders[i];
-                    $modalBody
-                    .append(
-                        $('<p>')
-                        .append(rider.name)
-                        .append(' (')
-                        .append(
-                            $('<a>')
-                            .attr('href', "mailto:"+rider.email)
-                            .attr('target', '_blank')
-                            .append(rider.email)
-                        )
-                        .append(')')
-                    );
-                }
-
-                $modal.modal();
-            };
-
-            $('table').on('click', 'tr.carona', function(){
-                var $this = $(this);
-                var rideId = $this.data('ride-id');
-
-                $this.addClass('loading');
-                $.get(routes.riders(rideId)).then(function(riders){
-                    showModal(riders);
-                    $this.removeClass('loading');
-                });
-            });
 
             $('.table').DataTable({
                 createdRow: function( row, data ) {
@@ -183,7 +146,12 @@
                     {
                         data: 'distancia_media',
                         render: formatDistance
-                    }
+                    },
+                    {
+                        render: function ( data, type, full, meta ) {
+                            return '<a href="'+routes.ride(full.id)+'" class="btn btn-xs btn-default"><i class="fa fa-eye"></i> Ver</a>'
+                        }
+                    },
                 ]
             });
         });

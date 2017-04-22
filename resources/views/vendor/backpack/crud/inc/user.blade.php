@@ -1,5 +1,7 @@
 <div class="user-details">
-	<img src="{{ $u->profile_pic_url or asset('images/user-placeholder.png') }}" class="image">
+	<div class="user-image">
+		<img src="{{ $u->profile_pic_url or asset('images/user-placeholder.png') }}">
+	</div>
 
 	<ul class="properties">
 		<li class="property"><span class="column-name">Nome</span> {{ $u->name }}</li>

@@ -1,25 +1,37 @@
 .user-details {
+	display: flex;
 	margin: 15px;
 	text-align: left;
 }
 
 .user-details .properties {
 	display: inline-block;
+	flex-grow: 1;
 	vertical-align: top;
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
-.user-details .image {
-	display: inline-block;
-	width: 150px;
-	height: auto;
+.user-details .user-image {
+	display: inline-flex;
+	background-color: #666;
+	border: 5px solid #666;
+	border-radius: 50%;
 	margin-right: 20px;
+	overflow: hidden;
+	align-items: center;
+	width: 150px;
+	height: 150px;
+	order: 1;
+}
+
+.user-details .user-image img {
+  width: 100%;
 }
 
 .user-details .property {
-	margin: 10px 0;
+	margin: 2px 0;
 }
 
 .user-details .column-name {

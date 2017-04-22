@@ -29,5 +29,9 @@ routes = {
 
     riders: function(rideId){
         return url('admin/riders/'+rideId);
+    },
+
+    ride: function(id){
+        return '/admin2/rides/'+id;
     }
 };
