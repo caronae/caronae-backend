@@ -17,3 +17,6 @@ CRUD::resource('users', 'UserController')->with(function() {
     Route::post('users/{user}/ban', 'UserController@ban');
     Route::post('users/{user}/unban', 'UserController@unban');
 });
+
+Route::get('rides', 'RideController@index');
+Route::get('rides.json', 'RideController@indexJson');

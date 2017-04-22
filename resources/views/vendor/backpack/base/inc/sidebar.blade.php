@@ -10,7 +10,7 @@
           </div>
           <div class="pull-left info">
             <p>{{ Auth::user()->name }}</p>
-            <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+            <small>{{ Auth::user()->email }}</small>
           </div>
         </div>
         <!-- sidebar menu: : style can be found in sidebar.less -->
@@ -21,6 +21,7 @@
           <!-- ================================================ -->
           <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/dashboard') }}"><i class="fa fa-dashboard"></i> <span>{{ trans('backpack::base.dashboard') }}</span></a></li>
           <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/users') }}"><i class="fa fa-user"></i> <span>{{ trans('backpack::base.users') }}</span></a></li>
+          <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/rides') }}"><i class="fa fa-car"></i> <span>Caronas</span></a></li>
           <li><a href="{{ route('logs') }}"><i class="fa fa-terminal"></i> <span>Logs</span></a></li>
 
           <!-- ======================================= -->

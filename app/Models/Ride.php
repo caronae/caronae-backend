@@ -140,6 +140,8 @@ class Ride extends Model
             ->mergeBindings($join)
             ->where('ride_user.status', '=', 'driver')
             ->where('done', '=', true)
+            ->where('rides.date', '>=', $periodStart)
+            ->where('rides.date', '<=', $periodEnd)
             ->select('users.name as driver', 'users.course', 'rides.id', 'date', 'myzone', 'neighborhood', 'going', 'hub', 'distance',
                 't1.distancia_total',
                 't1.numero_de_caronas',
