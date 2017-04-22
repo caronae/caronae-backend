@@ -45,7 +45,7 @@ class UserBanishTest extends TestCase
 
         $user->banish();
 
-        $this->assertTrue(!is_null($user->deleted_at));
+        $this->assertTrue($user->banned);
     }
 
     public function testNotDoneRequestsForRidesAreDeleted(){

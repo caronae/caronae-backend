@@ -15,7 +15,7 @@ class User extends Model
     use CrudTrait;
 
     protected $fillable = ['name', 'email', 'profile', 'id_ufrj', 'token'];
-    protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version'];
+    protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version', 'banned'];
     protected $dates = ['deleted_at'];
 
     public function rides()
