@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class UserController extends CrudController {
 
-	public function setup() {
+    public function setup() {
         $this->crud->setModel('Caronae\Models\User');
         $this->crud->setRoute('admin2/users');
         $this->crud->setEntityNameStrings('usuário', 'usuários');
@@ -30,44 +30,44 @@ class UserController extends CrudController {
         );
 
         $this->crud->setColumns([
-        	[ 'name' => 'name', 'label' => 'Nome' ],
-        	[ 'name' => 'profile', 'label' => 'Perfil' ],
-        	[ 'name' => 'course', 'label' => 'Curso' ],
-        	[ 'name' => 'location', 'label' => 'Bairro' ],
+            [ 'name' => 'name', 'label' => 'Nome' ],
+            [ 'name' => 'profile', 'label' => 'Perfil' ],
+            [ 'name' => 'course', 'label' => 'Curso' ],
+            [ 'name' => 'location', 'label' => 'Bairro' ],
             [ 'name' => 'id_ufrj', 'label' => 'ID UFRJ' ],
         ]);
         $this->crud->addFields([
-        	[ 'name' => 'profile_pic_url', 'label' => 'Foto', 'type' => 'image' ],
-        	[ 'name' => 'name', 'label' => 'Nome' ],
-        	[ 'name' => 'email', 'label' => 'E-mail', 'type' => 'email' ],
-        	[ 'name' => 'phone_number', 'label' => 'Telefone' ],
-        	[ 'name' => 'profile', 'label' => 'Perfil' ],
-        	[ 'name' => 'course', 'label' => 'Curso' ],
-        	[ 'name' => 'location', 'label' => 'Bairro' ],
-        	[ 'name' => 'id_ufrj', 'label' => 'ID UFRJ' ],
-        	[ 'name' => 'token', 'label' => 'Chave', 'type' => 'password' ],
-        	[ 'name' => 'car_owner', 'label' => 'Possui carro', 'type' => 'checkbox' ],
-        	[ 'name' => 'car_model', 'label' => 'Modelo do carro' ],
-        	[ 'name' => 'car_plate', 'label' => 'Placa do carro' ],
-        	[ 'name' => 'car_color', 'label' => 'Cor do carro' ],
-		]);
+            [ 'name' => 'profile_pic_url', 'label' => 'Foto', 'type' => 'image' ],
+            [ 'name' => 'name', 'label' => 'Nome' ],
+            [ 'name' => 'email', 'label' => 'E-mail', 'type' => 'email' ],
+            [ 'name' => 'phone_number', 'label' => 'Telefone' ],
+            [ 'name' => 'profile', 'label' => 'Perfil' ],
+            [ 'name' => 'course', 'label' => 'Curso' ],
+            [ 'name' => 'location', 'label' => 'Bairro' ],
+            [ 'name' => 'id_ufrj', 'label' => 'ID UFRJ' ],
+            [ 'name' => 'token', 'label' => 'Chave', 'type' => 'password' ],
+            [ 'name' => 'car_owner', 'label' => 'Possui carro', 'type' => 'checkbox' ],
+            [ 'name' => 'car_model', 'label' => 'Modelo do carro' ],
+            [ 'name' => 'car_plate', 'label' => 'Placa do carro' ],
+            [ 'name' => 'car_color', 'label' => 'Cor do carro' ],
+        ]);
     }
 
-	public function store(Request $request)
-	{
-		return parent::storeCrud();
-	}
+    public function store(Request $request)
+    {
+        return parent::storeCrud();
+    }
 
-	public function update(Request $request)
-	{
-		return parent::updateCrud();
-	}
+    public function update(Request $request)
+    {
+        return parent::updateCrud();
+    }
 
-	public function showDetailsRow($id)
-	{
-		$user = User::find($id);
-		return view('vendor.backpack.crud.inc.user', ['u' => $user]);
-	}
+    public function showDetailsRow($id)
+    {
+        $user = User::find($id);
+        return view('vendor.backpack.crud.inc.user', ['u' => $user]);
+    }
 
     public function ban(Request $request, User $user)
     {

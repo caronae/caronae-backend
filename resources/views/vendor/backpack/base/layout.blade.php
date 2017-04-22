@@ -144,6 +144,5 @@
 
     <!-- JavaScripts -->
     {{-- <script src="{{ elixir('js/app.js') }}"></script> --}}
-    <script src="{{ asset('js/crud.js') }}"></script>
 </body>
 </html>
