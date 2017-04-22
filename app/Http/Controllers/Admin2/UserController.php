@@ -37,6 +37,7 @@ class UserController extends CrudController
             [ 'name' => 'location', 'label' => 'Bairro' ],
             [ 'name' => 'id_ufrj', 'label' => 'ID UFRJ' ],
         ]);
+        
         $this->crud->addFields([
             [ 'name' => 'profile_pic_url', 'label' => 'Foto', 'type' => 'image' ],
             [ 'name' => 'name', 'label' => 'Nome' ],
