@@ -11,7 +11,11 @@
 |
 */
 
-// Administrative pages
+Route::get('/', function() {
+	return redirect()->route('dashboard');
+});
+
+Route::name('dashboard')->get('dashboard', 'HomeController@index');
 
 CRUD::resource('users', 'UserController')->with(function() {
     Route::post('users/{user}/ban', 'UserController@ban');

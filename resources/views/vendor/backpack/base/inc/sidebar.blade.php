@@ -1,26 +1,18 @@
   @if (Auth::check())
-    <!-- Left side column. contains the sidebar -->
     <aside class="main-sidebar">
-      <!-- sidebar: style can be found in sidebar.less -->
       <section class="sidebar">
-        <!-- Sidebar user panel -->
         <div class="user-panel">
-          <div class="pull-left image">
-            <img src="{{ asset('images/logo_caronae.png') }}" class="img-circle" alt="">
-          </div>
-          <div class="pull-left info">
-            <p>{{ Auth::user()->name }}</p>
-            <small>{{ Auth::user()->email }}</small>
+          <div class="info">
+          <p>{{ Auth::user()->name }}</p>
+          <small>{{ Auth::user()->email }}</small>
           </div>
         </div>
-        <!-- sidebar menu: : style can be found in sidebar.less -->
+
         <ul class="sidebar-menu">
           <li class="header">{{ trans('backpack::base.administration') }}</li>
-          <!-- ================================================ -->
-          <!-- ==== Recommended place for admin menu items ==== -->
-          <!-- ================================================ -->
-          <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/dashboard') }}"><i class="fa fa-dashboard"></i> <span>{{ trans('backpack::base.dashboard') }}</span></a></li>
-          <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/users') }}"><i class="fa fa-user"></i> <span>{{ trans('backpack::base.users') }}</span></a></li>
+
+          <li><a href="{{ route('dashboard') }}"><i class="fa fa-dashboard"></i> <span>Painel</span></a></li>
+          <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/users') }}"><i class="fa fa-user"></i> <span>Usuários</span></a></li>
           <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/rides') }}"><i class="fa fa-car"></i> <span>Caronas</span></a></li>
           <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/admins') }}"><i class="fa fa-lock"></i> <span>Administradores</span></a></li>
           <li><a href="{{ route('logs') }}"><i class="fa fa-terminal"></i> <span>Logs</span></a></li>

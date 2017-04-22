@@ -1,7 +1,27 @@
+.logo-lg {
+	width: 100%;
+	height: 100%;
+}
+
+.logo-lg img {
+	height: 100%;
+	margin-bottom: 10px;
+}
+
+.user-panel .info {
+	position: static;
+	padding: 5px;
+}
+
 .user-details {
 	display: flex;
 	margin: 15px;
 	text-align: left;
+}
+
+.stats .logo {
+	width: 100px;
+	float: right;
 }
 
 .user-details .properties {
@@ -34,11 +54,27 @@
 	margin: 2px 0;
 }
 
-.user-details .column-name {
+.column-name {
 	font-weight: bold;
 }
 
-.user-details .column-name::after {
+.column-name::after {
 	content: ':';
 	margin-right: 5px;
+}
+
+.stats {
+	list-style: none;
+	font-size: 15px;
+	margin: 0;
+	padding: 0;
+}
+
+.stats li {
+	margin: 5px 0;
+}
+
+.icon-ride {
+	background: url('/images/rides.png');
+	width: 20px;
 }
