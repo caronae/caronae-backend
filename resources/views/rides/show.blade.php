@@ -25,15 +25,15 @@
         </div>
         <div class="box-body">
             <div class="ride-info">
-                <p>{{ $ride->going ? 'Chegando' : 'Saindo' }} às: {{ $ride->date->format('H:i | l | d/m/Y') }}</p>
+                <p><span class="column-name">{{ $ride->going ? 'Chegando' : 'Saindo' }} às</span> {{ $ride->date->format('H:i | l | d/m/Y') }}</p>
 
-                <p>Origem: {{ $ride->going ? $ride->neighborhood : $ride->hub }}</p>
-                <p>Destino: {{ $ride->going ? $ride->hub : $ride->neighborhood }}</p>
-                <p>Zona: {{ $ride->zone }}</p>
-                <p>Vagas: {{ $ride->slots }}</p>
-                <p>Concluída: {{ $ride->done ? 'Sim' : 'Não' }}</p>
+                <p><span class="column-name">Origem</span> {{ $ride->going ? $ride->neighborhood : $ride->hub }}</p>
+                <p><span class="column-name">Destino</span> {{ $ride->going ? $ride->hub : $ride->neighborhood }}</p>
+                <p><span class="column-name">Zona</span> {{ $ride->zone }}</p>
+                <p><span class="column-name">Vagas</span> {{ $ride->slots }}</p>
+                <p><span class="column-name">Concluída</span> {{ $ride->done ? 'Sim' : 'Não' }}</p>
                 <p>
-                    Rotina:
+                    <span class="column-name">Rotina</span>
                     @if(!empty($ride->routine_id))
                         Sim (<a href="{{ route('ride', ['ride' => $ride->routine_id]) }}">{{ $ride->routine_id }}</a>)
                     @else
