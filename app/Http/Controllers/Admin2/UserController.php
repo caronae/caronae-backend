@@ -35,7 +35,6 @@ class UserController extends CrudController
             [ 'name' => 'profile', 'label' => 'Perfil' ],
             [ 'name' => 'course', 'label' => 'Curso' ],
             [ 'name' => 'location', 'label' => 'Bairro' ],
-            [ 'name' => 'id_ufrj', 'label' => 'ID UFRJ' ],
         ]);
         
         $this->crud->addFields([
