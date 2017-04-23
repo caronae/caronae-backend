@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "66d8cc62054b72263878a84896914d81",
+    "content-hash": "2c3839aa3f471780e9caa011e45203c0",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -2891,16 +2891,16 @@
         },
         {
             "name": "rap2hpoutre/laravel-log-viewer",
-            "version": "v0.8.1",
+            "version": "v0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rap2hpoutre/laravel-log-viewer.git",
-                "reference": "1a4d1905fd3835d946ca51e6e4d62c77fa19dc9c"
+                "reference": "990fe6b1db13fef918b07fb541148e8b5d6e3841"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rap2hpoutre/laravel-log-viewer/zipball/1a4d1905fd3835d946ca51e6e4d62c77fa19dc9c",
-                "reference": "1a4d1905fd3835d946ca51e6e4d62c77fa19dc9c",
+                "url": "https://api.github.com/repos/rap2hpoutre/laravel-log-viewer/zipball/990fe6b1db13fef918b07fb541148e8b5d6e3841",
+                "reference": "990fe6b1db13fef918b07fb541148e8b5d6e3841",
                 "shasum": ""
             },
             "require": {
@@ -2935,7 +2935,7 @@
                 "logging",
                 "lumen"
             ],
-            "time": "2017-03-13T07:50:58+00:00"
+            "time": "2017-04-23T07:25:46+00:00"
         },
         {
             "name": "simshaun/recurr",
