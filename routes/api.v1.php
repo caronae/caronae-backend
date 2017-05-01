@@ -51,6 +51,8 @@ Route::post('ride/{ride}/chat', 'RideController@sendChatMessage');
 Route::get('ride/{ride}/chat', 'RideController@getChatMessages');
 
 
-// Falae
+// Etc
 
+Route::get('places', 'PlaceController@index');
 Route::post('falae/sendMessage', 'FalaeController@sendMessage');
+

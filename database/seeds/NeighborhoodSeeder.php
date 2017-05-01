@@ -1,6 +1,5 @@
 <?php
 
-use Caronae\Models\Admin;
 use Caronae\Models\Neighborhood;
 use Illuminate\Database\Seeder;
 
