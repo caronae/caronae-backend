@@ -13,9 +13,6 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        \Caronae\Console\Commands\Inspire::class,
-        \Caronae\Console\Commands\DBStartCommand::class,
-        \Caronae\Console\Commands\DBDropCommand::class,
     ];
 
     /**
@@ -26,7 +23,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('inspire')
-                 ->hourly();
+        $schedule->command('backup:clean')->daily();
+        $schedule->command('backup:run')->daily();
     }
 }

@@ -11,7 +11,7 @@ getCurrentURL = function() {
 
 routes = {
     datatables: {
-        ptBrLanguageFile: url('vendor/DataTables/Portuguese-Brasil.json')
+        ptBrLanguageFile: '/vendor/DataTables/Portuguese-Brasil.json'
     },
 
     users: {
@@ -29,5 +29,9 @@ routes = {
 
     riders: function(rideId){
         return url('admin/riders/'+rideId);
+    },
+
+    ride: function(id){
+        return '/admin2/rides/'+id;
     }
 };

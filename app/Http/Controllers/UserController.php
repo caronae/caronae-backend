@@ -66,7 +66,7 @@ class UserController extends Controller
         ]);
 
         $user = User::where(['id_ufrj' => $request->id_ufrj, 'token' => $request->token])->first();
-        if ($user == null) {
+        if ($user == null || $user->banned) {
             return response()->json(['error' => 'User not found with provided credentials.'], 401);
         }
 
