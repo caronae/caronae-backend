@@ -24,9 +24,8 @@ class UserController extends Controller
             'getIntranetPhotoUrl'
         ]]);
 
-        $this->middleware('api.v1.userMatchesRequestedUser', ['only' => [
-            'getOfferedRides'
-        ]]);
+        $this->middleware('api.v1.userMatchesRequestedUser', ['only' => ['getOfferedRides']]);
+        $this->middleware('api.institution', ['only' => ['store']]);
     }
 
     public function store(SignUpRequest $request)

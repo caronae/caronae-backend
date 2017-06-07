@@ -46,6 +46,7 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         'auth' => \Caronae\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'api.institution' => \Caronae\Http\Middleware\ApiAuthenticateInstitution::class,
         'api.v1.auth' => \Caronae\Http\Middleware\ApiV1Authenticate::class,
         'api.v1.userMatchesRequestedUser' => \Caronae\Http\Middleware\ApiV1AuthenticateRequestedUser::class,
         'api.v1.userBelongsToRide' => \Caronae\Http\Middleware\ApiV1AuthenticateRideUser::class,

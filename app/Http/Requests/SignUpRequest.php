@@ -8,7 +8,6 @@ class SignUpRequest extends FormRequest
 {
     public function authorize()
     {
-        // TODO: Add verification  
         return true;
     }
 
