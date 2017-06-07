@@ -8,7 +8,7 @@ return [
          * The name of this application. You can use this name to monitor
          * the backups.
          */
-        'name' => 'caronae-backend',
+        'name' => 'caronae-backend' . env('APP_ENV'),
 
         'source' => [
 
@@ -107,7 +107,7 @@ return [
      */
     'monitorBackups' => [
         [
-            'name' => 'caronae-backend',
+            'name' => 'caronae-backend_' . env('APP_ENV'),
             'disks' => ['backups'],
             'newestBackupsShouldNotBeOlderThanDays' => 1,
             'storageUsedMayNotBeHigherThanMegabytes' => 512,
@@ -136,7 +136,7 @@ return [
             /*
              * The number of days for which daily backups must be kept.
              */
-            'keepDailyBackupsForDays' => 16,
+            'keepDailyBackupsForDays' => 7,
 
             /*
              * The number of weeks for which one weekly backup must be kept.
