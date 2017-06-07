@@ -1,11 +1,9 @@
 <?php
+
 namespace Caronae\Http\Controllers;
 
-use Caronae\ExcelExport\ExcelExporter;
-use Caronae\Http\Requests;
 use Caronae\Http\Requests\SignUpRequest;
 use Caronae\Models\User;
-use Caronae\Exception\SigaException;
 use Caronae\Services\SigaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -49,7 +47,6 @@ class UserController extends Controller
 
         $intranetUser = $siga->getProfileById($idUFRJ);
         $user = new User();
-
         $user->name = mb_convert_case($intranetUser->nome, MB_CASE_TITLE, "UTF-8");
         $user->token = $token;
         $user->id_ufrj = $idUFRJ;
@@ -93,11 +90,11 @@ class UserController extends Controller
             ->where(['done' => false, 'status' => 'driver'])
             ->get();
 
-        $rides = $rides->map(function($ride) {
+        $rides = $rides->map(function ($ride) {
             $ride->riders = $ride->riders();
             return $ride;
         });
-        
+
         return ['rides' => $rides];
     }
 

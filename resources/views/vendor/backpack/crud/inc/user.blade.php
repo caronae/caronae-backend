@@ -1,4 +1,4 @@
-<div class="user-details">
+<div class="model-details user-details">
 	<div class="user-image">
 		<img src="{{ $u->profile_pic_url or asset('images/user-placeholder.png') }}">
 	</div>

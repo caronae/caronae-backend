@@ -12,6 +12,7 @@ class InstitutionController extends CrudController
         $this->crud->setRoute('admin2/institutions');
         $this->crud->setEntityNameStrings('instituição', 'instituições');
         $this->crud->denyAccess(['edit', 'delete']);
+        $this->crud->enableDetailsRow();
 
         $this->crud->setColumns([
             [ 'name' => 'name', 'label' => 'Nome' ],
@@ -27,4 +28,9 @@ class InstitutionController extends CrudController
         return parent::storeCrud();
     }
 
+    public function showDetailsRow($id)
+    {
+        $institution = Institution::find($id);
+        return view('vendor.backpack.crud.inc.institution', ['institution' => $institution]);
+    }
 }
