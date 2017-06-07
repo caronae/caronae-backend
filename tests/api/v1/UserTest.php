@@ -34,8 +34,8 @@ class UserTest extends TestCase
             'id_ufrj' => '111',
             'course' => 'Course'
         ]);
-        $response->assertResponseStatus(201);
-        $response->seeJsonStructure([ 'id' ]);
+        $response->assertStatus(201);
+        $response->assertJsonStructure([ 'id' ]);
     }
 
     public function testStoreDoesNotAddDuplicatedUser()
@@ -50,7 +50,7 @@ class UserTest extends TestCase
         User::create($user);
 
         $response = $this->json('POST', 'users', $user);
-        $response->assertResponseStatus(422);
+        $response->assertStatus(422);
     }
 
     public function testSignUpIntranet()
