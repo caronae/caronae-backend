@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
       docker:
-        - image: circleci/php:7.1-browsers
+        - image: circleci/php:7.1-node
         - image: postgres:9.4.11
           environment:
             POSTGRES_USER: root
@@ -20,6 +20,9 @@ jobs:
       steps:
         - checkout
         - run: cp .env.example .env
+        - run:
+            name: Install Composer
+            command: 'curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer'
         - restore_cache:
             key: composer-{{ checksum "composer.json" }}
         - run: composer install --no-interaction --no-ansi
