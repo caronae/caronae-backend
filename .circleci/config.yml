@@ -1,0 +1,47 @@
+version: 2
+
+jobs:
+  build:
+      docker:
+        - image: circleci/php:7.1-fpm-node
+        - image: postgres:9.4.11
+          environment:
+            POSTGRES_USER: root
+
+      environment:
+        APP_ENV: testing
+        DB_CONNECTION: pgsql
+        DB_HOST: localhost
+        DB_DATABASE: caronae
+        DB_USERNAME: caronae
+
+      working_directory: ~/caronae
+
+      steps:
+        - checkout
+        - run: cp .env.example .env
+        - restore_cache:
+            key: composer-{{ checksum "composer.json" }}
+        - run: composer install --no-interaction --no-ansi
+        - save_cache:
+            key: composer-{{ checksum "composer.json" }}
+            paths:
+              - vendor
+        - run: |
+            sudo -u root createuser -h localhost --superuser caronae &&
+            sudo createdb -h localhost caronae
+        - run: php artisan migrate
+        - run: php artisan key:generate
+        - run:
+            name: test
+            command: './vendor/bin/phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml'
+        - deploy:
+            command: |
+              if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+               ssh -A caronae@54.243.7.207 "cd ~/backend && git reset --hard && git pull && bash upgrade.sh"
+              fi
+        - deploy:
+            command: |
+              if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                ssh -A caronae@146.164.84.130 -p 22022 "cd ~/backend && git fetch origin master && git reset --hard origin/master && bash upgrade.sh"
+              fi
