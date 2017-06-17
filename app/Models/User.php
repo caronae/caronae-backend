@@ -84,4 +84,10 @@ class User extends Model
             || ($this->app_platform == 'Android' && preg_match('/^1\.0(\.[0-9]+)?$/', $this->app_version))
         );
     }
+
+    public function generateToken()
+    {
+        $this->token = strtoupper(substr(base_convert(sha1(uniqid() . rand()), 16, 36), 0, 6));
+        return $this;
+    }
 }

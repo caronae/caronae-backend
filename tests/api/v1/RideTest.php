@@ -809,7 +809,7 @@ class RideTest extends TestCase
             'message' => str_random(255)
         ];
 
-        // all users should be notificated except the sender
+        // all users should be notified except the sender
         $this->expectsNotification($user2, RideMessageReceived::class);
         $this->expectsNotification($user3, RideMessageReceived::class);
 

@@ -1,4 +1,5 @@
 <?php
+use Caronae\Models\Institution;
 use Caronae\Models\Message;
 use Caronae\Models\Neighborhood;
 use Caronae\Models\User;
@@ -267,5 +268,12 @@ $factory->define(Message::class, function (Faker\Generator $faker) {
     return [
         'body' => $faker->realText(50),
         'created_at' => $faker->dateTime()
+    ];
+});
+
+$factory->define(Institution::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->company,
+        'password' => $faker->password
     ];
 });

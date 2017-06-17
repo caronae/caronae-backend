@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use Caronae\Models\Institution;
+use Faker\Factory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App;
 use Carbon;
@@ -28,29 +30,26 @@ class UserTest extends TestCase
 
     public function testStoreSavesUser()
     {
-        $response = $this->json('POST', 'users', [
-            'name' => 'Foo Bar',
-            'profile' => 'Aluno',
-            'id_ufrj' => '111',
-            'course' => 'Course'
-        ]);
-        $response->assertStatus(201);
-        $response->assertJsonStructure([ 'id' ]);
+        $user = $this->newUser();
+        $response = $this->json('POST', 'users', $user, $this->institutionAuthorizationHeaders());
+
+        $createdUser = User::where('id_ufrj', $user['id_ufrj'])->first();
+
+        $response->assertStatus(200);
+        $response->assertExactJson($createdUser->makeVisible('token')->toArray());
     }
 
     public function testStoreDoesNotAddDuplicatedUser()
     {
-        $user = [
-            'name' => 'Foo Bar',
-            'profile' => 'Aluno',
-            'id_ufrj' => '666',
-            'course' => 'Course'
-        ];
+        $user = $this->newUser();
+        $existingUser = User::create($user);
+        $existingUser->generateToken();
+        $existingUser->save();
 
-        User::create($user);
+        $response = $this->json('POST', 'users', $user, $this->institutionAuthorizationHeaders());
 
-        $response = $this->json('POST', 'users', $user);
-        $response->assertStatus(422);
+        $response->assertStatus(200);
+        $response->assertExactJson($existingUser->fresh()->makeVisible('token')->toArray());
     }
 
     public function testSignUpIntranet()
@@ -59,7 +58,7 @@ class UserTest extends TestCase
         $token = str_random(6);
 
         // Mock Siga interface
-        App::singleton(SigaInterface::class, function($app) use ($id_ufrj) {
+        App::singleton(SigaInterface::class, function() use ($id_ufrj) {
             $mockProfile = new \stdClass;
             $mockProfile->nome = 'FULANO SILVA';
             $mockProfile->nomeCurso = 'Engenharia';
@@ -73,7 +72,6 @@ class UserTest extends TestCase
 
         $response = $this->json('GET', "user/signup/intranet/$id_ufrj/$token");
         $response->assertStatus(200);
-        // $response->dump();
         $response->assertJsonFragment([
             'name' => 'Fulano Silva',
             'course' => 'Engenharia',
@@ -94,7 +92,6 @@ class UserTest extends TestCase
         $user = $user->fresh();
 
         // add unfinished rides, which should be returned
-        $rideIds = [];
         $ride = factory(Ride::class)->create(['done' => false])->fresh();
         $user->rides()->attach($ride, ['status' => 'driver']);
 
@@ -191,7 +188,6 @@ class UserTest extends TestCase
 
     public function testUpdateWithInvalidUserFails()
     {
-        $user = factory(User::class)->create();
         $headers = ['token' => ''];
         $body = [
             'phone_number' => '021999999999',
@@ -214,7 +210,6 @@ class UserTest extends TestCase
         $user = factory(User::class)->create()->fresh();
 
         // add unfinished rides, which should be returned
-        $rideIds = [];
         $ride = factory(Ride::class, 'next')->create(['done' => false])->fresh();
         $ride->users()->attach($user, ['status' => 'driver']);
         $rider = factory(User::class)->create()->fresh();
@@ -278,10 +273,7 @@ class UserTest extends TestCase
 
     public function testGetOfferedRidesFromAnotherUserShouldError()
     {
-        // create user
         $user = factory(User::class)->create()->fresh();
-
-        // create another user
         $user2 = factory(User::class)->create()->fresh();
 
         $response = $this->json('GET', 'user/' . $user2->id . '/offeredRides', [], [
@@ -325,7 +317,7 @@ class UserTest extends TestCase
     {
         $user = factory(User::class)->create();
         $headers = ['token' => $user->token];
-        $newURL = \Faker\Factory::create()->url;
+        $newURL = Factory::create()->url;
 
         $response = $this->json('PUT', 'user/saveProfilePicUrl', [
             'url' => $newURL
@@ -336,23 +328,13 @@ class UserTest extends TestCase
         $this->assertEquals($newURL, $savedUser->profile_pic_url);
     }
 
-    public function testGetMutualFriends()
-    {
-
-    }
-
-    public function testLoadIntranetPhoto()
-    {
-
-    }
-
     public function testGetIntranetPhotoUrl()
     {
         $user = factory(User::class)->create();
         $headers = ['token' => $user->token];
 
         // Mock Siga interface
-        App::singleton(SigaInterface::class, function($app) use ($user) {
+        App::singleton(SigaInterface::class, function() use ($user) {
             $mockProfile = new \stdClass;
             $mockProfile->urlFoto = 'image.jpg';
             $sigaRepositoryMock = Mockery::mock(SigaInterface::class);
@@ -365,5 +347,26 @@ class UserTest extends TestCase
         $response->assertExactJson([
             'url' => 'image.jpg'
         ]);
+    }
+
+    private function institutionAuthorizationHeaders(): array
+    {
+        $institution = factory(Institution::class)->create();
+        return [
+            'Authorization' => 'Basic ' . base64_encode($institution->id . ':' . $institution->password)
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function newUser(): array
+    {
+        return [
+            'name' => 'Foo Bar',
+            'profile' => 'Aluno',
+            'id_ufrj' => '111',
+            'course' => 'Course'
+        ];
     }
 }
