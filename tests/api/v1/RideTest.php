@@ -3,7 +3,6 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use DB;
 
 use Caronae\Models\Message;
 use Caronae\Models\User;
@@ -14,7 +13,6 @@ use Caronae\Notifications\RideJoinRequestAnswered;
 use Caronae\Notifications\RideJoinRequested;
 use Caronae\Notifications\RideMessageReceived;
 use Caronae\Notifications\RideUserLeft;
-use Caronae\Services\PushNotificationService;
 
 class RideTest extends TestCase
 {
@@ -23,16 +21,6 @@ class RideTest extends TestCase
     protected $user;
     protected $headers;
     protected $push;
-
-    /**
-    * @before
-    */
-    public function cleanDatabase()
-    {
-        DB::table('ride_user')->delete();
-        DB::table('users')->delete();
-        DB::table('rides')->delete();
-    }
 
     /**
     * @before

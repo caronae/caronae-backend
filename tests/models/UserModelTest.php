@@ -3,7 +3,6 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use DB;
 
 use Caronae\Models\User;
 

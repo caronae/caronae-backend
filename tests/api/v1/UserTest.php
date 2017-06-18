@@ -6,8 +6,6 @@ use Caronae\Models\Institution;
 use Faker\Factory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App;
-use Carbon;
-use DB;
 use Mockery;
 
 use Caronae\Models\User;
@@ -17,16 +15,6 @@ use Caronae\Repositories\SigaInterface;
 class UserTest extends TestCase
 {
     use DatabaseTransactions;
-
-    /**
-    * @before
-    */
-    public function cleanDatabase()
-    {
-        DB::table('ride_user')->delete();
-        DB::table('users')->delete();
-        DB::table('rides')->delete();
-    }
 
     public function testStoreSavesUser()
     {

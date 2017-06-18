@@ -7,7 +7,6 @@ use Mockery;
 
 use Caronae\Repositories\PushNotificationInterface;
 use Caronae\Services\PushNotificationService;
-use Caronae\Models\Ride;
 use Caronae\Models\User;
 
 class PushNotificationServiceTest extends TestCase

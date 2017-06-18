@@ -5,23 +5,12 @@ namespace Tests;
 use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
 use Caronae\Models\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use DB;
 
 class UserBanishTest extends TestCase
 {
     use DatabaseTransactions;
-
-    /**
-     * @before
-     */
-    public function cleanDatabase()
-    {
-        DB::table('ride_user')->delete();
-        DB::table('users')->delete();
-        DB::table('rides')->delete();
-    }
 
     public function createRidesAsCaronista($user, $rideAttrs){
         factory(User::class, count($rideAttrs))->create()->each(function($u, $i) use($user, $rideAttrs) {

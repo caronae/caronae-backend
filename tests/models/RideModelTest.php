@@ -4,7 +4,6 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Carbon;
-use DB;
 
 use Caronae\Models\User;
 use Caronae\Models\Ride;
@@ -12,16 +11,6 @@ use Caronae\Models\Ride;
 class RideModelTest extends TestCase
 {
     use DatabaseTransactions;
-
-    /**
-    * @before
-    */
-    public function cleanDatabase()
-    {
-        DB::table('ride_user')->delete();
-        DB::table('users')->delete();
-        DB::table('rides')->delete();
-    }
 
     public function testGetDriver()
     {
