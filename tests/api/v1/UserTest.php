@@ -337,7 +337,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    private function institutionAuthorizationHeaders(): array
+    private function institutionAuthorizationHeaders()
     {
         $institution = factory(Institution::class)->create();
         return [
@@ -345,10 +345,7 @@ class UserTest extends TestCase
         ];
     }
 
-    /**
-     * @return array
-     */
-    private function newUser(): array
+    private function newUser()
     {
         return [
             'name' => 'Foo Bar',
