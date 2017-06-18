@@ -35,7 +35,9 @@ jobs:
           command: 'curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer'
       - restore_cache:
           key: composer-{{ checksum "composer.json" }}
-      - run: composer install --no-interaction --no-ansi
+      - run:
+          name: Install Project Dependencies
+          command: composer install --no-interaction --no-ansi
       - save_cache:
           key: composer-{{ checksum "composer.json" }}
           paths:
