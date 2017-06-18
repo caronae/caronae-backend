@@ -22,11 +22,11 @@ jobs:
     steps:
       - run:
           name: Install System Packages
-          command: apt-get update && apt-get -y install git unzip zlib1g-dev
+          command: sudo apt-get update && sudo apt-get -y install git unzip zlib1g-dev libpq-dev
       - checkout
       - run:
           name: Install PHP Extensions
-          command: docker-php-ext-install pdo pdo_pgsql zip
+          command: docker-php-ext-install pdo pdo_pgsql zip pgsql
       - run:
           name: Install Composer
           command: 'curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer'
