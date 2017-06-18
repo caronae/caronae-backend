@@ -13,31 +13,15 @@ class PushNotificationServiceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testSendNotificationToUser()
+    public function testNotificationsAreSentToUserTopic()
     {
         $mockResult = array('notification');
-        $user = factory(User::class)->create(['gcm_token' => NULL]);
+        $user = factory(User::class)->create();
         $topicId = 'user-' . $user->id;
         $data = array('data');
 
         $mock = Mockery::mock(PushNotificationInterface::class);
         $mock->shouldReceive('sendNotificationToTopicId')->with($topicId, $data)->once()->andReturn($mockResult);
-        $mock->shouldNotReceive('sendNotificationToDevices');
-
-        $push = new PushNotificationService($mock);
-        $result = $push->sendNotificationToUser($user, $data);
-        $this->assertEquals($mockResult, $result);
-    }
-
-    public function testSendNotificationToUserWithTokenNotifications()
-    {
-        $mockResult = array('notification');
-        $user = factory(User::class)->create(['gcm_token' => 'token']);
-        $data = array('data');
-
-        $mock = Mockery::mock(PushNotificationInterface::class);
-        $mock->shouldReceive('sendNotificationToDevices')->with('token', $data)->once()->andReturn($mockResult);
-        $mock->shouldNotReceive('sendNotificationToTopicId');
 
         $push = new PushNotificationService($mock);
         $result = $push->sendNotificationToUser($user, $data);

@@ -15,7 +15,6 @@ class UserController extends Controller
         $this->middleware('api.v1.auth', ['only' => [
             'getOfferedRides',
             'update',
-            'saveGcmToken',
             'saveFaceId',
             'saveProfilePicUrl',
             'getMutualFriends',
@@ -132,13 +131,6 @@ class UserController extends Controller
         }
 
         $user->save();
-    }
-
-    public function saveGcmToken(Request $request)
-    {
-        // TODO: Deprecate
-        $request->currentUser->gcm_token = $request->token;
-        $request->currentUser->save();
     }
 
     public function saveFaceId(Request $request)

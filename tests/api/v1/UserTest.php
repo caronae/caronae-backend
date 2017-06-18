@@ -271,21 +271,6 @@ class UserTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function testSaveGcmToken()
-    {
-        $user = factory(User::class)->create();
-        $headers = ['token' => $user->token];
-        $newToken = str_random(255);
-
-        $response = $this->json('PUT', 'user/saveGcmToken', [
-            'token' => $newToken
-        ], $headers);
-        $response->assertStatus(200);
-
-        $savedUser = $user->fresh();
-        $this->assertEquals($newToken, $savedUser->gcm_token);
-    }
-
     public function testSaveFacebookID()
     {
         $user = factory(User::class)->create();

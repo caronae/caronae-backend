@@ -15,7 +15,7 @@ class User extends Model
     use CrudTrait;
 
     protected $fillable = ['name', 'email', 'profile', 'course', 'id_ufrj', 'profile_pic_url'];
-    protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version', 'banned'];
+    protected $hidden = ['token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version', 'banned'];
     protected $dates = ['deleted_at'];
 
     public function setCarPlateAttribute($value)
@@ -71,18 +71,6 @@ class User extends Model
     {
         $this->banned = false;
         $this->save();
-    }
-
-    public function usesNotificationsWithToken()
-    {
-        if (empty($this->gcm_token)) return false;
-
-        if (empty($this->app_platform) || empty($this->app_version)) return true;
-
-        return (
-            ($this->app_platform == 'iOS' && preg_match('/^1\.0(\.[0-9]+)?$/', $this->app_version))
-            || ($this->app_platform == 'Android' && preg_match('/^1\.0(\.[0-9]+)?$/', $this->app_version))
-        );
     }
 
     public function generateToken()

@@ -4,7 +4,6 @@ namespace Caronae\Services;
 
 use Caronae\Repositories\PushNotificationInterface;
 use Caronae\Models\User;
-use Caronae\Models\Ride;
 
 class PushNotificationService
 {
@@ -17,11 +16,6 @@ class PushNotificationService
 
     public function sendNotificationToUser(User $user, $data)
     {
-        // TODO: Deprecate after users have migrated to topic-based notifications
-        if ($user->usesNotificationsWithToken()) {
-            return $this->push->sendNotificationToDevices($user->gcm_token, $data);
-        }
-
         return $this->push->sendNotificationToTopicId($this->topicForUser($user), $data);
     }
 
