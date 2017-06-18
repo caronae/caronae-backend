@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: php:7.1-node
+      - image: circleci/php:7.1-node
         environment:
           APP_ENV: testing
           APP_DEBUG: true
