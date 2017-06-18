@@ -2,49 +2,44 @@ version: 2
 
 jobs:
   build:
-      docker:
-        - image: circleci/php:7.1-node
-        - image: postgres:9.4.11
-          environment:
-            POSTGRES_USER: root
+    docker:
+      - image: php:7.1-node
+        environment:
+          APP_ENV: testing
+          APP_DEBUG: true
+          APP_KEY: kjcndjjksddwdwdw
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: circle_test
+          DB_USERNAME: root
+      - image: postgres:9.4.11
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: circle_test
 
-      environment:
-        APP_ENV: testing
-        DB_CONNECTION: pgsql
-        DB_HOST: localhost
-        DB_DATABASE: caronae
-        DB_USERNAME: caronae
+    working_directory: ~/caronae
 
-      working_directory: ~/caronae
-
-      steps:
-        - checkout
-        - run: cp .env.example .env
-        - run:
-            name: Install Composer
-            command: 'curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer'
-        - restore_cache:
-            key: composer-{{ checksum "composer.json" }}
-        - run: composer install --no-interaction --no-ansi
-        - save_cache:
-            key: composer-{{ checksum "composer.json" }}
-            paths:
-              - vendor
-        - run: |
-            sudo -u root createuser -h localhost --superuser caronae &&
-            sudo createdb -h localhost caronae
-        - run: php artisan migrate
-        - run: php artisan key:generate
-        - run:
-            name: test
-            command: './vendor/bin/phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml'
-        - deploy:
-            command: |
-              if [ "${CIRCLE_BRANCH}" == "develop" ]; then
-               ssh -A caronae@54.243.7.207 "cd ~/backend && git reset --hard && git pull && bash upgrade.sh"
-              fi
-        - deploy:
-            command: |
-              if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                ssh -A caronae@146.164.84.130 -p 22022 "cd ~/backend && git fetch origin master && git reset --hard origin/master && bash upgrade.sh"
-              fi
+    steps:
+      - run:
+          name: Install System Packages
+          command: apt-get update && apt-get -y install git unzip zlib1g-dev
+      - checkout
+      - run:
+        name: Install PHP Extensions
+        command: docker-php-ext-install pdo pdo_pgsql zip
+      - run:
+          name: Install Composer
+          command: 'curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer'
+      - restore_cache:
+          key: composer-{{ checksum "composer.json" }}
+      - run: composer install --no-interaction --no-ansi
+      - save_cache:
+          key: composer-{{ checksum "composer.json" }}
+          paths:
+            - vendor
+      - run:
+          name: Initialize Database
+          command: php artisan migrate:refresh
+      - run:
+          name: Run Tests
+          command: './vendor/bin/phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml'
