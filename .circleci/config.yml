@@ -26,7 +26,7 @@ jobs:
       - checkout
       - run:
           name: Install PHP Extensions
-          command: docker-php-ext-install pdo pdo_pgsql zip pgsql
+          command: sudo docker-php-ext-install pdo pdo_pgsql zip pgsql
       - run:
           name: Install Composer
           command: 'curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer'
