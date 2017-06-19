@@ -24,13 +24,13 @@ return [
     /*
      * The channels to which the notification will be sent.
      */
-    'channels' => ['mail'],
+    'channels' => ['mail', 'slack'],
 
     'mail' => [
         'to' => 'macecchi@gmail.com',
     ],
 
     'slack' => [
-        'webhook_url' => env('FAILED_JOB_SLACK_WEBHOOK_URL'),
+        'webhook_url' => env('SLACK_WEBHOOK_URL'),
     ],
 ];
