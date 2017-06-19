@@ -2,9 +2,10 @@
 
 namespace Caronae\Services;
 
+use Caronae\Exceptions\FirebaseException;
 use Caronae\Models\User;
 use GuzzleHttp\Client;
-use Recurr\Exception;
+use GuzzleHttp\Exception\RequestException;
 
 class PushNotificationService
 {
@@ -17,6 +18,9 @@ class PushNotificationService
         $this->client = new Client([
             'base_uri' => self::FCM_API_URL,
             'timeout' => 15.0,
+            'headers' => [
+                'Authorization' => 'key=' . env('FCM_API_KEY')
+            ]
         ]);
     }
 
@@ -34,7 +38,7 @@ class PushNotificationService
         $this->sendFCMRequest($payload);
     }
 
-    private function topicForUser(User $user) 
+    private function topicForUser(User $user)
     {
         return 'user-' . $user->id;
     }
@@ -61,13 +65,9 @@ class PushNotificationService
 
     private function sendFCMRequest($payload)
     {
-        $headers = [
-            'Authorization: key=' . env('FCM_API_KEY')
-        ];
-
         try {
-            $response = $this->client->post('send', ['json' => $payload, 'headers' => $headers]);
-        } catch (Exception $exception) {
+            $response = $this->client->post('send', [ 'json' => $payload ]);
+        } catch (RequestException $exception) {
             throw new FirebaseException('Error sending push notification. (' . $exception->getMessage() . ')');
         }
 
