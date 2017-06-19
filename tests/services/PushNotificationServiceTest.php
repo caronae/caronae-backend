@@ -24,7 +24,8 @@ class PushNotificationServiceTest extends TestCase
         $handler = HandlerStack::create($mockHandler);
         $handler->push($historyMiddleware);
         $client = new Client(['handler' => $handler]);
-        $push = new PushNotificationService($client);
+        $push = new PushNotificationService();
+        $push->setClient($client);
         $user = factory(User::class)->create();
         $data = [
             'message' => 'Example message',
@@ -36,7 +37,7 @@ class PushNotificationServiceTest extends TestCase
         $this->assertEquals(1, count($historyContainer));
 
         $request = $historyContainer[0]['request'];
-        $this->assertEquals('/send', $request->getRequestTarget());
+        $this->assertEquals('send', $request->getRequestTarget());
         $this->assertEquals('POST', $request->getMethod());
 
         $expectedBody = [

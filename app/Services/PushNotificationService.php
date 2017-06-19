@@ -8,19 +8,20 @@ use Recurr\Exception;
 
 class PushNotificationService
 {
-    const FCM_API_URL = 'https://fcm.googleapis.com/fcm';
+    const FCM_API_URL = 'https://fcm.googleapis.com/fcm/';
 
     private $client;
 
-    public function __construct(Client $client = null)
+    public function __construct()
     {
-        if ($client == null) {
-            $client = new Client([
-                'base_uri' => FIREBASE_API_URL,
-                'timeout' => 15.0,
-            ]);
-        }
+        $this->client = new Client([
+            'base_uri' => self::FCM_API_URL,
+            'timeout' => 15.0,
+        ]);
+    }
 
+    public function setClient(Client $client)
+    {
         $this->client = $client;
     }
 
@@ -65,7 +66,7 @@ class PushNotificationService
         ];
 
         try {
-            $response = $this->client->post('/send', ['json' => $payload, 'headers' => $headers]);
+            $response = $this->client->post('send', ['json' => $payload, 'headers' => $headers]);
         } catch (Exception $exception) {
             throw new FirebaseException('Error sending push notification. (' . $exception->getMessage() . ')');
         }
