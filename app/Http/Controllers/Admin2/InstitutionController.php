@@ -3,7 +3,6 @@ namespace Caronae\Http\Controllers\Admin2;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Caronae\Models\Institution;
-use Illuminate\Http\Request;
 
 class InstitutionController extends CrudController
 {
@@ -23,9 +22,14 @@ class InstitutionController extends CrudController
         ]);
     }
 
-    public function store(Request $request)
+    public function store()
     {
         return parent::storeCrud();
+    }
+
+    public function update()
+    {
+        return parent::updateCrud();
     }
 
     public function showDetailsRow($id)

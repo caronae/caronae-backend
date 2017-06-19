@@ -3,7 +3,6 @@ namespace Caronae\Http\Controllers\Admin2;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Caronae\Models\User;
-use Illuminate\Http\Request;
 
 class UserController extends CrudController
 {
@@ -25,7 +24,7 @@ class UserController extends CrudController
               'label' => 'Banidos'
             ],
             false,
-            function($values) {
+            function() {
                 $this->crud->query = $this->crud->query->where('banned', true);
             }
         );
@@ -54,12 +53,12 @@ class UserController extends CrudController
         ]);
     }
 
-    public function store(Request $request)
+    public function store()
     {
         return parent::storeCrud();
     }
 
-    public function update(Request $request)
+    public function update()
     {
         return parent::updateCrud();
     }
@@ -70,13 +69,13 @@ class UserController extends CrudController
         return view('vendor.backpack.crud.inc.user', ['u' => $user]);
     }
 
-    public function ban(Request $request, User $user)
+    public function ban(User $user)
     {
         $user->banish();
         return response()->json(['message' => 'User banned']);
     }
 
-    public function unban(Request $request, User $user)
+    public function unban(User $user)
     {
         $user->unban();
         return response()->json(['message' => 'User unbanned']);

@@ -2,8 +2,6 @@
 namespace Caronae\Http\Controllers\Admin2;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
-use Caronae\Models\Admin;
-use Illuminate\Http\Request;
 
 class AdminController extends CrudController
 {
@@ -25,9 +23,13 @@ class AdminController extends CrudController
         ]);
     }
 
-    public function store(Request $request)
+    public function store()
     {
         return parent::storeCrud();
     }
 
+    public function update()
+    {
+        return parent::updateCrud();
+    }
 }
