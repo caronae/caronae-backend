@@ -14,8 +14,8 @@ class User extends Model
     use SoftDeletes;
     use CrudTrait;
 
-    protected $fillable = ['name', 'email', 'profile', 'id_ufrj', 'token'];
-    protected $hidden = ['token', 'gcm_token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version', 'banned'];
+    protected $fillable = ['name', 'email', 'profile', 'course', 'id_ufrj', 'profile_pic_url'];
+    protected $hidden = ['token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version', 'banned'];
     protected $dates = ['deleted_at'];
 
     public function setCarPlateAttribute($value)
@@ -73,15 +73,9 @@ class User extends Model
         $this->save();
     }
 
-    public function usesNotificationsWithToken()
+    public function generateToken()
     {
-        if (empty($this->gcm_token)) return false;
-
-        if (empty($this->app_platform) || empty($this->app_version)) return true;
-
-        return (
-            ($this->app_platform == 'iOS' && preg_match('/^1\.0(\.[0-9]+)?$/', $this->app_version))
-            || ($this->app_platform == 'Android' && preg_match('/^1\.0(\.[0-9]+)?$/', $this->app_version))
-        );
+        $this->token = strtoupper(substr(base_convert(sha1(uniqid() . rand()), 16, 36), 0, 6));
+        return $this;
     }
 }

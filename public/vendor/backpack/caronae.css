@@ -13,7 +13,7 @@
 	padding: 5px;
 }
 
-.user-details {
+.model-details {
 	display: flex;
 	margin: 15px;
 	text-align: left;
@@ -24,7 +24,7 @@
 	float: right;
 }
 
-.user-details .properties {
+.model-details .properties {
 	display: inline-block;
 	flex-grow: 1;
 	vertical-align: top;
@@ -54,11 +54,11 @@
 	margin: 2px 0;
 }
 
-.column-name {
+.model-details .column-name {
 	font-weight: bold;
 }
 
-.column-name::after {
+.model-details .column-name::after {
 	content: ':';
 	margin-right: 5px;
 }

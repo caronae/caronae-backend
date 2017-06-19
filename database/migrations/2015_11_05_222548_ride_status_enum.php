@@ -38,7 +38,7 @@ class RideStatusEnum extends Migration
     {
         Schema::table('ride_user', function (Blueprint $table) {
             $table->renameColumn('status', 'status_string');
-            $table->integer('status_int');
+            $table->integer('status_int')->default(-1);
         });
 
         DB::table('ride_user')->where('status_string', 'driver')->update(array('status_int' => 0));

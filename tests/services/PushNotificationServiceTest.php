@@ -2,46 +2,56 @@
 
 namespace Tests;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Mockery;
 
-use Caronae\Repositories\PushNotificationInterface;
 use Caronae\Services\PushNotificationService;
-use Caronae\Models\Ride;
 use Caronae\Models\User;
 
 class PushNotificationServiceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testSendNotificationToUser()
+    public function testSendsNotificationToFirebase()
     {
-        $mockResult = array('notification');
-        $user = factory(User::class)->create(['gcm_token' => NULL]);
-        $topicId = 'user-' . $user->id;
-        $data = array('data');
+        $historyContainer = [];
+        $historyMiddleware = Middleware::history($historyContainer);
+        $mockHandler = new MockHandler([ new Response(200) ]);
+        $handler = HandlerStack::create($mockHandler);
+        $handler->push($historyMiddleware);
+        $client = new Client(['handler' => $handler]);
+        $push = new PushNotificationService();
+        $push->setClient($client);
+        $user = factory(User::class)->create();
+        $data = [
+            'message' => 'Example message',
+            'title' => 'Example title'
+        ];
 
-        $mock = Mockery::mock(PushNotificationInterface::class);
-        $mock->shouldReceive('sendNotificationToTopicId')->with($topicId, $data)->once()->andReturn($mockResult);
-        $mock->shouldNotReceive('sendNotificationToDevices');
+        $push->sendNotificationToUser($user, $data);
 
-        $push = new PushNotificationService($mock);
-        $result = $push->sendNotificationToUser($user, $data);
-        $this->assertEquals($mockResult, $result);
-    }
+        $this->assertEquals(1, count($historyContainer));
 
-    public function testSendNotificationToUserWithTokenNotifications()
-    {
-        $mockResult = array('notification');
-        $user = factory(User::class)->create(['gcm_token' => 'token']);
-        $data = array('data');
+        $request = $historyContainer[0]['request'];
+        $this->assertEquals('send', $request->getRequestTarget());
+        $this->assertEquals('POST', $request->getMethod());
 
-        $mock = Mockery::mock(PushNotificationInterface::class);
-        $mock->shouldReceive('sendNotificationToDevices')->with('token', $data)->once()->andReturn($mockResult);
-        $mock->shouldNotReceive('sendNotificationToTopicId');
-
-        $push = new PushNotificationService($mock);
-        $result = $push->sendNotificationToUser($user, $data);
-        $this->assertEquals($mockResult, $result);
+        $expectedBody = [
+            'to' => '/topics/user-' . $user->id,
+            'content_available' => true,
+            'priority' => 'high',
+            'notification' => [
+                'body' => 'Example message',
+                'title' => 'Example title',
+                'icon' => 'ic_stat_name',
+                'sound' => 'beep_beep.wav'
+            ],
+            'data' => $data
+        ];
+        $this->assertEquals($expectedBody, json_decode($request->getBody()->getContents(), true));
     }
 }

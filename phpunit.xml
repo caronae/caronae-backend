@@ -25,5 +25,6 @@
         <env name="SESSION_DRIVER" value="array"/>
         <env name="QUEUE_DRIVER" value="sync"/>
         <env name="DB_CONNECTION" value="pgsql_testing"/>
+        <env name="FCM_API_KEY" value="FCMKEY"/>
     </php>
 </phpunit>

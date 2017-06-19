@@ -16,10 +16,10 @@ use Illuminate\Http\Request;
 // User
 
 Route::get('user/signup/intranet/{idUFRJ}/{token}', 'UserController@signUpIntranet');
+Route::post('users', 'UserController@store');
 Route::post('user/login', 'UserController@login');
 Route::put('user', 'UserController@update');
 Route::get('user/{user}/offeredRides', 'UserController@getOfferedRides');
-Route::put('user/saveGcmToken', 'UserController@saveGcmToken');
 Route::put('user/saveFaceId', 'UserController@saveFaceId');
 Route::put('user/saveProfilePicUrl', 'UserController@saveProfilePicUrl');
 Route::get('user/{id}/mutualFriends', 'UserController@getMutualFriends');

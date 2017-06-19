@@ -2,31 +2,77 @@
 
 namespace Caronae\Services;
 
-use Caronae\Repositories\PushNotificationInterface;
+use Caronae\Exceptions\FirebaseException;
 use Caronae\Models\User;
-use Caronae\Models\Ride;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 class PushNotificationService
 {
-    protected $push;
+    const FCM_API_URL = 'https://fcm.googleapis.com/fcm/';
 
-    public function __construct(PushNotificationInterface $push)
+    private $client;
+
+    public function __construct()
     {
-        $this->push = $push;
+        $this->client = new Client([
+            'base_uri' => self::FCM_API_URL,
+            'timeout' => 15.0,
+            'headers' => [
+                'Authorization' => 'key=' . env('FCM_API_KEY')
+            ]
+        ]);
+    }
+
+    public function setClient(Client $client)
+    {
+        $this->client = $client;
     }
 
     public function sendNotificationToUser(User $user, $data)
     {
-        // TODO: Deprecate after users have migrated to topic-based notifications
-        if ($user->usesNotificationsWithToken()) {
-            return $this->push->sendNotificationToDevices($user->gcm_token, $data);
-        }
+        $topicId = $this->topicForUser($user);
+        $payload = $this->payloadWithData($data);
+        $payload['to'] = '/topics/' . $topicId;
 
-        return $this->push->sendNotificationToTopicId($this->topicForUser($user), $data);
+        $this->sendFCMRequest($payload);
     }
 
-    private function topicForUser(User $user) 
+    private function topicForUser(User $user)
     {
         return 'user-' . $user->id;
+    }
+
+    private function payloadWithData($data)
+    {
+        $notification = [
+            'body' => $data['message'],
+            'icon' => 'ic_stat_name',
+            'sound' => 'beep_beep.wav'
+        ];
+
+        if (!empty($data['title'])) {
+            $notification['title'] = $data['title'];
+        }
+
+        return [
+            'content_available' => true,
+            'priority' => 'high',
+            'notification' => $notification,
+            'data' => $data
+        ];
+    }
+
+    private function sendFCMRequest($payload)
+    {
+        try {
+            $response = $this->client->post('send', [ 'json' => $payload ]);
+        } catch (RequestException $exception) {
+            throw new FirebaseException('Error sending push notification. (' . $exception->getMessage() . ')');
+        }
+
+        if ($response->getStatusCode() != 200) {
+            throw new FirebaseException('Error sending push notification. (HTTP ' . $response->getStatusCode() . ')');
+        }
     }
 }

@@ -1,10 +1,9 @@
 <?php
+
 namespace Caronae\Http\Controllers;
 
-use Caronae\ExcelExport\ExcelExporter;
-use Caronae\Http\Requests;
+use Caronae\Http\Requests\SignUpRequest;
 use Caronae\Models\User;
-use Caronae\Exception\SigaException;
 use Caronae\Services\SigaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -16,16 +15,27 @@ class UserController extends Controller
         $this->middleware('api.v1.auth', ['only' => [
             'getOfferedRides',
             'update',
-            'saveGcmToken',
             'saveFaceId',
             'saveProfilePicUrl',
             'getMutualFriends',
             'getIntranetPhotoUrl'
         ]]);
 
-        $this->middleware('api.v1.userMatchesRequestedUser', ['only' => [
-            'getOfferedRides'
-        ]]);
+        $this->middleware('api.v1.userMatchesRequestedUser', ['only' => ['getOfferedRides']]);
+        $this->middleware('api.institution', ['only' => ['store']]);
+    }
+
+    public function store(SignUpRequest $request)
+    {
+        if (!$user = User::where('id_ufrj', $request->id_ufrj)->first()) {
+            $user = new User;
+            $user->generateToken();
+        }
+
+        $user->fill($request->all());
+        $user->save();
+
+        return $user->fresh()->makeVisible('token');
     }
 
     public function signUpIntranet($idUFRJ, $token, SigaService $siga)
@@ -39,7 +49,6 @@ class UserController extends Controller
 
         $intranetUser = $siga->getProfileById($idUFRJ);
         $user = new User();
-
         $user->name = mb_convert_case($intranetUser->nome, MB_CASE_TITLE, "UTF-8");
         $user->token = $token;
         $user->id_ufrj = $idUFRJ;
@@ -83,11 +92,11 @@ class UserController extends Controller
             ->where(['done' => false, 'status' => 'driver'])
             ->get();
 
-        $rides = $rides->map(function($ride) {
+        $rides = $rides->map(function ($ride) {
             $ride->riders = $ride->riders();
             return $ride;
         });
-        
+
         return ['rides' => $rides];
     }
 
@@ -122,13 +131,6 @@ class UserController extends Controller
         }
 
         $user->save();
-    }
-
-    public function saveGcmToken(Request $request)
-    {
-        // TODO: Deprecate
-        $request->currentUser->gcm_token = $request->token;
-        $request->currentUser->save();
     }
 
     public function saveFaceId(Request $request)

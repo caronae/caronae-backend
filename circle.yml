@@ -16,6 +16,8 @@ dependencies:
     - cp .env.example .env
     - php artisan migrate
     - php artisan key:generate
+  cache_directories:
+    - vendor
 
 test:
   override:
