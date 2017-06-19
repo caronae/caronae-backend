@@ -49,7 +49,7 @@ return [
     |
     */
 
-    'url' => 'http://localhost',
+    'url' => env('APP_URL', 'https://caronae.ufrj.br'),
 
     /*
     |--------------------------------------------------------------------------
@@ -184,6 +184,7 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
         Spatie\Backup\BackupServiceProvider::class,
+        Spatie\FailedJobMonitor\FailedJobMonitorServiceProvider::class,
 
         /*
         * Backpack Service Providers...
