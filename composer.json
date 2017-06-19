@@ -19,7 +19,8 @@
         "predis/predis": "^1.1",
         "rap2hpoutre/laravel-log-viewer": "^0.10.0",
         "simshaun/recurr": "^1.2",
-        "spatie/laravel-backup": "^4.12"
+        "spatie/laravel-backup": "^4.12",
+        "spatie/laravel-failed-job-monitor": "^2.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
