@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Caronae\Http\Requests\SignUpRequest;
 use Caronae\Models\User;
 use Caronae\Services\SigaService;
+use Facebook\Exceptions\FacebookResponseException;
+use Facebook\Exceptions\FacebookSDKException;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -44,10 +46,10 @@ class UserController extends Controller
     public function signUpIntranet($idUFRJ, $token, SigaService $siga)
     {
         if (User::where('token', $token)->count() > 0) {
-            return response()->json(['error' => 'User token already exists.'], 409);
+            return $this->error('User token already exists.', 409);
         }
         if (User::where('id_ufrj', $idUFRJ)->count() > 0) {
-            return response()->json(['error' => 'User id_ufrj already exists.'], 409);
+            return $this->error('User id_ufrj already exists.', 409);
         }
 
         $intranetUser = $siga->getProfileById($idUFRJ);
@@ -79,7 +81,7 @@ class UserController extends Controller
 
         $user = User::where(['id_ufrj' => $request->id_ufrj, 'token' => $request->token])->first();
         if ($user == null || $user->banned) {
-            return response()->json(['error' => 'User not found with provided credentials.'], 401);
+            return $this->error('User not found with provided credentials.', 401);
         }
 
         // get user's rides as driver
@@ -160,17 +162,17 @@ class UserController extends Controller
     {
         $fbToken = $request->header('Facebook-Token');
         if ($fbToken == null) {
-            return response()->json(['error' => 'User\'s Facebook token missing.'], 403);
+            return $this->error('User\'s Facebook token missing.', 403);
         }
 
         try {
             $response = $fb->get('/' . $fbID . '?fields=context.fields(mutual_friends)', $fbToken);
-        } catch(\Facebook\Exceptions\FacebookResponseException $e) {
+        } catch(FacebookResponseException $e) {
             // When Graph returns an error
-            return response()->json(['error' => 'Facebook Graph returned an error: ' . $e->getMessage()], 500);
-        } catch(\Facebook\Exceptions\FacebookSDKException $e) {
+            return $this->error('Facebook Graph returned an error: ' . $e->getMessage(), 500);
+        } catch(FacebookSDKException $e) {
             // When validation fails or other local issues
-            return response()->json(['error' => 'Facebook SDK returned an error: ' . $e->getMessage()], 500);
+            return $this->error('Facebook SDK returned an error: ' . $e->getMessage(), 500);
         }
 
         $mutualFriendsFB = $response->getGraphObject()['context']['mutual_friends'];
@@ -190,7 +192,7 @@ class UserController extends Controller
     {
         $idUFRJ = $request->currentUser->id_ufrj;
         if (empty($idUFRJ)) {
-            return response()->json(['error' => 'User does not have an Intranet identification.'], 404);
+            return $this->error('User does not have an Intranet identification.', 404);
         }
 
         $picture = $siga->getProfilePictureById($idUFRJ);
