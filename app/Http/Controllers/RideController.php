@@ -122,7 +122,7 @@ class RideController extends Controller
         }
         
         if ($date->isPast()) {
-            return response()->json(['error' => 'You cannot create a ride in the past.'], 403);
+            return $this->error('You cannot create a ride in the past.', 403);
         }
 
         $user = $request->currentUser;
@@ -197,7 +197,7 @@ class RideController extends Controller
         });
 
         if (empty($ridesCreated)) {
-            return response()->json(['error'=>'No rides were created.'], 204);
+            return $this->error('No rides were created.', 204);
         }
 
         return response()->json($ridesCreated, 201);
@@ -257,7 +257,7 @@ class RideController extends Controller
             $user = $request->currentUser;
             $ride = $user->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
             if ($ride == null) {
-                return response()->json(['error'=>'User is not the driver on this ride or ride does not exist.'], 403);
+                return $this->error('User is not the driver on this ride or ride does not exist.', 403);
             }
 
             RideUser::where('ride_id', $rideId)->delete(); //delete all relationships with this ride first
@@ -287,11 +287,11 @@ class RideController extends Controller
             $rideIdList = Ride::where($matchThese)->pluck('id')->toArray();
 
             if ($rideIdList == null || empty($rideIdList)) {
-                return response()->json(['error'=>'No rides found with this routine id.'], 400);
+                return $this->error('No rides found with this routine id.', 400);
             }
             $matchThese2 = ['ride_id' => $rideIdList[0], 'user_id' => $user->id, 'status' => 'driver'];
             if (RideUser::where($matchThese2)->count() < 1) {
-                return response()->json(['error'=>'User is not the driver on this ride.'], 403);
+                return $this->error('User is not the driver on this ride.', 403);
             }
 
             RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
@@ -374,7 +374,7 @@ class RideController extends Controller
     {
         $ride = Ride::find($rideId);
         if ($ride == null) {
-            return response()->json(['error' => 'ride not found with id = ' . $rideId], 400);
+            return $this->error('ride not found with id = ' . $rideId, 400);
         }
 
         return $ride->users()->where('status', 'pending')->get();
@@ -386,7 +386,7 @@ class RideController extends Controller
         $matchThese = ['ride_id' => $request->rideId, 'user_id' => $request->userId, 'status' => 'pending'];
         $rideUser = RideUser::where($matchThese)->first();
         if ($rideUser == null) {
-            return response()->json(['error' => 'Ride request not found.'], 400);
+            return $this->error('Ride request not found.', 400);
         }
 
         $rideUser->status = $request->accepted ? 'accepted' : 'refused';
@@ -471,12 +471,12 @@ class RideController extends Controller
         // check if the current user is the driver of the ride
         $ride = $request->currentUser->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
         if ($ride == null) {
-            return response()->json(['error' => 'User is not the driver of this ride'], 403);
+            return $this->error('User is not the driver of this ride', 403);
         }
 
         // check if the ride is in the past, otherwise it cannot be marked as finished
         if ($ride->date->isFuture()) {
-            return response()->json(['error' => 'A ride in the future cannot be marked as finished'], 403);
+            return $this->error('A ride in the future cannot be marked as finished', 403);
         }
 
         $ride->done = true;
@@ -539,7 +539,7 @@ class RideController extends Controller
         $ride_user = RideUser::where($matchThese)->first();
 
         if ($ride_user == null) {
-            return response()->json(['error'=>'relationship between user with id ' . $request->userId . ' and ride with id '. $request->rideId . ' does not exist or ride does not exist'], 400);
+            return $this->error('relationship between user with id ' . $request->userId . ' and ride with id '. $request->rideId . ' does not exist or ride does not exist', 400);
         }
 
         $ride_user->feedback = $request->feedback;
