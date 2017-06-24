@@ -11,15 +11,24 @@ class LoginController extends Controller
 {
     public function index(Request $request)
     {
-        try {
-            if (!$user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['user_not_found'], 404);
-            }
-        } catch (JWTException $e) {
-            $institution = Institution::find($request->institution);
-            return redirect($institution->authentication_url);
+        if (!JWTAuth::getToken() && !$request->institution) {
+            $institutions = Institution::all();
+            return view('chave.institutions', [ 'institutions' => $institutions ]);
         }
 
-        return $user;
+        try {
+            if (!$user = JWTAuth::authenticate()) {
+                return $this->error('User not found', 404);
+            }
+        } catch (JWTException $e) {
+            if ($request->institution) {
+                $institution = Institution::find($request->institution);
+                return redirect($institution->authentication_url);
+            }
+
+            return $this->error('Invalid token', $e->getStatusCode());
+        }
+
+        return view('chave.chave', [ 'user' => $user ]);
     }
 }

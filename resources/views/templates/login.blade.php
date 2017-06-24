@@ -47,5 +47,7 @@
     </div>
 </div>
 
+@yield('after_scripts')
+
 </body>
 </html>
