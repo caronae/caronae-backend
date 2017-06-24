@@ -7,6 +7,7 @@ use Caronae\Models\User;
 use Caronae\Services\SigaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
@@ -35,7 +36,8 @@ class UserController extends Controller
         $user->fill($request->all());
         $user->save();
 
-        return $user->fresh()->makeVisible('token');
+        $token = JWTAuth::fromUser($user);
+        return [ 'user' => $user->fresh(), 'token' => $token ];
     }
 
     public function signUpIntranet($idUFRJ, $token, SigaService $siga)

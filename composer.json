@@ -21,7 +21,8 @@
         "rap2hpoutre/laravel-log-viewer": "^0.10.0",
         "simshaun/recurr": "^1.2",
         "spatie/laravel-backup": "^4.12",
-        "spatie/laravel-failed-job-monitor": "^2.2"
+        "spatie/laravel-failed-job-monitor": "^2.2",
+        "tymon/jwt-auth": "^0.5.12"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
