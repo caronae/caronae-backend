@@ -2,10 +2,10 @@
 
 namespace Caronae\Http\Controllers;
 
+use Carbon\Carbon;
 use Caronae\Http\Requests\SignUpRequest;
 use Caronae\Models\User;
 use Caronae\Services\SigaService;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -37,7 +37,8 @@ class UserController extends Controller
         $user->save();
 
         $token = JWTAuth::fromUser($user);
-        return [ 'user' => $user->fresh(), 'token' => $token ];
+        $redirect_url = route('chave', [ 'token' => $token]);
+        return [ 'user' => $user->fresh(), 'redirect_url' => $redirect_url ];
     }
 
     public function signUpIntranet($idUFRJ, $token, SigaService $siga)

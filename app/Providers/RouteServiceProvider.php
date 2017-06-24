@@ -2,8 +2,8 @@
 
 namespace Caronae\Providers;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -77,9 +77,15 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapAdminRoutes()
     {
         Route::prefix('admin')
+            ->middleware(['web'])
+            ->namespace($this->namespace . '\Admin')
+            ->group(base_path('routes/admin.auth.php'));
+
+        Route::prefix('admin')
             ->middleware(['web', 'auth:web'])
             ->namespace($this->namespace . '\Admin')
             ->group(base_path('routes/admin.php'));
+
         Route::prefix('admin2')
             ->middleware(['web', 'auth:web'])
             ->namespace($this->namespace . '\Admin2')

@@ -3,6 +3,7 @@ namespace Caronae\Http\Controllers\Admin2;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Caronae\Models\Institution;
+use Illuminate\Http\Request;
 
 class InstitutionController extends CrudController
 {
@@ -19,6 +20,7 @@ class InstitutionController extends CrudController
 
         $this->crud->addFields([
             [ 'name' => 'name', 'label' => 'Nome' ],
+            [ 'name' => 'authentication_url', 'label' => 'URL de autenticação', 'type' => 'url' ],
         ]);
     }
 
@@ -27,8 +29,12 @@ class InstitutionController extends CrudController
         return parent::storeCrud();
     }
 
-    public function update()
+    public function update(Request $request)
     {
+        $this->validate($request, [
+            'name' => 'required|string',
+            'authentication_url' => 'required|url',
+        ]);
         return parent::updateCrud();
     }
 
