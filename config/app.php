@@ -169,7 +169,6 @@ return [
          */
         Caronae\Providers\AppServiceProvider::class,
         Caronae\Providers\AuthServiceProvider::class,
-        // Caronae\Providers\BroadcastServiceProvider::class,
         Caronae\Providers\EventServiceProvider::class,
         Caronae\Providers\RouteServiceProvider::class,
 

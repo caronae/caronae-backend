@@ -11,7 +11,7 @@
 |
 */
 
-$this->get('chave', 'ChaveController@index');
+$this->get('chave', 'LoginController@index');
 
 // Authentication 
 $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');

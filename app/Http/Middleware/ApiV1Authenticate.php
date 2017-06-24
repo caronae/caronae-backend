@@ -2,9 +2,8 @@
 
 namespace Caronae\Http\Middleware;
 
-use Closure;
 use Caronae\Models\User;
-use Illuminate\Support\Facades\Log;
+use Closure;
 
 class ApiV1Authenticate
 {
