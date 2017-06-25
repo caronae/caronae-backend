@@ -93,26 +93,7 @@ class RideController extends Controller
 
         return $results;
     }
-
-    // DEPRECATED
-    public function listAll()
-    {
-        $limit = 50;
-        $rides = Ride::withAvailableSlots()
-            ->inTheFuture()
-            ->notFinished()
-            ->orderBy('rides.date')
-            ->paginate($limit);
-
-        $results = [];
-        foreach($rides as $ride) {
-            $ride->driver = $ride->driver();
-            $results[] = $ride;
-        }
-
-        return $results;
-    }
-
+    
     public function show(Ride $ride)
     {
         $ride->driver = $ride->driver();
