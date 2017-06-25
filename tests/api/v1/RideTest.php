@@ -2,17 +2,16 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-
 use Caronae\Models\Message;
-use Caronae\Models\User;
 use Caronae\Models\Ride;
+use Caronae\Models\User;
 use Caronae\Notifications\RideCanceled;
 use Caronae\Notifications\RideFinished;
 use Caronae\Notifications\RideJoinRequestAnswered;
 use Caronae\Notifications\RideJoinRequested;
 use Caronae\Notifications\RideMessageReceived;
 use Caronae\Notifications\RideUserLeft;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class RideTest extends TestCase
 {
@@ -295,9 +294,16 @@ class RideTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function testSearch()
+    public function testFindsRide()
     {
-        // TODO: test search with zone, search with neighborhood, search with/without center
+        $ride = factory(Ride::class)->create();
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $response = $this->json('GET', 'ride/' . $ride->id, [], $this->headers);
+
+        $response->assertStatus(200);
+        $response->assertJson($ride->toArray());
+        $response->assertJson(['driver' => $this->user->toArray()]);
     }
 
     public function testValidateValidRide()

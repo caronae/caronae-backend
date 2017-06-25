@@ -1,5 +1,4 @@
 <?php
-use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +47,7 @@ Route::get('ride/getRidesHistory', 'RideController@getRidesHistory');
 Route::get('ride/getRidesHistoryCount/{userId}', 'RideController@getRidesHistoryCount');
 Route::post('ride/saveFeedback', 'RideController@saveFeedback');
 Route::get('ride/validateDuplicate', 'RideController@validateDuplicate');
+Route::get('ride/{ride}', 'RideController@show');
 Route::post('ride/{ride}/chat', 'RideController@sendChatMessage');
 Route::get('ride/{ride}/chat', 'RideController@getChatMessages');
 

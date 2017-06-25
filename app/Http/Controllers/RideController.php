@@ -2,9 +2,7 @@
 
 namespace Caronae\Http\Controllers;
 
-use Caronae\ExcelExport\ExcelExporter;
-use Caronae\Http\Requests;
-use Caronae\Http\Requests\RankingRequest;
+use Carbon\Carbon;
 use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
@@ -15,7 +13,6 @@ use Caronae\Notifications\RideJoinRequestAnswered;
 use Caronae\Notifications\RideJoinRequested;
 use Caronae\Notifications\RideMessageReceived;
 use Caronae\Notifications\RideUserLeft;
-use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 
@@ -26,6 +23,7 @@ class RideController extends Controller
         $this->middleware('api.v1.auth', ['only' => [
             'index',
             'listAll',
+            'show',
             'store',
             'validateDuplicate',
             'delete', 'deleteAllFromRoutine', 'deleteAllFromUser',
@@ -113,6 +111,12 @@ class RideController extends Controller
         }
 
         return $results;
+    }
+
+    public function show(Ride $ride)
+    {
+        $ride->driver = $ride->driver();
+        return $ride;
     }
 
     public function store(Request $request)
