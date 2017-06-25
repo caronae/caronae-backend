@@ -11,9 +11,9 @@ class LoginController extends Controller
 {
     public function index(Request $request)
     {
-        if (!JWTAuth::getToken() && !$request->institution) {
+        if (!JWTAuth::getToken() && !$request->has('institution')) {
             $institutions = Institution::all();
-            return view('chave.institutions', [ 'institutions' => $institutions ]);
+            return view('login.institutions', [ 'institutions' => $institutions ]);
         }
 
         try {
@@ -21,14 +21,14 @@ class LoginController extends Controller
                 return $this->error('User not found', 404);
             }
         } catch (JWTException $e) {
-            if ($request->institution) {
-                $institution = Institution::find($request->institution);
+            if ($request->has('institution')) {
+                $institution = Institution::findOrFail($request->input('institution'));
                 return redirect($institution->authentication_url);
             }
 
             return $this->error('Invalid token', $e->getStatusCode());
         }
 
-        return view('chave.chave', [ 'user' => $user ]);
+        return view('login.token', [ 'user' => $user ]);
     }
 }
