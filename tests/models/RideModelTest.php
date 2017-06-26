@@ -2,11 +2,10 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Carbon;
-
-use Caronae\Models\User;
 use Caronae\Models\Ride;
+use Caronae\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class RideModelTest extends TestCase
 {
@@ -61,6 +60,15 @@ class RideModelTest extends TestCase
             'date' => Carbon\Carbon::createFromDate(2017, 01, 29)
         ]);
         $this->assertEquals('CCS → Ipanema | 29/01', $ride->title);
+    }
+
+    public function testAvailableSlots()
+    {
+        $ride = factory(Ride::class)->create(['slots' => 2])->fresh();
+        $ride->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
+        $ride->users()->attach(factory(User::class)->create(), ['status' => 'accepted']);
+
+        $this->assertEquals(1, $ride->availableSlots);
     }
 
     public function testScopeShouldReturnRidesWithAvailableSlots()

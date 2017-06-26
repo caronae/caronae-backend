@@ -97,6 +97,7 @@ class RideController extends Controller
     public function show(Ride $ride)
     {
         $ride->driver = $ride->driver();
+        $ride->availableSlots = $ride->availableSlots;
         return $ride;
     }
 

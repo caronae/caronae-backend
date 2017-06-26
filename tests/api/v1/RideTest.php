@@ -223,6 +223,7 @@ class RideTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson($ride->toArray());
         $response->assertJson(['driver' => $this->user->toArray()]);
+        $response->assertJson(['availableSlots' => $ride->availableSlots]);
     }
 
     public function testValidateValidRide()
