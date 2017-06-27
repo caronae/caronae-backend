@@ -39,8 +39,7 @@ class UserController extends Controller
         $user->save();
 
         $token = JWTAuth::fromUser($user);
-        $redirect_url = route('chave', [ 'token' => $token]);
-        return [ 'user' => $user->fresh(), 'redirect_url' => $redirect_url ];
+        return [ 'user' => $user->fresh(), 'token' => $token ];
     }
 
     public function signUpIntranet($idUFRJ, $token, SigaService $siga)

@@ -24,7 +24,7 @@ class UserTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson(['user' => $createdUser->toArray()]);
-        $response->assertJsonStructure(['redirect_url']);
+        $response->assertJsonStructure(['token']);
     }
 
     public function testStoreDoesNotAddDuplicatedUser()
@@ -38,7 +38,7 @@ class UserTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson(['user' => $existingUser->fresh()->toArray()]);
-        $response->assertJsonStructure(['redirect_url']);
+        $response->assertJsonStructure(['token']);
     }
 
     public function testSignUpIntranet()
