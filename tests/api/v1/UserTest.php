@@ -2,15 +2,14 @@
 
 namespace Tests;
 
+use App;
 use Caronae\Models\Institution;
+use Caronae\Models\Ride;
+use Caronae\Models\User;
+use Caronae\Repositories\SigaInterface;
 use Faker\Factory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use App;
 use Mockery;
-
-use Caronae\Models\User;
-use Caronae\Models\Ride;
-use Caronae\Repositories\SigaInterface;
 
 class UserTest extends TestCase
 {
@@ -24,7 +23,8 @@ class UserTest extends TestCase
         $createdUser = User::where('id_ufrj', $user['id_ufrj'])->first();
 
         $response->assertStatus(200);
-        $response->assertExactJson($createdUser->makeVisible('token')->toArray());
+        $response->assertJson(['user' => $createdUser->toArray()]);
+        $response->assertJsonStructure(['redirect_url']);
     }
 
     public function testStoreDoesNotAddDuplicatedUser()
@@ -37,7 +37,8 @@ class UserTest extends TestCase
         $response = $this->json('POST', 'users', $user, $this->institutionAuthorizationHeaders());
 
         $response->assertStatus(200);
-        $response->assertExactJson($existingUser->fresh()->makeVisible('token')->toArray());
+        $response->assertJson(['user' => $existingUser->fresh()->toArray()]);
+        $response->assertJsonStructure(['redirect_url']);
     }
 
     public function testSignUpIntranet()

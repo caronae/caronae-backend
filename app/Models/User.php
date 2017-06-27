@@ -2,17 +2,21 @@
 
 namespace Caronae\Models;
 
+use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+
 use Backpack\CRUD\CrudTrait;
 
-class User extends Model
+class User extends Model implements AuthenticatableContract
 {
     use Notifiable;
     use SoftDeletes;
     use CrudTrait;
+    use Authenticatable;
 
     protected $fillable = ['name', 'email', 'profile', 'course', 'id_ufrj', 'profile_pic_url'];
     protected $hidden = ['token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version', 'banned'];

@@ -22,7 +22,7 @@
 <nav class="navbar navbar-default">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="{{action('Admin\AdminController@getIndex')}}">
+            <a class="navbar-brand" href="{{route('login')}}">
                 <img alt="Brand" src="{{ asset('images/logo_caronae.png') }}">
             </a>
             <p class="navbar-text">Caronaê</p>
@@ -76,7 +76,7 @@
                 </a>
             </li>
         </ul>
-        <a href="{{action('Auth\LoginController@logout')}}" class="navbar-text navbar-right">
+        <a href="{{route('logout')}}" class="navbar-text navbar-right">
             <span class="glyphicon glyphicon-log-out"></span>
             Logout
         </a>
