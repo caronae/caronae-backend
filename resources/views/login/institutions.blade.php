@@ -7,7 +7,7 @@
         <ul class="institutions">
             @foreach ($institutions as $institution)
                 <li>
-                    <a href="?institution={{ $institution->authentication_url }}">{{ $institution->name }}</a>
+                    <a href="{{ $institution->authentication_url }}">{{ $institution->name }}</a>
                 </li>
             @endforeach
         </ul>
