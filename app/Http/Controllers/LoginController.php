@@ -2,30 +2,26 @@
 
 namespace Caronae\Http\Controllers;
 
+use Caronae\Http\Requests\LoginRequest;
 use Caronae\Models\Institution;
-use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class LoginController extends Controller
 {
-    public function index(Request $request)
+    public function index(LoginRequest $request)
     {
-        if (!JWTAuth::getToken() && !$request->has('institution')) {
+        if (!$request->hasSelectedInstitution()) {
             $institutions = Institution::all();
             return view('login.institutions', [ 'institutions' => $institutions ]);
         }
 
-        try {
-            if (!$user = JWTAuth::authenticate()) {
-                return $this->error('User not found', 404);
-            }
-        } catch (JWTException $e) {
-            if ($request->has('institution')) {
-                $institution = Institution::findOrFail($request->input('institution'));
-                return redirect($institution->authentication_url);
-            }
+        if (!$request->has('error')) {
+            return view('login.error', [ 'error' => $request->input('error') ]);
+        }
 
+        try {
+            $user = $request->authenticateUser();
+        } catch (JWTException $e) {
             return $this->error('Invalid token', $e->getStatusCode());
         }
 
