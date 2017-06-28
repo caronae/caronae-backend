@@ -10,13 +10,13 @@ class LoginController extends Controller
 {
     public function index(LoginRequest $request)
     {
+        if ($request->has('error')) {
+            return view('login.error', [ 'error' => $request->input('error') ]);
+        }
+
         if (!$request->hasSelectedInstitution()) {
             $institutions = Institution::all();
             return view('login.institutions', [ 'institutions' => $institutions ]);
-        }
-
-        if (!$request->has('error')) {
-            return view('login.error', [ 'error' => $request->input('error') ]);
         }
 
         try {
