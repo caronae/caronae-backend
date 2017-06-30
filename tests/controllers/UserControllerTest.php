@@ -11,7 +11,7 @@ use Faker\Factory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Mockery;
 
-class UserTest extends TestCase
+class UserControllerTest extends TestCase
 {
     use DatabaseTransactions;
 

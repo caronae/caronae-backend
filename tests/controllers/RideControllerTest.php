@@ -13,7 +13,7 @@ use Caronae\Notifications\RideMessageReceived;
 use Caronae\Notifications\RideUserLeft;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class RideTest extends TestCase
+class RideControllerTest extends TestCase
 {
     use DatabaseTransactions;
 

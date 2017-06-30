@@ -4,7 +4,6 @@ namespace Tests;
 
 use Caronae\Http\Middleware\ApiV1Authenticate;
 use Caronae\Models\User;
-
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
 use Mockery;
