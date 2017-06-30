@@ -11,14 +11,6 @@ abstract class Request extends FormRequest
         return config('custom.nativeDateFormat');
     }
 
-    /**
-     * @param $attribute
-     * @param null $default
-     * @return \Carbon\Carbon
-     *
-     * Usado nos controllers para facilitar a obtenção de uma data
-     * Carbon a partir de uma data enviada via request.
-     */
     public function getDate($attribute, $default = null){
         $value = $this->get($attribute);
         return $value ? Carbon::createFromFormat($this->getDateFormat(), $value) : $default;

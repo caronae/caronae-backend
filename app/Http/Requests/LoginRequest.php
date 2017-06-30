@@ -2,11 +2,11 @@
 
 namespace Caronae\Http\Requests;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\Request as BaseRequest;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class LoginRequest extends Request
+class LoginRequest extends BaseRequest
 {
     public function hasSelectedInstitution()
     {
