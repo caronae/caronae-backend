@@ -22,7 +22,7 @@
             <label class="sr-only" for="password">Senha</label>
             <input type="password" name="password" placeholder="Senha" class="form-password form-control" id="password" required>
         </div>
-        <button type="submit" class="btn">Login</button>
+        <button type="submit" class="btn btn-primary">Login</button>
     </form>
     <p class="text-center">
         <a href="{{ route('password.request') }}">Esqueci minha senha</a>
