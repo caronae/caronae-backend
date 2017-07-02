@@ -3,9 +3,10 @@
 namespace Caronae\Http\Controllers;
 
 use Caronae\Models\Institution;
+use Cookie;
 use Illuminate\Http\Request;
+use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class LoginController extends Controller
 {
@@ -27,7 +28,11 @@ class LoginController extends Controller
             return response()->view('login.error', [ 'error' => 'Token inválido.' ], 401);
         }
 
-        return view('login.token', [ 'user' => $user ]);
+        return view('login.token', [
+            'user' => $user,
+            'token' => $request->input('token'),
+            'displayTermsOfUse' => !$this->hasAcceptedTermsOfUse($request)
+        ]);
     }
 
     private function authenticateUser()
@@ -35,5 +40,15 @@ class LoginController extends Controller
         $user = JWTAuth::parseToken()->authenticate();
         if (!$user) throw new JWTException('User not found', 401);
         return $user;
+    }
+
+    private function hasAcceptedTermsOfUse(Request $request)
+    {
+        if ($request->has('acceptedTermsOfUse')) {
+            Cookie::queue('acceptedTermsOfUse', true);
+            return true;
+        }
+
+        return $request->cookie('acceptedTermsOfUse', false);
     }
 }
