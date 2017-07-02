@@ -32,12 +32,13 @@
 
 <div class="top-content">
     <div class="inner-bg">
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-8 col-sm-offset-2 text">
+                <div class="col-sm-12 logo">
                     <img src="{{ asset('images/logo_caronae_with_text.png') }}">
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-sm-6 col-sm-offset-3 form-box">
                     @yield('content')

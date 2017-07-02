@@ -113,6 +113,9 @@ img { max-width: 100%; }
 ::-moz-selection { background: #de615e; color: #fff; text-shadow: none; }
 ::selection { background: #de615e; color: #fff; text-shadow: none; }
 
+.logo {
+    margin: 8vw auto;
+}
 
 .btn-link-1 {
     display: inline-block;
@@ -156,12 +159,6 @@ img { max-width: 100%; }
 .btn-link-2:active, .btn-link-2:active:focus { outline: 0; opacity: 0.6; background: rgba(0, 0, 0, 0.3); color: #fff; }
 
 
-/***** Top content *****/
-
-.inner-bg {
-    padding: 100px 0 170px 0;
-}
-
 .top-content .text {
     color: #fff;
 }
@@ -179,10 +176,6 @@ img { max-width: 100%; }
 }
 .top-content .description a:hover,
 .top-content .description a:focus { border-bottom: 1px dotted #fff; }
-
-.form-box {
-    margin-top: 35px;
-}
 
 .form-top {
     overflow: hidden;
@@ -215,8 +208,7 @@ img { max-width: 100%; }
 
 .form-bottom {
     padding: 25px 25px 30px 25px;
-    background: #444;
-    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0,0,0,0.3);
     -moz-border-radius: 0 0 4px 4px; -webkit-border-radius: 0 0 4px 4px; border-radius: 0 0 4px 4px;
     text-align: left;
 }
@@ -261,15 +253,10 @@ img { max-width: 100%; }
     background-color: #eb3d38;
 }
 
-.box-institutions {
-    border: 1px solid #b1b1b1;
-    border-radius: 10px;
-    padding: 15px;
-}
-
 .institutions {
     list-style: none;
-    margin-top: 1em;
+    margin: 0;
+    padding: 0;
 }
 
 .institutions a {
@@ -280,4 +267,31 @@ img { max-width: 100%; }
 
 .institutions li {
     font-size: 1.5em;
+    width: 100%;
+    margin: 0.2em 0;
+    text-align: center;
+}
+
+.error .title {
+    font-size: 1.1em;
+}
+
+.error .message {
+    font-size: 0.8em;
+}
+
+.terms-alert {
+    text-align: center;
+}
+
+.terms-alert h2 {
+    font-size: 2em;
+}
+
+.terms-alert .icon {
+    font-size: 40px;
+}
+
+.token {
+    font-size: 4em;
 }
