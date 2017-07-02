@@ -32,7 +32,7 @@ class LoginController extends Controller
 
     private function authenticateUser()
     {
-        $user = JWTAuth::authenticate();
+        $user = JWTAuth::parseToken()->authenticate();
         if (!$user) throw new JWTException('User not found', 401);
         return $user;
     }
