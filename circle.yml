@@ -12,7 +12,6 @@ dependencies:
   override:
     - composer install --no-interaction --no-ansi
   post:
-    - echo "memory_limit = -1" > /opt/circleci/php/$(phpenv global)/etc/conf.d/memory.ini
     - cp .env.example .env
     - php artisan migrate
     - php artisan key:generate
@@ -28,12 +27,12 @@ deployment:
     branch: develop
     owner: macecchi
     commands:
-      - ssh -A caronae@54.243.7.207 "cd ~/backend && git reset --hard && git pull && bash upgrade.sh"
+      - ssh -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT "cd ~/backend && git fetch origin master && git reset --hard origin/develop && bash upgrade.sh"
   production:
     branch: master
     owner: macecchi
     commands:
-      - ssh -A caronae@146.164.84.130 -p 22022 "cd ~/backend && git fetch origin master && git reset --hard origin/master && bash upgrade.sh"
+      - ssh -A $CARONAE_PROD_USER@$CARONAE_PROD_HOST -p $CARONAE_PROD_PORT "cd ~/backend && git fetch origin master && git reset --hard origin/master && bash upgrade.sh"
 
 experimental:
   notify:
