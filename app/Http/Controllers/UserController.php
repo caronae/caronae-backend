@@ -6,8 +6,8 @@ use Carbon\Carbon;
 use Caronae\Http\Requests\SignUpRequest;
 use Caronae\Models\User;
 use Caronae\Services\SigaService;
-use Facebook\Exceptions\FacebookResponseException;
 use Facebook\Exceptions\FacebookSDKException;
+use Facebook\Facebook;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -157,7 +157,7 @@ class UserController extends Controller
         $request->currentUser->save();
     }
 
-    public function getMutualFriends(Request $request, \Facebook\Facebook $fb, $fbID)
+    public function getMutualFriends(Request $request, Facebook $fb, $fbID)
     {
         $fbToken = $request->header('Facebook-Token');
         if ($fbToken == null) {
@@ -166,25 +166,16 @@ class UserController extends Controller
 
         try {
             $response = $fb->get('/' . $fbID . '?fields=context.fields(mutual_friends)', $fbToken);
-        } catch(FacebookResponseException $e) {
-            // When Graph returns an error
-            return $this->error('Facebook Graph returned an error: ' . $e->getMessage(), 500);
         } catch(FacebookSDKException $e) {
-            // When validation fails or other local issues
             return $this->error('Facebook SDK returned an error: ' . $e->getMessage(), 500);
         }
 
-        $mutualFriendsFB = $response->getGraphObject()['context']['mutual_friends'];
+        $mutualFriendsFB = $response->getGraphNode()['context']['mutual_friends'];
         $totalFriendsCount = $mutualFriendsFB->getMetaData()['summary']['total_count'];
+        $mutualFriendsFB = collect($mutualFriendsFB)->pluck('id');
 
-        // Array will hold only the Facebook IDs of the mutual friends
-        $friendsFacebookIds = [];
-        foreach ($mutualFriendsFB as $friendFB) {
-            $friendsFacebookIds[] = $friendFB['id'];
-        }
-
-        $mutualFriends = User::whereIn('face_id', $friendsFacebookIds)->get();
-        return response()->json(['total_count' => $totalFriendsCount, 'mutual_friends' => $mutualFriends]);
+        $mutualFriends = User::whereIn('face_id', $mutualFriendsFB)->get();
+        return ['total_count' => $totalFriendsCount, 'mutual_friends' => $mutualFriends];
     }
 
     public function getIntranetPhotoUrl(Request $request, SigaService $siga)
@@ -195,6 +186,6 @@ class UserController extends Controller
         }
 
         $picture = $siga->getProfilePictureById($idUFRJ);
-        return response()->json(['url' => $picture]);
+        return ['url' => $picture];
     }
 }
