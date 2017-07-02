@@ -20,7 +20,7 @@ dependencies:
 
 test:
   override:
-    - ./vendor/bin/phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml
+    - ./vendor/bin/phpunit -d memory_limit=512M --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml
 
 deployment:
   development:
