@@ -13,8 +13,8 @@
         </div>
     </div>
     <div class="form-bottom">
-        <form>
-            @if($displayTermsOfUse)
+        @if($displayTermsOfUse)
+            <form>
                 <input type="hidden" name="token" value="{{ $token }}">
                 <input type="hidden" name="acceptedTermsOfUse" value="1">
 
@@ -35,15 +35,24 @@
                         <span>Li e aceito os termos</span>
                     </button>
                 </div>
-            @else
-                <input type="hidden" name="user" id="user" value="<?= $user->id_ufrj ?>">
-                <input type="hidden" name="app_token" id="app_token" value="<?= $user->token ?>">
+            </form>
+        @else
+            <form method="POST" action="{{ route('refreshToken') }}">
+                <input type="hidden" name="user" id="user" value="{{ $user->id_ufrj }}">
+                <input type="hidden" name="app_token" id="app_token" value="{{ $user->token }}">
+                <input type="hidden" name="token" value="{{ $token }}">
+                {{ csrf_field() }}
 
                 <p class="text-center">Sua chave de acesso ao Caronaê é:</p>
                 <h2 class="text-center token" data-clipboard-text="{{ $user->token }}">{{ $user->token }}</h2>
                 <p class="text-center copy-text">Basta clicar para copiar a chave.</p>
-            @endif
-        </form>
+
+                <button type="submit" class="button btn btn-block btn-success">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                    <span>Nova chave</span>
+                </button>
+            </form>
+        @endif
     </div>
 @endsection
 

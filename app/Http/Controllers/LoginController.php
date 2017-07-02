@@ -23,7 +23,7 @@ class LoginController extends Controller
         }
 
         try {
-            $user = $this->authenticateUser();
+            $user = $this->authenticateUser($request);
         } catch (JWTException $e) {
             return response()->view('login.error', [ 'error' => 'Token inválido.' ], 401);
         }
@@ -35,9 +35,24 @@ class LoginController extends Controller
         ]);
     }
 
-    private function authenticateUser()
+    public function refreshToken(Request $request)
     {
-        $user = JWTAuth::parseToken()->authenticate();
+        try {
+            $user = $this->authenticateUser($request);
+        } catch (JWTException $e) {
+            return response()->view('login.error', [ 'error' => 'Token inválido.' ], 401);
+        }
+
+        $user->generateToken();
+        $user->save();
+
+        return redirect(route('chave', $request->only(['token'])));
+    }
+
+    private function authenticateUser(Request $request)
+    {
+        JWTAuth::setToken($request->input('token'));
+        $user = JWTAuth::authenticate();
         if (!$user) throw new JWTException('User not found', 401);
         return $user;
     }

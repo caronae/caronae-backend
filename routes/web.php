@@ -1,6 +1,7 @@
 <?php
 
 $this->get('login', 'LoginController@index')->name('chave');
+$this->post('refreshToken', 'LoginController@refreshToken')->name('refreshToken');
 
 Route::get('/', function() {
     return redirect()->route('home');

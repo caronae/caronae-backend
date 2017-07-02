@@ -23,7 +23,7 @@ class LoginControllerTest extends TestCase
     public function testReturnsErrorView()
     {
         $errorMessage = 'Error message';
-        $response = $this->get('login?error=' . $errorMessage);
+        $response = $this->call('GET', 'login', [ 'error' => $errorMessage ]);
 
         $response->assertStatus(401);
         $response->assertViewIs('login.error');
@@ -32,24 +32,27 @@ class LoginControllerTest extends TestCase
 
     public function testReturnsTokenView()
     {
-        $user = factory(User::class)->make();
-        $this->mockJWT($user);
+        $user = factory(User::class)->create();
+        $jwtToken = JWTAuth::fromUser($user);
 
-        $response = $this->get('login?token=bla');
+        $response = $this->call('GET', 'login', [ 'token' => $jwtToken ]);
 
         $response->assertStatus(200);
         $response->assertViewIs('login.token');
-        $response->assertViewHas('user', $user);
-        $response->assertViewHas('token', 'bla');
+        $response->assertViewHas('user', $user->fresh());
+        $response->assertViewHas('token', $jwtToken);
         $response->assertViewHas('displayTermsOfUse', true);
     }
 
     public function testAcceptsTermsOfUse()
     {
-        $user = factory(User::class)->make();
-        $this->mockJWT($user);
+        $user = factory(User::class)->create();
+        $jwtToken = JWTAuth::fromUser($user);
 
-        $response = $this->get('login?token=bla&acceptedTermsOfUse=1');
+        $response = $this->call('GET','login', [
+            'token' => $jwtToken,
+            'acceptedTermsOfUse' => true
+        ]);
 
         $response->assertStatus(200);
         $response->assertCookie('acceptedTermsOfUse', true);
@@ -57,20 +60,24 @@ class LoginControllerTest extends TestCase
 
     public function testTokenViewDoesNotDisplayTermsAgain()
     {
-        $user = factory(User::class)->make();
-        $this->mockJWT($user);
+        $user = factory(User::class)->create();
+        $jwtToken = JWTAuth::fromUser($user);
 
-        $cookies = [
-            'acceptedTermsOfUse' => Crypt::encrypt(true),
-        ];
-        $response = $this->call('GET', 'login', [ 'token' => 'bla' ], $cookies);
+        $cookies = [ 'acceptedTermsOfUse' => Crypt::encrypt(true) ];
+        $response = $this->call('GET', 'login', [ 'token' => $jwtToken ], $cookies);
 
         $response->assertViewHas('displayTermsOfUse', false);
     }
 
-    private function mockJWT($user)
+    public function testRefreshToken()
     {
-        JWTAuth::shouldReceive('parseToken')->andReturnSelf();
-        JWTAuth::shouldReceive('authenticate')->andReturn($user);
+        $user = factory(User::class)->create();
+        $jwtToken = JWTAuth::fromUser($user);
+        $previousToken = $user->token;
+
+        $response = $this->post('refreshToken', [ 'token' => $jwtToken ]);
+
+        $response->assertRedirect(route('chave', [ 'token' => $jwtToken ]));
+        $this->assertNotEquals($user->fresh()->token, $previousToken);
     }
 }
