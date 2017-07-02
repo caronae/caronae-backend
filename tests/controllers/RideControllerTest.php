@@ -576,16 +576,6 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testSaveFeedback()
-    {
-        // TODO
-    }
-
-    public function testGetActiveRides()
-    {
-        // TODO
-    }
-
     public function testGetHistory()
     {
         $user2 = factory(User::class)->create()->fresh();
