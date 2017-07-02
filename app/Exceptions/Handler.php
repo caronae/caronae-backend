@@ -4,8 +4,8 @@ namespace Caronae\Exceptions;
 
 use Exception;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Caronae\Exceptions\FirebaseException;
 
 class Handler extends ExceptionHandler
 {
@@ -23,46 +23,36 @@ class Handler extends ExceptionHandler
         \Illuminate\Validation\ValidationException::class,
     ];
 
-    /**
-     * Report or log an exception.
-     *
-     * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
-     *
-     * @param  \Exception  $e
-     * @return void
-     */
     public function report(Exception $e)
     {
         return parent::report($e);
     }
 
-    /**
-     * Render an exception into an HTTP response.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $e
-     * @return \Illuminate\Http\Response
-     */
-    public function render($request, Exception $exception)
+    public function render($request, Exception $e)
     {
-        if ($exception instanceof SigaException || $exception instanceof FirebaseException) {
-            return response()->json(['error' => $exception->getMessage()], 500);
+        if ($request->expectsJson()) {
+            if ($e instanceof ModelNotFoundException) {
+                return response()->json([ 'error' => 'Not found' ], 404);
+            }
+
+            $response = [
+                'error' => 'Sorry, something went wrong.'
+            ];
+
+            if (config('app.debug')) {
+                $response['exception'] = get_class($e);
+                $response['message'] = $e->getMessage();
+                $response['trace'] = $e->getTrace();
+            }
+
+            $status = $this->isHttpException($e) ? $e->getStatusCode() : 500;
+
+            return response()->json($response, $status);
         }
 
-        if ($exception instanceof ModelNotFoundException) {
-            $exception = new NotFoundHttpException($exception->getMessage(), $exception);
-        }
-
-        return parent::render($request, $exception);
+        return parent::render($request, $e);
     }
 
-    /**
-     * Convert an authentication exception into an unauthenticated response.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Auth\AuthenticationException  $exception
-     * @return \Illuminate\Http\Response
-     */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         if ($request->expectsJson()) {
