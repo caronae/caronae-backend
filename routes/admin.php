@@ -19,3 +19,4 @@ Route::name('ride')->get('rides/{ride}', 'RideController@show');
 
 CRUD::resource('admins', 'AdminController');
 CRUD::resource('institutions', 'InstitutionController');
+CRUD::resource('hubs', 'HubController');
