@@ -274,6 +274,7 @@ $factory->define(Message::class, function (Faker\Generator $faker) {
 $factory->define(Institution::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->company,
-        'password' => $faker->password
+        'password' => $faker->password,
+        'authentication_url' => $faker->url
     ];
 });

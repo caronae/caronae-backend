@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Caronae\Models\Institution;
 use Caronae\Models\User;
 use Crypt;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -11,13 +12,22 @@ class LoginControllerTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testReturnsInstitutionsView()
+    public function testReturnsInstitutionsViewWhenThereAreManyInstitutions()
     {
+        factory(Institution::class, 2)->create();
         $response = $this->get('login');
 
         $response->assertStatus(200);
         $response->assertViewIs('login.institutions');
         $response->assertViewHas('institutions');
+    }
+
+    public function testRedirectsToInstitutionWhenThereIsOneInstitution()
+    {
+        $institution = factory(Institution::class)->create();
+        $response = $this->get('login');
+
+        $response->assertRedirect($institution->authentication_url);
     }
 
     public function testReturnsErrorView()

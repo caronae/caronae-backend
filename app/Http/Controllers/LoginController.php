@@ -19,6 +19,12 @@ class LoginController extends Controller
 
         if (!$request->has('token') && !$request->has('error')) {
             $institutions = Institution::all();
+            
+            if (count($institutions) == 1) {
+                $institution = $institutions->first();
+                return redirect($institution->authentication_url);
+            }
+
             return view('login.institutions', [ 'institutions' => $institutions ]);
         }
 
