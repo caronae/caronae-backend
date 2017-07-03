@@ -27,7 +27,7 @@ deployment:
     branch: develop
     owner: macecchi
     commands:
-      - ssh -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT "cd ~/backend && git fetch origin master && git reset --hard origin/develop && bash upgrade.sh"
+      - ssh -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT "cd ~/backend && git fetch origin develop && git reset --hard origin/develop && bash upgrade.sh"
   production:
     branch: master
     owner: macecchi
