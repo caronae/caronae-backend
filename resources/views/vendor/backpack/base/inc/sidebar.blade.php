@@ -16,6 +16,7 @@
           <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/rides') }}"><i class="fa fa-car"></i> <span>Caronas</span></a></li>
           <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/institutions') }}"><i class="fa fa-university"></i> <span>Instituições</span></a></li>
           <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/hubs') }}"><i class="fa fa-map-marker"></i> <span>Hubs</span></a></li>
+          <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/neighborhoods') }}"><i class="fa fa-location-arrow"></i> <span>Bairros</span></a></li>
           <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/admins') }}"><i class="fa fa-lock"></i> <span>Administradores</span></a></li>
           <li><a href="{{ route('logs') }}"><i class="fa fa-terminal"></i> <span>Logs</span></a></li>
 
