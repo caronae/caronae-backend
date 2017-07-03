@@ -1,37 +1,27 @@
-<?php
-
+<?php 
 namespace Caronae\Http\Controllers\Admin;
 
-use Caronae\Http\Controllers\Controller;
-use Caronae\ExcelExport\ExcelExporter;
-use Caronae\Http\Requests\RankingRequest;
+use Backpack\Base\app\Http\Controllers\Controller as Controller;
 use Caronae\Models\Ride;
+use Caronae\Http\Requests\RankingRequest;
 
 class RideController extends Controller
 {
     public function index()
     {
-        return view('rides.index');
+        $this->data['title'] = 'Caronas';
+        return view('rides.index', $this->data);
     }
 
     public function indexJson(RankingRequest $request)
     {
-        // o RankingRequest está sendo usado para reutilizar código, mas isso tecnicamente não é um ranking
         return Ride::getInPeriodWithUserInfo($request->getDate('start'), $request->getDate('end'));
     }
 
-    public function indexExcel(RankingRequest $request)
+    public function show(Ride $ride)
     {
-        $data = Ride::getInPeriodWithUserInfo($request->getDate('start'), $request->getDate('end'));
-
-        (new ExcelExporter())->exportWithBlade('caronas-dadas', 'rides.excel-export-sheet',
-        ['Motorista', 'Curso', 'Data', 'Hora', 'Origem', 'Destino', 'Distancia', 'Distancia Total', 'Total de Caronas', 'Distancia Média'],
-        $data->toArray(), $request->get('type', 'xlsx'));
-    }
-
-    public function riders($rideId)
-    {
-        return Ride::find($rideId)->riders();
+        $this->data['title'] = 'Carona ' . $ride->id;
+        return view('rides.show', $this->data, ['ride' => $ride]);
     }
 
 }

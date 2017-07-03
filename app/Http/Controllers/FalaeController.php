@@ -5,10 +5,6 @@ namespace Caronae\Http\Controllers;
 use Illuminate\Http\Request;
 use Mail;
 
-use Caronae\Http\Requests;
-use Caronae\Http\Controllers\Controller;
-use Caronae\Models\User;
-
 class FalaeController extends Controller
 {
     public function __construct()

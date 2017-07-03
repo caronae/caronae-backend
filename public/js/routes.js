@@ -32,6 +32,6 @@ routes = {
     },
 
     ride: function(id){
-        return '/admin2/rides/'+id;
+        return '/admin/rides/'+id;
     }
 };

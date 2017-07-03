@@ -1,36 +1,35 @@
-<?php
-
+<?php 
 namespace Caronae\Http\Controllers\Admin;
 
-use Caronae\Http\Controllers\Controller;
-use Caronae\Models\Admin;
-use Caronae\Http\Requests\AdminEditRequest;
+use Backpack\CRUD\app\Http\Controllers\CrudController;
 
-class AdminController extends Controller
+class AdminController extends CrudController
 {
-    public function getIndex()
-    {
-        return view('admin.index');
+    public function setup() {
+        $this->crud->setModel('Caronae\Models\Admin');
+        $this->crud->setRoute('admin/admins');
+        $this->crud->setEntityNameStrings('administrador', 'administradores');
+        $this->crud->denyAccess(['edit', 'delete']);
+
+        $this->crud->setColumns([
+            [ 'name' => 'name', 'label' => 'Nome' ],
+            [ 'name' => 'email', 'label' => 'E-mail' ],
+        ]);
+
+        $this->crud->addFields([
+            [ 'name' => 'name', 'label' => 'Nome' ],
+            [ 'name' => 'email', 'label' => 'E-mail', 'type' => 'email' ],
+            [ 'name' => 'password', 'label' => 'Senha', 'type' => 'password' ],
+        ]);
     }
 
-    public function getEdit()
+    public function store()
     {
-        $data['admin'] = Admin::first();
-        return view('admin.edit')->with($data);
+        return parent::storeCrud();
     }
 
-    public function postEdit(AdminEditRequest $request)
+    public function update()
     {
-        $admin = Admin::first();
-
-        $admin->fill($request->all());
-
-        if($request->get('password')){
-            $admin->password = bcrypt($request->get('password'));
-        }
-
-        $admin->save();
-
-        return back()->with('message', 'Administrador editado com sucesso.');
+        return parent::updateCrud();
     }
 }

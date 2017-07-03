@@ -1,5 +1,5 @@
 <?php 
-namespace Caronae\Http\Controllers\Admin2;
+namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Caronae\Models\Institution;
@@ -9,7 +9,7 @@ class InstitutionController extends CrudController
 {
     public function setup() {
         $this->crud->setModel('Caronae\Models\Institution');
-        $this->crud->setRoute('admin2/institutions');
+        $this->crud->setRoute('admin/institutions');
         $this->crud->setEntityNameStrings('instituição', 'instituições');
         $this->crud->denyAccess(['edit', 'delete']);
         $this->crud->enableDetailsRow();

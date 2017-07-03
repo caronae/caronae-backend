@@ -1,5 +1,5 @@
 <?php 
-namespace Caronae\Http\Controllers\Admin2;
+namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\Base\app\Http\Controllers\Controller as Controller;
 
