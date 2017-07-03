@@ -2,16 +2,15 @@
 
 namespace Caronae\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Caronae\Models\Hub;
 use Caronae\Models\Neighborhood;
 
 class PlaceController extends Controller
 {
-	public function index(Request $request)
+	public function index()
 	{
 		return [
-			'neighbodhoods' => Neighborhood::all(),
+			'neighborhoods' => Neighborhood::all(),
 			'hubs' => Hub::all()
 		];
 	}
