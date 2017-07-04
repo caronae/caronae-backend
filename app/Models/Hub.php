@@ -10,6 +10,6 @@ class Hub extends Model
     use CrudTrait;
 
     protected $fillable = ['name', 'center', 'campus'];
-
     public $timestamps = false;
+    public $hidden = ['id'];
 }

@@ -11,5 +11,5 @@ class Neighborhood extends Model
 
     protected $fillable = ['name', 'zone', 'distance'];
     public $timestamps = false;
-    public $hidden = ['distance'];
+    public $hidden = ['id', 'distance'];
 }
