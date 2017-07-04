@@ -3,6 +3,8 @@ namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class HubController extends CrudController
 {
@@ -27,6 +29,7 @@ class HubController extends CrudController
 
     public function store()
     {
+        $this->clearCache();
         return parent::storeCrud();
     }
 
@@ -37,6 +40,14 @@ class HubController extends CrudController
             'center' => 'required|string',
             'campus' => 'required|string',
         ]);
+
+        $this->clearCache();
         return parent::updateCrud();
+    }
+
+    private function clearCache()
+    {
+        Log::info('Clearing centers cache.');
+        Cache::forget('centers');
     }
 }

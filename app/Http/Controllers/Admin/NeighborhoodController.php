@@ -3,6 +3,8 @@ namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class NeighborhoodController extends CrudController
 {
@@ -24,6 +26,7 @@ class NeighborhoodController extends CrudController
 
     public function store()
     {
+        $this->clearCache();
         return parent::storeCrud();
     }
 
@@ -33,6 +36,14 @@ class NeighborhoodController extends CrudController
             'name' => 'required|string',
             'zone' => 'required|string',
         ]);
+
+        $this->clearCache();
         return parent::updateCrud();
+    }
+
+    private function clearCache()
+    {
+        Log::info('Clearing zones cache.');
+        Cache::forget('zones');
     }
 }

@@ -22,7 +22,7 @@ class PlaceController extends Controller
 	public function getZones()
     {
         return Cache::remember('zones', self::CACHE_TIME_MINUTES, function () {
-            Log::info('Loading zones from database');
+            Log::info('Loading zones from database.');
             $zones = Neighborhood::select('zone')->distinct()->pluck('zone');
             return $zones->map(function($zone) {
                 return [
@@ -36,7 +36,7 @@ class PlaceController extends Controller
     private function getCenters()
     {
         return Cache::remember('centers', self::CACHE_TIME_MINUTES, function () {
-            Log::info('Loading centers from database');
+            Log::info('Loading centers from database.');
             $centers = Hub::select('center', 'campus')->distinct()->get();
             return $centers->map(function ($center) {
                 return [
