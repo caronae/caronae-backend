@@ -2,31 +2,24 @@
 
 namespace Caronae\Http\Middleware;
 
-use Closure;
 use Caronae\Models\Institution;
-use Illuminate\Support\Facades\Log;
+use Closure;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
-use Illuminate\Support\Facades\Auth;
+use Log;
 
 class ApiAuthenticateInstitution extends AuthenticateWithBasicAuth
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
     public function handle($request, Closure $next, $guard = NULL)
     {
         if (($institution = Institution::where([
-            'id'=> $request->getUser(),
+            'id' => $request->getUser(),
             'password' => $request->getPassword()
             ])->first()) == NULL) {
-            abort(403);
+            Log::warning('Autenticação da instituição falhou', [ 'id' => $request->getUser(), 'password' => $request->getPassword() ]);
+            return response()->json(['error' => 'Institution not authorized.'], 401);
         }
 
-        $this->institution = $institution;
+        $request->institution = $institution;
 
         return $next($request);
     }
