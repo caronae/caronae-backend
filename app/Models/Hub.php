@@ -12,4 +12,9 @@ class Hub extends Model
     protected $fillable = ['name', 'center', 'campus'];
     public $timestamps = false;
     public $hidden = ['id'];
+
+    public function scopeWithCampus($query, string $campus)
+    {
+        return $query->where('campus', $campus);
+    }
 }

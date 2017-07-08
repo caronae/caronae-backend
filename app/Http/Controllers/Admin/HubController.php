@@ -47,7 +47,7 @@ class HubController extends CrudController
 
     private function clearCache()
     {
-        Log::info('Clearing centers cache.');
-        Cache::forget('centers');
+        Log::info('Clearing campi cache.');
+        Cache::forget('campi');
     }
 }

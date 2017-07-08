@@ -12,4 +12,9 @@ class Neighborhood extends Model
     protected $fillable = ['name', 'zone', 'distance'];
     public $timestamps = false;
     public $hidden = ['id', 'distance'];
+
+    public function scopeWithZone($query, string $zone)
+    {
+        return $query->where('zone', $zone);
+    }
 }

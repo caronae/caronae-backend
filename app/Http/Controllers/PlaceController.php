@@ -9,40 +9,40 @@ use Illuminate\Support\Facades\Log;
 
 class PlaceController extends Controller
 {
-    const CACHE_TIME_MINUTES = 60*24*365;
+    const CACHE_TIME_MINUTES = 60 * 24 * 365;
 
-	public function index()
-	{
-		return [
-			'zones' => $this->getZones(),
-			'centers' => $this->getCenters()
-		];
-	}
+    public function index()
+    {
+        return [
+            'zones' => $this->getZones(),
+            'campi' => $this->getCampi()
+        ];
+    }
 
-	public function getZones()
+    public function getZones()
     {
         return Cache::remember('zones', self::CACHE_TIME_MINUTES, function () {
             Log::info('Loading zones from database.');
             $zones = Neighborhood::select('zone')->distinct()->pluck('zone');
-            return $zones->map(function($zone) {
+            return $zones->map(function ($zone) {
                 return [
                     'name' => $zone,
-                    'neighborhoods' => Neighborhood::where('zone', $zone)->pluck('name')
+                    'neighborhoods' => Neighborhood::withZone($zone)->pluck('name')
                 ];
             });
         });
     }
 
-    private function getCenters()
+    private function getCampi()
     {
-        return Cache::remember('centers', self::CACHE_TIME_MINUTES, function () {
-            Log::info('Loading centers from database.');
-            $centers = Hub::select('center', 'campus')->distinct()->get();
-            return $centers->map(function ($center) {
+        return Cache::remember('campi', self::CACHE_TIME_MINUTES, function () {
+            Log::info('Loading campi from database.');
+            $campi = Hub::select('campus')->distinct()->pluck('campus');
+            return $campi->map(function ($campus) {
                 return [
-                    'name' => $center->center,
-                    'campus' => $center->campus,
-                    'hubs' => Hub::where('center', $center->center)->pluck('name')
+                    'name' => $campus,
+                    'centers' => Hub::select('center')->distinct()->withCampus($campus)->pluck('center'),
+                    'hubs' => Hub::withCampus($campus)->pluck('name')
                 ];
             });
         });

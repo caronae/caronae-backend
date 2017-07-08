@@ -10,7 +10,7 @@ class PlaceControllerTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testReturnsZonesAndCenters()
+    public function testReturnsZonesAndCampi()
     {
         $neighborhood = factory(Neighborhood::class)->create();
         $hub = factory(Hub::class)->create();
@@ -25,10 +25,10 @@ class PlaceControllerTest extends TestCase
                     'neighborhoods' => [ $neighborhood->name ]
                 ]
             ],
-            'centers' => [
+            'campi' => [
                 [
-                    'name' => $hub->center,
-                    'campus' => $hub->campus,
+                    'name' => $hub->campus,
+                    'centers' => [ $hub-> center ],
                     'hubs' => [ $hub->name ]
                 ]
             ]
