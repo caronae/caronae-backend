@@ -3,6 +3,7 @@
 namespace Caronae\Http\Controllers;
 
 use Carbon\Carbon;
+use Caronae\Http\Requests\CreateRideRequest;
 use Caronae\Models\Hub;
 use Caronae\Models\Message;
 use Caronae\Models\Ride;
@@ -105,35 +106,12 @@ class RideController extends Controller
         return $ride;
     }
 
-    public function store(Request $request)
+    public function store(CreateRideRequest $request)
     {
-        $this->validate($request, [
-            'myzone' => 'required|string',
-            'neighborhood' => 'required|string',
-            'place' => 'string|max:255',
-            'route' => 'string|max:255',
-            'slots' => 'numeric|max:10',
-            'hub' => 'string|max:255',
-            'description' => 'string|max:255',
-            'going' => 'required|boolean',
-            'mydate' => 'required|string',
-            'mytime' => 'required|string'
-        ]);
-
-        try {
-            $date = Carbon::createFromFormat('d/m/Y H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
-        } catch(\InvalidArgumentException $error) {
-            $date = Carbon::createFromFormat('Y-m-d H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
-        }
-        
-        if ($date->isPast()) {
-            return $this->error('You cannot create a ride in the past.', 403);
-        }
-
         $user = $request->currentUser;
 
         $ridesCreated = [];
-        DB::transaction(function() use ($request, $date, $user, &$ridesCreated) {
+        DB::transaction(function() use ($request, $user, &$ridesCreated) {
             $ride = new Ride();
             $ride->myzone = $request->myzone;
             $ride->neighborhood = $request->neighborhood;
@@ -143,7 +121,7 @@ class RideController extends Controller
             $ride->hub = $request->hub;
             $ride->description = $request->description;
             $ride->going = $request->going;
-            $ride->date = $date;
+            $ride->date = $request->date;
             $ride->save();
             $ridesCreated[] = $ride;
 

@@ -46,7 +46,9 @@ class RideControllerTest extends TestCase
         $response = $this->json('GET', 'rides', [], $this->headers);
         $response->assertStatus(200);
 
-        $response->assertJson(['data' => [ $rides[0]->toArray(), $rides[1]->toArray() ]]);
+        $response->assertJsonStructure(['data']);
+        $response->assertJsonFragment($rides[0]->toArray());
+        $response->assertJsonFragment($rides[1]->toArray());
     }
 
     public function testIndexShouldAllowFiltering()
@@ -290,9 +292,9 @@ class RideControllerTest extends TestCase
         ];
 
         $response = $this->json('POST', 'ride', $request, $this->headers);
-        $response->assertStatus(403);
+        $response->assertStatus(422);
         $response->assertExactJson([
-            'error' => 'You cannot create a ride in the past.'
+            'mydate' => ['You cannot create a ride in the past.']
         ]);
     }
 
@@ -569,7 +571,6 @@ class RideControllerTest extends TestCase
 
     public function testGetChatMessages()
     {
-        // Create fake ride with the user as driver
         $ride = factory(Ride::class)->create()->fresh();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
@@ -594,7 +595,6 @@ class RideControllerTest extends TestCase
 
     public function testSendChatMessage()
     {
-        // Create fake ride with the user as driver
         $ride = factory(Ride::class)->create();
         $ride->users()->attach($this->user, ['status' => 'accepted']);
 

@@ -11,13 +11,19 @@ use Mockery;
 class ApiV1AuthenticateTest extends TestCase
 {
     use DatabaseTransactions;
+    private $middleware;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->middleware = new ApiV1Authenticate();
+    }
 
     public function testHandleShouldReturn401WithInvalidToken()
     {
     	$request = Mockery::mock(Request::class);
     	$request->shouldReceive('header')->with('token')->andReturn('xxx');
-    	$middleware = new ApiV1Authenticate();
-    	$response = $middleware->handle($request, function($r){ });
+    	$response = $this->middleware->handle($request, function($r){ });
         $this->assertResponseIs401TokenNotAuthorized($response);
     }
 
@@ -25,21 +31,23 @@ class ApiV1AuthenticateTest extends TestCase
     {
     	$request = Mockery::mock(Request::class);
     	$request->shouldReceive('header')->with('token')->andReturn(null);
-    	$middleware = new ApiV1Authenticate();
-    	$response = $middleware->handle($request, function($r){ });
+
+    	$response = $this->middleware->handle($request, function($r){ });
+
         $this->assertResponseIs401TokenNotAuthorized($response);
     }
 
     public function testShouldContinueWithValidToken()
     {
     	$user = factory(User::class)->create()->fresh();
+
     	$request = Mockery::mock(Request::class)->makePartial();
     	$request->shouldReceive('header')->with('token')->andReturn($user->token);
     	$request->shouldReceive('header')->andReturn();
-    	$middleware = new ApiV1Authenticate();
+    	$request->shouldReceive('merge')->andReturn();
 
     	// Assert that $next($request) will be called
-    	$response = $middleware->handle($request, function($r) { 
+    	$response = $this->middleware->handle($request, function() {
     		return 'next';
     	});
     	$this->assertEquals($response, 'next');
@@ -51,10 +59,10 @@ class ApiV1AuthenticateTest extends TestCase
     	$request = Mockery::mock(Request::class)->makePartial();
     	$request->shouldReceive('header')->with('token')->andReturn($user->token);
     	$request->shouldReceive('header')->andReturn();
-    	$middleware = new ApiV1Authenticate();
+    	$request->shouldReceive('merge')->andReturn();
 
-    	$response = $middleware->handle($request, function($r) {});
-    	$this->assertEquals($user, $request->currentUser);
+    	$this->middleware->handle($request, function() {});
+    	$request->shouldHaveReceived('merge', [['currentUser' => $user]]);
     }
 
     private function assertResponseIs401TokenNotAuthorized($response)
