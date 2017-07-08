@@ -94,7 +94,9 @@ class Ride extends Model
             if ($key == 'neighborhoods') {
                 $query = $query->whereIn('rides.neighborhood', $value);
             } else if ($key == 'hub') {
-                $query = $query->where('rides.' . $key, 'LIKE', $value . '%');
+                $query = $query->where('rides.hub', 'LIKE', $value . '%');
+            } else if ($key == 'hubs') {
+                $query = $query->whereIn('rides.hub', $value);
             } else {
                 $query = $query->where('rides.' . $key, $value);
             }

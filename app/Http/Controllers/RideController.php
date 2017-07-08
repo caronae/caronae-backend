@@ -3,6 +3,7 @@
 namespace Caronae\Http\Controllers;
 
 use Carbon\Carbon;
+use Caronae\Models\Hub;
 use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
@@ -49,6 +50,7 @@ class RideController extends Controller
             'neighborhoods' => 'string',
             'place' => 'string|max:255',
             'hub' => 'string|max:255',
+            'campus' => 'string|max:255',
             'going' => 'boolean',
             'date' => 'string',
             'time' => 'string'
@@ -63,8 +65,10 @@ class RideController extends Controller
             $filters['myplace'] = $request->place;
         if (!empty($request->zone))
             $filters['myzone'] = $request->zone;
-        if (!empty($request->hub))
-            $filters['hub'] = $request->hub;
+        if (!empty($request->campus))
+            $filters['hubs'] = Hub::withCampus($request->campus)->pluck('name');
+        else if (!empty($request->hub))
+            $filters['hubs'] = [ $request->hub ];
 
         $limit = 20;
         $rides = Ride::withAvailableSlots()

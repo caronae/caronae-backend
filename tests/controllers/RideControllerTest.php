@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use Carbon\Carbon;
+use Caronae\Models\Hub;
 use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
@@ -44,42 +46,7 @@ class RideControllerTest extends TestCase
         $response = $this->json('GET', 'rides', [], $this->headers);
         $response->assertStatus(200);
 
-        $response->assertJsonFragment(['data' => [
-            [
-                'id' => $rides[0]->id,
-                'myzone' => $rides[0]->myzone,
-                'neighborhood' => $rides[0]->neighborhood,
-                'going' => $rides[0]->going,
-                'place' => $rides[0]->place,
-                'route' => $rides[0]->route,
-                'routine_id' => $rides[0]->routine_id,
-                'hub' => $rides[0]->hub,
-                'slots' => $rides[0]->slots,
-                'mydate' => $rides[0]->date->format('Y-m-d'),
-                'mytime' => $rides[0]->date->format('H:i:s'),
-                'description' => $rides[0]->description,
-                'week_days' => $rides[0]->week_days,
-                'repeats_until' => $rides[0]->repeats_until,
-                'driver' => $rides[0]->driver()->toArray()
-            ],
-            [
-                'id' => $rides[1]->id,
-                'myzone' => $rides[1]->myzone,
-                'neighborhood' => $rides[1]->neighborhood,
-                'going' => $rides[1]->going,
-                'place' => $rides[1]->place,
-                'route' => $rides[1]->route,
-                'routine_id' => $rides[1]->routine_id,
-                'hub' => $rides[1]->hub,
-                'slots' => $rides[1]->slots,
-                'mydate' => $rides[1]->date->format('Y-m-d'),
-                'mytime' => $rides[1]->date->format('H:i:s'),
-                'description' => $rides[1]->description,
-                'week_days' => $rides[1]->week_days,
-                'repeats_until' => $rides[1]->repeats_until,
-                'driver' => $rides[1]->driver()->toArray()
-            ]
-        ]]);
+        $response->assertJson(['data' => [ $rides[0]->toArray(), $rides[1]->toArray() ]]);
     }
 
     public function testIndexShouldAllowFiltering()
@@ -92,52 +59,32 @@ class RideControllerTest extends TestCase
 
         $response = $this->json('GET', 'rides', ['neighborhoods' => 'Ipanema'], $this->headers);
         $response->assertStatus(200);
-        $response->assertJson(['data' => [
-            [
-                'id' => $ride1->id,
-                'myzone' => $ride1->myzone,
-                'neighborhood' => $ride1->neighborhood,
-                'going' => $ride1->going,
-                'place' => $ride1->place,
-                'route' => $ride1->route,
-                'routine_id' => $ride1->routine_id,
-                'hub' => $ride1->hub,
-                'slots' => $ride1->slots,
-                'mydate' => $ride1->date->format('Y-m-d'),
-                'mytime' => $ride1->date->format('H:i:s'),
-                'description' => $ride1->description,
-                'week_days' => $ride1->week_days,
-                'repeats_until' => $ride1->repeats_until,
-                'driver' => $ride1->driver()->toArray()
-            ]
-        ]]);
+        $response->assertJson(['data' => [ $ride1->toArray() ]]);
 
         $response = $this->json('GET', 'rides', ['going' => false], $this->headers);
         $response->assertStatus(200);
-        $response->assertJson(['data' => [
-            [
-                'id' => $ride2->id,
-                'myzone' => $ride2->myzone,
-                'neighborhood' => $ride2->neighborhood,
-                'going' => $ride2->going,
-                'place' => $ride2->place,
-                'route' => $ride2->route,
-                'routine_id' => $ride2->routine_id,
-                'hub' => $ride2->hub,
-                'slots' => $ride2->slots,
-                'mydate' => $ride2->date->format('Y-m-d'),
-                'mytime' => $ride2->date->format('H:i:s'),
-                'description' => $ride2->description,
-                'week_days' => $ride2->week_days,
-                'repeats_until' => $ride2->repeats_until,
-                'driver' => $ride2->driver()->toArray()
-            ]
-        ]]);
+        $response->assertJson(['data' => [ $ride2->toArray() ]]);
+    }
+
+    public function testIndexShouldFilterByCampus()
+    {
+        $hub = factory(Hub::class)->create(['campus' => 'Cidade Universitária']);
+        $hub2 = factory(Hub::class)->create(['campus' => 'Praia Vermelha']);
+
+        $ride1 = factory(Ride::class, 'next')->create(['hub' => $hub->name])->fresh();
+        $ride1->users()->attach($this->user, ['status' => 'driver']);
+
+        $ride2 = factory(Ride::class, 'next')->create(['hub' => $hub2->name])->fresh();
+        $ride2->users()->attach($this->user, ['status' => 'driver']);
+
+        $response = $this->json('GET', 'rides', ['campus' => 'Cidade Universitária'], $this->headers);
+        $response->assertStatus(200);
+        $response->assertJson(['data' => [ $ride1->toArray() ]]);
     }
 
     public function testIndexShouldAllowSearchByDateAndTime()
     {
-        $futureDate = \Carbon\Carbon::now()->addDays(5)->setTime(12,0,0);
+        $futureDate = Carbon::now()->addDays(5)->setTime(12,0,0);
         $ride1 = factory(Ride::class, 'next')->create(['date' => $futureDate])->fresh();
         $ride1->users()->attach($this->user, ['status' => 'driver']);
 
@@ -145,72 +92,19 @@ class RideControllerTest extends TestCase
         $ride2 = factory(Ride::class, 'next')->create(['date' => $futureDate2])->fresh();
         $ride2->users()->attach($this->user, ['status' => 'driver']);
 
-        $pastDate = \Carbon\Carbon::now()->addDays(-5);
+        $pastDate = Carbon::now()->addDays(-5);
         $ride3 = factory(Ride::class)->create(['date' => $pastDate])->fresh();
         $ride3->users()->attach($this->user, ['status' => 'driver']);
 
         $filterParams = ['date' => $futureDate->format('Y-m-d'), 'time' => '12:00'];
         $response = $this->json('GET', 'rides', $filterParams, $this->headers);
         $response->assertStatus(200);
-        $response->assertJson(['data' => [
-            [
-                'id' => $ride1->id,
-                'myzone' => $ride1->myzone,
-                'neighborhood' => $ride1->neighborhood,
-                'going' => $ride1->going,
-                'place' => $ride1->place,
-                'route' => $ride1->route,
-                'routine_id' => $ride1->routine_id,
-                'hub' => $ride1->hub,
-                'slots' => $ride1->slots,
-                'mydate' => $ride1->date->format('Y-m-d'),
-                'mytime' => $ride1->date->format('H:i:s'),
-                'description' => $ride1->description,
-                'week_days' => $ride1->week_days,
-                'repeats_until' => $ride1->repeats_until,
-                'driver' => $ride1->driver()->toArray()
-            ]
-        ]]);
+        $response->assertJson(['data' => [ $ride1->toArray() ]]);
 
         $filterParams = ['date' => $futureDate->format('Y-m-d')];
         $response = $this->json('GET', 'rides', $filterParams, $this->headers);
         $response->assertStatus(200);
-        $response->assertJson(['data' => [
-            [
-                'id' => $ride2->id,
-                'myzone' => $ride2->myzone,
-                'neighborhood' => $ride2->neighborhood,
-                'going' => $ride2->going,
-                'place' => $ride2->place,
-                'route' => $ride2->route,
-                'routine_id' => $ride2->routine_id,
-                'hub' => $ride2->hub,
-                'slots' => $ride2->slots,
-                'mydate' => $ride2->date->format('Y-m-d'),
-                'mytime' => $ride2->date->format('H:i:s'),
-                'description' => $ride2->description,
-                'week_days' => $ride2->week_days,
-                'repeats_until' => $ride2->repeats_until,
-                'driver' => $ride2->driver()->toArray()
-            ],
-            [
-                'id' => $ride1->id,
-                'myzone' => $ride1->myzone,
-                'neighborhood' => $ride1->neighborhood,
-                'going' => $ride1->going,
-                'place' => $ride1->place,
-                'route' => $ride1->route,
-                'routine_id' => $ride1->routine_id,
-                'hub' => $ride1->hub,
-                'slots' => $ride1->slots,
-                'mydate' => $ride1->date->format('Y-m-d'),
-                'mytime' => $ride1->date->format('H:i:s'),
-                'description' => $ride1->description,
-                'week_days' => $ride1->week_days,
-                'repeats_until' => $ride1->repeats_until,
-                'driver' => $ride1->driver()->toArray()
-            ]
-        ]]);
+        $response->assertJson(['data' => [ $ride2->toArray(), $ride1->toArray() ]]);
     }
 
     public function testFindsRide()
@@ -285,7 +179,7 @@ class RideControllerTest extends TestCase
 
     public function testCreateWithoutRoutine()
     {
-        $date = \Carbon\Carbon::now()->addDays(5);
+        $date = Carbon::now()->addDays(5);
         $request = [
             'myzone' => 'Norte',
             'neighborhood' => 'Jardim Guanabara',
@@ -324,7 +218,7 @@ class RideControllerTest extends TestCase
 
     public function testCreateWithRoutine()
     {
-        $date = \Carbon\Carbon::now()->addDays(5);
+        $date = Carbon::now()->addDays(5);
         $repeatsUntil = $date->copy()->addWeek();
         $request = [
             'myzone' => 'Norte',
@@ -379,7 +273,7 @@ class RideControllerTest extends TestCase
 
     public function testCreateRideInThePastShouldFail()
     {
-        $date = \Carbon\Carbon::yesterday();
+        $date = Carbon::yesterday();
         $request = [
             'myzone' => 'Norte',
             'neighborhood' => 'Jardim Guanabara',
