@@ -32,24 +32,46 @@ class CreateRideRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            $mydate = $this->input('mydate');
-            $mytime = substr($this->input('mytime'), 0, 5);
-            $dateTime = $mydate . ' ' . $mytime;
+            $this->parseDate();
 
-            try {
-                $date = Carbon::createFromFormat('d/m/Y H:i', $dateTime);
-            } catch(\InvalidArgumentException $error) {
-                $date = Carbon::createFromFormat('Y-m-d H:i', $dateTime);
-            }
-
-            if ($date->isPast()) {
+            if ($this->input('date')->isPast()) {
                 $validator->errors()->add('mydate', 'You cannot create a ride in the past.');
             }
-
-            $this->merge([
-                'date' => $date
-            ]);
         });
+    }
+
+    protected function parseDate()
+    {
+        $mydate = $this->input('mydate');
+        $mytime = substr($this->input('mytime'), 0, 5);
+        $dateTime = $mydate . ' ' . $mytime;
+
+        try {
+            $date = Carbon::createFromFormat('d/m/Y H:i', $dateTime);
+        } catch (\InvalidArgumentException $error) {
+            $date = Carbon::createFromFormat('Y-m-d H:i', $dateTime);
+        }
+
+        $this->merge([
+            'date' => $date
+        ]);
+    }
+
+    public function isRoutine()
+    {
+        $repeatsUntil = $this->input('repeats_until');
+        return (!empty($repeatsUntil) && is_string($repeatsUntil));
+    }
+
+    public function getRoutineEndDate()
+    {
+        $repeatsUntil = $this->input('repeats_until');
+        try {
+            $date = Carbon::createFromFormat('d/m/Y', $repeatsUntil);
+        } catch(\InvalidArgumentException $error) {
+            $date = Carbon::createFromFormat('Y-m-d', $repeatsUntil);
+        }
+        return $date->setTime(23,59,59);
     }
 
     public function response(array $errors)
