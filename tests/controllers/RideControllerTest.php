@@ -70,8 +70,8 @@ class RideControllerTest extends TestCase
 
     public function testIndexShouldFilterByCampus()
     {
-        $hub = factory(Hub::class)->create(['campus' => 'Cidade Universitária']);
-        $hub2 = factory(Hub::class)->create(['campus' => 'Praia Vermelha']);
+        $hub = Hub::create(['name' => 'CT1', 'center' => 'CT', 'campus' => 'Cidade Universitária']);
+        $hub2 = Hub::create(['name' => 'PV', 'center' => 'PV', 'campus' => 'Praia Vermelha']);
 
         $ride1 = factory(Ride::class, 'next')->create(['hub' => $hub->name])->fresh();
         $ride1->users()->attach($this->user, ['status' => 'driver']);
