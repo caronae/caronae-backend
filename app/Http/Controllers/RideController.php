@@ -3,6 +3,8 @@
 namespace Caronae\Http\Controllers;
 
 use Carbon\Carbon;
+use Caronae\Http\Requests\CreateRideRequest;
+use Caronae\Models\Hub;
 use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
@@ -49,6 +51,7 @@ class RideController extends Controller
             'neighborhoods' => 'string',
             'place' => 'string|max:255',
             'hub' => 'string|max:255',
+            'campus' => 'string|max:255',
             'going' => 'boolean',
             'date' => 'string',
             'time' => 'string'
@@ -63,8 +66,10 @@ class RideController extends Controller
             $filters['myplace'] = $request->place;
         if (!empty($request->zone))
             $filters['myzone'] = $request->zone;
-        if (!empty($request->hub))
-            $filters['hub'] = $request->hub;
+        if (!empty($request->campus))
+            $filters['hubs'] = Hub::withCampus($request->campus)->pluck('name');
+        else if (!empty($request->hub))
+            $filters['hubs'] = [ $request->hub ];
 
         $limit = 20;
         $rides = Ride::withAvailableSlots()
@@ -101,105 +106,42 @@ class RideController extends Controller
         return $ride;
     }
 
-    public function store(Request $request)
+    public function store(CreateRideRequest $request)
     {
-        $this->validate($request, [
-            'myzone' => 'required|string',
-            'neighborhood' => 'required|string',
-            'place' => 'string|max:255',
-            'route' => 'string|max:255',
-            'slots' => 'numeric|max:10',
-            'hub' => 'string|max:255',
-            'description' => 'string|max:255',
-            'going' => 'required|boolean',
-            'mydate' => 'required|string',
-            'mytime' => 'required|string'
-        ]);
-
-        try {
-            $date = Carbon::createFromFormat('d/m/Y H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
-        } catch(\InvalidArgumentException $error) {
-            $date = Carbon::createFromFormat('Y-m-d H:i', $request->mydate . ' ' . substr($request->mytime, 0, 5));
-        }
-        
-        if ($date->isPast()) {
-            return $this->error('You cannot create a ride in the past.', 403);
-        }
-
         $user = $request->currentUser;
 
         $ridesCreated = [];
-        DB::transaction(function() use ($request, $date, $user, &$ridesCreated) {
-            $ride = new Ride();
-            $ride->myzone = $request->myzone;
-            $ride->neighborhood = $request->neighborhood;
-            $ride->place = $request->place;
-            $ride->route = $request->route;
-            $ride->slots = $request->slots;
-            $ride->hub = $request->hub;
-            $ride->description = $request->description;
-            $ride->going = $request->going;
-            $ride->date = $date;
-            $ride->save();
+        DB::transaction(function() use ($request, $user, &$ridesCreated) {
+            $ride = Ride::create($request->all());
+            $ride->users()->attach($user->id, ['status' => 'driver']);
             $ridesCreated[] = $ride;
 
-            // save relationship between ride and user
-            $ride->users()->attach($user->id, ['status' => 'driver']);
-
-            // check if the ride is recurring. if so, there will be a field 'repeats_until'
-            // and a field 'week_days' with the repeating days (1->monday, 2->tuesday, ..., 7->sunday)
-            if (!empty($request->repeats_until) && is_string($request->repeats_until)) {
-               try {
-                    $repeats_until = Carbon::createFromFormat('d/m/Y', $request->repeats_until);
-                } catch(\InvalidArgumentException $error) {
-                    $repeats_until = Carbon::createFromFormat('Y-m-d', $request->repeats_until);
-                }
+            if ($request->isRoutine()) {
+                $repeats_until = $request->getRoutineEndDate();
 
                 $ride->repeats_until = $repeats_until;
                 $ride->week_days = $request->week_days;
+                $ride->routine_id = $ride->id;
+                $ride->save();
 
-                $repeating_dates = $this->recurringDates($ride->date, $repeats_until->setTime(23,59,59), $ride->week_days);
+                $repeating_dates = $this->recurringDates($ride->date, $repeats_until, $ride->week_days);
 
                 foreach ($repeating_dates as $date) {
-                    // Skip if it's the date of the original Ride
                     if ($date == $ride->date) continue;
 
-                    // Creating repeating Ride objects. All fields are the same except for
-                    // the date - which will have a new generated date - and a foreign key
-                    // to the original Ride (routine_id).
                     $repeating_ride = new Ride();
-                    $repeating_ride->myzone = $ride->myzone;
-                    $repeating_ride->neighborhood = $ride->neighborhood;
-                    $repeating_ride->place = $ride->place;
-                    $repeating_ride->route = $ride->route;
-                    $repeating_ride->date = $date; // New date
-                    $repeating_ride->slots = $ride->slots;
-                    $repeating_ride->hub = $ride->hub;
-                    $repeating_ride->description = $ride->description;
-                    $repeating_ride->going = $ride->going;
+                    $repeating_ride->fill($request->all());
+                    $repeating_ride->date = $date;
                     $repeating_ride->week_days = $ride->week_days;
-                    $repeating_ride->routine_id = $ride->id; // References the original ride which originated this ride
-
+                    $repeating_ride->routine_id = $ride->id;
                     $repeating_ride->save();
 
                     $ridesCreated[] = $repeating_ride;
 
-                    // Saving the relationship between ride and user
                     $repeating_ride->users()->attach($user->id, ['status' => 'driver']);
                 }
-
-                $ride->routine_id = $ride->id;
-                $ride->save();
-            } else {
-                $ride->routine_id = NULL;
-                $ride->week_days = NULL;
-                $ride->repeats_until = NULL;
             }
         });
-
-        if (empty($ridesCreated)) {
-            return $this->error('No rides were created.', 204);
-        }
 
         return response()->json($ridesCreated, 201);
     }

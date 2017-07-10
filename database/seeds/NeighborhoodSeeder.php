@@ -1,6 +1,5 @@
 <?php
 
-use Caronae\Models\Admin;
 use Caronae\Models\Neighborhood;
 use Illuminate\Database\Seeder;
 
@@ -22,7 +21,6 @@ class NeighborhoodSeeder extends Seeder
             ['zone' => 'Centro', 'name' => 'Glória', 'distance' => 13.3],
             ['zone' => 'Centro', 'name' => 'Lapa', 'distance' => 11.6],
             ['zone' => 'Centro', 'name' => 'Mangueira', 'distance' => 9.2],
-            ['zone' => 'Centro', 'name' => 'Paquetá', 'distance' => 11.0],
             ['zone' => 'Centro', 'name' => 'Rio Comprido', 'distance' => 10.2],
             ['zone' => 'Centro', 'name' => 'Santa Teresa', 'distance' => 11.8],
             ['zone' => 'Centro', 'name' => 'Santo Cristo', 'distance' => 8.0],

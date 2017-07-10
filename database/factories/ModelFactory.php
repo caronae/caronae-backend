@@ -1,9 +1,10 @@
 <?php
+use Caronae\Models\Hub;
 use Caronae\Models\Institution;
 use Caronae\Models\Message;
 use Caronae\Models\Neighborhood;
-use Caronae\Models\User;
 use Caronae\Models\Ride;
+use Caronae\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -276,5 +277,13 @@ $factory->define(Institution::class, function (Faker\Generator $faker) {
         'name' => $faker->company,
         'password' => $faker->password,
         'authentication_url' => $faker->url
+    ];
+});
+
+$factory->define(Hub::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->randomElement(['CCS: Frente', 'CCS: HUCFF', 'CCMN: Frente', 'CCMN: Fundos', 'CT: Bloco A', 'CT: Bloco D', 'Letras', 'Reitoria', 'EEFD']),
+        'center' => $faker->randomElement(['CCS', 'CCMN', 'CT', 'Letras', 'Reitoria', 'EEFD']),
+        'campus' => $faker->city
     ];
 });

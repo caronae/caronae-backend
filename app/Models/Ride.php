@@ -13,6 +13,7 @@ class Ride extends Model
     use Notifiable;
     use SoftDeletes;
 
+    protected $fillable = ['myzone', 'neighborhood', 'place', 'route', 'slots', 'hub', 'description', 'going', 'date'];
     protected $hidden = ['pivot', 'created_at', 'deleted_at', 'updated_at', 'date', 'done'];
     protected $dates = ['date', 'created_at', 'updated_at', 'deleted_at'];
     protected $appends = ['mydate', 'mytime'];
@@ -94,7 +95,9 @@ class Ride extends Model
             if ($key == 'neighborhoods') {
                 $query = $query->whereIn('rides.neighborhood', $value);
             } else if ($key == 'hub') {
-                $query = $query->where('rides.' . $key, 'LIKE', $value . '%');
+                $query = $query->where('rides.hub', 'LIKE', $value . '%');
+            } else if ($key == 'hubs') {
+                $query = $query->whereIn('rides.hub', $value);
             } else {
                 $query = $query->where('rides.' . $key, $value);
             }

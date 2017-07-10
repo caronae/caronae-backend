@@ -104,23 +104,35 @@ class RideModelTest extends TestCase
         $this->assertFalse($results->contains($rideOld));
     }
 
-    public function testScopeShouldApplyFilters() 
+    public function testScopeShouldFilterByNeighborhoods()
     {
-        $ride1 = factory(Ride::class, 'next')->create(['neighborhood' => 'Ipanema', 'hub' => 'CCMN: Fundos'])->fresh();
+        $ride1 = factory(Ride::class, 'next')->create(['neighborhood' => 'Ipanema'])->fresh();
         $ride1->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
 
-        $ride2 = factory(Ride::class, 'next')->create(['neighborhood' => 'Niterói', 'hub' => 'CT: Bloco A'])->fresh();
+        $ride2 = factory(Ride::class, 'next')->create(['neighborhood' => 'Niterói'])->fresh();
         $ride2->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
 
-        $ride3 = factory(Ride::class, 'next')->create(['neighborhood' => 'Leblon', 'hub' => 'CT: Bloco H'])->fresh();
+        $ride3 = factory(Ride::class, 'next')->create(['neighborhood' => 'Leblon'])->fresh();
         $ride3->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
 
         $results = Ride::withFilters(['neighborhoods' => ['Ipanema', 'Leblon']])->get();
         $this->assertTrue($results->contains($ride1));
         $this->assertFalse($results->contains($ride2));
         $this->assertTrue($results->contains($ride3));
+    }
 
-        $results = Ride::withFilters(['hub' => 'CT'])->get();
+    public function testScopeShouldFilterByHubs()
+    {
+        $ride1 = factory(Ride::class, 'next')->create(['hub' => 'FND'])->fresh();
+        $ride1->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
+
+        $ride2 = factory(Ride::class, 'next')->create(['hub' => 'CT: Bloco A'])->fresh();
+        $ride2->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
+
+        $ride3 = factory(Ride::class, 'next')->create(['hub' => 'CT: Bloco H'])->fresh();
+        $ride3->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
+
+        $results = Ride::withFilters(['hubs' => ['CT: Bloco A', 'CT: Bloco H']])->get();
         $this->assertFalse($results->contains($ride1));
         $this->assertTrue($results->contains($ride2));
         $this->assertTrue($results->contains($ride3));

@@ -9,6 +9,7 @@ use Caronae\Services\SigaService;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\Facebook;
 use Illuminate\Http\Request;
+use Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
@@ -33,6 +34,8 @@ class UserController extends Controller
         if (!$user = User::where('id_ufrj', $request->id_ufrj)->first()) {
             $user = new User;
             $user->generateToken();
+
+            Log::info("Novo cadastro (id institucional: $request->id_ufrj)");
         }
 
         $user->fill($request->all());

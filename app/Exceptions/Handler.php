@@ -6,14 +6,10 @@ use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 
 class Handler extends ExceptionHandler
 {
-    /**
-     * A list of the exception types that should not be reported.
-     *
-     * @var array
-     */
     protected $dontReport = [
         \Illuminate\Auth\AuthenticationException::class,
         \Illuminate\Auth\Access\AuthorizationException::class,
@@ -30,7 +26,7 @@ class Handler extends ExceptionHandler
 
     public function render($request, Exception $e)
     {
-        if ($request->expectsJson()) {
+        if ($request->expectsJson() && !($e instanceof ValidationException)) {
             if ($e instanceof ModelNotFoundException) {
                 return response()->json([ 'error' => 'Not found' ], 404);
             }
