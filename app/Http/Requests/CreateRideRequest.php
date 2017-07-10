@@ -3,6 +3,7 @@
 namespace Caronae\Http\Requests;
 
 use Carbon\Carbon;
+use Caronae\Models\Hub;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
 
@@ -37,6 +38,8 @@ class CreateRideRequest extends FormRequest
             if ($this->input('date')->isPast()) {
                 $validator->errors()->add('mydate', 'You cannot create a ride in the past.');
             }
+
+            $this->checkHub();
         });
     }
 
@@ -77,5 +80,13 @@ class CreateRideRequest extends FormRequest
     public function response(array $errors)
     {
         return new JsonResponse($errors, 422);
+    }
+
+    protected function checkHub()
+    {
+        $hubName = $this->input('hub');
+        if (Hub::findByName($hubName) == null) {
+            \Log::warning("Criando carona com hub desconhecido: '$hubName'");
+        }
     }
 }

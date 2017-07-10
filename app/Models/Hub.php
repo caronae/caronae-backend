@@ -17,4 +17,9 @@ class Hub extends Model
     {
         return $query->where('campus', $campus);
     }
+
+    public static function findByName(string $name)
+    {
+        return self::where('name', $name)->first();
+    }
 }

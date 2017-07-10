@@ -121,6 +121,8 @@ class RideController extends Controller
 
                 $ride->repeats_until = $repeats_until;
                 $ride->week_days = $request->week_days;
+                $ride->routine_id = $ride->id;
+                $ride->save();
 
                 $repeating_dates = $this->recurringDates($ride->date, $repeats_until, $ride->week_days);
 
@@ -131,23 +133,15 @@ class RideController extends Controller
                     $repeating_ride->fill($request->all());
                     $repeating_ride->date = $date;
                     $repeating_ride->week_days = $ride->week_days;
-                    $repeating_ride->routine_id = $ride->id; // References the original ride which originated this ride
+                    $repeating_ride->routine_id = $ride->id;
                     $repeating_ride->save();
 
                     $ridesCreated[] = $repeating_ride;
 
-                    // Saving the relationship between ride and user
                     $repeating_ride->users()->attach($user->id, ['status' => 'driver']);
                 }
-
-                $ride->routine_id = $ride->id;
-                $ride->save();
             }
         });
-
-        if (empty($ridesCreated)) {
-            return $this->error('No rides were created.', 204);
-        }
 
         return response()->json($ridesCreated, 201);
     }
