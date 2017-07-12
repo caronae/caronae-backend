@@ -2,14 +2,14 @@
 
 namespace Caronae\Models;
 
+use Backpack\CRUD\CrudTrait;
+use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-
-use Backpack\CRUD\CrudTrait;
 
 class User extends Model implements AuthenticatableContract
 {
@@ -29,7 +29,30 @@ class User extends Model implements AuthenticatableContract
 
     public function rides()
     {
-        return $this->belongsToMany(Ride::class)->withPivot('status', 'feedback')->withTimestamps();
+        return $this->belongsToMany(Ride::class)
+            ->withPivot('status', 'feedback')
+            ->withTimestamps();
+    }
+
+    public function activeRides()
+    {
+        return $this->belongsToMany(Ride::class)
+            ->wherePivotIn('status', ['driver', 'accepted'])
+            ->where('done', false);
+    }
+
+    public function offeredRides()
+    {
+        return $this->belongsToMany(Ride::class)
+            ->wherePivot('status', 'driver');
+    }
+
+    public function pendingRides()
+    {
+        return $this->belongsToMany(Ride::class)
+            ->wherePivot('status', 'pending')
+            ->where('done', false)
+            ->where('date', '>=', Carbon::now());
     }
 
     public function belongsToRide(Ride $ride)
