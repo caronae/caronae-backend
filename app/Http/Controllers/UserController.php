@@ -92,7 +92,7 @@ class UserController extends Controller
         return ['user' => $user, 'rides' => $drivingRides];
     }
 
-    public function getOfferedRides(User $user, Request $request)
+    public function getOfferedRides(User $user)
     {
         $rides = $user->rides()
             ->where('date', '>=', Carbon::now())
