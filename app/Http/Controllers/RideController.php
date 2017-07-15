@@ -106,6 +106,14 @@ class RideController extends Controller
         return $ride;
     }
 
+    public function showWeb(Ride $ride)
+    {
+        $title = $ride->title . ' | ' . $ride->date->format('H:i');
+        $driver = $ride->driver()->name;
+        $deepLinkUrl = 'caronae://carona/' . $ride->id;
+        return view('rides.showWeb', ['title' => $title, 'driver' => $driver, 'deepLinkUrl' => $deepLinkUrl]);
+    }
+
     public function store(CreateRideRequest $request)
     {
         $user = $request->currentUser;

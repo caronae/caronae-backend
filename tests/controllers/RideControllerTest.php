@@ -122,6 +122,25 @@ class RideControllerTest extends TestCase
         $response->assertJson(['availableSlots' => $ride->availableSlots]);
     }
 
+    public function testShowsRideWebView()
+    {
+        $ride = factory(Ride::class, 'next')->create([
+            'date' => Carbon::parse('2017-07-15 12:00:00'),
+            'neighborhood' => 'Ipanema',
+            'hub' => 'CT',
+            'going' => 'true'
+        ]);
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $response = $this->json('GET', 'carona/' . $ride->id, [], $this->headers);
+
+        $response->assertStatus(200);
+        $response->assertViewIs('rides.showWeb');
+        $response->assertViewHas('title', 'Ipanema → CT | 15/07 | 12:00');
+        $response->assertViewHas('driver', $this->user->name);
+        $response->assertViewHas('deepLinkUrl', 'caronae://carona/' . $ride->id);
+    }
+
     public function testValidateValidRide()
     {
         $ride = factory(Ride::class)->create(['date' => '2016-12-18 16:00:00', 'going' => false]);

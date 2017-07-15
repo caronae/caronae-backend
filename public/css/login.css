@@ -195,3 +195,30 @@ img { max-width: 100%; }
 .token {
     font-size: 4em;
 }
+
+.ride-content {
+    text-align: center;
+}
+
+.ride-driver {
+    font-size: 1.1em;
+}
+
+.open-app-section {
+    margin-top: 20px;
+}
+
+.open-app-button {
+    padding: 15px 25px;
+    font-size: 1.1em;
+}
+
+.store-links {
+    margin-top: 20px;
+}
+
+.store-button {
+    width: 130px;
+    display: inline-block;
+    margin: 10px auto;
+}

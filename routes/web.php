@@ -1,12 +1,13 @@
 <?php
 
-$this->get('login', 'LoginController@index')->name('chave');
-$this->post('refreshToken', 'LoginController@refreshToken')->name('refreshToken');
+Route::get('login', 'LoginController@index')->name('chave');
+Route::post('refreshToken', 'LoginController@refreshToken')->name('refreshToken');
 
 Route::get('/', function() {
     return '';
 });
 
+Route::get('carona/{ride}', 'RideController@showWeb');
 
 // Static pages
 
