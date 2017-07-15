@@ -7,7 +7,7 @@ Route::get('/', function() {
     return '';
 });
 
-Route::get('carona/{ride}', 'RideController@showWeb');
+Route::get('carona/{id}', 'RideController@showWeb');
 
 // Static pages
 

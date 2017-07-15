@@ -141,6 +141,14 @@ class RideControllerTest extends TestCase
         $response->assertViewHas('deepLinkUrl', 'caronae://carona/' . $ride->id);
     }
 
+    public function testShowsRideNotFoundWebView()
+    {
+        $response = $this->json('GET', 'carona/666', [], $this->headers);
+
+        $response->assertStatus(404);
+        $response->assertViewIs('rides.notFound');
+    }
+
     public function testValidateValidRide()
     {
         $ride = factory(Ride::class)->create(['date' => '2016-12-18 16:00:00', 'going' => false]);
