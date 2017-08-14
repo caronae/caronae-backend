@@ -16,7 +16,7 @@ class SignUpRequest extends FormRequest
         return [
             'name' => 'required|string',
             'id_ufrj' => 'required|string',
-            'course' => 'required|string',
+            'course' => 'string',
             'profile' => 'required|string',
             'profile_pic_url' => 'nullable|string'
         ];
