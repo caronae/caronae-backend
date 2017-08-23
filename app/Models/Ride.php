@@ -94,10 +94,8 @@ class Ride extends Model
         collect($filters)->each(function ($value, $key) use (&$query) {
             if ($key == 'neighborhoods') {
                 $query = $query->whereIn('rides.neighborhood', $value);
-            } else if ($key == 'hub') {
-                $query = $query->where('rides.hub', 'LIKE', $value . '%');
             } else if ($key == 'hubs') {
-                $query = $query->whereIn('rides.hub', $value);
+                $query = $query->where('rides.hub', 'SIMILAR TO', '(' . implode('|', $value) . ')%');
             } else {
                 $query = $query->where('rides.' . $key, $value);
             }

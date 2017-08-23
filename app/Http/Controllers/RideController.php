@@ -68,9 +68,11 @@ class RideController extends Controller
         if (!empty($request->zone))
             $filters['myzone'] = $request->zone;
         if (!empty($request->campus))
-            $filters['hubs'] = Hub::withCampus($request->campus)->pluck('name');
-        else if (!empty($request->hub))
+            $filters['hubs'] = Hub::withCampus($request->campus)->pluck('name')->toArray();
+        if (!empty($request->hub))
             $filters['hubs'] = [ $request->hub ];
+        else if (!empty($request->hubs))
+            $filters['hubs'] = explode(', ', $request->hubs);
 
         $limit = 20;
         $rides = Ride::withAvailableSlots()
