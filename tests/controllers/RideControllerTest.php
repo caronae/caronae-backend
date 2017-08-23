@@ -76,12 +76,15 @@ class RideControllerTest extends TestCase
         $ride1 = factory(Ride::class, 'next')->create(['hub' => $hub->name])->fresh();
         $ride1->users()->attach($this->user, ['status' => 'driver']);
 
-        $ride2 = factory(Ride::class, 'next')->create(['hub' => $hub2->name])->fresh();
+        $ride2 = factory(Ride::class, 'next')->create(['hub' => $hub->center])->fresh();
         $ride2->users()->attach($this->user, ['status' => 'driver']);
+
+        $ride3 = factory(Ride::class, 'next')->create(['hub' => $hub2->name])->fresh();
+        $ride3->users()->attach($this->user, ['status' => 'driver']);
 
         $response = $this->json('GET', 'rides', ['campus' => 'Cidade Universitária'], $this->headers);
         $response->assertStatus(200);
-        $response->assertJson(['data' => [ $ride1->toArray() ]]);
+        $response->assertJson(['data' => [ $ride1->toArray(), $ride2->toArray() ]]);
     }
 
     public function testIndexShouldAllowSearchByDateAndTime()

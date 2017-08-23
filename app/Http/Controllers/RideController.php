@@ -68,7 +68,7 @@ class RideController extends Controller
         if (!empty($request->zone))
             $filters['myzone'] = $request->zone;
         if (!empty($request->campus))
-            $filters['hubs'] = Hub::withCampus($request->campus)->pluck('name')->toArray();
+            $filters['hubs'] = Hub::withCampus($request->campus)->distinct()->pluck('center')->toArray();
         if (!empty($request->hub))
             $filters['hubs'] = [ $request->hub ];
         else if (!empty($request->hubs))
