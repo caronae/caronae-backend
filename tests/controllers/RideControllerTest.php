@@ -73,10 +73,12 @@ class RideControllerTest extends TestCase
         $hub = Hub::create(['name' => 'CT1', 'center' => 'CT', 'campus' => 'Cidade Universitária']);
         $hub2 = Hub::create(['name' => 'PV', 'center' => 'PV', 'campus' => 'Praia Vermelha']);
 
-        $ride1 = factory(Ride::class, 'next')->create(['hub' => $hub->name])->fresh();
+        $futureDate = Carbon::now()->addDays(5)->setTime(12,0,0);
+        $ride1 = factory(Ride::class, 'next')->create(['hub' => $hub->name, 'date' => $futureDate])->fresh();
         $ride1->users()->attach($this->user, ['status' => 'driver']);
 
-        $ride2 = factory(Ride::class, 'next')->create(['hub' => $hub->center])->fresh();
+        $futureDate = Carbon::now()->addDays(5)->setTime(13,0,0);
+        $ride2 = factory(Ride::class, 'next')->create(['hub' => $hub->center, 'date' => $futureDate])->fresh();
         $ride2->users()->attach($this->user, ['status' => 'driver']);
 
         $ride3 = factory(Ride::class, 'next')->create(['hub' => $hub2->name])->fresh();
