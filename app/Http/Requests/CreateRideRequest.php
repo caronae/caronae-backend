@@ -85,7 +85,7 @@ class CreateRideRequest extends FormRequest
     protected function checkHub()
     {
         $hubName = $this->input('hub');
-        if (Hub::findByName($hubName) == null) {
+        if (Hub::findByName($hubName) == null && Hub::whereCenter($hubName)->count() == 0) {
             \Log::warning("Criando carona com hub desconhecido: '$hubName'");
         }
     }
