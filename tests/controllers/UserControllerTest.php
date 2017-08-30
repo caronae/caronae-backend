@@ -41,39 +41,6 @@ class UserControllerTest extends TestCase
         $response->assertJsonStructure(['token']);
     }
 
-    public function testSignUpIntranet()
-    {
-        $id_ufrj = str_random(10);
-        $token = str_random(6);
-
-        // Mock Siga interface
-        App::singleton(SigaInterface::class, function() use ($id_ufrj) {
-            $mockProfile = new \stdClass;
-            $mockProfile->nome = 'FULANO SILVA';
-            $mockProfile->nomeCurso = 'Engenharia';
-            $mockProfile->alunoServidor = '0';
-            $mockProfile->nivel = 'Graduação';
-            $mockProfile->urlFoto = 'image.jpg';
-            $sigaRepositoryMock = Mockery::mock(SigaInterface::class);
-            $sigaRepositoryMock->shouldReceive('getProfileById')->once()->with($id_ufrj)->andReturn($mockProfile);
-            return $sigaRepositoryMock;
-        });
-
-        $response = $this->json('GET', "user/signup/intranet/$id_ufrj/$token");
-        $response->assertStatus(200);
-        $response->assertJsonFragment([
-            'name' => 'Fulano Silva',
-            'course' => 'Engenharia',
-            'profile' => 'Graduação',
-            'profile_pic_url' => 'image.jpg'
-        ]);
-
-        $response->assertJsonStructure([
-            'id',
-            'created_at'
-        ]);
-    }
-
     public function testSignInWithValidUserSucceeds()
     {
         // create user with some rides

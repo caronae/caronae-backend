@@ -45,35 +45,6 @@ class UserController extends Controller
         return [ 'user' => $user->fresh(), 'token' => $token ];
     }
 
-    public function signUpIntranet($idUFRJ, $token, SigaService $siga)
-    {
-        if (User::where('token', $token)->count() > 0) {
-            return $this->error('User token already exists.', 409);
-        }
-        if (User::where('id_ufrj', $idUFRJ)->count() > 0) {
-            return $this->error('User id_ufrj already exists.', 409);
-        }
-
-        $intranetUser = $siga->getProfileById($idUFRJ);
-        $user = new User();
-        $user->name = mb_convert_case($intranetUser->nome, MB_CASE_TITLE, "UTF-8");
-        $user->token = $token;
-        $user->id_ufrj = $idUFRJ;
-        $user->course = $intranetUser->nomeCurso;
-        if ($intranetUser->alunoServidor == "1") {
-            $user->profile = "Servidor";
-        } else {
-            $user->profile = $intranetUser->nivel;
-        }
-
-        if (!empty($intranetUser->urlFoto)) {
-            $user->profile_pic_url = $intranetUser->urlFoto;
-        }
-
-        $user->save();
-        return $user;
-    }
-
     public function login(Request $request)
     {
         $this->validate($request, [
