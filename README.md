@@ -2,21 +2,20 @@
 
 [![CircleCI](https://circleci.com/gh/macecchi/caronae-backend/tree/develop.svg?style=svg&circle-token=9c47c2e35ff1feee8355437fe8c1d1ae7fc326d3)](https://circleci.com/gh/macecchi/caronae-backend/tree/develop)
 
-Este é o backend no Caronaê, baseado no framework Laravel, em PHP. O backend é
+Backend do Caronaê, baseado no [Laravel](https://github.com/laravel/laravel). O backend é
 composto da API mobile e da área administrativa.
 
 
 ## Instalação
 
-Para instalar o ambiente de desenvolvimento, você precisa ter configurado na 
-sua máquina:
+Dependências:
 
 - PHP 7.x
 - Composer
 - PostgreSQL
 
-Comece fazendo o **clone** deste repositório para seu computador e selecionando 
-o diretório dele. Todos os comandos abaixo serão executados dentro desse diretório.
+Comece fazendo o **clone** deste repositório para seu computador. Todos os comandos
+abaixo serão executados dentro deste diretório.
 
 Verifique que o **PostgreSQL** está sendo executado e **crie uma tabela e um 
 usuário** para serem usados pelo backend.
@@ -75,20 +74,22 @@ php artisan db:seed
 Pronto! Agora você já pode fazer login na área administrativa utilizando o usuário
 padrão.
 
-| E-mail    | Senha    |
-|-----------|----------|
-| 1@1.com   | 1234     |
+* E-mail: 1@1.com
+* Senha: 1234
 
 
 ## Testes
 
 Parte do código possui cobertura de testes, que ficam dentro da pasta **tests**.
 
-Os testes são executados em um banco de dados separado para não haver interferência
-do seu ambiente local. Portanto, é necessário criar uma tabela **caronae_testing**.
-
-Para executá-los, basta utilizar o **PHPUnit**:
+Os testes são executados em uma tabela separada do banco de dados. Portanto, é necessário criar uma tabela **caronae_testing**:
 
 ```
-vendor/bin/phpunit
+createdb -O caronae -E utf8 caronae_testing
+```
+
+Para executar os testes, basta utilizar o **PHPUnit**:
+
+```
+vendor/bin/phpunit -d memory_limit=512M
 ```
