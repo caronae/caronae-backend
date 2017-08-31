@@ -5,7 +5,6 @@ namespace Caronae\Http\Controllers;
 use Carbon\Carbon;
 use Caronae\Http\Requests\SignUpRequest;
 use Caronae\Models\User;
-use Caronae\Services\SigaService;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\Facebook;
 use Illuminate\Http\Request;
@@ -150,16 +149,5 @@ class UserController extends Controller
 
         $mutualFriends = User::whereIn('face_id', $mutualFriendsFB)->get();
         return ['total_count' => $totalFriendsCount, 'mutual_friends' => $mutualFriends];
-    }
-
-    public function getIntranetPhotoUrl(Request $request, SigaService $siga)
-    {
-        $idUFRJ = $request->currentUser->id_ufrj;
-        if (empty($idUFRJ)) {
-            return $this->error('User does not have an Intranet identification.', 404);
-        }
-
-        $picture = $siga->getProfilePictureById($idUFRJ);
-        return ['url' => $picture];
     }
 }

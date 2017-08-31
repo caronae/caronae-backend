@@ -2,14 +2,11 @@
 
 namespace Tests;
 
-use App;
 use Caronae\Models\Institution;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
-use Caronae\Repositories\SigaInterface;
 use Faker\Factory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Mockery;
 
 class UserControllerTest extends TestCase
 {
@@ -267,27 +264,6 @@ class UserControllerTest extends TestCase
 
         $savedUser = $user->fresh();
         $this->assertEquals($newURL, $savedUser->profile_pic_url);
-    }
-
-    public function testGetIntranetPhotoUrl()
-    {
-        $user = factory(User::class)->create();
-        $headers = ['token' => $user->token];
-
-        // Mock Siga interface
-        App::singleton(SigaInterface::class, function() use ($user) {
-            $mockProfile = new \stdClass;
-            $mockProfile->urlFoto = 'image.jpg';
-            $sigaRepositoryMock = Mockery::mock(SigaInterface::class);
-            $sigaRepositoryMock->shouldReceive('getProfileById')->once()->with($user->id_ufrj)->andReturn($mockProfile);
-            return $sigaRepositoryMock;
-        });
-
-        $response = $this->json('GET', 'user/intranetPhotoUrl', [], $headers);
-        $response->assertStatus(200);
-        $response->assertExactJson([
-            'url' => 'image.jpg'
-        ]);
     }
 
     private function institutionAuthorizationHeaders()
