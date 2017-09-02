@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  caronae-backend:
+    container_name: caronae-backend
+    image: caronae/backend
+    build:
+      context: ../
+      dockerfile: ./images/Dockerfile.app
+
+  caronae-backend-worker:
+    container_name: caronae-backend-worker
+    image: caronae/backend-worker
+    build:
+      context: ./
+      dockerfile: Dockerfile.worker
+    depends_on:
+      - caronae-backend
