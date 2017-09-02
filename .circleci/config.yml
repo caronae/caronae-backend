@@ -7,7 +7,7 @@ jobs:
         environment:
           APP_ENV: testing
           APP_DEBUG: true
-          APP_KEY: kjcndjjksddwdwdw
+          APP_KEY: base64:Gyp7w38D5+VhnvSDIDRAFlJn55OImeqdgvXGjyh9kXs=
           DB_CONNECTION: pgsql
           DB_HOST: 127.0.0.1
           DB_DATABASE: circle_test
@@ -28,9 +28,6 @@ jobs:
           name: Install PHP Extensions
           command: sudo docker-php-ext-install pdo pdo_pgsql zip pgsql
       - run:
-          name: Increase PHP memory limit
-          command: echo "memory_limit = -1" | sudo tee /usr/local/etc/php/conf.d/memory.ini
-      - run:
           name: Install Composer
           command: 'curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer'
       - restore_cache:
@@ -47,4 +44,4 @@ jobs:
           command: php artisan migrate:refresh
       - run:
           name: Run Tests
-          command: './vendor/bin/phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml'
+          command: './vendor/bin/phpunit -d memory_limit=512M --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml'
