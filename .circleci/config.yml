@@ -45,3 +45,14 @@ jobs:
       - run:
           name: Run Tests
           command: './vendor/bin/phpunit -d memory_limit=512M --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml'
+      - setup_remote_docker
+      - run:
+          name: Build Docker images
+          command: docker-compose -f images/docker-compose.yml build
+      - run:
+          name: Publish Docker images
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push caronae/backend
+            docker push caronae/backend-worker
+
