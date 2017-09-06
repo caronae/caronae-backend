@@ -11,6 +11,7 @@
         "barryvdh/laravel-ide-helper": "^2.1",
         "doctrine/dbal": "^2.5",
         "facebook/graph-sdk": "^5.4",
+        "fideloper/proxy": "^3.3",
         "graylog2/gelf-php": "^1.5",
         "guzzlehttp/guzzle": "^6.2",
         "laravel/framework": "5.4.*",
