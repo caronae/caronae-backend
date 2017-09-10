@@ -41,6 +41,12 @@ class NeighborhoodController extends CrudController
         return parent::updateCrud();
     }
 
+    public function destroy($id)
+    {
+        $this->clearCache();
+        return parent::destroy($id);
+    }
+
     private function clearCache()
     {
         Log::info('Clearing zones cache.');
