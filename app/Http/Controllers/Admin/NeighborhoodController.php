@@ -21,11 +21,13 @@ class NeighborhoodController extends CrudController
         $this->crud->addFields([
             [ 'name' => 'name', 'label' => 'Nome' ],
             [ 'name' => 'zone', 'label' => 'Zona' ],
+            [ 'name' => 'distance', 'label' => 'Distância', 'type' => 'number', 'suffix' => 'km' ],
         ]);
     }
 
-    public function store()
+    public function store(Request $request)
     {
+        Log::info('Adding neighborhood ' . $request->name);
         $this->clearCache();
         return parent::storeCrud();
     }
@@ -37,12 +39,14 @@ class NeighborhoodController extends CrudController
             'zone' => 'required|string',
         ]);
 
+        Log::info('Updating neighborhood ' . $request->name);
         $this->clearCache();
         return parent::updateCrud();
     }
 
     public function destroy($id)
     {
+        Log::info('Deleting neighborhood ' . $id);
         $this->clearCache();
         return parent::destroy($id);
     }

@@ -27,8 +27,9 @@ class HubController extends CrudController
         ]);
     }
 
-    public function store()
+    public function store(Request $request)
     {
+        Log::info('Adding hub ' . $request->name);
         $this->clearCache();
         return parent::storeCrud();
     }
@@ -41,12 +42,14 @@ class HubController extends CrudController
             'campus' => 'required|string',
         ]);
 
+        Log::info('Updating hub ' . $request->name);
         $this->clearCache();
         return parent::updateCrud();
     }
 
     public function destroy($id)
     {
+        Log::info('Deleting hub ' . $id);
         $this->clearCache();
         return parent::destroy($id);
     }
