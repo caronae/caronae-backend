@@ -1,8 +1,7 @@
 FROM php:7.1-fpm-alpine
 
-RUN rm -rf /var/www/html
 WORKDIR /var/www
-VOLUME /var/www
+RUN rm -rf html
 
 # Configure PHP extensions and dependencies
 RUN set -ex && apk --no-cache add \
@@ -37,10 +36,12 @@ RUN mkdir -p storage/framework/sessions
 RUN mkdir -p storage/framework/views
 
 RUN chown -R www-data:www-data bootstrap/cache 
-# RUN chown -R www-data:www-data storage 
+RUN chown -R www-data:www-data storage 
 
 # Install dependencies
 RUN composer install --no-interaction --no-ansi --no-dev
 
 # Configure Laravel Task Scheduler
 RUN echo "*	*	*	*	*	php /var/www/artisan schedule:run" >> /etc/crontabs/root
+
+VOLUME /var/www
