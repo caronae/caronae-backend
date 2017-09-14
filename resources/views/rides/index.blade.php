@@ -80,7 +80,6 @@
     <script src="{{ asset('vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/routes.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
-    <script src="{{ asset('js/ranking.js') }}"></script>
     <script>
         $(function() {
             var formatDate = function(date){
