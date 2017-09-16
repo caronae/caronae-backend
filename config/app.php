@@ -177,7 +177,6 @@ return [
 
         Caronae\Providers\GraylogLogProvider::class,
         Caronae\Providers\FacebookSDKServiceProvider::class,
-        Caronae\Providers\SigaRepositoryServiceProvider::class,
 
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
