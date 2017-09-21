@@ -37,7 +37,7 @@ class UserController extends Controller
             Log::info("Novo cadastro (id institucional: $request->id_ufrj)");
         }
 
-        $user->fill($request->all());
+        $user->fill($request->except('token'));
         $user->save();
 
         $token = JWTAuth::fromUser($user);

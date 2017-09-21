@@ -38,6 +38,21 @@ class UserControllerTest extends TestCase
         $response->assertJsonStructure(['token']);
     }
 
+    public function testStoreDoesNotChangeExistingToken()
+    {
+        $user = $this->newUser();
+        $existingUser = User::create($user);
+        $existingUser->generateToken();
+        $existingUser->save();
+        $oldToken = $existingUser->token;
+
+        $data = array_merge($user, [ 'token' => 'new token']);
+        $response = $this->json('POST', 'users', $data, $this->institutionAuthorizationHeaders());
+
+        $response->assertStatus(200);
+        $this->assertEquals($oldToken, $existingUser->fresh()->token);
+    }
+
     public function testSignInWithValidUserSucceeds()
     {
         // create user with some rides

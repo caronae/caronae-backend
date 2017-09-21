@@ -18,7 +18,7 @@ class User extends Model implements AuthenticatableContract
     use CrudTrait;
     use Authenticatable;
 
-    protected $fillable = ['name', 'email', 'profile', 'course', 'id_ufrj', 'profile_pic_url'];
+    protected $fillable = ['name', 'email', 'profile', 'course', 'id_ufrj', 'profile_pic_url', 'token'];
     protected $hidden = ['token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version', 'banned'];
     protected $dates = ['deleted_at'];
 
