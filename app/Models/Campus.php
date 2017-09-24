@@ -14,11 +14,16 @@ class Campus extends Model
 
     public function institution()
     {
-        return $this->belongsTo(Institution::class);
+        return $this->belongsTo(Institution::class)->first();
     }
 
-//    public function hubs()
-//    {
-//        return $this->hasMany(Hub::class);
-//    }
+    public function hubs()
+    {
+        return $this->hasMany(Hub::class);
+    }
+
+    public function getFullNameAttribute()
+    {
+        return $this->institution()->name . ' - ' . $this->name;
+    }
 }

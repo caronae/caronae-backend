@@ -9,7 +9,7 @@ class Hub extends Model
 {
     use CrudTrait;
 
-    protected $fillable = ['name', 'center', 'campus'];
+    protected $fillable = ['name', 'center', 'campus_id'];
     public $timestamps = false;
     public $hidden = ['id'];
 
@@ -21,5 +21,10 @@ class Hub extends Model
     public static function findByName(string $name)
     {
         return self::where('name', $name)->first();
+    }
+
+    public function campus()
+    {
+        return $this->belongsTo(Campus::class);
     }
 }

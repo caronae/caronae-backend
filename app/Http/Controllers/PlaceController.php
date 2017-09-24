@@ -2,7 +2,7 @@
 
 namespace Caronae\Http\Controllers;
 
-use Caronae\Models\Hub;
+use Caronae\Models\Campus;
 use Caronae\Models\Neighborhood;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -37,12 +37,12 @@ class PlaceController extends Controller
     {
         return Cache::remember('campi', self::CACHE_TIME_MINUTES, function () {
             Log::info('Loading campi from database.');
-            $campi = Hub::select('campus')->distinct()->pluck('campus');
+            $campi = Campus::all();
             return $campi->map(function ($campus) {
                 return [
-                    'name' => $campus,
-                    'centers' => Hub::select('center')->distinct()->withCampus($campus)->pluck('center'),
-                    'hubs' => Hub::withCampus($campus)->pluck('name')
+                    'name' => $campus->name,
+                    'centers' => $campus->hubs()->distinct('center')->pluck('center'),
+                    'hubs' => $campus->hubs()->pluck('name')
                 ];
             });
         });
