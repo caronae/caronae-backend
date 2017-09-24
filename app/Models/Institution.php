@@ -18,4 +18,9 @@ class Institution extends Model
         return $model;
     }
 
+    public function campi()
+    {
+        return $this->hasMany(Campus::class);
+    }
+
 }
