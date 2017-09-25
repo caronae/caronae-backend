@@ -38,7 +38,9 @@ class PlaceController extends Controller
         return Cache::remember('campi', self::CACHE_TIME_MINUTES, function () {
             Log::info('Loading campi from database.');
             $campi = Campus::all();
-            return $campi->map(function ($campus) {
+            return $campi->filter(function ($campus) {
+                return $campus->hubs()->count() > 0;
+            })->map(function ($campus) {
                 return [
                     'name' => $campus->name,
                     'color' => $campus->color,

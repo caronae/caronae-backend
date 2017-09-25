@@ -12,12 +12,22 @@ class PlaceControllerTest extends TestCase
 {
     use DatabaseTransactions;
 
+    private $neighborhood;
+    private $institution;
+    private $campus;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->neighborhood = factory(Neighborhood::class)->create();
+        $this->institution = factory(Institution::class)->create();
+        $this->campus = factory(Campus::class)->create(['institution_id' => $this->institution->id]);
+    }
+
     public function testReturnsZonesAndCampi()
     {
-        $neighborhood = factory(Neighborhood::class)->create();
-        $institution = factory(Institution::class)->create();
-        $campus = factory(Campus::class)->create(['institution_id' => $institution->id]);
-        $hub = factory(Hub::class)->create(['campus_id' => $campus->id]);
+        $hub = factory(Hub::class)->create(['campus_id' => $this->campus->id]);
 
         $response = $this->json('GET', 'places');
 
@@ -25,18 +35,28 @@ class PlaceControllerTest extends TestCase
         $response->assertJson([
             'zones' => [
                 [
-                    'name' => $neighborhood->zone,
-                    'neighborhoods' => [ $neighborhood->name ]
+                    'name' => $this->neighborhood->zone,
+                    'neighborhoods' => [ $this->neighborhood->name ]
                 ]
             ],
             'campi' => [
                 [
-                    'name' => $campus->name,
-                    'color' => $campus->color,
+                    'name' => $this->campus->name,
+                    'color' => $this->campus->color,
                     'centers' => [ $hub->center ],
                     'hubs' => [ $hub->name ]
                 ]
             ]
+        ]);
+    }
+
+    public function testDoesNotIncludeCampiWithoutHubs()
+    {
+        $response = $this->json('GET', 'places');
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'campi' => []
         ]);
     }
 }
