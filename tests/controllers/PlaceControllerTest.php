@@ -32,6 +32,7 @@ class PlaceControllerTest extends TestCase
             'campi' => [
                 [
                     'name' => $campus->name,
+                    'color' => $campus->color,
                     'centers' => [ $hub->center ],
                     'hubs' => [ $hub->name ]
                 ]

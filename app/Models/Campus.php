@@ -9,6 +9,8 @@ class Campus extends Model
 {
     use CrudTrait;
 
+    const DEFAULT_COLOR = '#000000';
+
     protected $table = 'campi';
     protected $fillable = ['name', 'color', 'institution_id'];
 
@@ -20,6 +22,11 @@ class Campus extends Model
     public function hubs()
     {
         return $this->hasMany(Hub::class);
+    }
+
+    public function getColorAttribute($value)
+    {
+        return $value ?: self::DEFAULT_COLOR;
     }
 
     public function getFullNameAttribute()

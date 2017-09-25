@@ -41,6 +41,7 @@ class PlaceController extends Controller
             return $campi->map(function ($campus) {
                 return [
                     'name' => $campus->name,
+                    'color' => $campus->color,
                     'centers' => $campus->hubs()->distinct('center')->pluck('center'),
                     'hubs' => $campus->hubs()->pluck('name')
                 ];
