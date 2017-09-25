@@ -21,6 +21,11 @@ class CreateCampiTable extends Migration
             $table->string('color', 7)->nullable();
             $table->timestamps();
         });
+
+        DB::connection()->getPdo()->exec("
+            INSERT INTO campi (name, institution_id)
+            SELECT DISTINCT campus, institutions.id FROM hubs, institutions
+        ");
     }
 
     /**
