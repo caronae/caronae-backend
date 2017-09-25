@@ -18,7 +18,7 @@ class CreateCampiTable extends Migration
             $table->integer('institution_id')->unsigned();
             $table->foreign('institution_id')->references('id')->on('institutions');
             $table->string('name');
-            $table->string('color', 7);
+            $table->string('color', 7)->nullable();
             $table->timestamps();
         });
     }

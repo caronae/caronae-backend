@@ -10,7 +10,7 @@ class Campus extends Model
     use CrudTrait;
 
     protected $table = 'campi';
-    protected $fillable = ['name', 'color'];
+    protected $fillable = ['name', 'color', 'institution_id'];
 
     public function institution()
     {
@@ -25,5 +25,10 @@ class Campus extends Model
     public function getFullNameAttribute()
     {
         return $this->institution()->name . ' - ' . $this->name;
+    }
+
+    public static function findByName($name)
+    {
+        return self::where('name', $name)->first();
     }
 }

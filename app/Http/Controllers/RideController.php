@@ -4,7 +4,7 @@ namespace Caronae\Http\Controllers;
 
 use Carbon\Carbon;
 use Caronae\Http\Requests\CreateRideRequest;
-use Caronae\Models\Hub;
+use Caronae\Models\Campus;
 use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
@@ -68,7 +68,7 @@ class RideController extends Controller
         if (!empty($request->zone))
             $filters['myzone'] = $request->zone;
         if (!empty($request->campus))
-            $filters['hubs'] = Hub::withCampus($request->campus)->distinct()->pluck('center')->toArray();
+            $filters['hubs'] = Campus::findByName($request->campus)->hubs()->distinct('center')->pluck('center')->toArray();
         if (!empty($request->hub))
             $filters['hubs'] = [ $request->hub ];
         else if (!empty($request->hubs))

@@ -13,12 +13,7 @@ class Hub extends Model
     public $timestamps = false;
     public $hidden = ['id'];
 
-    public function scopeWithCampus($query, string $campus)
-    {
-        return $query->where('campus', $campus);
-    }
-
-    public static function findByName(string $name)
+    public static function findByName($name)
     {
         return self::where('name', $name)->first();
     }
