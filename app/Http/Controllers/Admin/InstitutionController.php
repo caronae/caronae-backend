@@ -3,8 +3,10 @@ namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Http\Requests\CrudRequest;
+use Cache;
 use Caronae\Models\Campus;
 use Caronae\Models\Institution;
+use Log;
 
 class InstitutionController extends CrudController
 {
@@ -72,6 +74,13 @@ class InstitutionController extends CrudController
             $institution->campi()->save($campus);
         });
 
+        $this->clearCache();
         return parent::updateCrud($request);
+    }
+
+    private function clearCache()
+    {
+        Log::info('Clearing campi cache.');
+        Cache::forget('campi');
     }
 }
