@@ -2,7 +2,7 @@
 namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
-use Illuminate\Http\Request;
+use Backpack\CRUD\app\Http\Requests\CrudRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -17,24 +17,38 @@ class HubController extends CrudController
         $this->crud->setColumns([
             [ 'name' => 'name', 'label' => 'Nome' ],
             [ 'name' => 'center', 'label' => 'Centro' ],
-            [ 'name' => 'campus', 'label' => 'Campus' ],
+            [
+                'label' => 'Campus',
+                'type' => 'select',
+                'name' => 'campus_id',
+                'entity' => 'campus',
+                'attribute' => 'fullName',
+                'model' => 'Caronae\Models\Campus',
+            ],
         ]);
 
         $this->crud->addFields([
             [ 'name' => 'name', 'label' => 'Nome' ],
             [ 'name' => 'center', 'label' => 'Centro' ],
-            [ 'name' => 'campus', 'label' => 'Campus' ],
+            [
+                'label' => 'Campus',
+                'type' => 'select2',
+                'name' => 'campus_id',
+                'entity' => 'campus',
+                'attribute' => 'fullName',
+                'model' => 'Caronae\Models\Campus',
+            ]
         ]);
     }
 
-    public function store(Request $request)
+    public function store(CrudRequest $request)
     {
         Log::info('Adding hub ' . $request->name);
         $this->clearCache();
-        return parent::storeCrud();
+        return parent::storeCrud($request);
     }
 
-    public function update(Request $request)
+    public function update(CrudRequest $request)
     {
         $this->validate($request, [
             'name' => 'required|string',
@@ -44,7 +58,7 @@ class HubController extends CrudController
 
         Log::info('Updating hub ' . $request->name);
         $this->clearCache();
-        return parent::updateCrud();
+        return parent::updateCrud($request);
     }
 
     public function destroy($id)

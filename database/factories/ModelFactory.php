@@ -1,4 +1,6 @@
 <?php
+
+use Caronae\Models\Campus;
 use Caronae\Models\Hub;
 use Caronae\Models\Institution;
 use Caronae\Models\Message;
@@ -280,10 +282,16 @@ $factory->define(Institution::class, function (Faker\Generator $faker) {
     ];
 });
 
+$factory->define(Campus::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->randomElement(['Cidade Universitária', 'Praia Vermelha', 'FND']),
+        'color' => $faker->hexColor,
+    ];
+});
+
 $factory->define(Hub::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->randomElement(['CCS: Frente', 'CCS: HUCFF', 'CCMN: Frente', 'CCMN: Fundos', 'CT: Bloco A', 'CT: Bloco D', 'Letras', 'Reitoria', 'EEFD']),
         'center' => $faker->randomElement(['CCS', 'CCMN', 'CT', 'Letras', 'Reitoria', 'EEFD']),
-        'campus' => $faker->city
     ];
 });
