@@ -6,6 +6,7 @@ use Caronae\Models\Campus;
 use Caronae\Models\Hub;
 use Caronae\Models\Institution;
 use Caronae\Models\Neighborhood;
+use Caronae\Models\Zone;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class PlaceControllerTest extends TestCase
@@ -15,12 +16,14 @@ class PlaceControllerTest extends TestCase
     private $neighborhood;
     private $institution;
     private $campus;
+    private $zone;
 
     public function setUp()
     {
         parent::setUp();
 
-        $this->neighborhood = factory(Neighborhood::class)->create();
+        $this->zone = factory(Zone::class)->create();
+        $this->neighborhood = factory(Neighborhood::class)->create(['zone_id' => $this->zone->id]);
         $this->institution = factory(Institution::class)->create();
         $this->campus = factory(Campus::class)->create(['institution_id' => $this->institution->id]);
     }
@@ -35,7 +38,7 @@ class PlaceControllerTest extends TestCase
         $response->assertJson([
             'zones' => [
                 [
-                    'name' => $this->neighborhood->zone,
+                    'name' => $this->zone->name,
                     'neighborhoods' => [ $this->neighborhood->name ]
                 ]
             ],

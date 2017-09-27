@@ -3,7 +3,7 @@
 namespace Caronae\Http\Controllers;
 
 use Caronae\Models\Campus;
-use Caronae\Models\Neighborhood;
+use Caronae\Models\Zone;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -23,11 +23,11 @@ class PlaceController extends Controller
     {
         return Cache::remember('zones', self::CACHE_TIME_MINUTES, function () {
             Log::info('Loading zones from database.');
-            $zones = Neighborhood::select('zone')->distinct()->pluck('zone');
+            $zones = Zone::all();
             return $zones->map(function ($zone) {
                 return [
-                    'name' => $zone,
-                    'neighborhoods' => Neighborhood::withZone($zone)->pluck('name')
+                    'name' => $zone->name,
+                    'neighborhoods' => $zone->neighborhoods()->pluck('name')
                 ];
             });
         });

@@ -46,7 +46,7 @@ return [
     'in_the_database'           => 'no banco de dados',
     'list'                      => 'Lista',
     'actions'                   => 'Ações',
-    'preview'                   => 'Preview',
+    'preview'                   => 'Ver',
     'delete'                    => 'Deletar',
     'admin'                     => 'Admin',
     'details_row'               => 'This is the details row. Modify as you please.',

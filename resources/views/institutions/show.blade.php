@@ -56,16 +56,3 @@
         </div>
     </div>
 @endsection
-
-@section('after_styles')
-    <style type="text/css">
-        .campus-color {
-            display: inline-block;
-            width: 2em;
-            height: 1em;
-            vertical-align: middle;
-            margin-right: 5px;
-            border-radius: 5px;
-        }
-    </style>
-@endsection
