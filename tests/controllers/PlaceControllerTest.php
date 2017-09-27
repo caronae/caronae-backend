@@ -39,6 +39,7 @@ class PlaceControllerTest extends TestCase
             'zones' => [
                 [
                     'name' => $this->zone->name,
+                    'color' => $this->zone->color,
                     'neighborhoods' => [ $this->neighborhood->name ]
                 ]
             ],

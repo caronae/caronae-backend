@@ -15,7 +15,7 @@ class PlaceController extends Controller
     {
         return [
             'zones' => $this->getZones(),
-            'campi' => $this->getCampi()
+            'campi' => $this->getCampi(),
         ];
     }
 
@@ -27,7 +27,8 @@ class PlaceController extends Controller
             return $zones->map(function ($zone) {
                 return [
                     'name' => $zone->name,
-                    'neighborhoods' => $zone->neighborhoods()->pluck('name')
+                    'color' => $zone->color,
+                    'neighborhoods' => $zone->neighborhoods()->pluck('name'),
                 ];
             });
         });
@@ -45,7 +46,7 @@ class PlaceController extends Controller
                     'name' => $campus->name,
                     'color' => $campus->color,
                     'centers' => $campus->hubs()->distinct('center')->pluck('center'),
-                    'hubs' => $campus->hubs()->pluck('name')
+                    'hubs' => $campus->hubs()->pluck('name'),
                 ];
             });
         });
