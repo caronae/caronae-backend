@@ -46,6 +46,7 @@ $factory->define(Neighborhood::class, function (Faker\Generator $faker) {
 });
 
 $factory->define(User::class, function (Faker\Generator $faker) {
+    $institution = factory(Institution::class)->create();
     return [
         'name' => $faker->name,
         'email' => $faker->email,
@@ -60,7 +61,8 @@ $factory->define(User::class, function (Faker\Generator $faker) {
         'token' => strtoupper(str_random(6)),
         'id_ufrj' => $faker->cpf(false),
         'profile_pic_url' => $faker->imageUrl(500, 500, 'people'),
-        'face_id' => NULL
+        'face_id' => NULL,
+        'institution_id' => $institution->id,
     ];
 });
 
