@@ -44,5 +44,5 @@ createdb -O caronae -E utf8 caronae_testing
 Para executar os testes, basta utilizar o **PHPUnit**:
 
 ```
-vendor/bin/phpunit -d memory_limit=512M
+vendor/bin/phpunit
 ```
