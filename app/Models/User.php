@@ -18,13 +18,18 @@ class User extends Model implements AuthenticatableContract
     use CrudTrait;
     use Authenticatable;
 
-    protected $fillable = ['name', 'email', 'profile', 'course', 'id_ufrj', 'profile_pic_url', 'token'];
-    protected $hidden = ['token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version', 'banned'];
+    protected $fillable = ['name', 'email', 'profile', 'course', 'id_ufrj', 'profile_pic_url', 'token', 'institution_id'];
+    protected $hidden = ['token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version', 'banned', 'institution_id'];
     protected $dates = ['deleted_at'];
 
     public function setCarPlateAttribute($value)
     {
         $this->attributes['car_plate'] = strtoupper($value);
+    }
+
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class);
     }
 
     public function rides()
