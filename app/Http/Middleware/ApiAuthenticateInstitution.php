@@ -19,7 +19,9 @@ class ApiAuthenticateInstitution extends AuthenticateWithBasicAuth
             return response()->json(['error' => 'Institution not authorized.'], 401);
         }
 
-        $request->institution = $institution;
+        $request->merge([
+            'institution' => $institution
+        ]);
 
         return $next($request);
     }
