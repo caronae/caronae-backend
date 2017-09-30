@@ -1,6 +1,6 @@
 # Caronaê - Backend
 
-[![CircleCI](https://circleci.com/gh/macecchi/caronae-backend/tree/develop.svg?style=svg&circle-token=9c47c2e35ff1feee8355437fe8c1d1ae7fc326d3)](https://circleci.com/gh/macecchi/caronae-backend/tree/develop)
+[![CircleCI](https://circleci.com/gh/caronae/caronae-backend.svg?style=svg)](https://circleci.com/gh/caronae/caronae-backend)
 
 Backend do Caronaê, baseado no [Laravel](https://github.com/laravel/laravel). O backend é
 composto da API mobile e da área administrativa.
