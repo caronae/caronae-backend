@@ -92,7 +92,7 @@ $factory->define(Ride::class, function (Faker\Generator $faker) {
         'going' => $going,
         'place' => $faker->streetName,
         'route' => $faker->streetName . ', ' . $faker->streetName . ', ' . $faker->streetName,
-        'description' => $faker->realText(100),
+        'description' => $faker->text(100),
         'hub' => $hub,
         'slots' => $faker->numberBetween(1, 4),
         'date' => $faker->dateTime(),
@@ -111,7 +111,7 @@ $factory->defineAs(Ride::class, 'next', function (Faker\Generator $faker) use ($
 
 $factory->define(Message::class, function (Faker\Generator $faker) {
     return [
-        'body' => $faker->realText(50),
+        'body' => $faker->text(50),
         'created_at' => $faker->dateTime()
     ];
 });
