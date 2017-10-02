@@ -6,7 +6,7 @@ use Caronae\Http\Middleware\ApiV1Authenticate;
 use Caronae\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
-use Mockery;
+use Symfony\Component\HttpFoundation\HeaderBag;
 
 class ApiV1AuthenticateTest extends TestCase
 {
@@ -16,60 +16,70 @@ class ApiV1AuthenticateTest extends TestCase
     public function setUp()
     {
         parent::setUp();
+
         $this->middleware = new ApiV1Authenticate();
     }
 
     public function testHandleShouldReturn401WithInvalidToken()
     {
-    	$request = Mockery::mock(Request::class);
-    	$request->shouldReceive('header')->with('token')->andReturn('xxx');
-    	$response = $this->middleware->handle($request, function($r){ });
+        $request = $this->unauthorizedRequest('xxx');
+
+        $response = $this->middleware->handle($request, function($r){ });
+
         $this->assertResponseIs401TokenNotAuthorized($response);
     }
 
     public function testHandleShouldReturn401WithoutToken()
     {
-    	$request = Mockery::mock(Request::class);
-    	$request->shouldReceive('header')->with('token')->andReturn(null);
+        $request = $this->unauthorizedRequest(null);
 
-    	$response = $this->middleware->handle($request, function($r){ });
+        $response = $this->middleware->handle($request, function($r){ });
 
         $this->assertResponseIs401TokenNotAuthorized($response);
     }
 
     public function testShouldContinueWithValidToken()
     {
-    	$user = factory(User::class)->create()->fresh();
+        $request = $this->authenticatedRequest();
 
-    	$request = Mockery::mock(Request::class)->makePartial();
-    	$request->shouldReceive('header')->with('token')->andReturn($user->token);
-    	$request->shouldReceive('header')->andReturn();
-    	$request->shouldReceive('merge')->andReturn();
+        $result = $this->middleware->handle($request, function() {
+            return 'next';
+        });
 
-    	// Assert that $next($request) will be called
-    	$response = $this->middleware->handle($request, function() {
-    		return 'next';
-    	});
-    	$this->assertEquals($response, 'next');
+        $this->assertEquals($result, 'next');
     }
 
     public function testShouldSetCurrentUserInRequest()
     {
-    	$user = factory(User::class)->create()->fresh();
-    	$request = Mockery::mock(Request::class)->makePartial();
-    	$request->shouldReceive('header')->with('token')->andReturn($user->token);
-    	$request->shouldReceive('header')->andReturn();
-    	$request->shouldReceive('merge')->andReturn();
+        $request = $this->authenticatedRequest();
 
-    	$this->middleware->handle($request, function() {});
-    	$request->shouldHaveReceived('merge', [['currentUser' => $user]]);
+        $result = $this->middleware->handle($request, function($request) {
+            return $request;
+        });
+
+        $this->assertNotNull($result->currentUser);
     }
 
     private function assertResponseIs401TokenNotAuthorized($response)
     {
-    	$this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals(401, $response->getStatusCode());
         $this->assertEquals([
-        	'error' => 'User token not authorized.'
+            'error' => 'User token not authorized.'
         ], (array)$response->getData());
+    }
+
+    private function authenticatedRequest(): Request
+    {
+        $user = factory(User::class)->create()->fresh();
+        $request = new Request();
+        $request->headers = new HeaderBag(['token' => $user->token]);
+        return $request;
+    }
+
+    private function unauthorizedRequest($token)
+    {
+        $request = new Request();
+        $request->headers = new HeaderBag(['token' => $token]);
+        return $request;
     }
 }
