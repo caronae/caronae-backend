@@ -28,6 +28,11 @@ class Ride extends Model
         return $this->belongsToMany(User::class)->wherePivot('status', 'driver')->first();
     }
 
+    public function institution()
+    {
+        return $this->driver()->institution();
+    }
+
     public function riders()
     {
         return $this->belongsToMany(User::class)->wherePivot('status', 'accepted')->get();
