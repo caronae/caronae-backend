@@ -37,6 +37,7 @@
                 <th>Curso</th>
                 <th style="width: 70px">Data</th>
                 <th style="width: 30px">Hora</th>
+                <th style="width: 60px">Instituição</th>
                 <th>Origem</th>
                 <th>Destino</th>
                 <th style="width: 60px">Distância</th>
@@ -114,6 +115,7 @@
                             return formatTime(full.mytime);
                         }
                     },
+                    {data: 'institution'},
                     { // origem
                         render: function ( data, type, full, meta ) {
                             if(full.going)
@@ -156,4 +158,3 @@
         });
     </script>
 @endsection
-
