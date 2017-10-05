@@ -21,6 +21,16 @@ class RideModelTest extends TestCase
         $this->assertEquals($user->id, $ride->driver()->id);
     }
 
+    public function testInstitutionShouldReturnDriversInstitution()
+    {
+        $ride = factory(Ride::class)->create();
+
+        $user = factory(User::class)->create();
+        $ride->users()->attach($user, ['status' => 'driver']);
+
+        $this->assertEquals($user->institution()->get(), $ride->institution()->get());
+    }
+
     public function testGetRiders()
     {
         $ride = factory(Ride::class)->create();
