@@ -23,4 +23,9 @@ class Institution extends Model
         return $this->hasMany(Campus::class);
     }
 
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
 }

@@ -46,6 +46,7 @@ $factory->define(Neighborhood::class, function (Faker\Generator $faker) {
 });
 
 $factory->define(User::class, function (Faker\Generator $faker) {
+    $institution = factory(Institution::class)->create();
     return [
         'name' => $faker->name,
         'email' => $faker->email,
@@ -60,7 +61,8 @@ $factory->define(User::class, function (Faker\Generator $faker) {
         'token' => strtoupper(str_random(6)),
         'id_ufrj' => $faker->cpf(false),
         'profile_pic_url' => $faker->imageUrl(500, 500, 'people'),
-        'face_id' => NULL
+        'face_id' => NULL,
+        'institution_id' => $institution->id,
     ];
 });
 
@@ -90,7 +92,7 @@ $factory->define(Ride::class, function (Faker\Generator $faker) {
         'going' => $going,
         'place' => $faker->streetName,
         'route' => $faker->streetName . ', ' . $faker->streetName . ', ' . $faker->streetName,
-        'description' => $faker->realText(100),
+        'description' => $faker->text(100),
         'hub' => $hub,
         'slots' => $faker->numberBetween(1, 4),
         'date' => $faker->dateTime(),
@@ -109,7 +111,7 @@ $factory->defineAs(Ride::class, 'next', function (Faker\Generator $faker) use ($
 
 $factory->define(Message::class, function (Faker\Generator $faker) {
     return [
-        'body' => $faker->realText(50),
+        'body' => $faker->text(50),
         'created_at' => $faker->dateTime()
     ];
 });

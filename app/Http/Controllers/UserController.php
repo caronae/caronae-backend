@@ -33,6 +33,7 @@ class UserController extends Controller
         if (!$user = User::where('id_ufrj', $request->id_ufrj)->first()) {
             $user = new User;
             $user->generateToken();
+            $user->institution()->associate($request->institution);
 
             Log::info("Novo cadastro (id institucional: $request->id_ufrj)");
         }

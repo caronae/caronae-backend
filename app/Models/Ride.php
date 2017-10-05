@@ -119,7 +119,6 @@ class Ride extends Model
                 $join->on('ride_user.ride_id', '=', 'rides.id');
             })
             ->leftJoin('neighborhoods', function($join){
-                $join->on('rides.myzone', '=', 'neighborhoods.zone');
                 $join->on('rides.neighborhood', '=', 'neighborhoods.name');
             })
             ->where('ride_user.status', '=', 'driver')
@@ -142,7 +141,6 @@ class Ride extends Model
         $join = self::userStats($periodStart, $periodEnd);
 
         return Ride::leftJoin('neighborhoods', function($join){
-            $join->on('rides.myzone', '=', 'neighborhoods.zone');
             $join->on('rides.neighborhood', '=', 'neighborhoods.name');
         })
             ->join('ride_user', function($join){

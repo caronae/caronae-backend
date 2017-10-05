@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tests\controllers;
 
 use Carbon\Carbon;
 use Caronae\Models\Campus;
@@ -16,6 +16,7 @@ use Caronae\Notifications\RideJoinRequested;
 use Caronae\Notifications\RideMessageReceived;
 use Caronae\Notifications\RideUserLeft;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tests\TestCase;
 
 class RideControllerTest extends TestCase
 {
@@ -25,11 +26,10 @@ class RideControllerTest extends TestCase
     protected $headers;
     protected $push;
 
-    /**
-    * @before
-    */
-    public function createFakeUserHeaders()
+    public function setUp()
     {
+        parent::setUp();
+
         $this->user = factory(User::class)->create()->fresh();
         $this->headers = ['token' => $this->user->token];
     }

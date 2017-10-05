@@ -12,6 +12,14 @@ class UserControllerTest extends TestCase
 {
     use DatabaseTransactions;
 
+    protected $institution;
+
+    public function setUp()
+    {
+      parent::setUp();
+      $this->institution = factory(Institution::class)->create();
+    }
+
     public function testStoreSavesUser()
     {
         $user = $this->newUser();
@@ -27,6 +35,7 @@ class UserControllerTest extends TestCase
     public function testStoreDoesNotAddDuplicatedUser()
     {
         $user = $this->newUser();
+        $user['institution_id'] = $this->institution->id;
         $existingUser = User::create($user);
         $existingUser->generateToken();
         $existingUser->save();
@@ -41,6 +50,7 @@ class UserControllerTest extends TestCase
     public function testStoreDoesNotChangeExistingToken()
     {
         $user = $this->newUser();
+        $user['institution_id'] = $this->institution->id;
         $existingUser = User::create($user);
         $existingUser->generateToken();
         $existingUser->save();
@@ -283,9 +293,8 @@ class UserControllerTest extends TestCase
 
     private function institutionAuthorizationHeaders()
     {
-        $institution = factory(Institution::class)->create();
         return [
-            'Authorization' => 'Basic ' . base64_encode($institution->id . ':' . $institution->password)
+            'Authorization' => 'Basic ' . base64_encode($this->institution->id . ':' . $this->institution->password)
         ];
     }
 

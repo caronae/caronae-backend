@@ -34,12 +34,28 @@ class UserController extends CrudController
             [ 'name' => 'profile', 'label' => 'Perfil' ],
             [ 'name' => 'course', 'label' => 'Curso' ],
             [ 'name' => 'location', 'label' => 'Bairro' ],
+            [
+                'label' => 'Instituição',
+                'type' => 'select',
+                'name' => 'institution_id',
+                'entity' => 'institution',
+                'attribute' => 'name',
+                'model' => 'Caronae\Models\Institution',
+            ],
         ]);
-        
+
         $this->crud->addFields([
             [ 'name' => 'profile_pic_url', 'label' => 'Foto', 'type' => 'image' ],
             [ 'name' => 'name', 'label' => 'Nome' ],
             [ 'name' => 'email', 'label' => 'E-mail', 'type' => 'email' ],
+            [
+                'label' => 'Instituição',
+                'type' => 'select2',
+                'name' => 'institution_id',
+                'entity' => 'institution',
+                'attribute' => 'name',
+                'model' => 'Caronae\Models\Institution',
+            ],
             [ 'name' => 'phone_number', 'label' => 'Telefone' ],
             [ 'name' => 'profile', 'label' => 'Perfil' ],
             [ 'name' => 'course', 'label' => 'Curso' ],
