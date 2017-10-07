@@ -59,19 +59,19 @@ class RideController extends Controller
         ]);
 
         $filters = [];
-        if (isset($request->going))
+        if ($request->filled('going'))
             $filters['going'] = $request->going;
-        if (!empty($request->neighborhoods))
+        if ($request->filled('neighborhoods'))
             $filters['neighborhoods'] = explode(', ', $request->neighborhoods);
-        if (!empty($request->place))
+        if ($request->filled('place'))
             $filters['myplace'] = $request->place;
-        if (!empty($request->zone))
+        if ($request->filled('zone'))
             $filters['myzone'] = $request->zone;
-        if (!empty($request->campus))
+        if ($request->filled('campus'))
             $filters['hubs'] = Campus::findByName($request->campus)->hubs()->distinct('center')->pluck('center')->toArray();
-        if (!empty($request->hub))
+        if ($request->filled('hub'))
             $filters['hubs'] = [ $request->hub ];
-        else if (!empty($request->hubs))
+        else if ($request->filled('hubs'))
             $filters['hubs'] = explode(', ', $request->hubs);
 
         $limit = 20;
@@ -80,8 +80,8 @@ class RideController extends Controller
             ->orderBy('rides.date')
             ->withFilters($filters);
 
-        if (!empty($request->date)) {
-            if (empty($request->time)) {
+        if ($request->filled('date')) {
+            if (!$request->filled('time')) {
                 $dateMin = Carbon::createFromFormat('Y-m-d', $request->date)->setTime(0,0,0);
             } else {
                 $dateTimeString = $request->date . ' ' . substr($request->time, 0, 5);
@@ -279,11 +279,11 @@ class RideController extends Controller
             ->where('going', $request->go)
             ->whereIn($locationColumn, $locations);
 
-        if (empty($request->center)) {
-            $rides = $rides->get();
-        } else {
-            $rides = $rides->where('hub', 'LIKE', "$request->center%")->get();
+        if ($request->filled('center')) {
+            $rides = $rides->where('hub', 'LIKE', $request->input('center') . '%');
         }
+
+        $rides = $rides->get();
 
         $results = [];
         foreach($rides as $ride) {
