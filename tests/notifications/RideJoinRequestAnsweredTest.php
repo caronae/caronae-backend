@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests;
+namespace Tests\notifications;
 
-use Mockery;
-
-use Caronae\Notifications\RideJoinRequestAnswered;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
+use Caronae\Notifications\RideJoinRequestAnswered;
+use Mockery;
+use Tests\TestCase;
 
 class RideJoinRequestAnsweredTest extends TestCase
 {
@@ -46,7 +46,7 @@ class RideJoinRequestAnsweredTest extends TestCase
             'message'  => 'Você foi recusado em uma carona =(',
             'msgType'  => 'refused',
             'rideId'   => 1,
-            'senderId' => 2
+            'senderId' => 2,
         ], $notification->toPush(Mockery::mock(User::class)));
     }
 }

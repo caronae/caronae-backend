@@ -25,7 +25,6 @@ class RideController extends Controller
     {
         $this->middleware('api.v1.auth', ['only' => [
             'index',
-            'listAll',
             'show',
             'store',
             'validateDuplicate',
@@ -403,23 +402,18 @@ class RideController extends Controller
         $ride = Ride::find($rideID);
 
         if ($rideUser->status == 'driver') {
-            //send notification to riders on that ride
-            $rideCanceledNotification = new RideCanceled($ride);
+            $rideCanceledNotification = new RideCanceled($ride, $user);
             foreach ($ride->riders() as $rider) {
                 $rider->notify($rideCanceledNotification);
             }
 
-            // delete all relationships to this ride
             RideUser::where('ride_id', $rideID)->delete();
 
-            // delete ride
             $ride->delete();
         } else {
-            // if user is not the driver, just set relationship as quit
             $rideUser->status = 'quit';
             $rideUser->save();
 
-            // send notification to driver
             $ride->driver()->notify(new RideUserLeft($ride, $user));
         }
 
@@ -428,13 +422,11 @@ class RideController extends Controller
 
     public function finishRide(Request $request)
     {
-        // check if the current user is the driver of the ride
         $ride = $request->currentUser->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
         if ($ride == null) {
             return $this->error('User is not the driver of this ride', 403);
         }
 
-        // check if the ride is in the past, otherwise it cannot be marked as finished
         if ($ride->date->isFuture()) {
             return $this->error('A ride in the future cannot be marked as finished', 403);
         }
@@ -442,8 +434,7 @@ class RideController extends Controller
         $ride->done = true;
         $ride->save();
 
-        // send notification to riders on that ride
-        $rideFinishedNotification = new RideFinished($ride);
+        $rideFinishedNotification = new RideFinished($ride, $request->currentUser);
         foreach ($ride->riders() as $rider) {
             $rider->notify($rideFinishedNotification);
         }

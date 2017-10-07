@@ -1,11 +1,12 @@
 <?php
 
-namespace Tests;
+namespace Tests\notifications;
 
-use Mockery;
-
-use Caronae\Notifications\RideFinished;
 use Caronae\Models\Ride;
+use Caronae\Models\User;
+use Caronae\Notifications\RideFinished;
+use Mockery;
+use Tests\TestCase;
 
 class RideFinishedTest extends TestCase
 {
@@ -15,7 +16,9 @@ class RideFinishedTest extends TestCase
     {
         $ride = Mockery::mock(Ride::class);
     	$ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
-    	$this->notification = new RideFinished($ride);
+        $user = Mockery::mock(User::class);
+        $user->shouldReceive('getAttribute')->with('id')->andReturn(2);
+    	$this->notification = new RideFinished($ride, $user);
         $this->notification->id = uniqid();
     }
 
@@ -25,7 +28,8 @@ class RideFinishedTest extends TestCase
             'id'      => $this->notification->id,
             'message' => 'Um motorista concluiu uma carona ativa sua',
             'msgType' => 'finished',
-            'rideId'  => 1
+            'rideId'  => 1,
+            'senderId' => 2,
         ], $this->notification->toPush(Mockery::mock(User::class)));
     }
 }
