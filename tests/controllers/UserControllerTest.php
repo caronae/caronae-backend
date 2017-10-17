@@ -2,18 +2,23 @@
 
 namespace Tests;
 
-use App;
 use Caronae\Models\Institution;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
-use Caronae\Repositories\SigaInterface;
 use Faker\Factory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Mockery;
 
 class UserControllerTest extends TestCase
 {
     use DatabaseTransactions;
+
+    protected $institution;
+
+    public function setUp()
+    {
+      parent::setUp();
+      $this->institution = factory(Institution::class)->create();
+    }
 
     public function testStoreSavesUser()
     {
@@ -30,6 +35,7 @@ class UserControllerTest extends TestCase
     public function testStoreDoesNotAddDuplicatedUser()
     {
         $user = $this->newUser();
+        $user['institution_id'] = $this->institution->id;
         $existingUser = User::create($user);
         $existingUser->generateToken();
         $existingUser->save();
@@ -39,6 +45,22 @@ class UserControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson(['user' => $existingUser->fresh()->toArray()]);
         $response->assertJsonStructure(['token']);
+    }
+
+    public function testStoreDoesNotChangeExistingToken()
+    {
+        $user = $this->newUser();
+        $user['institution_id'] = $this->institution->id;
+        $existingUser = User::create($user);
+        $existingUser->generateToken();
+        $existingUser->save();
+        $oldToken = $existingUser->token;
+
+        $data = array_merge($user, [ 'token' => 'new token']);
+        $response = $this->json('POST', 'users', $data, $this->institutionAuthorizationHeaders());
+
+        $response->assertStatus(200);
+        $this->assertEquals($oldToken, $existingUser->fresh()->token);
     }
 
     public function testSignInWithValidUserSucceeds()
@@ -269,32 +291,10 @@ class UserControllerTest extends TestCase
         $this->assertEquals($newURL, $savedUser->profile_pic_url);
     }
 
-    public function testGetIntranetPhotoUrl()
-    {
-        $user = factory(User::class)->create();
-        $headers = ['token' => $user->token];
-
-        // Mock Siga interface
-        App::singleton(SigaInterface::class, function() use ($user) {
-            $mockProfile = new \stdClass;
-            $mockProfile->urlFoto = 'image.jpg';
-            $sigaRepositoryMock = Mockery::mock(SigaInterface::class);
-            $sigaRepositoryMock->shouldReceive('getProfileById')->once()->with($user->id_ufrj)->andReturn($mockProfile);
-            return $sigaRepositoryMock;
-        });
-
-        $response = $this->json('GET', 'user/intranetPhotoUrl', [], $headers);
-        $response->assertStatus(200);
-        $response->assertExactJson([
-            'url' => 'image.jpg'
-        ]);
-    }
-
     private function institutionAuthorizationHeaders()
     {
-        $institution = factory(Institution::class)->create();
         return [
-            'Authorization' => 'Basic ' . base64_encode($institution->id . ':' . $institution->password)
+            'Authorization' => 'Basic ' . base64_encode($this->institution->id . ':' . $this->institution->password)
         ];
     }
 

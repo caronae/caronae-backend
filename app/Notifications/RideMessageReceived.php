@@ -5,8 +5,8 @@ namespace Caronae\Notifications;
 use Caronae\Channels\PushChannel;
 use Caronae\Models\Message;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Notification;
 
 class RideMessageReceived extends Notification implements ShouldQueue
 {
@@ -14,34 +14,17 @@ class RideMessageReceived extends Notification implements ShouldQueue
 
     protected $message;
 
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
     public function __construct(Message $message)
     {
         $this->message = $message;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function via($notifiable)
+    public function via()
     {
         return [PushChannel::class];
     }
 
-    /**
-     * Get the mobile push representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toPush($notifiable)
+    public function toPush()
     {
         return [
             'id'       => (string)$this->message->id,
@@ -49,7 +32,7 @@ class RideMessageReceived extends Notification implements ShouldQueue
             'message'  => $this->message->user->name . ': ' . $this->message->body,
             'rideId'   => $this->message->ride_id,
             'senderId' => $this->message->user->id,
-            'msgType'  => 'chat'
+            'msgType'  => 'chat',
         ];
     }
 }

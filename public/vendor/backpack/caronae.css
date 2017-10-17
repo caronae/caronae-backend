@@ -78,3 +78,25 @@
 	background: url('/images/rides.png');
 	width: 20px;
 }
+
+.campus-color {
+	display: inline-block;
+	width: 2em;
+	height: 1em;
+	vertical-align: middle;
+	margin-right: 5px;
+	border-radius: 5px;
+}
+
+.zone-color {
+	display: inline-block;
+	width: .5em;
+	height: .5em;
+	vertical-align: middle;
+	margin-left: 5px;
+	border-radius: 0.5em;
+}
+
+.btn-edit-neighborhoods {
+	margin-left: 5px;
+}

@@ -160,9 +160,9 @@ return [
         Illuminate\View\ViewServiceProvider::class,
 
         /*
-         * Package Service Providers...
+         * Packages Service Providers...
          */
-        Laravel\Tinker\TinkerServiceProvider::class,
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -175,16 +175,8 @@ return [
         Caronae\Providers\ViewComposerServiceProvider::class,
         Caronae\Providers\ValidatorServiceProvider::class,
 
+        Caronae\Providers\GraylogLogProvider::class,
         Caronae\Providers\FacebookSDKServiceProvider::class,
-        Caronae\Providers\SigaRepositoryServiceProvider::class,
-
-        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
-        Maatwebsite\Excel\ExcelServiceProvider::class,
-        Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
-        Spatie\Backup\BackupServiceProvider::class,
-        Spatie\FailedJobMonitor\FailedJobMonitorServiceProvider::class,
-        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
-        Fideloper\Proxy\TrustedProxyServiceProvider::class,
 
         /*
         * Backpack Service Providers...

@@ -6,8 +6,8 @@ use Caronae\Channels\PushChannel;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Notification;
 
 class RideUserLeft extends Notification implements ShouldQueue
 {
@@ -16,57 +16,33 @@ class RideUserLeft extends Notification implements ShouldQueue
     protected $ride;
     protected $user;
 
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
     public function __construct(Ride $ride, User $user)
     {
         $this->ride = $ride;
         $this->user = $user;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function via($notifiable)
+    public function via()
     {
         return ['database', PushChannel::class];
     }
 
-    /**
-     * Get the mobile push representation of the notification.
-     *
-     * @param  User  $notifiable
-     * @return array
-     */
-    public function toPush($notifiable)
+    public function toPush()
     {
-        // TODO: Include the rider's name in the notification
         return [
             'id'       => $this->id,
             'message'  => 'Um caronista desistiu de sua carona',
             'msgType'  => 'quitter',
             'rideId'   => $this->ride->id,
-            'senderId' => $this->user->id
+            'senderId' => $this->user->id,
         ];
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  User  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
+    public function toArray()
     {
         return [
             'rideID' => $this->ride->id,
-            'userID' => $this->user->id
+            'userID' => $this->user->id,
         ];
     }
 }

@@ -2,26 +2,21 @@
 
 namespace Tests;
 
+use Caronae\Models\Campus;
 use Caronae\Models\Hub;
+use Caronae\Models\Institution;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class HubModelTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testFindsHubsWithCampus()
-    {
-        $hub = factory(Hub::class)->create(['campus' => 'Cidade Universitária'])->fresh();
-        $hub2 = factory(Hub::class)->create(['campus' => 'Praia Vermelha'])->fresh();
-
-        $results = Hub::withCampus('Cidade Universitária')->get();
-        $this->assertTrue($results->contains($hub));
-        $this->assertFalse($results->contains($hub2));
-    }
-
     public function testFindsByName()
     {
-        $hub = factory(Hub::class)->create(['name' => 'CT 1'])->fresh();
-        $this->assertEquals($hub, Hub::findByName('CT 1'));
+        $institution = factory(Institution::class)->create();
+        $campus = factory(Campus::class)->create(['institution_id' => $institution->id]);
+        $hub1 = factory(Hub::class)->create(['name' => 'CT 1', 'campus_id' => $campus->id])->fresh();
+        $hub2 = factory(Hub::class)->create(['name' => 'CT 2', 'campus_id' => $campus->id])->fresh();
+        $this->assertEquals($hub1, Hub::findByName('CT 1'));
     }
 }

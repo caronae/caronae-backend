@@ -15,7 +15,7 @@ $(function() {
 	$.extend( true, $.fn.dataTable.defaults, {
 		"processing": true,
 		"language" : {
-			"url": routes.datatables.ptBrLanguageFile
+			"url": '/vendor/dataTables-pt_BR.json'
 		}
 	} );
 
@@ -24,11 +24,5 @@ $(function() {
 		'autoclose': "true",
 		'todayBtn': "linked"
 	} );
-
-    /*
-        Fullscreen background
-    */
-    //$.backstretch(url('assets/img/backgrounds/1.jpg'));
-
 
 });

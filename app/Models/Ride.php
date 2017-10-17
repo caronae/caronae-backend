@@ -28,6 +28,11 @@ class Ride extends Model
         return $this->belongsToMany(User::class)->wherePivot('status', 'driver')->first();
     }
 
+    public function institution()
+    {
+        return $this->driver()->institution();
+    }
+
     public function riders()
     {
         return $this->belongsToMany(User::class)->wherePivot('status', 'accepted')->get();
@@ -114,7 +119,6 @@ class Ride extends Model
                 $join->on('ride_user.ride_id', '=', 'rides.id');
             })
             ->leftJoin('neighborhoods', function($join){
-                $join->on('rides.myzone', '=', 'neighborhoods.zone');
                 $join->on('rides.neighborhood', '=', 'neighborhoods.name');
             })
             ->where('ride_user.status', '=', 'driver')
@@ -137,7 +141,6 @@ class Ride extends Model
         $join = self::userStats($periodStart, $periodEnd);
 
         return Ride::leftJoin('neighborhoods', function($join){
-            $join->on('rides.myzone', '=', 'neighborhoods.zone');
             $join->on('rides.neighborhood', '=', 'neighborhoods.name');
         })
             ->join('ride_user', function($join){
@@ -145,6 +148,9 @@ class Ride extends Model
             })
             ->join('users', function($join){
                 $join->on('ride_user.user_id', '=', 'users.id');
+            })
+            ->join('institutions', function($join){
+                $join->on('users.institution_id', '=', 'institutions.id');
             })
             ->join(DB::raw('(' . $join->toSql() . ') as t1'), function($join){
                 $join->on('users.id' , '=', 't1.id');
@@ -154,7 +160,7 @@ class Ride extends Model
             ->where('done', '=', true)
             ->where('rides.date', '>=', $periodStart)
             ->where('rides.date', '<=', $periodEnd)
-            ->select('users.name as driver', 'users.course', 'rides.id', 'date', 'myzone', 'neighborhood', 'going', 'hub', 'distance',
+            ->select('users.name as driver','institutions.name as institution', 'users.course', 'rides.id', 'date', 'myzone', 'neighborhood', 'going', 'hub', 'distance',
                 't1.distancia_total',
                 't1.numero_de_caronas',
                 't1.distancia_media'

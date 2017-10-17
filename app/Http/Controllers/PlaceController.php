@@ -2,8 +2,8 @@
 
 namespace Caronae\Http\Controllers;
 
-use Caronae\Models\Hub;
-use Caronae\Models\Neighborhood;
+use Caronae\Models\Campus;
+use Caronae\Models\Zone;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -15,7 +15,7 @@ class PlaceController extends Controller
     {
         return [
             'zones' => $this->getZones(),
-            'campi' => $this->getCampi()
+            'campi' => $this->getCampi(),
         ];
     }
 
@@ -23,11 +23,12 @@ class PlaceController extends Controller
     {
         return Cache::remember('zones', self::CACHE_TIME_MINUTES, function () {
             Log::info('Loading zones from database.');
-            $zones = Neighborhood::select('zone')->distinct()->pluck('zone');
+            $zones = Zone::all();
             return $zones->map(function ($zone) {
                 return [
-                    'name' => $zone,
-                    'neighborhoods' => Neighborhood::withZone($zone)->pluck('name')
+                    'name' => $zone->name,
+                    'color' => $zone->color,
+                    'neighborhoods' => $zone->neighborhoods()->pluck('name'),
                 ];
             });
         });
@@ -37,12 +38,15 @@ class PlaceController extends Controller
     {
         return Cache::remember('campi', self::CACHE_TIME_MINUTES, function () {
             Log::info('Loading campi from database.');
-            $campi = Hub::select('campus')->distinct()->pluck('campus');
-            return $campi->map(function ($campus) {
+            $campi = Campus::all();
+            return $campi->filter(function ($campus) {
+                return $campus->hubs()->count() > 0;
+            })->map(function ($campus) {
                 return [
-                    'name' => $campus,
-                    'centers' => Hub::select('center')->distinct()->withCampus($campus)->pluck('center'),
-                    'hubs' => Hub::withCampus($campus)->pluck('name')
+                    'name' => $campus->name,
+                    'color' => $campus->color,
+                    'centers' => $campus->hubs()->distinct('center')->pluck('center'),
+                    'hubs' => $campus->hubs()->pluck('name'),
                 ];
             });
         });

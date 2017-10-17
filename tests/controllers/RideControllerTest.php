@@ -1,9 +1,11 @@
 <?php
 
-namespace Tests;
+namespace Tests\controllers;
 
 use Carbon\Carbon;
+use Caronae\Models\Campus;
 use Caronae\Models\Hub;
+use Caronae\Models\Institution;
 use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
@@ -14,6 +16,7 @@ use Caronae\Notifications\RideJoinRequested;
 use Caronae\Notifications\RideMessageReceived;
 use Caronae\Notifications\RideUserLeft;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tests\TestCase;
 
 class RideControllerTest extends TestCase
 {
@@ -23,11 +26,10 @@ class RideControllerTest extends TestCase
     protected $headers;
     protected $push;
 
-    /**
-    * @before
-    */
-    public function createFakeUserHeaders()
+    public function setUp()
     {
+        parent::setUp();
+
         $this->user = factory(User::class)->create()->fresh();
         $this->headers = ['token' => $this->user->token];
     }
@@ -70,8 +72,11 @@ class RideControllerTest extends TestCase
 
     public function testIndexShouldFilterByCampus()
     {
-        $hub = Hub::create(['name' => 'CT1', 'center' => 'CT', 'campus' => 'Cidade Universitária']);
-        $hub2 = Hub::create(['name' => 'PV', 'center' => 'PV', 'campus' => 'Praia Vermelha']);
+        $institution = factory(Institution::class)->create();
+        $campus1 = Campus::create(['name' => 'Cidade Universitária', 'institution_id' => $institution->id]);
+        $campus2 = Campus::create(['name' => 'Praia Vermelha', 'institution_id' => $institution->id]);
+        $hub = Hub::create(['name' => 'CT1', 'center' => 'CT', 'campus_id' => $campus1->id]);
+        $hub2 = Hub::create(['name' => 'PV', 'center' => 'PV', 'campus_id' => $campus2->id]);
 
         $futureDate = Carbon::now()->addDays(5)->setTime(12,0,0);
         $ride1 = factory(Ride::class, 'next')->create(['hub' => $hub->name, 'date' => $futureDate])->fresh();

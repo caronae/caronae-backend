@@ -1,11 +1,12 @@
 <?php
 
-namespace Tests;
+namespace Tests\notifications;
 
-use Mockery;
-
-use Caronae\Notifications\RideCanceled;
 use Caronae\Models\Ride;
+use Caronae\Models\User;
+use Caronae\Notifications\RideCanceled;
+use Mockery;
+use Tests\TestCase;
 
 class RideCanceledTest extends TestCase
 {
@@ -15,17 +16,20 @@ class RideCanceledTest extends TestCase
     {
         $ride = Mockery::mock(Ride::class);
     	$ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
-    	$this->notification = new RideCanceled($ride);
+        $user = Mockery::mock(User::class);
+        $user->shouldReceive('getAttribute')->with('id')->andReturn(2);
+    	$this->notification = new RideCanceled($ride, $user);
         $this->notification->id = uniqid();
     }
 
     public function testPushNotificationArrayShouldContainAllFields()
     {
         $this->assertSame([
-            'id'      => $this->notification->id,
-            'message' => 'Um motorista cancelou uma carona ativa sua',
-            'msgType' => 'cancelled',
-            'rideId'  => 1
+            'id'       => $this->notification->id,
+            'message'  => 'Um motorista cancelou uma carona ativa sua',
+            'msgType'  => 'cancelled',
+            'rideId'   => 1,
+            'senderId' => 2,
         ], $this->notification->toPush(Mockery::mock(User::class)));
     }
 }

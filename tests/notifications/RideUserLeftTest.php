@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests;
+namespace Tests\notifications;
 
-use Mockery;
-
-use Caronae\Notifications\RideUserLeft;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
+use Caronae\Notifications\RideUserLeft;
+use Mockery;
+use Tests\TestCase;
 
 class RideUserLeftTest extends TestCase
 {
@@ -31,7 +31,7 @@ class RideUserLeftTest extends TestCase
             'message'  => 'Um caronista desistiu de sua carona',
             'msgType'  => 'quitter',
             'rideId'   => 1,
-            'senderId' => 2
+            'senderId' => 2,
         ], $this->notification->toPush(Mockery::mock(User::class)));
     }
 }

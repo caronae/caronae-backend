@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'pgsql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -58,8 +58,8 @@ return [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
+            'database' => env('DB_DATABASE', 'caronae'),
+            'username' => env('DB_USERNAME', 'caronae'),
             'password' => env('DB_PASSWORD', ''),
             'charset' => 'utf8',
             'prefix' => '',
@@ -70,8 +70,8 @@ return [
         'pgsql_testing' => [
             'driver'   => 'pgsql',
             'host'     => env('TESTING_DB_HOST', 'localhost'),
-            'database' => env('TESTING_DB_DATABASE', 'forge'),
-            'username' => env('TESTING_DB_USERNAME', 'forge'),
+            'database' => env('TESTING_DB_DATABASE', 'caronae_testing'),
+            'username' => env('TESTING_DB_USERNAME', 'caronae'),
             'password' => env('TESTING_DB_PASSWORD', ''),
             'charset'  => 'utf8',
             'prefix'   => '',

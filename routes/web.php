@@ -10,15 +10,16 @@ Route::get('/', function() {
 Route::get('carona/{id}', 'RideController@showWeb');
 
 // Static pages
+// (redirect temporário)
 
 Route::get('static_pages/sobre.html', function(){
-    return view('static_pages/sobre');
+    return redirect()->away('https://caronae.com.br/sobre_mobile.html');
 });
 
 Route::get('static_pages/termos.html', function(){
-    return view('static_pages/termos');
+    return redirect()->away('https://caronae.com.br/termos_mobile.html');
 });
 
 Route::get('static_pages/faq.html', function(){
-    return view('static_pages/faq');
+    return redirect()->away('https://caronae.com.br/faq.html?mobile');
 });

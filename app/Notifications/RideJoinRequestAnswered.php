@@ -4,10 +4,9 @@ namespace Caronae\Notifications;
 
 use Caronae\Channels\PushChannel;
 use Caronae\Models\Ride;
-use Caronae\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Notification;
 
 class RideJoinRequestAnswered extends Notification implements ShouldQueue
 {
@@ -16,35 +15,18 @@ class RideJoinRequestAnswered extends Notification implements ShouldQueue
     protected $ride;
     protected $accepted;
 
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
     public function __construct(Ride $ride, bool $accepted)
     {
         $this->ride = $ride;
         $this->accepted = $accepted;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function via($notifiable)
+    public function via()
     {
         return ['database', PushChannel::class];
     }
 
-    /**
-     * Get the mobile push representation of the notification.
-     *
-     * @param  User  $notifiable
-     * @return array
-     */
-    public function toPush($notifiable)
+    public function toPush()
     {
         return [
             'id'       => $this->id,
@@ -55,13 +37,7 @@ class RideJoinRequestAnswered extends Notification implements ShouldQueue
         ];
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  User  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
+    public function toArray()
     {
         return [
             'rideID' => $this->ride->id,

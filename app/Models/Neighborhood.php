@@ -9,12 +9,12 @@ class Neighborhood extends Model
 {
     use CrudTrait;
 
-    protected $fillable = ['name', 'zone', 'distance'];
+    protected $fillable = ['name', 'zone_id', 'distance'];
     public $timestamps = false;
     public $hidden = ['id', 'distance'];
 
-    public function scopeWithZone($query, string $zone)
+    public function zone()
     {
-        return $query->where('zone', $zone);
+        return $this->belongsTo(Zone::class);
     }
 }

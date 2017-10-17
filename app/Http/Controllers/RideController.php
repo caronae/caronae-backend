@@ -4,7 +4,7 @@ namespace Caronae\Http\Controllers;
 
 use Carbon\Carbon;
 use Caronae\Http\Requests\CreateRideRequest;
-use Caronae\Models\Hub;
+use Caronae\Models\Campus;
 use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
@@ -25,7 +25,6 @@ class RideController extends Controller
     {
         $this->middleware('api.v1.auth', ['only' => [
             'index',
-            'listAll',
             'show',
             'store',
             'validateDuplicate',
@@ -59,19 +58,19 @@ class RideController extends Controller
         ]);
 
         $filters = [];
-        if (isset($request->going))
+        if ($request->filled('going'))
             $filters['going'] = $request->going;
-        if (!empty($request->neighborhoods))
+        if ($request->filled('neighborhoods'))
             $filters['neighborhoods'] = explode(', ', $request->neighborhoods);
-        if (!empty($request->place))
+        if ($request->filled('place'))
             $filters['myplace'] = $request->place;
-        if (!empty($request->zone))
+        if ($request->filled('zone'))
             $filters['myzone'] = $request->zone;
-        if (!empty($request->campus))
-            $filters['hubs'] = Hub::withCampus($request->campus)->distinct()->pluck('center')->toArray();
-        if (!empty($request->hub))
+        if ($request->filled('campus'))
+            $filters['hubs'] = Campus::findByName($request->campus)->hubs()->distinct('center')->pluck('center')->toArray();
+        if ($request->filled('hub'))
             $filters['hubs'] = [ $request->hub ];
-        else if (!empty($request->hubs))
+        else if ($request->filled('hubs'))
             $filters['hubs'] = explode(', ', $request->hubs);
 
         $limit = 20;
@@ -80,8 +79,8 @@ class RideController extends Controller
             ->orderBy('rides.date')
             ->withFilters($filters);
 
-        if (!empty($request->date)) {
-            if (empty($request->time)) {
+        if ($request->filled('date')) {
+            if (!$request->filled('time')) {
                 $dateMin = Carbon::createFromFormat('Y-m-d', $request->date)->setTime(0,0,0);
             } else {
                 $dateTimeString = $request->date . ' ' . substr($request->time, 0, 5);
@@ -279,11 +278,11 @@ class RideController extends Controller
             ->where('going', $request->go)
             ->whereIn($locationColumn, $locations);
 
-        if (empty($request->center)) {
-            $rides = $rides->get();
-        } else {
-            $rides = $rides->where('hub', 'LIKE', "$request->center%")->get();
+        if ($request->filled('center')) {
+            $rides = $rides->where('hub', 'LIKE', $request->input('center') . '%');
         }
+
+        $rides = $rides->get();
 
         $results = [];
         foreach($rides as $ride) {
@@ -403,23 +402,18 @@ class RideController extends Controller
         $ride = Ride::find($rideID);
 
         if ($rideUser->status == 'driver') {
-            //send notification to riders on that ride
-            $rideCanceledNotification = new RideCanceled($ride);
+            $rideCanceledNotification = new RideCanceled($ride, $user);
             foreach ($ride->riders() as $rider) {
                 $rider->notify($rideCanceledNotification);
             }
 
-            // delete all relationships to this ride
             RideUser::where('ride_id', $rideID)->delete();
 
-            // delete ride
             $ride->delete();
         } else {
-            // if user is not the driver, just set relationship as quit
             $rideUser->status = 'quit';
             $rideUser->save();
 
-            // send notification to driver
             $ride->driver()->notify(new RideUserLeft($ride, $user));
         }
 
@@ -428,13 +422,11 @@ class RideController extends Controller
 
     public function finishRide(Request $request)
     {
-        // check if the current user is the driver of the ride
         $ride = $request->currentUser->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
         if ($ride == null) {
             return $this->error('User is not the driver of this ride', 403);
         }
 
-        // check if the ride is in the past, otherwise it cannot be marked as finished
         if ($ride->date->isFuture()) {
             return $this->error('A ride in the future cannot be marked as finished', 403);
         }
@@ -442,8 +434,7 @@ class RideController extends Controller
         $ride->done = true;
         $ride->save();
 
-        // send notification to riders on that ride
-        $rideFinishedNotification = new RideFinished($ride);
+        $rideFinishedNotification = new RideFinished($ride, $request->currentUser);
         foreach ($ride->riders() as $rider) {
             $rider->notify($rideFinishedNotification);
         }

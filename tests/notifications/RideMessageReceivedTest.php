@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests;
+namespace Tests\notifications;
 
-use Mockery;
-
-use Caronae\Notifications\RideMessageReceived;
+use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
-use Caronae\Models\Message;
+use Caronae\Notifications\RideMessageReceived;
+use Mockery;
+use Tests\TestCase;
 
 class RideMessageReceivedTest extends TestCase
 {
@@ -40,7 +40,7 @@ class RideMessageReceivedTest extends TestCase
             'message' => 'Foo: bar',
             'rideId' => 1,
             'senderId' => 2,
-            'msgType' => 'chat'
+            'msgType' => 'chat',
         ], $this->notification->toPush(Mockery::mock(User::class)));
     }
 }

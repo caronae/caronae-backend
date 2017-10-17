@@ -13,13 +13,13 @@ class LoginController extends Controller
 {
     public function index(Request $request)
     {
-        if ($request->has('error')) {
+        if ($request->filled('error')) {
             $error = $request->input('error');
             Log::info('Login: instituição não autorizou login.', [ 'error' => $error, 'referer' => $request->headers->get('referer') ]);
             return response()->view('login.error', [ 'error' => $error ], 401);
         }
 
-        if (!$request->has('token') && !$request->has('error')) {
+        if (!$request->filled('token') && !$request->filled('error')) {
             $institutions = Institution::all();
 
             if (count($institutions) == 1) {
