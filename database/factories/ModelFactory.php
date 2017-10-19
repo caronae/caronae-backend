@@ -59,7 +59,7 @@ $factory->define(User::class, function (Faker\Generator $faker) {
         'car_color' => NULL,
         'car_plate' => NULL,
         'token' => strtoupper(str_random(6)),
-        'id_ufrj' => $faker->cpf(false),
+        'id_ufrj' => $faker->unique()->cpf(false),
         'profile_pic_url' => $faker->imageUrl(500, 500, 'people'),
         'face_id' => NULL,
         'institution_id' => $institution->id,
@@ -118,7 +118,7 @@ $factory->define(Message::class, function (Faker\Generator $faker) {
 
 $factory->define(Institution::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->company,
+        'name' => $faker->unique()->company,
         'password' => $faker->password,
         'authentication_url' => $faker->url
     ];
