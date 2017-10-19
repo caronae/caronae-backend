@@ -7,6 +7,7 @@ jobs:
         environment:
           APP_ENV: testing
           APP_DEBUG: true
+          APP_KEY: base64:Adh76j7g9HxvQf1vkyzKfa5yefi9KLRbygXxZxgYNTc=
       - image: postgres:9.6-alpine
         environment:
           POSTGRES_USER: caronae
