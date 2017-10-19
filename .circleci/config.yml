@@ -34,11 +34,14 @@ jobs:
           command: './vendor/bin/phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml'
       - setup_remote_docker
       - run:
+          name: Setup Docker
+          command: apk --no-cache add docker
+      - run:
           name: Build Docker images
           command: |
             docker build -t caronae/backend -f images/Dockerfile.app .
             docker build -t caronae/backend-worker -f images/Dockerfile.worker .
-      - deploy:
+      - run:
           name: Publish Docker images
           command: |
             docker login -u $DOCKER_USER -p $DOCKER_PASS
