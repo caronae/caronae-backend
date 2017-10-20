@@ -32,7 +32,8 @@ jobs:
       - run:
           name: Run tests
           command: './vendor/bin/phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml'
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 17.07.0-ce
       - run:
           name: Setup Docker
           command: apk --no-cache add docker
