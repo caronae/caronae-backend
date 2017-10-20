@@ -53,11 +53,11 @@ jobs:
           name: Deploy to dev
           command: |
             if [ "${CIRCLE_BRANCH}" == "develop" ]; then
-              ssh -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT "cd ~/backend && git fetch origin develop && git reset --hard origin/develop && bash upgrade.sh"
+              ssh -o StrictHostKeyChecking=No -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT "cd ~/backend && git fetch origin develop && git reset --hard origin/develop && bash upgrade.sh"
             fi
       - deploy:
           name: Deploy to production environment
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ssh -A $CARONAE_PROD_USER@$CARONAE_PROD_HOST -p $CARONAE_PROD_PORT "cd ~/backend && git fetch origin master && git reset --hard origin/master && bash upgrade.sh"
+              ssh -o StrictHostKeyChecking=No -A $CARONAE_PROD_USER@$CARONAE_PROD_HOST -p $CARONAE_PROD_PORT "cd ~/backend && git fetch origin master && git reset --hard origin/master && bash upgrade.sh"
             fi
