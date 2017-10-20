@@ -38,15 +38,16 @@ jobs:
           command: apk --no-cache add docker
       - run:
           name: Build Docker images
+          working_directory: /var/www/images
           command: |
-            docker build -t caronae/backend -f images/Dockerfile.app .
-            docker build -t caronae/backend-worker -f images/Dockerfile.worker .
-      - run:
-          name: Publish Docker images
-          command: |
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker push caronae/backend
-            docker push caronae/backend-worker
+            if [[ "$CIRCLE_BRANCH" = "develop" || "$CIRCLE_BRANCH" = "master" ]]; then
+              [[ "${CIRCLE_BRANCH}" = "master" ]] && TAG="latest" || TAG="${CIRCLE_BRANCH}"
+              docker build -t caronae/backend:$TAG -f Dockerfile.app ..
+              docker build -t caronae/backend-worker:$TAG -f Dockerfile.worker --build-arg BACKEND_TAG=$TAG .
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+              docker push caronae/backend:$TAG
+              docker push caronae/backend-worker:$TAG
+            fi
       - deploy:
           name: Deploy to dev
           command: |

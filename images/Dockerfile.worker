@@ -1,4 +1,5 @@
-FROM caronae/backend:latest
+ARG BACKEND_TAG=latest
+FROM caronae/backend:${BACKEND_TAG}
 
 RUN apk --no-cache add supervisor
 
