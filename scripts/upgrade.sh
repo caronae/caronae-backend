@@ -1,9 +1,6 @@
 #!/bin/bash
-set -e
+set -eo pipefail
 cd "$(dirname ${BASH_SOURCE[0]})"
-
-# Upgrade dependencies
-composer install --no-interaction --no-ansi --no-dev
 
 # Backup database
 php artisan backup:run --no-interaction --no-ansi

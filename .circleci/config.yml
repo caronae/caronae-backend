@@ -54,7 +54,7 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "develop" ]; then
               TAG=develop
-              ssh -o StrictHostKeyChecking=No -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT bash -s < update_images.sh "$TAG"
+              ssh -o StrictHostKeyChecking=No -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT bash -s < scripts/update_images.sh "$TAG"
             fi
       - deploy:
           name: Deploy to production environment
