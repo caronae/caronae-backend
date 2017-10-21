@@ -36,7 +36,7 @@ jobs:
           command: apk --no-cache add docker
       - run:
           name: Build Docker images
-          working_directory: /var/www/images
+          working_directory: /var/www/docker
           command: |
             if [[ "$CIRCLE_BRANCH" = "develop" || "$CIRCLE_BRANCH" = "master" ]]; then
               [[ "${CIRCLE_BRANCH}" = "master" ]] && TAG="latest" || TAG="${CIRCLE_BRANCH}"
