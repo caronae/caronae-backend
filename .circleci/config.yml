@@ -53,7 +53,8 @@ jobs:
           name: Deploy to dev
           command: |
             if [ "${CIRCLE_BRANCH}" == "develop" ]; then
-              ssh -o StrictHostKeyChecking=No -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT "cd ~/backend && git fetch origin develop && git reset --hard origin/develop && bash upgrade.sh"
+              TAG=develop
+              ssh -o StrictHostKeyChecking=No -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT bash -s < update_images.sh "$TAG"
             fi
       - deploy:
           name: Deploy to production environment
