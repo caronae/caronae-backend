@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -eo pipefail
 
 if [ $# -eq 0 ]; then
@@ -19,3 +19,5 @@ docker pull caronae/backend:$CARONAE_ENV_TAG
 docker pull caronae/backend-worker:$CARONAE_ENV_TAG
 
 /usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+docker exec -it caronae-backend /var/www/scripts/update_laravel.sh
