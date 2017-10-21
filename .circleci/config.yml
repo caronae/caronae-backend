@@ -49,7 +49,7 @@ jobs:
       - deploy:
           name: Deploy to dev
           command: |
-            if [[ "$CIRCLE_BRANCH" = "develop" || "$CIRCLE_BRANCH" = "master" ]]; then
+            if [ "${CIRCLE_BRANCH}" == "develop" ]; then
               ssh -o StrictHostKeyChecking=No -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT bash -s < scripts/update_images.sh "develop"
             fi
       - deploy:
