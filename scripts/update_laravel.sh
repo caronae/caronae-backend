@@ -1,6 +1,5 @@
 #!/bin/bash
 set -eo pipefail
-cd "$(dirname ${BASH_SOURCE[0]})"
 
 # Backup database
 php artisan backup:run --no-interaction --no-ansi
