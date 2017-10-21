@@ -8,16 +8,15 @@ fi
 
 sudo CARONAE_ENV_TAG=$1 su
 
-echo "Deploying with tag: $CARONAE_ENV_TAG"
-
+echo "Updating caronae-docker..."
 cd /var/caronae/caronae-docker
-
 git fetch origin master
 git reset --hard origin/master
 
+echo "Updating backend and backend-worker using the tag $CARONAE_ENV_TAG"
 docker pull caronae/backend:$CARONAE_ENV_TAG
 docker pull caronae/backend-worker:$CARONAE_ENV_TAG
-
 /usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
-docker exec -it caronae-backend /var/www/scripts/update_laravel.sh
+echo "Running backend update scripts..."
+docker exec caronae-backend /var/www/scripts/update_laravel.sh
