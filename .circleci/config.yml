@@ -27,9 +27,6 @@ jobs:
           paths:
             - vendor
       - run:
-          name: Initialize database
-          command: php artisan migrate --database=pgsql_testing
-      - run:
           name: Run tests
           command: './vendor/bin/phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml'
       - setup_remote_docker:
