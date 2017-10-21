@@ -21,3 +21,6 @@ echo "Updating images using the tag $CARONAE_ENV_TAG"
 
 echo "Running backend update scripts..."
 docker exec caronae-backend sh /var/www/scripts/update_laravel.sh
+
+echo "Clean-up unused Docker images..."
+docker image prune -af
