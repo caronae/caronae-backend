@@ -1,9 +1,5 @@
 #!/bin/bash
-set -e
-cd "$(dirname ${BASH_SOURCE[0]})"
-
-# Upgrade dependencies
-composer install --no-interaction --no-ansi --no-dev
+set -eo pipefail
 
 # Backup database
 php artisan backup:run --no-interaction --no-ansi

@@ -12,6 +12,7 @@ COPY public ./public
 COPY resources ./resources
 COPY routes ./routes
 COPY vendor ./vendor
+COPY scripts/update_laravel.sh ./scripts/
 
 RUN mkdir -p storage/app
 RUN mkdir -p storage/logs

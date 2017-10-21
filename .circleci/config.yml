@@ -27,9 +27,6 @@ jobs:
           paths:
             - vendor
       - run:
-          name: Initialize database
-          command: php artisan migrate --database=pgsql_testing
-      - run:
           name: Run tests
           command: './vendor/bin/phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml'
       - setup_remote_docker:
@@ -39,7 +36,7 @@ jobs:
           command: apk --no-cache add docker
       - run:
           name: Build Docker images
-          working_directory: /var/www/images
+          working_directory: /var/www/docker
           command: |
             if [[ "$CIRCLE_BRANCH" = "develop" || "$CIRCLE_BRANCH" = "master" ]]; then
               [[ "${CIRCLE_BRANCH}" = "master" ]] && TAG="latest" || TAG="${CIRCLE_BRANCH}"
@@ -52,12 +49,12 @@ jobs:
       - deploy:
           name: Deploy to dev
           command: |
-            if [ "${CIRCLE_BRANCH}" == "develop" ]; then
-              ssh -o StrictHostKeyChecking=No -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT "cd ~/backend && git fetch origin develop && git reset --hard origin/develop && bash upgrade.sh"
+            if [[ "$CIRCLE_BRANCH" = "develop" || "$CIRCLE_BRANCH" = "master" ]]; then
+              ssh -o StrictHostKeyChecking=No -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT bash -s < scripts/update_images.sh "develop"
             fi
       - deploy:
-          name: Deploy to production environment
+          name: Deploy to production
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ssh -o StrictHostKeyChecking=No -A $CARONAE_PROD_USER@$CARONAE_PROD_HOST -p $CARONAE_PROD_PORT "cd ~/backend && git fetch origin master && git reset --hard origin/master && bash upgrade.sh"
+              ssh -o StrictHostKeyChecking=No -A $CARONAE_PROD_USER@$CARONAE_PROD_HOST -p $CARONAE_PROD_PORT bash -s < scripts/update_images.sh "latest"
             fi
