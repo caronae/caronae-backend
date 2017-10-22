@@ -28,7 +28,7 @@ jobs:
             - vendor
       - run:
           name: Run tests
-          command: './vendor/bin/phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml'
+          command: './vendor/bin/phpunit --debug --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml'
       - setup_remote_docker:
           version: 17.07.0-ce
       - run:

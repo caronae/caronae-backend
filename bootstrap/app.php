@@ -41,7 +41,7 @@ $app->singleton(
     Caronae\Exceptions\Handler::class
 );
 
-if (getenv('LOG_STREAM')) {
+if (env('APP_ENV') != 'testing' && getenv('LOG_STREAM')) {
     $app->configureMonologUsing(function ($monolog) {
         $monolog->pushHandler(
             new \Monolog\Handler\StreamHandler(getenv('LOG_STREAM'))

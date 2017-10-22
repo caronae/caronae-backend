@@ -12,7 +12,7 @@ services:
     environment:
       - TESTING_DB_HOST=postgres
       - APP_KEY=base64:Adh76j7g9HxvQf1vkyzKfa5yefi9KLRbygXxZxgYNTc=
-    command: ./vendor/bin/phpunit --log-junit reports/phpunit/junit.xml
+    command: ./vendor/bin/phpunit --debug --log-junit reports/phpunit/junit.xml
 
   postgres:
     container_name: postgres
