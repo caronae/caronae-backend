@@ -18,6 +18,16 @@ class UserModelTest extends TestCase
         $this->driver = factory(User::class)->create();
     }
 
+    /**
+     * @test
+     */
+    public function shouldFindUserByInstitutionID()
+    {
+        $user = factory(User::class)->create(['id_ufrj' => '666'])->fresh();
+
+        $this->assertEquals($user, User::findByInstitutionId('666'));
+    }
+
     public function testActiveReturnsRidesWithAcceptedUsers()
     {
         $rider = factory(User::class)->create();

@@ -22,6 +22,11 @@ class User extends Model implements AuthenticatableContract
     protected $hidden = ['token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version', 'banned', 'institution_id'];
     protected $dates = ['deleted_at'];
 
+    public static function findByInstitutionId($id)
+    {
+        return self::where('id_ufrj', $id)->first();
+    }
+
     public function setCarPlateAttribute($value)
     {
         $this->attributes['car_plate'] = strtoupper($value);

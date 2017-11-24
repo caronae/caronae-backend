@@ -30,12 +30,13 @@ class UserController extends Controller
 
     public function store(SignUpRequest $request)
     {
-        if (!$user = User::where('id_ufrj', $request->id_ufrj)->first()) {
+        $institutionID = $request->input('id_ufrj');
+        if (!$user = User::findByInstitutionId($institutionID)) {
             $user = new User;
             $user->generateToken();
             $user->institution()->associate($request->institution);
 
-            Log::info("Novo cadastro (id institucional: $request->id_ufrj)");
+            Log::info("Novo cadastro (id institucional: $institutionID)");
         }
 
         $user->fill($request->except('token'));
