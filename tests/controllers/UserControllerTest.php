@@ -65,9 +65,7 @@ class UserControllerTest extends TestCase
 
     public function testSignInWithValidUserSucceeds()
     {
-        // create user with some rides
-        $user = factory(User::class)->create();
-        $user = $user->fresh();
+        $user = $this->someUser();
 
         // add unfinished rides, which should be returned
         $ride = factory(Ride::class)->create(['done' => false])->fresh();
@@ -138,7 +136,7 @@ class UserControllerTest extends TestCase
 
     public function testUpdateWithValidUserSucceeds()
     {
-        $user = factory(User::class)->create();
+        $user = $this->someUser();
         $headers = ['token' => $user->token];
         $body = [
             'phone_number' => '021998781890',
@@ -185,12 +183,12 @@ class UserControllerTest extends TestCase
     public function testGetOfferedRides()
     {
         // create user with some rides
-        $user = factory(User::class)->create()->fresh();
+        $user = $this->someUser();
 
         // add unfinished rides, which should be returned
         $ride = factory(Ride::class, 'next')->create(['done' => false])->fresh();
         $ride->users()->attach($user, ['status' => 'driver']);
-        $rider = factory(User::class)->create()->fresh();
+        $rider = $this->someUser();
         $ride->users()->attach($rider, ['status' => 'accepted']);
 
         // add finished ride, which shouldn't be returned
@@ -251,8 +249,8 @@ class UserControllerTest extends TestCase
 
     public function testGetOfferedRidesFromAnotherUserShouldError()
     {
-        $user = factory(User::class)->create()->fresh();
-        $user2 = factory(User::class)->create()->fresh();
+        $user = $this->someUser();
+        $user2 = $this->someUser();
 
         $response = $this->json('GET', 'user/' . $user2->id . '/offeredRides', [], [
             'token' => $user->token
@@ -263,13 +261,14 @@ class UserControllerTest extends TestCase
 
     public function testSaveFacebookID()
     {
-        $user = factory(User::class)->create();
+        $user = $this->someUser();
         $headers = ['token' => $user->token];
-        $newId = str_random(50);
+        $newId = 'new-facebook-id';
 
         $response = $this->json('PUT', 'user/saveFaceId', [
             'id' => $newId
         ], $headers);
+
         $response->assertStatus(200);
 
         $savedUser = $user->fresh();
@@ -278,17 +277,21 @@ class UserControllerTest extends TestCase
 
     public function testSaveProfilePictureURL()
     {
-        $user = factory(User::class)->create();
+        $user = $this->someUser();
         $headers = ['token' => $user->token];
-        $newURL = Factory::create()->url;
+        $newURL = 'https://example.com/new-profile-picture-url.jpg';
 
         $response = $this->json('PUT', 'user/saveProfilePicUrl', [
             'url' => $newURL
         ], $headers);
-        $response->assertStatus(200);
 
-        $savedUser = $user->fresh();
-        $this->assertEquals($newURL, $savedUser->profile_pic_url);
+        $response->assertStatus(200);
+        $this->assertEquals($newURL, $user->fresh()->profile_pic_url);
+    }
+
+    private function someUser()
+    {
+        return factory(User::class)->create()->fresh();
     }
 
     private function institutionAuthorizationHeaders()

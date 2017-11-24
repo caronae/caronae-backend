@@ -6,7 +6,7 @@ Route::post('users', 'UserController@store');
 Route::post('user/login', 'UserController@login');
 Route::put('user', 'UserController@update');
 Route::get('user/{user}/offeredRides', 'UserController@getOfferedRides');
-Route::put('user/saveFaceId', 'UserController@saveFaceId');
+Route::put('user/saveFaceId', 'UserController@saveFacebookId');
 Route::put('user/saveProfilePicUrl', 'UserController@saveProfilePicUrl');
 Route::get('user/{id}/mutualFriends', 'UserController@getMutualFriends');
 

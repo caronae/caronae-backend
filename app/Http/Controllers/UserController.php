@@ -18,7 +18,7 @@ class UserController extends Controller
         $this->middleware('api.v1.auth', ['only' => [
             'getOfferedRides',
             'update',
-            'saveFaceId',
+            'saveFacebookId',
             'saveProfilePicUrl',
             'getMutualFriends',
             'getIntranetPhotoUrl'
@@ -111,14 +111,15 @@ class UserController extends Controller
         $user->save();
     }
 
-    public function saveFaceId(Request $request)
+    public function saveFacebookId(Request $request)
     {
         $this->validate($request, [
             'id' => 'required'
         ]);
 
-        $request->currentUser->face_id = $request->id;
-        $request->currentUser->save();
+        $user = $request->currentUser;
+        $user->face_id = $request->input('id');
+        $user->save();
     }
 
     public function saveProfilePicUrl(Request $request)

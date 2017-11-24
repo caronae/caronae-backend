@@ -21,6 +21,7 @@
     </filter>
     <php>
         <env name="APP_ENV" value="testing" force="true"/>
+        <env name="APP_DEBUG" value="true" force="true"/>
         <env name="CACHE_DRIVER" value="array" force="true"/>
         <env name="SESSION_DRIVER" value="array" force="true"/>
         <env name="QUEUE_DRIVER" value="sync" force="true"/>
