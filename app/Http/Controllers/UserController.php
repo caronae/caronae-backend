@@ -17,14 +17,19 @@ class UserController extends Controller
     {
         $this->middleware('api.v1.auth', ['only' => [
             'getOfferedRides',
+            'getPendingRides',
             'update',
             'saveFacebookId',
             'saveProfilePicUrl',
             'getMutualFriends',
-            'getIntranetPhotoUrl'
+            'getIntranetPhotoUrl',
         ]]);
 
-        $this->middleware('api.v1.userMatchesRequestedUser', ['only' => ['getOfferedRides']]);
+        $this->middleware('api.v1.userMatchesRequestedUser', ['only' => [
+            'getOfferedRides',
+            'getPendingRides',
+        ]]);
+
         $this->middleware('api.institution', ['only' => ['store']]);
     }
 
@@ -73,6 +78,18 @@ class UserController extends Controller
 
         $rides = $rides->map(function ($ride) {
             $ride->riders = $ride->riders();
+            return $ride;
+        });
+
+        return ['rides' => $rides];
+    }
+
+    public function getPendingRides(User $user)
+    {
+        $rides = $user->pendingRides()->get();
+
+        $rides = $rides->map(function ($ride) {
+            $ride->driver = $ride->driver();
             return $ride;
         });
 

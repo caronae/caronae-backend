@@ -182,7 +182,6 @@ class UserControllerTest extends TestCase
 
     public function testGetOfferedRides()
     {
-        // create user with some rides
         $user = $this->someUser();
 
         // add unfinished rides, which should be returned
@@ -253,6 +252,61 @@ class UserControllerTest extends TestCase
         $user2 = $this->someUser();
 
         $response = $this->json('GET', 'user/' . $user2->id . '/offeredRides', [], [
+            'token' => $user->token
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldReturnPendingRides()
+    {
+        $user = $this->someUser();
+        $driver = $this->someUser();
+
+        $ride = factory(Ride::class, 'next')->create(['done' => false])->fresh();
+        $ride->users()->attach($driver, ['status' => 'driver']);
+        $ride->users()->attach($user, ['status' => 'pending']);
+
+        $response = $this->json('GET', 'user/' . $user->id . '/pendingRides', [], [
+            'token' => $user->token
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'rides' => [
+                [
+                    'id' => $ride->id,
+                    'myzone' => $ride->myzone,
+                    'neighborhood' => $ride->neighborhood,
+                    'going' => $ride->going,
+                    'place' => $ride->place,
+                    'route' => $ride->route,
+                    'routine_id' => $ride->routine_id,
+                    'hub' => $ride->hub,
+                    'slots' => $ride->slots,
+                    'mytime' => $ride->date->format('H:i:s'),
+                    'mydate' => $ride->date->format('Y-m-d'),
+                    'description' => $ride->description,
+                    'week_days' => $ride->week_days,
+                    'repeats_until' => $ride->repeats_until,
+                    'driver' => $driver->toArray(),
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFailWhenGettingPendingRidesForOtherUser()
+    {
+        $user = $this->someUser();
+        $user2 = $this->someUser();
+
+        $response = $this->json('GET', 'user/' . $user2->id . '/pendingRides', [], [
             'token' => $user->token
         ]);
 
