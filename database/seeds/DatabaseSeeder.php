@@ -10,13 +10,10 @@ class DatabaseSeeder extends Seeder
             throw new Exception('Seeder executado em ambiente de produção.');
         }
 
-        //$this->setForeignKeyChecks(false);
-
         $this->call(NeighborhoodSeeder::class);
         $this->call(AdminTableSeeder::class);
+        $this->call(InstitutionSeeder::class);
         $this->call(UserRideTableSeeder::class);
-
-        //$this->setForeignKeyChecks(true);
     }
 
     public function setForeignKeyChecks($value)
