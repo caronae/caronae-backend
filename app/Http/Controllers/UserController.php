@@ -2,8 +2,8 @@
 
 namespace Caronae\Http\Controllers;
 
-use Carbon\Carbon;
 use Caronae\Http\Requests\SignUpRequest;
+use Caronae\Http\Resources\User as UserResource;
 use Caronae\Models\User;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\Facebook;
@@ -48,7 +48,7 @@ class UserController extends Controller
         $user->save();
 
         $token = JWTAuth::fromUser($user);
-        return [ 'user' => $user->fresh(), 'token' => $token ];
+        return [ 'user' => new UserResource($user), 'token' => $token ];
     }
 
     public function login(Request $request)
@@ -66,14 +66,14 @@ class UserController extends Controller
         // get user's rides as driver
         $drivingRides = $user->rides()->where(['status' => 'driver', 'done' => false])->get();
 
-        return ['user' => $user, 'rides' => $drivingRides];
+        return ['user' => new UserResource($user), 'rides' => $drivingRides];
     }
 
     public function getOfferedRides(User $user)
     {
-        $rides = $user->rides()
-            ->where('date', '>=', Carbon::now())
-            ->where(['done' => false, 'status' => 'driver'])
+        $rides = $user->offeredRides()
+            ->inTheFuture()
+            ->notFinished()
             ->get();
 
         $rides = $rides->map(function ($ride) {
@@ -168,6 +168,6 @@ class UserController extends Controller
         $mutualFriendsFB = collect($mutualFriendsFB)->pluck('id');
 
         $mutualFriends = User::whereIn('face_id', $mutualFriendsFB)->get();
-        return ['total_count' => $totalFriendsCount, 'mutual_friends' => $mutualFriends];
+        return ['total_count' => $totalFriendsCount, 'mutual_friends' => UserResource::collection($mutualFriends)];
     }
 }

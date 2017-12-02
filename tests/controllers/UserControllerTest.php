@@ -5,7 +5,6 @@ namespace Tests;
 use Caronae\Models\Institution;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
-use Faker\Factory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class UserControllerTest extends TestCase
@@ -266,9 +265,7 @@ class UserControllerTest extends TestCase
         $user = $this->someUser();
         $driver = $this->someUser();
 
-        $ride = factory(Ride::class, 'next')->create(['done' => false])->fresh();
-        $ride->users()->attach($driver, ['status' => 'driver']);
-        $ride->users()->attach($user, ['status' => 'pending']);
+        $ride = $this->createPendingRideForUser($driver, $user);
 
         $response = $this->json('GET', 'user/' . $user->id . '/pendingRides', [], [
             'token' => $user->token
@@ -363,5 +360,13 @@ class UserControllerTest extends TestCase
             'id_ufrj' => '111',
             'course' => 'Course'
         ];
+    }
+
+    private function createPendingRideForUser($driver, $user)
+    {
+        $ride = factory(Ride::class, 'next')->create(['done' => false])->fresh();
+        $ride->users()->attach($driver, ['status' => 'driver']);
+        $ride->users()->attach($user, ['status' => 'pending']);
+        return $ride;
     }
 }

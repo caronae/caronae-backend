@@ -3,7 +3,6 @@
 namespace Caronae\Models;
 
 use Backpack\CRUD\CrudTrait;
-use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
@@ -48,7 +47,7 @@ class User extends Model implements AuthenticatableContract
     {
         return $this->belongsToMany(Ride::class)
             ->wherePivotIn('status', ['driver', 'accepted'])
-            ->where('done', false);
+            ->notFinished();
     }
 
     public function offeredRides()
@@ -61,8 +60,8 @@ class User extends Model implements AuthenticatableContract
     {
         return $this->belongsToMany(Ride::class)
             ->wherePivot('status', 'pending')
-            ->where('done', false)
-            ->where('date', '>=', Carbon::now());
+            ->notFinished()
+            ->inTheFuture();
     }
 
     public function belongsToRide(Ride $ride)
