@@ -1,5 +1,6 @@
 <?php
 
+use Caronae\Models\Institution;
 use Caronae\Models\User;
 use Caronae\Models\Ride;
 use Illuminate\Database\Seeder;
@@ -10,10 +11,12 @@ class UserRideTableSeeder extends Seeder
 	protected $rides;
 	protected $riders;
 	protected $faker;
+    protected $institutions;
 
-	public function __construct(Faker\Generator $faker)
+    public function __construct(Faker\Generator $faker)
 	{
 		$this->faker = $faker;
+		$this->institutions = Institution::all();
 	}
 
     public function run()

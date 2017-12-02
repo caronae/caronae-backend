@@ -12,8 +12,8 @@ class AdminTableSeeder extends Seeder
         $admins = [
             [
                 'name' => 'Administrador',
-                'email' => '1@1.com',
-                'password' => bcrypt('1234')
+                'email' => 'user@example.com',
+                'password' => '123456'
             ],
         ];
 

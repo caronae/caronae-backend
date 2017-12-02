@@ -26,8 +26,8 @@ php artisan db:seed
 Pronto! Agora você já pode fazer login na área administrativa utilizando o usuário
 padrão.
 
-* E-mail: 1@1.com
-* Senha: 1234
+* E-mail: user@example.com
+* Senha: 123456
 
 
 ## Testes

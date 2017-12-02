@@ -46,7 +46,13 @@ $factory->define(Neighborhood::class, function (Faker\Generator $faker) {
 });
 
 $factory->define(User::class, function (Faker\Generator $faker) {
-    $institution = factory(Institution::class)->create();
+    $institutions = Institution::all();
+    if ($institutions->count() > 0) {
+        $institution = $institutions->random();
+    } else {
+        $institution = factory(Institution::class)->create();
+    }
+
     return [
         'name' => $faker->name,
         'email' => $faker->email,
