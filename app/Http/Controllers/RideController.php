@@ -259,6 +259,9 @@ class RideController extends Controller
         });
     }
 
+    /**
+     * @deprecated
+     */
     public function listFiltered(Request $request)
     {
         $locations = explode(', ', $request->location);
