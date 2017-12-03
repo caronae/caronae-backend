@@ -5,15 +5,14 @@ namespace Caronae\Http\Resources;
 use Caronae\Models\Ride as RideModel;
 use Caronae\Models\User as UserModel;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Resources\MissingValue;
 use Tests\TestCase;
 
 class RideTest extends TestCase
 {
     private $driver;
-
     private $ride;
-
     private $request;
 
     public function setUp()
@@ -54,7 +53,8 @@ class RideTest extends TestCase
 
         $this->assertArraySubset($expectedJson, $response);
         $this->assertTrue($response['driver']->is($userResource));
-        $this->assertDoesNotHaveRiders($response);
+        $this->assertDoesNotShowAttribute('availableSlots', $response);
+        $this->assertDoesNotShowAttribute('riders', $response);
     }
 
     /**
@@ -74,9 +74,24 @@ class RideTest extends TestCase
         $this->assertTrue($ridersResponse[0]->is(new User($rider)));
     }
 
-    private function assertDoesNotHaveRiders($response)
+    /**
+     * @test
+     */
+    public function shouldIncludeAvailableSlots()
     {
-        $riders = $response['riders']->resource;
-        $this->assertInstanceOf(MissingValue::class, $riders);
+        $rideResource = new Ride($this->ride);
+
+        $response = $rideResource->withAvailableSlots()->toArray($this->request);
+
+        $this->assertEquals($this->ride->availableSlots(), $response['availableSlots']);
+    }
+
+    private function assertDoesNotShowAttribute($field, $response)
+    {
+        $fieldValue = $response[$field];
+        if ($fieldValue instanceof ResourceCollection) {
+            $fieldValue = $fieldValue->resource;
+        }
+        $this->assertInstanceOf(MissingValue::class, $fieldValue);
     }
 }

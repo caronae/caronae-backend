@@ -15,6 +15,7 @@ use Caronae\Notifications\RideJoinRequestAnswered;
 use Caronae\Notifications\RideJoinRequested;
 use Caronae\Notifications\RideMessageReceived;
 use Caronae\Notifications\RideUserLeft;
+use Caronae\Http\Resources\Ride as RideResource;
 use DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -103,9 +104,8 @@ class RideController extends Controller
     
     public function show(Ride $ride)
     {
-        $ride->driver = $ride->driver();
-        $ride->availableSlots = $ride->availableSlots;
-        return $ride;
+        RideResource::withoutWrapping();
+        return (new RideResource($ride))->withAvailableSlots();
     }
 
     public function showWeb($id)

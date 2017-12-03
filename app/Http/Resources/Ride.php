@@ -6,6 +6,8 @@ use Illuminate\Http\Resources\Json\Resource;
 
 class Ride extends Resource
 {
+    private $displayAvailableSlots;
+
     public function toArray($request)
     {
         return [
@@ -25,6 +27,13 @@ class Ride extends Resource
             'repeats_until' => $this->repeats_until,
             'driver' => new User($this->driver()),
             'riders' => User::collection($this->whenLoaded('riders')),
+            'availableSlots' => $this->when($this->displayAvailableSlots, $this->availableSlots()),
         ];
+    }
+
+    public function withAvailableSlots()
+    {
+        $this->displayAvailableSlots = true;
+        return $this;
     }
 }

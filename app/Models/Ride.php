@@ -63,7 +63,7 @@ class Ride extends Model
         return $route . ' | ' . $this->date->format('d/m');
     }
 
-    public function getAvailableSlotsAttribute()
+    public function availableSlots()
     {
         $ridersCount = $this->belongsToMany(User::class)->wherePivot('status', 'accepted')->count();
         return $this->slots - $ridersCount;

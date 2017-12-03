@@ -78,7 +78,7 @@ class RideModelTest extends TestCase
         $ride->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
         $ride->users()->attach(factory(User::class)->create(), ['status' => 'accepted']);
 
-        $this->assertEquals(1, $ride->availableSlots);
+        $this->assertEquals(1, $ride->availableSlots());
     }
 
     public function testScopeShouldReturnRidesWithAvailableSlots()
