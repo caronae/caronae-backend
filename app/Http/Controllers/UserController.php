@@ -3,6 +3,7 @@
 namespace Caronae\Http\Controllers;
 
 use Caronae\Http\Requests\SignUpRequest;
+use Caronae\Http\Resources\Ride as RideResource;
 use Caronae\Http\Resources\User as UserResource;
 use Caronae\Models\User;
 use Facebook\Exceptions\FacebookSDKException;
@@ -74,26 +75,17 @@ class UserController extends Controller
         $rides = $user->offeredRides()
             ->inTheFuture()
             ->notFinished()
+            ->with('riders')
             ->get();
 
-        $rides = $rides->map(function ($ride) {
-            $ride->riders = $ride->riders();
-            return $ride;
-        });
-
-        return ['rides' => $rides];
+        return ['rides' => RideResource::collection($rides)];
     }
 
     public function getPendingRides(User $user)
     {
         $rides = $user->pendingRides()->get();
 
-        $rides = $rides->map(function ($ride) {
-            $ride->driver = $ride->driver();
-            return $ride;
-        });
-
-        return ['rides' => $rides];
+        return ['rides' => RideResource::collection($rides)];
     }
 
     public function update(Request $request)

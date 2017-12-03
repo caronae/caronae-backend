@@ -403,7 +403,8 @@ class RideController extends Controller
 
         if ($rideUser->status == 'driver') {
             $rideCanceledNotification = new RideCanceled($ride, $user);
-            foreach ($ride->riders() as $rider) {
+            $riders = $ride->riders()->get();
+            foreach ($riders as $rider) {
                 $rider->notify($rideCanceledNotification);
             }
 
@@ -435,7 +436,8 @@ class RideController extends Controller
         $ride->save();
 
         $rideFinishedNotification = new RideFinished($ride, $request->currentUser);
-        foreach ($ride->riders() as $rider) {
+        $riders = $ride->riders()->get();
+        foreach ($riders as $rider) {
             $rider->notify($rideFinishedNotification);
         }
 

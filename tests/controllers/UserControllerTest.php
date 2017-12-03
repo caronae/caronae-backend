@@ -222,6 +222,7 @@ class UserControllerTest extends TestCase
                     'description' => $ride->description,
                     'week_days' => $ride->week_days,
                     'repeats_until' => $ride->repeats_until,
+                    'driver' => $user->toArray(),
                     'riders' => [
                         [
                             'id' => $rider->id,

@@ -47,7 +47,7 @@ class RideModelTest extends TestCase
         $accepted = factory(User::class)->create();
         $ride->users()->attach($accepted, ['status' => 'accepted']);
 
-        $this->assertEquals([$accepted->toArray()], $ride->riders()->toArray());
+        $this->assertContainsOnly($accepted, $ride->riders()->get());
     }
 
     public function testTitleGoing()

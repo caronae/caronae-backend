@@ -35,7 +35,7 @@ class Ride extends Model
 
     public function riders()
     {
-        return $this->belongsToMany(User::class)->wherePivot('status', 'accepted')->get();
+        return $this->belongsToMany(User::class)->wherePivot('status', 'accepted');
     }
 
     public function messages()
