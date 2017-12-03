@@ -83,7 +83,12 @@ $factory->defineAs(User::class, 'driver', function (Faker\Generator $faker) use 
 });
 
 $factory->define(Ride::class, function (Faker\Generator $faker) {
-    $neighborhood = factory(Neighborhood::class)->make();
+    $neighborhoods = Neighborhood::all();
+    if ($neighborhoods->count() > 0) {
+        $neighborhood = $neighborhoods->random();
+    } else {
+        $neighborhood = factory(Neighborhood::class)->create();
+    }
 
     $going = $faker->boolean();
     if ($going) {
