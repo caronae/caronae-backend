@@ -5,41 +5,56 @@ namespace Caronae\Http\Resources;
 use Caronae\Models\Ride as RideModel;
 use Caronae\Models\User as UserModel;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\MissingValue;
 use Tests\TestCase;
 
 class RideTest extends TestCase
 {
+    private $driver;
+
+    private $ride;
+
+    private $request;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->driver = factory(UserModel::class)->create()->fresh();
+        $this->ride = factory(RideModel::class)->create();
+        $this->ride->users()->attach($this->driver, ['status' => 'driver']);
+        $this->request = new Request();
+    }
+
     /**
      * @test
      */
     public function shouldRenderAsJsonIncludingDriver()
     {
-        $driver = factory(UserModel::class)->create();
-        $ride = factory(RideModel::class)->create();
-        $ride->users()->attach($driver, ['status' => 'driver']);
-        $userResource = new User($driver);
-        $rideResource = new Ride($ride);
-        $request = new Request();
-
+        $userResource = new User($this->driver);
+        $rideResource = new Ride($this->ride);
         $expectedJson = [
-            'id' => $ride->id,
-            'myzone' => $ride->myzone,
-            'neighborhood' => $ride->neighborhood,
-            'going' => $ride->going,
-            'place' => $ride->place,
-            'route' => $ride->route,
-            'routine_id' => $ride->routine_id,
-            'hub' => $ride->hub,
-            'slots' => $ride->slots,
-            'mytime' => $ride->date->format('H:i:s'),
-            'mydate' => $ride->date->format('Y-m-d'),
-            'description' => $ride->description,
-            'week_days' => $ride->week_days,
-            'repeats_until' => $ride->repeats_until,
-            'driver' => $userResource->toArray($request),
+            'id' => $this->ride->id,
+            'myzone' => $this->ride->myzone,
+            'neighborhood' => $this->ride->neighborhood,
+            'going' => $this->ride->going,
+            'place' => $this->ride->place,
+            'route' => $this->ride->route,
+            'routine_id' => $this->ride->routine_id,
+            'hub' => $this->ride->hub,
+            'slots' => $this->ride->slots,
+            'mytime' => $this->ride->date->format('H:i:s'),
+            'mydate' => $this->ride->date->format('Y-m-d'),
+            'description' => $this->ride->description,
+            'week_days' => $this->ride->week_days,
+            'repeats_until' => $this->ride->repeats_until,
         ];
 
-        $this->assertArraySubset($expectedJson, $rideResource->toArray($request));
+        $response = $rideResource->toArray($this->request);
+
+        $this->assertArraySubset($expectedJson, $response);
+        $this->assertTrue($response['driver']->is($userResource));
+        $this->assertDoesNotHaveRiders($response);
     }
 
     /**
@@ -47,20 +62,21 @@ class RideTest extends TestCase
      */
     public function shouldIncludeRidersWhenLoaded()
     {
-        $driver = factory(UserModel::class)->create();
         $rider = factory(UserModel::class)->create()->fresh();
-        $ride = factory(RideModel::class)->create();
-        $ride->users()->attach($driver, ['status' => 'driver']);
-        $ride->users()->attach($rider, ['status' => 'accepted']);
+        $this->ride->users()->attach($rider, ['status' => 'accepted']);
+        $this->ride->load('riders');
+        $rideResource = new Ride($this->ride);
 
-        $ride->load('riders');
-        $rideResource = new Ride($ride);
-        $riderResource = new User($rider);
-        $request = new Request();
+        $response = $rideResource->toArray($this->request);
 
-        $rideJson = $rideResource->toArray($request);
-        $ridersJson = $rideJson['riders']->toArray($request);
+        $ridersResponse = $response['riders']->resource;
+        $this->assertEquals(1, count($ridersResponse));
+        $this->assertTrue($ridersResponse[0]->is(new User($rider)));
+    }
 
-        $this->assertEquals([$riderResource->toArray($request)], $ridersJson);
+    private function assertDoesNotHaveRiders($response)
+    {
+        $riders = $response['riders']->resource;
+        $this->assertInstanceOf(MissingValue::class, $riders);
     }
 }

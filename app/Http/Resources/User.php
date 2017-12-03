@@ -25,4 +25,9 @@ class User extends Resource
             'profile_pic_url' => $this->profile_pic_url
         ];
     }
+
+    public function is(User $user)
+    {
+        return $user->getKey() === $this->getKey();
+    }
 }

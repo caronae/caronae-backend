@@ -8,7 +8,6 @@ class Ride extends Resource
 {
     public function toArray($request)
     {
-        $driver = new User($this->driver());
         return [
             'id' => $this->id,
             'myzone' => $this->myzone,
@@ -24,7 +23,7 @@ class Ride extends Resource
             'description' => $this->description,
             'week_days' => $this->week_days,
             'repeats_until' => $this->repeats_until,
-            'driver' => $driver->toArray($request),
+            'driver' => new User($this->driver()),
             'riders' => User::collection($this->whenLoaded('riders')),
         ];
     }
