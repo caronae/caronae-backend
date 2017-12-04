@@ -409,9 +409,7 @@ class RideController extends Controller
         if ($rideUser->status == 'driver') {
             $rideCanceledNotification = new RideCanceled($ride, $user);
             $riders = $ride->riders()->get();
-            foreach ($riders as $rider) {
-                $rider->notify($rideCanceledNotification);
-            }
+            $riders->each->notify($rideCanceledNotification);
 
             RideUser::where('ride_id', $rideID)->delete();
 
@@ -442,9 +440,7 @@ class RideController extends Controller
 
         $rideFinishedNotification = new RideFinished($ride, $request->currentUser);
         $riders = $ride->riders()->get();
-        foreach ($riders as $rider) {
-            $rider->notify($rideFinishedNotification);
-        }
+        $riders->each->notify($rideFinishedNotification);
 
         return ['message' => 'Ride finished.'];
     }
@@ -538,9 +534,7 @@ class RideController extends Controller
             ->whereIn('status', ['accepted', 'driver'])
             ->where('user_id', '!=', $request->currentUser->id)
             ->get();
-        $subscribers->each(function($user) use ($notification) {
-            $user->notify($notification);
-        });
+        $subscribers->each->notify($notification);
 
         return response()->json([
             'message' => 'Message sent.',
