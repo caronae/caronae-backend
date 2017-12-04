@@ -69,6 +69,11 @@ class Ride extends Model
         return $this->slots - $ridersCount;
     }
 
+    public function isAroundDate($date)
+    {
+        return abs($date->diffInMinutes($this->date)) <= 30;
+    }
+
     public function scopeWithAvailableSlots($query)
     {
         return $query

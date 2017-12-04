@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use Carbon;
+use Carbon\Carbon;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -56,7 +56,7 @@ class RideModelTest extends TestCase
             'going' => true,
             'neighborhood' => 'Ipanema',
             'hub' => 'CCS',
-            'date' => Carbon\Carbon::createFromDate(2017, 01, 29)
+            'date' => Carbon::createFromDate(2017, 01, 29)
         ]);
         $this->assertEquals('Ipanema → CCS | 29/01', $ride->title);
     }
@@ -67,7 +67,7 @@ class RideModelTest extends TestCase
             'going' => false,
             'neighborhood' => 'Ipanema',
             'hub' => 'CCS',
-            'date' => Carbon\Carbon::createFromDate(2017, 01, 29)
+            'date' => Carbon::createFromDate(2017, 01, 29)
         ]);
         $this->assertEquals('CCS → Ipanema | 29/01', $ride->title);
     }
@@ -79,6 +79,28 @@ class RideModelTest extends TestCase
         $ride->users()->attach(factory(User::class)->create(), ['status' => 'accepted']);
 
         $this->assertEquals(1, $ride->availableSlots());
+    }
+
+    /**
+     * @test
+     */
+    public function shouldValidateIfAroundASimilarDate()
+    {
+        $ride = factory(Ride::class)->create(['date' => Carbon::parse('2017-12-03 08:00')])->fresh();
+        $date = Carbon::parse('2017-12-03 08:15');
+
+        $this->assertTrue($ride->isAroundDate($date));
+    }
+
+    /**
+     * @test
+     */
+    public function shouldValidateIfAroundADistantDate()
+    {
+        $ride = factory(Ride::class)->create(['date' => Carbon::parse('2017-12-03 08:00')])->fresh();
+        $date = Carbon::parse('2017-12-03 10:00');
+
+        $this->assertFalse($ride->isAroundDate($date));
     }
 
     public function testScopeShouldReturnRidesWithAvailableSlots()

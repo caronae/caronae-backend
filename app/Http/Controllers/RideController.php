@@ -4,6 +4,7 @@ namespace Caronae\Http\Controllers;
 
 use Carbon\Carbon;
 use Caronae\Http\Requests\CreateRideRequest;
+use Caronae\Http\Requests\ValidateDuplicateRequest;
 use Caronae\Http\Resources\MessageResource;
 use Caronae\Http\Resources\RideResource;
 use Caronae\Models\Campus;
@@ -164,33 +165,21 @@ class RideController extends Controller
         return RideResource::collection($ridesCreated)->response()->setStatusCode(201);
     }
     
-    public function validateDuplicate(Request $request)
+    public function validateDuplicate(ValidateDuplicateRequest $request)
     {
-        $this->validate($request, [
-            'date' => 'required|date_format:d/m/Y',
-            'time' => 'required|date_format:H:i:s',
-            'going' => 'required|boolean'
-        ]);
-
-        $dateTime = Carbon::createFromFormat('d/m/Y H:i:s', $request->input('date') . ' ' . $request->input('time'));
-        $dateMin = $dateTime->copy()->setTime(0,0,0);
-        $dateMax = $dateTime->copy()->setTime(23,59,59);
+        $searchDate = $request->searchDate();
 
         $ridesFound = $request->currentUser->rides()
-            ->whereBetween('date', [$dateMin, $dateMax])
+            ->whereBetween('date', $request->searchRange())
             ->where('going', $request->input('going'))
             ->get();
 
         if (count($ridesFound) > 0) {
             $valid = false;
 
-            $duplicated = false;
-            $ridesFound->each(function ($ride) use ($dateTime, &$duplicated) {
-                if (abs($dateTime->diffInMinutes($ride->date)) <= 30) {
-                    $duplicated = true;
-                    return false;
-                }
-            });
+            $duplicated = $ridesFound->reduce(function ($duplicated, $ride) use ($searchDate) {
+                return $duplicated || $ride->isAroundDate($searchDate);
+            }, false);
 
             if ($duplicated) {
                 $status = 'duplicate';
