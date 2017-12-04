@@ -2,14 +2,14 @@
 
 namespace Caronae\Http\Resources;
 
-use Caronae\Models\Ride as RideModel;
-use Caronae\Models\User as UserModel;
+use Caronae\Models\Ride;
+use Caronae\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Resources\MissingValue;
 use Tests\TestCase;
 
-class RideTest extends TestCase
+class RideResourceTest extends TestCase
 {
     private $driver;
     private $ride;
@@ -19,8 +19,8 @@ class RideTest extends TestCase
     {
         parent::setUp();
 
-        $this->driver = factory(UserModel::class)->create()->fresh();
-        $this->ride = factory(RideModel::class)->create();
+        $this->driver = factory(User::class)->create()->fresh();
+        $this->ride = factory(Ride::class)->create();
         $this->ride->users()->attach($this->driver, ['status' => 'driver']);
         $this->request = new Request();
     }
@@ -30,8 +30,8 @@ class RideTest extends TestCase
      */
     public function shouldRenderAsJsonIncludingDriver()
     {
-        $userResource = new User($this->driver);
-        $rideResource = new Ride($this->ride);
+        $userResource = new UserResource($this->driver);
+        $rideResource = new RideResource($this->ride);
         $expectedJson = [
             'id' => $this->ride->id,
             'myzone' => $this->ride->myzone,
@@ -62,16 +62,16 @@ class RideTest extends TestCase
      */
     public function shouldIncludeRidersWhenLoaded()
     {
-        $rider = factory(UserModel::class)->create()->fresh();
+        $rider = factory(User::class)->create()->fresh();
         $this->ride->users()->attach($rider, ['status' => 'accepted']);
         $this->ride->load('riders');
-        $rideResource = new Ride($this->ride);
+        $rideResource = new RideResource($this->ride);
 
         $response = $rideResource->toArray($this->request);
 
         $ridersResponse = $response['riders']->resource;
         $this->assertEquals(1, count($ridersResponse));
-        $this->assertTrue($ridersResponse[0]->is(new User($rider)));
+        $this->assertTrue($ridersResponse[0]->is(new UserResource($rider)));
     }
 
     /**
@@ -79,7 +79,7 @@ class RideTest extends TestCase
      */
     public function shouldIncludeAvailableSlots()
     {
-        $rideResource = new Ride($this->ride);
+        $rideResource = new RideResource($this->ride);
 
         $response = $rideResource->withAvailableSlots()->toArray($this->request);
 

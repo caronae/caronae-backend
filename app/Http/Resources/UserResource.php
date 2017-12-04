@@ -4,7 +4,7 @@ namespace Caronae\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class User extends Resource
+class UserResource extends Resource
 {
     public function toArray($request)
     {
@@ -26,7 +26,7 @@ class User extends Resource
         ];
     }
 
-    public function is(User $user)
+    public function is(UserResource $user)
     {
         return $user->getKey() === $this->getKey();
     }

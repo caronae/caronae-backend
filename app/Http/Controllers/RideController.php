@@ -4,6 +4,8 @@ namespace Caronae\Http\Controllers;
 
 use Carbon\Carbon;
 use Caronae\Http\Requests\CreateRideRequest;
+use Caronae\Http\Resources\MessageResource;
+use Caronae\Http\Resources\RideResource;
 use Caronae\Models\Campus;
 use Caronae\Models\Message;
 use Caronae\Models\Ride;
@@ -15,7 +17,6 @@ use Caronae\Notifications\RideJoinRequestAnswered;
 use Caronae\Notifications\RideJoinRequested;
 use Caronae\Notifications\RideMessageReceived;
 use Caronae\Notifications\RideUserLeft;
-use Caronae\Http\Resources\Ride as RideResource;
 use DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -514,17 +515,8 @@ class RideController extends Controller
             $messages = $ride->messages()->orderBy('created_at')->get();
         }
 
-        $messages = $messages->map(function ($message) {
-            return [
-                'id' => $message->id,
-                'body' => $message->body,
-                'user' => $message->user,
-                'date' => $message->date->toDateTimeString()
-            ];
-        });
-
         return [
-            'messages' => $messages
+            'messages' => MessageResource::collection($messages)
         ];
     }
 

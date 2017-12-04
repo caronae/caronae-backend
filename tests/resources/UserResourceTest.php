@@ -2,18 +2,19 @@
 
 namespace Caronae\Http\Resources;
 
+use Caronae\Models\User;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 
-class UserTest extends TestCase
+class UserResourceTest extends TestCase
 {
     /**
      * @test
      */
     public function shouldRenderAsJson()
     {
-        $user = factory(\Caronae\Models\User::class)->create();
-        $userResource = new User($user);
+        $user = factory(User::class)->create();
+        $userResource = new UserResource($user);
         $expectedJson = [
             'id' => $user->id,
             'name' => $user->name,

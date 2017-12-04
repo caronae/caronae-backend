@@ -3,8 +3,8 @@
 namespace Caronae\Http\Controllers;
 
 use Caronae\Http\Requests\SignUpRequest;
-use Caronae\Http\Resources\Ride as RideResource;
-use Caronae\Http\Resources\User as UserResource;
+use Caronae\Http\Resources\RideResource;
+use Caronae\Http\Resources\UserResource;
 use Caronae\Models\User;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\Facebook;

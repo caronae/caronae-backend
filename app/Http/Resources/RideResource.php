@@ -4,7 +4,7 @@ namespace Caronae\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class Ride extends Resource
+class RideResource extends Resource
 {
     private $displayAvailableSlots;
 
@@ -25,8 +25,8 @@ class Ride extends Resource
             'description' => $this->description,
             'week_days' => $this->week_days,
             'repeats_until' => $this->repeats_until,
-            'driver' => new User($this->driver()),
-            'riders' => User::collection($this->whenLoaded('riders')),
+            'driver' => new UserResource($this->driver()),
+            'riders' => UserResource::collection($this->whenLoaded('riders')),
             'availableSlots' => $this->when($this->displayAvailableSlots, $this->availableSlots()),
         ];
     }
