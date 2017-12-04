@@ -127,7 +127,7 @@ class RideController extends Controller
     {
         $user = $request->currentUser;
 
-        $ridesCreated = [];
+        $ridesCreated = collect();
         DB::transaction(function() use ($request, $user, &$ridesCreated) {
             $ride = Ride::create($request->all());
             $ride->users()->attach($user->id, ['status' => 'driver']);
@@ -160,7 +160,8 @@ class RideController extends Controller
             }
         });
 
-        return response()->json($ridesCreated, 201);
+        RideResource::withoutWrapping();
+        return RideResource::collection($ridesCreated)->response()->setStatusCode(201);
     }
     
     public function validateDuplicate(Request $request)
