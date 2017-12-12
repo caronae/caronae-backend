@@ -13,19 +13,40 @@ O backend do Caronaê executa em um ambiente com PHP 7.1, PostgreSQL e Redis.
 O jeito mais fácil de executar este projeto localmente é utilizando nossas imagens 
 Docker. A documentação encontra-se no repositório [caronae-docker](https://github.com/caronae/caronae-docker).
 
+**Todos os comandos abaixo devem ser executados de dentro do container Docker.
+Você pode criar uma sessão dentro do container do caronae-backend através do comando abaixo:**
+
+```bash
+docker exec -it caronae-backend sh
+```
+
+
+### Instalando dependências
+
+Para instalar todas as ferramentas, incluindo as bibliotecas de teste (para o restante da configuração),
+execute o comando abaixo de dentro do container:
+
+```bash
+composer install
+```
+
 
 ### Populando o banco de dados
 
-Há um seed do banco que cria um banco de dados limitado de amostra para desenvolvimento
-local. Para usá-lo, importe os seeds no seu banco.
+Há um seed do banco que cria um banco de dados limitado para desenvolvimento local.
+Para usá-lo, execute o comando abaixo de dentro do container:
 
-```
-php artisan db:seed
+_Importante: o comando abaixo apaga todas as informações do banco de dados antes de
+inserir os novos dados._
+
+```bash
+php artisan migrate:refresh --seed
 ```
 
 Pronto! Agora você já pode fazer login na área administrativa utilizando o usuário
 padrão.
 
+* URL: [localhost:8000/admin](http://localhost:8000/admin)
 * E-mail: user@example.com
 * Senha: 123456
 
