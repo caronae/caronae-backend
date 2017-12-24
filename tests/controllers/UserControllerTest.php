@@ -15,11 +15,14 @@ class UserControllerTest extends TestCase
 
     public function setUp()
     {
-      parent::setUp();
-      $this->institution = factory(Institution::class)->create();
+        parent::setUp();
+        $this->institution = factory(Institution::class)->create();
     }
 
-    public function testStoreSavesUser()
+    /**
+     * @test
+     */
+    public function shouldCreateUser()
     {
         $user = $this->newUser();
         $response = $this->json('POST', 'users', $user, $this->institutionAuthorizationHeaders());
@@ -31,7 +34,10 @@ class UserControllerTest extends TestCase
         $response->assertJsonStructure(['token']);
     }
 
-    public function testStoreDoesNotAddDuplicatedUser()
+    /**
+     * @test
+     */
+    public function shouldNotCreateDuplicatedUser()
     {
         $user = $this->newUser();
         $user['institution_id'] = $this->institution->id;
@@ -46,7 +52,10 @@ class UserControllerTest extends TestCase
         $response->assertJsonStructure(['token']);
     }
 
-    public function testStoreDoesNotChangeExistingToken()
+    /**
+     * @test
+     */
+    public function shouldNotChangeTokenWhenUserAlreadyExists()
     {
         $user = $this->newUser();
         $user['institution_id'] = $this->institution->id;
@@ -62,7 +71,10 @@ class UserControllerTest extends TestCase
         $this->assertEquals($oldToken, $existingUser->fresh()->token);
     }
 
-    public function testSignInWithValidUserSucceeds()
+    /**
+     * @test
+     */
+    public function shouldSignIn()
     {
         $user = $this->someUser();
 
@@ -121,7 +133,10 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    public function testSignInWithInvalidUserFails()
+    /**
+     * @test
+     */
+    public function shouldNotSignInWithInvalidUser()
     {
         $response = $this->json('POST', 'user/login', [
             'id_ufrj' => str_random(11),
@@ -133,7 +148,10 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    public function testUpdateWithValidUserSucceeds()
+    /**
+     * @test
+     */
+    public function shouldUpdateUserProfile()
     {
         $user = $this->someUser();
         $headers = ['token' => $user->token];
@@ -161,7 +179,10 @@ class UserControllerTest extends TestCase
         $this->assertEquals($body['profile_pic_url'], $user->profile_pic_url);
     }
 
-    public function testUpdateWithInvalidUserFails()
+    /**
+     * @test
+     */
+    public function shouldNotUpdateUserProfileWithInvalidUser()
     {
         $headers = ['token' => ''];
         $body = [
@@ -179,7 +200,10 @@ class UserControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function testGetOfferedRides()
+    /**
+     * @test
+     */
+    public function shouldReturnOfferedRides()
     {
         $user = $this->someUser();
 
@@ -246,7 +270,10 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    public function testGetOfferedRidesFromAnotherUserShouldError()
+    /**
+     * @test
+     */
+    public function shouldNotReturnOfferedRidesFromOtherUser()
     {
         $user = $this->someUser();
         $user2 = $this->someUser();
@@ -311,7 +338,10 @@ class UserControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function testSaveFacebookID()
+    /**
+     * @test
+     */
+    public function shouldSaveFacebookID()
     {
         $user = $this->someUser();
         $headers = ['token' => $user->token];
@@ -327,7 +357,10 @@ class UserControllerTest extends TestCase
         $this->assertEquals($newId, $savedUser->face_id);
     }
 
-    public function testSaveProfilePictureURL()
+    /**
+     * @test
+     */
+    public function shouldSaveProfilePictureURL()
     {
         $user = $this->someUser();
         $headers = ['token' => $user->token];
