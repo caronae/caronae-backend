@@ -56,14 +56,15 @@ padrão.
 Este projeto possui alguns testes unitários e de integração, que ficam dentro da
 pasta **tests**.
 
-Os testes são executados em uma tabela separada do banco de dados. Portanto, é necessário criar uma tabela **caronae_testing**:
+Os testes são executados em uma tabela separada do banco de dados. Portanto, é necessário criar uma tabela **caronae_testing**.
+Para criá-la, execute o comando abaixo de dentro do container:
 
 ```
-createdb -O caronae -E utf8 caronae_testing
+createdb -h $DB_HOST -U $DB_USERNAME -O $DB_USERNAME -E utf8 caronae_testing
 ```
 
 Para executar os testes, basta utilizar o **PHPUnit**:
 
 ```
-vendor/bin/phpunit
+./vendor/bin/phpunit
 ```
