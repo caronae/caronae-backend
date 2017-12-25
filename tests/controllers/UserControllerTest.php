@@ -401,22 +401,7 @@ class UserControllerTest extends TestCase
                     'repeats_until' => $ride->repeats_until,
                     'driver' => $user->toArray(),
                     'riders' => [
-                        [
-                            'id' => $rider->id,
-                            'name' => $rider->name,
-                            'profile' => $rider->profile,
-                            'course' => $rider->course,
-                            'phone_number' => $rider->phone_number,
-                            'email' => $rider->email,
-                            'car_owner' => $rider->car_owner,
-                            'car_model' => $rider->car_model,
-                            'car_color' => $rider->car_color,
-                            'car_plate' => $rider->car_plate,
-                            'created_at' => $rider->created_at->format('Y-m-d H:i:s'),
-                            'location' => $rider->location,
-                            'face_id' => $rider->face_id,
-                            'profile_pic_url' => $rider->profile_pic_url
-                        ]
+                        $rider->toArray()
                     ]
                 ]
             ]
