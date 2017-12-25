@@ -294,9 +294,6 @@ class UserControllerTest extends TestCase
     {
         $user = $this->someUser();
 
-        $offeredRide = factory(Ride::class, 'next')->create()->fresh();
-        $offeredRide->users()->attach($user, ['status' => 'driver']);
-
         // active ride that is both active and offered
         $activeRide = factory(Ride::class, 'next')->create()->fresh();
         $activeRideRider = $this->someUser();
@@ -352,24 +349,6 @@ class UserControllerTest extends TestCase
                 ],
             ],
             'offered_rides' => [
-                [
-                    'id' => $offeredRide->id,
-                    'myzone' => $offeredRide->myzone,
-                    'neighborhood' => $offeredRide->neighborhood,
-                    'going' => $offeredRide->going,
-                    'place' => $offeredRide->place,
-                    'route' => $offeredRide->route,
-                    'routine_id' => $offeredRide->routine_id,
-                    'hub' => $offeredRide->hub,
-                    'slots' => $offeredRide->slots,
-                    'mytime' => $offeredRide->date->format('H:i:s'),
-                    'mydate' => $offeredRide->date->format('Y-m-d'),
-                    'description' => $offeredRide->description,
-                    'week_days' => $offeredRide->week_days,
-                    'repeats_until' => $offeredRide->repeats_until,
-                    'driver' => $user->toArray(),
-                    'riders' => []
-                ],
             ],
         ]);
     }
