@@ -56,6 +56,13 @@ class User extends Model implements AuthenticatableContract
             ->wherePivot('status', 'driver');
     }
 
+    public function availableRides()
+    {
+        return $this->offeredRides()
+            ->notFinished()
+            ->inTheFuture();
+    }
+
     public function pendingRides()
     {
         return $this->belongsToMany(Ride::class)
