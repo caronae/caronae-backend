@@ -74,7 +74,7 @@ class UserController extends Controller
     {
         $pendingRides = $user->pendingRides()->with('riders')->get();
         $activeRides = $user->activeRides()->with('riders')->get();
-        $offeredRides = $user->availableRides()->with('riders')->get();
+        $offeredRides = $user->availableRides()->with('riders')->get()->diff($activeRides);
 
         return [
             'pending_rides' => RideResource::collection($pendingRides),
