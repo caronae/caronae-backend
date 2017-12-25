@@ -1,3 +1,8 @@
+ul, li {
+    margin: 0;
+    padding: 0;
+}
+
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -221,4 +226,9 @@ img { max-width: 100%; }
     width: 130px;
     display: inline-block;
     margin: 10px auto;
+}
+
+.home .links a {
+    font-size: 0.8em;
+    color: #222;
 }

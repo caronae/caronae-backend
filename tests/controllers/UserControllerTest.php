@@ -15,11 +15,14 @@ class UserControllerTest extends TestCase
 
     public function setUp()
     {
-      parent::setUp();
-      $this->institution = factory(Institution::class)->create();
+        parent::setUp();
+        $this->institution = factory(Institution::class)->create();
     }
 
-    public function testStoreSavesUser()
+    /**
+     * @test
+     */
+    public function shouldCreateUser()
     {
         $user = $this->newUser();
         $response = $this->json('POST', 'users', $user, $this->institutionAuthorizationHeaders());
@@ -31,7 +34,10 @@ class UserControllerTest extends TestCase
         $response->assertJsonStructure(['token']);
     }
 
-    public function testStoreDoesNotAddDuplicatedUser()
+    /**
+     * @test
+     */
+    public function shouldNotCreateDuplicatedUser()
     {
         $user = $this->newUser();
         $user['institution_id'] = $this->institution->id;
@@ -46,7 +52,10 @@ class UserControllerTest extends TestCase
         $response->assertJsonStructure(['token']);
     }
 
-    public function testStoreDoesNotChangeExistingToken()
+    /**
+     * @test
+     */
+    public function shouldNotChangeTokenWhenUserAlreadyExists()
     {
         $user = $this->newUser();
         $user['institution_id'] = $this->institution->id;
@@ -62,7 +71,10 @@ class UserControllerTest extends TestCase
         $this->assertEquals($oldToken, $existingUser->fresh()->token);
     }
 
-    public function testSignInWithValidUserSucceeds()
+    /**
+     * @test
+     */
+    public function shouldSignIn()
     {
         $user = $this->someUser();
 
@@ -121,7 +133,10 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    public function testSignInWithInvalidUserFails()
+    /**
+     * @test
+     */
+    public function shouldNotSignInWithInvalidUser()
     {
         $response = $this->json('POST', 'user/login', [
             'id_ufrj' => str_random(11),
@@ -133,7 +148,10 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    public function testUpdateWithValidUserSucceeds()
+    /**
+     * @test
+     */
+    public function shouldUpdateUserProfile()
     {
         $user = $this->someUser();
         $headers = ['token' => $user->token];
@@ -161,7 +179,10 @@ class UserControllerTest extends TestCase
         $this->assertEquals($body['profile_pic_url'], $user->profile_pic_url);
     }
 
-    public function testUpdateWithInvalidUserFails()
+    /**
+     * @test
+     */
+    public function shouldNotUpdateUserProfileWithInvalidUser()
     {
         $headers = ['token' => ''];
         $body = [
@@ -179,7 +200,184 @@ class UserControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function testGetOfferedRides()
+    /**
+     * @test
+     */
+    public function shouldReturnRidesDividedByCategory()
+    {
+        $user = $this->someUser();
+
+        $offeredRide = factory(Ride::class, 'next')->create()->fresh();
+        $offeredRide->users()->attach($user, ['status' => 'driver']);
+
+        $activeRide = factory(Ride::class, 'next')->create()->fresh();
+        $activeRideDriver = $this->someUser();
+        $activeRide->users()->attach($activeRideDriver, ['status' => 'driver']);
+        $activeRide->users()->attach($user, ['status' => 'accepted']);
+
+        $pendingRide = factory(Ride::class, 'next')->create()->fresh();
+        $pendingRideDriver = $this->someUser();
+        $pendingRide->users()->attach($pendingRideDriver, ['status' => 'driver']);
+        $pendingRide->users()->attach($user, ['status' => 'pending']);
+
+        $response = $this->json('GET', 'user/' . $user->id . '/rides', [], ['token' => $user->token]);
+
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'pending_rides' => [
+                [
+                    'id' => $pendingRide->id,
+                    'myzone' => $pendingRide->myzone,
+                    'neighborhood' => $pendingRide->neighborhood,
+                    'going' => $pendingRide->going,
+                    'place' => $pendingRide->place,
+                    'route' => $pendingRide->route,
+                    'routine_id' => $pendingRide->routine_id,
+                    'hub' => $pendingRide->hub,
+                    'slots' => $pendingRide->slots,
+                    'mytime' => $pendingRide->date->format('H:i:s'),
+                    'mydate' => $pendingRide->date->format('Y-m-d'),
+                    'description' => $pendingRide->description,
+                    'week_days' => $pendingRide->week_days,
+                    'repeats_until' => $pendingRide->repeats_until,
+                    'driver' => $pendingRideDriver->toArray(),
+                    'riders' => []
+                ],
+            ],
+            'active_rides' => [
+                [
+                    'id' => $activeRide->id,
+                    'myzone' => $activeRide->myzone,
+                    'neighborhood' => $activeRide->neighborhood,
+                    'going' => $activeRide->going,
+                    'place' => $activeRide->place,
+                    'route' => $activeRide->route,
+                    'routine_id' => $activeRide->routine_id,
+                    'hub' => $activeRide->hub,
+                    'slots' => $activeRide->slots,
+                    'mytime' => $activeRide->date->format('H:i:s'),
+                    'mydate' => $activeRide->date->format('Y-m-d'),
+                    'description' => $activeRide->description,
+                    'week_days' => $activeRide->week_days,
+                    'repeats_until' => $activeRide->repeats_until,
+                    'driver' => $activeRideDriver->toArray(),
+                    'riders' => [$user->toArray()]
+                ],
+            ],
+            'offered_rides' => [
+                [
+                    'id' => $offeredRide->id,
+                    'myzone' => $offeredRide->myzone,
+                    'neighborhood' => $offeredRide->neighborhood,
+                    'going' => $offeredRide->going,
+                    'place' => $offeredRide->place,
+                    'route' => $offeredRide->route,
+                    'routine_id' => $offeredRide->routine_id,
+                    'hub' => $offeredRide->hub,
+                    'slots' => $offeredRide->slots,
+                    'mytime' => $offeredRide->date->format('H:i:s'),
+                    'mydate' => $offeredRide->date->format('Y-m-d'),
+                    'description' => $offeredRide->description,
+                    'week_days' => $offeredRide->week_days,
+                    'repeats_until' => $offeredRide->repeats_until,
+                    'driver' => $user->toArray(),
+                    'riders' => []
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldReturnRidesWithoutDuplicates()
+    {
+        $user = $this->someUser();
+
+        $offeredRide = factory(Ride::class, 'next')->create()->fresh();
+        $offeredRide->users()->attach($user, ['status' => 'driver']);
+
+        // active ride that is both active and offered
+        $activeRide = factory(Ride::class, 'next')->create()->fresh();
+        $activeRideRider = $this->someUser();
+        $activeRide->users()->attach($user, ['status' => 'driver']);
+        $activeRide->users()->attach($activeRideRider, ['status' => 'accepted']);
+
+        $pendingRide = factory(Ride::class, 'next')->create()->fresh();
+        $pendingRide->users()->attach($this->someUser(), ['status' => 'driver']);
+        $pendingRide->users()->attach($user, ['status' => 'pending']);
+
+        $response = $this->json('GET', 'user/' . $user->id . '/rides', [], ['token' => $user->token]);
+
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'pending_rides' => [
+                [
+                    'id' => $pendingRide->id,
+                    'myzone' => $pendingRide->myzone,
+                    'neighborhood' => $pendingRide->neighborhood,
+                    'going' => $pendingRide->going,
+                    'place' => $pendingRide->place,
+                    'route' => $pendingRide->route,
+                    'routine_id' => $pendingRide->routine_id,
+                    'hub' => $pendingRide->hub,
+                    'slots' => $pendingRide->slots,
+                    'mytime' => $pendingRide->date->format('H:i:s'),
+                    'mydate' => $pendingRide->date->format('Y-m-d'),
+                    'description' => $pendingRide->description,
+                    'week_days' => $pendingRide->week_days,
+                    'repeats_until' => $pendingRide->repeats_until,
+                    'driver' => $pendingRide->driver()->toArray(),
+                    'riders' => []
+                ],
+            ],
+            'active_rides' => [
+                [
+                    'id' => $activeRide->id,
+                    'myzone' => $activeRide->myzone,
+                    'neighborhood' => $activeRide->neighborhood,
+                    'going' => $activeRide->going,
+                    'place' => $activeRide->place,
+                    'route' => $activeRide->route,
+                    'routine_id' => $activeRide->routine_id,
+                    'hub' => $activeRide->hub,
+                    'slots' => $activeRide->slots,
+                    'mytime' => $activeRide->date->format('H:i:s'),
+                    'mydate' => $activeRide->date->format('Y-m-d'),
+                    'description' => $activeRide->description,
+                    'week_days' => $activeRide->week_days,
+                    'repeats_until' => $activeRide->repeats_until,
+                    'driver' => $user->toArray(),
+                    'riders' => [$activeRideRider->toArray()]
+                ],
+            ],
+            'offered_rides' => [
+                [
+                    'id' => $offeredRide->id,
+                    'myzone' => $offeredRide->myzone,
+                    'neighborhood' => $offeredRide->neighborhood,
+                    'going' => $offeredRide->going,
+                    'place' => $offeredRide->place,
+                    'route' => $offeredRide->route,
+                    'routine_id' => $offeredRide->routine_id,
+                    'hub' => $offeredRide->hub,
+                    'slots' => $offeredRide->slots,
+                    'mytime' => $offeredRide->date->format('H:i:s'),
+                    'mydate' => $offeredRide->date->format('Y-m-d'),
+                    'description' => $offeredRide->description,
+                    'week_days' => $offeredRide->week_days,
+                    'repeats_until' => $offeredRide->repeats_until,
+                    'driver' => $user->toArray(),
+                    'riders' => []
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldReturnOfferedRides()
     {
         $user = $this->someUser();
 
@@ -246,7 +444,10 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    public function testGetOfferedRidesFromAnotherUserShouldError()
+    /**
+     * @test
+     */
+    public function shouldNotReturnOfferedRidesFromOtherUser()
     {
         $user = $this->someUser();
         $user2 = $this->someUser();
@@ -311,7 +512,10 @@ class UserControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function testSaveFacebookID()
+    /**
+     * @test
+     */
+    public function shouldSaveFacebookID()
     {
         $user = $this->someUser();
         $headers = ['token' => $user->token];
@@ -327,7 +531,10 @@ class UserControllerTest extends TestCase
         $this->assertEquals($newId, $savedUser->face_id);
     }
 
-    public function testSaveProfilePictureURL()
+    /**
+     * @test
+     */
+    public function shouldSaveProfilePictureURL()
     {
         $user = $this->someUser();
         $headers = ['token' => $user->token];

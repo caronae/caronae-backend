@@ -32,20 +32,27 @@ class UserModelTest extends TestCase
     {
         $rider = factory(User::class)->create();
 
-        $ride = $this->createRide();
+        $ride = $this->createRideAsDriver();
         $ride->users()->attach($rider, ['status' => 'accepted']);
 
-        $activeRides = $this->driver->activeRides()->get();
-        $this->assertContainsOnly($ride, $activeRides);
+        $rides = $this->driver->activeRides()->get();
+        $this->assertTrue($rides->contains($ride));
 
-        $activeRides = $rider->activeRides()->get();
-        $this->assertContainsOnly($ride, $activeRides);
+        $rides = $rider->activeRides()->get();
+        $this->assertTrue($rides->contains($ride));
     }
 
     public function testActiveDoesNotReturnFinishedRides()
     {
-        $ride = $this->createRide(['done' => true]);
-        $ride->users()->attach($this->driver, ['status' => 'driver']);
+        $this->createRideAsDriver(['done' => true]);
+
+        $activeRides = $this->driver->activeRides()->get();
+        $this->assertEmpty($activeRides);
+    }
+
+    public function testActiveDoesNotReturnEmptyRides()
+    {
+        $this->createRideAsDriver();
 
         $activeRides = $this->driver->activeRides()->get();
         $this->assertEmpty($activeRides);
@@ -55,12 +62,55 @@ class UserModelTest extends TestCase
     {
         $otherUser = factory(User::class)->create();
 
-        $ride1 = $this->createRide();
+        $ride1 = $this->createRideAsDriver();
         $ride2 = $this->createRide();
         $ride2->users()->attach($otherUser, ['status' => 'driver']);
 
-        $offeredRides = $this->driver->offeredRides()->get();
-        $this->assertContainsOnly($ride1, $offeredRides);
+        $rides = $this->driver->offeredRides()->get();
+        $this->assertTrue($rides->contains($ride1));
+        $this->assertFalse($rides->contains($ride2));
+    }
+
+    /**
+     * @test
+     */
+    public function shouldOnlyReturnAvailableRidesFromUser()
+    {
+        $otherUser = factory(User::class)->create();
+
+        $ride1 = $this->createRideAsDriver();
+        $ride2 = $this->createRide();
+        $ride2->users()->attach($otherUser, ['status' => 'driver']);
+
+        $rides = $this->driver->availableRides()->get();
+        $this->assertTrue($rides->contains($ride1));
+        $this->assertFalse($rides->contains($ride2));
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotConsiderAvailableRidesThatAreFinished()
+    {
+        $ride1 = $this->createRideAsDriver();
+        $ride2 = $this->createRideAsDriver(['done' => true]);
+
+        $rides = $this->driver->availableRides()->get();
+        $this->assertTrue($rides->contains($ride1));
+        $this->assertFalse($rides->contains($ride2));
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotConsiderAvailableRidesThatAreInThePast()
+    {
+        $ride1 = $this->createRideAsDriver();
+        $ride2 = $this->createRideAsDriver(['date' => Carbon::createFromDate(1970, 1, 1)]);
+
+        $rides = $this->driver->availableRides()->get();
+        $this->assertTrue($rides->contains($ride1));
+        $this->assertFalse($rides->contains($ride2));
     }
 
     public function testReturnsPendingRides()
@@ -68,22 +118,23 @@ class UserModelTest extends TestCase
         $rider = factory(User::class)->create();
         $otherRider = factory(User::class)->create();
 
-        $ride1 = $this->createRide();
+        $ride1 = $this->createRideAsDriver();
         $ride1->users()->attach($rider, ['status' => 'pending']);
 
-        $ride2 = $this->createRide();
+        $ride2 = $this->createRideAsDriver();
         $ride2->users()->attach($rider, ['status' => 'accepted']);
         $ride2->users()->attach($otherRider, ['status' => 'pending']);
 
-        $pendingRides = $rider->pendingRides()->get();
-        $this->assertContainsOnly($ride1, $pendingRides);
+        $rides = $rider->pendingRides()->get();
+        $this->assertTrue($rides->contains($ride1));
+        $this->assertFalse($rides->contains($ride2));
     }
 
     public function testPendingRidesDoesNotReturnFinishedRides()
     {
         $rider = factory(User::class)->create();
 
-        $ride1 = $this->createRide(['done' => true]);
+        $ride1 = $this->createRideAsDriver(['done' => true]);
         $ride1->users()->attach($rider, ['status' => 'pending']);
 
         $pendingRides = $rider->pendingRides()->get();
@@ -94,17 +145,22 @@ class UserModelTest extends TestCase
     {
         $rider = factory(User::class)->create();
 
-        $ride = $this->createRide(['done' => false, 'date' => Carbon::createFromDate(1970, 1, 1)]);
+        $ride = $this->createRideAsDriver(['done' => false, 'date' => Carbon::createFromDate(1970, 1, 1)]);
         $ride->users()->attach($rider, ['status' => 'pending']);
 
         $pendingRides = $rider->pendingRides()->get();
         $this->assertEmpty($pendingRides);
     }
 
-    private function createRide($attributes = [])
+    private function createRideAsDriver($attributes = [])
     {
-        $ride = factory(Ride::class, 'next')->create($attributes)->fresh();
+        $ride = $this->createRide($attributes);
         $ride->users()->attach($this->driver, ['status' => 'driver']);
         return $ride;
+    }
+
+    private function createRide($attributes = [])
+    {
+        return factory(Ride::class, 'next')->create($attributes)->fresh();
     }
 }
