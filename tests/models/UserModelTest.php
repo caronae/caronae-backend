@@ -44,8 +44,15 @@ class UserModelTest extends TestCase
 
     public function testActiveDoesNotReturnFinishedRides()
     {
-        $ride = $this->createRideAsDriver(['done' => true]);
-        $ride->users()->attach($this->driver, ['status' => 'driver']);
+        $this->createRideAsDriver(['done' => true]);
+
+        $activeRides = $this->driver->activeRides()->get();
+        $this->assertEmpty($activeRides);
+    }
+
+    public function testActiveDoesNotReturnEmptyRides()
+    {
+        $this->createRideAsDriver();
 
         $activeRides = $this->driver->activeRides()->get();
         $this->assertEmpty($activeRides);

@@ -70,6 +70,19 @@ class UserController extends Controller
         return ['user' => new UserResource($user), 'rides' => $drivingRides];
     }
 
+    public function getRides(User $user)
+    {
+        $pendingRides = $user->pendingRides()->with('riders')->get();
+        $activeRides = $user->activeRides()->with('riders')->get();
+        $offeredRides = $user->availableRides()->with('riders')->get();
+
+        return [
+            'pending_rides' => RideResource::collection($pendingRides),
+            'active_rides' => RideResource::collection($activeRides),
+            'offered_rides' => RideResource::collection($offeredRides),
+        ];
+    }
+
     public function getOfferedRides(User $user)
     {
         $rides = $user->offeredRides()
