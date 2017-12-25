@@ -356,6 +356,21 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
+    public function shouldNotReturnRidesFromOtherUser()
+    {
+        $user = $this->someUser();
+        $user2 = $this->someUser();
+
+        $response = $this->json('GET', 'user/' . $user2->id . '/rides', [], [
+            'token' => $user->token
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    /**
+     * @test
+     */
     public function shouldReturnOfferedRides()
     {
         $user = $this->someUser();

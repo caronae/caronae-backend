@@ -17,6 +17,7 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('api.v1.auth', ['only' => [
+            'getRides',
             'getOfferedRides',
             'getPendingRides',
             'update',
@@ -27,6 +28,7 @@ class UserController extends Controller
         ]]);
 
         $this->middleware('api.v1.userMatchesRequestedUser', ['only' => [
+            'getRides',
             'getOfferedRides',
             'getPendingRides',
         ]]);
