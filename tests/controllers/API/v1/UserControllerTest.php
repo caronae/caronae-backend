@@ -19,6 +19,11 @@ class UserControllerTest extends TestCase
         $this->institution = factory(Institution::class)->create();
     }
 
+    public function json($method, $uri, array $data = [], array $headers = [])
+    {
+        return parent::json($method, 'api/v1/' . $uri, $data, $headers);
+    }
+
     /**
      * @test
      */
@@ -163,7 +168,8 @@ class UserControllerTest extends TestCase
             'car_model' => 'Fiat Uno',
             'car_color' => 'azul',
             'car_plate' => 'ABC-1234',
-            'profile_pic_url' => 'http://example.com/image.jpg'
+            'profile_pic_url' => 'http://example.com/image.jpg',
+            'facebook_id' => '123ABC',
         ];
 
         $response = $this->json('PUT', 'user', $body, $headers);
@@ -177,6 +183,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals($body['car_model'], $user->car_model);
         $this->assertEquals($body['car_plate'], $user->car_plate);
         $this->assertEquals($body['profile_pic_url'], $user->profile_pic_url);
+        $this->assertEquals($body['facebook_id'], $user->face_id);
     }
 
     /**

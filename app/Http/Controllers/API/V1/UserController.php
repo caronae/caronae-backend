@@ -130,8 +130,12 @@ class UserController extends BaseController
             $user->car_plate = strtoupper($request->car_plate);
         }
 
-        if (isset($request->profile_pic_url)) {
+        if ($request->filled('profile_pic_url')) {
             $user->profile_pic_url = $request->profile_pic_url;
+        }
+
+        if ($request->filled('facebook_id')) {
+            $user->face_id = $request->input('facebook_id');
         }
 
         $user->save();
