@@ -1,7 +1,8 @@
 <?php
 
-namespace Caronae\Http\Controllers;
+namespace Caronae\Http\Controllers\API\v1;
 
+use Caronae\Http\Controllers\BaseController;
 use Caronae\Http\Requests\SignUpRequest;
 use Caronae\Http\Resources\RideResource;
 use Caronae\Http\Resources\UserResource;
@@ -12,7 +13,7 @@ use Illuminate\Http\Request;
 use Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class UserController extends Controller
+class UserController extends BaseController
 {
     public function __construct()
     {

@@ -1,7 +1,8 @@
 <?php
 
-namespace Caronae\Http\Controllers;
+namespace Caronae\Http\Controllers\Web;
 
+use Caronae\Http\Controllers\BaseController;
 use Caronae\Models\Institution;
 use Cookie;
 use Illuminate\Http\Request;
@@ -9,7 +10,7 @@ use JWTAuth;
 use Log;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
-class LoginController extends Controller
+class LoginController extends BaseController
 {
     public function index(Request $request)
     {

@@ -1,11 +1,12 @@
 <?php
 
-namespace Caronae\Http\Controllers;
+namespace Caronae\Http\Controllers\API\v1;
 
+use Caronae\Http\Controllers\BaseController;
 use Illuminate\Http\Request;
 use Mail;
 
-class FalaeController extends Controller
+class FalaeController extends BaseController
 {
     public function __construct()
     {

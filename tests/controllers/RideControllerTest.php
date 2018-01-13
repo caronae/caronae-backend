@@ -34,6 +34,11 @@ class RideControllerTest extends TestCase
         $this->headers = ['token' => $this->user->token];
     }
 
+    public function json($method, $uri, array $data = [], array $headers = [])
+    {
+        return parent::json($method, 'api/v1/' . $uri, $data, $headers);
+    }
+
     public function testIndexShouldReturnNextRides()
     {
         $user = $this->user;
@@ -130,33 +135,6 @@ class RideControllerTest extends TestCase
         $response->assertJson($ride->toArray());
         $response->assertJson(['driver' => $this->user->toArray()]);
         $response->assertJson(['availableSlots' => $ride->availableSlots()]);
-    }
-
-    public function testShowsRideWebView()
-    {
-        $ride = factory(Ride::class, 'next')->create([
-            'date' => Carbon::parse('2017-07-15 12:00:00'),
-            'neighborhood' => 'Ipanema',
-            'hub' => 'CT',
-            'going' => 'true'
-        ]);
-        $ride->users()->attach($this->user, ['status' => 'driver']);
-
-        $response = $this->json('GET', 'carona/' . $ride->id, [], $this->headers);
-
-        $response->assertStatus(200);
-        $response->assertViewIs('rides.showWeb');
-        $response->assertViewHas('title', 'Ipanema → CT | 15/07 | 12:00');
-        $response->assertViewHas('driver', $this->user->name);
-        $response->assertViewHas('deepLinkUrl', 'caronae://carona/' . $ride->id);
-    }
-
-    public function testShowsRideNotFoundWebView()
-    {
-        $response = $this->json('GET', 'carona/666', [], $this->headers);
-
-        $response->assertStatus(404);
-        $response->assertViewIs('rides.notFound');
     }
 
     public function testValidateValidRide()

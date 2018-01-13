@@ -1,13 +1,14 @@
 <?php
 
-namespace Caronae\Http\Controllers;
+namespace Caronae\Http\Controllers\API\v1;
 
+use Caronae\Http\Controllers\BaseController;
 use Caronae\Models\Campus;
 use Caronae\Models\Zone;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
-class PlaceController extends Controller
+class PlaceController extends BaseController
 {
     const CACHE_TIME_MINUTES = 60 * 24 * 365;
 

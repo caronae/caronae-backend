@@ -1,9 +1,9 @@
 <?php
 namespace Caronae\Http\Controllers\Admin\Auth;
-use Caronae\Http\Controllers\Controller;
+use Caronae\Http\Controllers\BaseController;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 
-class ResetPasswordController extends Controller
+class ResetPasswordController extends BaseController
 {
     /*
     |--------------------------------------------------------------------------
