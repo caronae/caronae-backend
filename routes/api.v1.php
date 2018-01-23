@@ -32,8 +32,8 @@ Route::get('rides/getRidesHistoryCount/{userId}', 'RideController@getRidesHistor
 Route::post('rides/saveFeedback', 'RideController@saveFeedback');
 Route::get('rides/validateDuplicate', 'RideController@validateDuplicate');
 Route::get('rides/{ride}', 'RideController@show');
-Route::post('rides/{ride}/chat', 'RideController@sendChatMessage');
-Route::get('rides/{ride}/chat', 'RideController@getChatMessages');
+Route::post('rides/{ride}/messages', 'RideController@sendChatMessage');
+Route::get('rides/{ride}/messages', 'RideController@getChatMessages');
 
 /** @deprecated  */
 Route::post('rides/listFiltered', 'RideController@listFiltered');

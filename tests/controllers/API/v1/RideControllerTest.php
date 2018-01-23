@@ -601,7 +601,7 @@ class RideControllerTest extends TestCase
             ];
         })->all();
 
-        $response = $this->json('GET', 'rides/' . $ride->id . '/chat', [], $this->headers);
+        $response = $this->json('GET', 'rides/' . $ride->id . '/messages', [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'messages' => $messages
@@ -626,7 +626,7 @@ class RideControllerTest extends TestCase
         $this->expectsNotification($user2, RideMessageReceived::class);
         $this->expectsNotification($user3, RideMessageReceived::class);
 
-        $response = $this->json('POST', 'rides/' . $ride->id . '/chat', $request, $this->headers);
+        $response = $this->json('POST', 'rides/' . $ride->id . '/messages', $request, $this->headers);
         $response->assertStatus(201);
     }
 }
