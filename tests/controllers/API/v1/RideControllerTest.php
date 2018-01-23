@@ -313,13 +313,32 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testDelete()
+    /** @test */
+    public function shouldDeleteRide()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
         $response = $this->json('DELETE', 'rides/' . $ride->id, [], $this->headers);
         $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('rides', ['id' => $ride->id]);
+    }
+
+    /** @test */
+    public function shouldDeleteRideRelationships()
+    {
+        $ride = factory(Ride::class, 'next')->create();
+        $rider = factory(User::class)->create();
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+        $ride->users()->attach($rider, ['status' => 'accepted']);
+
+        $response = $this->json('DELETE', 'rides/' . $ride->id, [], $this->headers);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('rides', ['id' => $ride->id]);
+        $this->assertDatabaseMissing('ride_user', ['ride_id' => $ride->id, 'user_id' => $this->user->id]);
+        $this->assertDatabaseMissing('ride_user', ['ride_id' => $ride->id, 'user_id' => $rider->id]);
     }
 
     public function testDeleteAllFromRoutine()
