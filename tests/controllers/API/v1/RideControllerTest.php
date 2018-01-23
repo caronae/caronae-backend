@@ -129,7 +129,7 @@ class RideControllerTest extends TestCase
         $ride = factory(Ride::class)->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
-        $response = $this->json('GET', 'ride/' . $ride->id, [], $this->headers);
+        $response = $this->json('GET', 'rides/' . $ride->id, [], $this->headers);
 
         $response->assertStatus(200);
         $response->assertJson($ride->toArray());
@@ -147,7 +147,7 @@ class RideControllerTest extends TestCase
             'time' => '16:00:00',
             'going' => 1
         ];
-        $response = $this->json('GET', 'ride/validateDuplicate', $parameters, $this->headers);
+        $response = $this->json('GET', 'rides/validateDuplicate', $parameters, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'valid' => true,
@@ -166,7 +166,7 @@ class RideControllerTest extends TestCase
             'time' => '16:00:00',
             'going' => 1
         ];
-        $response = $this->json('GET', 'ride/validateDuplicate', $parameters, $this->headers);
+        $response = $this->json('GET', 'rides/validateDuplicate', $parameters, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'valid' => false,
@@ -185,7 +185,7 @@ class RideControllerTest extends TestCase
             'time' => '16:00:00',
             'going' => 1
         ];
-        $response = $this->json('GET', 'ride/validateDuplicate', $parameters, $this->headers);
+        $response = $this->json('GET', 'rides/validateDuplicate', $parameters, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'valid' => false,
@@ -212,7 +212,7 @@ class RideControllerTest extends TestCase
             'going' => false
         ];
 
-        $response = $this->json('POST', 'ride', $request, $this->headers);
+        $response = $this->json('POST', 'rides', $request, $this->headers);
         $response->assertStatus(201);
 
         $response->assertJsonFragment([
@@ -252,7 +252,7 @@ class RideControllerTest extends TestCase
             'going' => true
         ];
 
-        $response = $this->json('POST', 'ride', $request, $this->headers);
+        $response = $this->json('POST', 'rides', $request, $this->headers);
         $response->assertStatus(201);
 
         $jsonContent = json_decode($response->getContent());
@@ -306,7 +306,7 @@ class RideControllerTest extends TestCase
             'going' => false
         ];
 
-        $response = $this->json('POST', 'ride', $request, $this->headers);
+        $response = $this->json('POST', 'rides', $request, $this->headers);
         $response->assertStatus(422);
         $response->assertExactJson([
             'mydate' => ['You cannot create a ride in the past.']
@@ -318,7 +318,7 @@ class RideControllerTest extends TestCase
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
-        $response = $this->json('DELETE', 'ride/' . $ride->id, [], $this->headers);
+        $response = $this->json('DELETE', 'rides/' . $ride->id, [], $this->headers);
         $response->assertStatus(200);
     }
 
@@ -329,7 +329,7 @@ class RideControllerTest extends TestCase
         $ride->routine_id = $ride->id;
         $ride->save();
 
-        $response = $this->json('DELETE', 'ride/allFromRoutine/' . $ride->id, [], $this->headers);
+        $response = $this->json('DELETE', 'rides/allFromRoutine/' . $ride->id, [], $this->headers);
         $response->assertStatus(200);
     }
 
@@ -345,7 +345,7 @@ class RideControllerTest extends TestCase
             'rideId' => $ride->id
         ];
 
-        $response = $this->json('POST', 'ride/requestJoin', $request, $this->headers);
+        $response = $this->json('POST', 'rides/requestJoin', $request, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'message' => 'Request sent.'
@@ -363,7 +363,7 @@ class RideControllerTest extends TestCase
         $ride->users()->attach(factory(User::class)->create(), ['status' => 'accepted']);
         $ride->users()->attach(factory(User::class)->create(), ['status' => 'rejected']);
 
-        $response = $this->json('GET', 'ride/getRequesters/' . $ride->id, [], $this->headers);
+        $response = $this->json('GET', 'rides/getRequesters/' . $ride->id, [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             [
@@ -401,7 +401,7 @@ class RideControllerTest extends TestCase
             'accepted' => true
         ];
 
-        $response = $this->json('POST', 'ride/answerJoinRequest', $request, $this->headers);
+        $response = $this->json('POST', 'rides/answerJoinRequest', $request, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'message' => 'Request answered.'
@@ -422,7 +422,7 @@ class RideControllerTest extends TestCase
             'rideId' => $ride->id
         ];
 
-        $response = $this->json('POST', 'ride/leaveRide', $request, $this->headers);
+        $response = $this->json('POST', 'rides/leaveRide', $request, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'message' => 'Left ride.'
@@ -443,7 +443,7 @@ class RideControllerTest extends TestCase
             'rideId' => $ride->id
         ];
 
-        $response = $this->json('POST', 'ride/leaveRide', $request, $this->headers);
+        $response = $this->json('POST', 'rides/leaveRide', $request, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'message' => 'Left ride.'
@@ -464,7 +464,7 @@ class RideControllerTest extends TestCase
             'rideId' => $ride->id
         ];
 
-        $response = $this->json('POST', 'ride/finishRide', $request, $this->headers);
+        $response = $this->json('POST', 'rides/finishRide', $request, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'message' => 'Ride finished.'
@@ -480,7 +480,7 @@ class RideControllerTest extends TestCase
             'rideId' => $ride->id
         ];
 
-        $response = $this->json('POST', 'ride/finishRide', $request, $this->headers);
+        $response = $this->json('POST', 'rides/finishRide', $request, $this->headers);
         $response->assertStatus(403);
         $response->assertExactJson([
             'error' => 'A ride in the future cannot be marked as finished'
@@ -506,7 +506,7 @@ class RideControllerTest extends TestCase
         $ride5->users()->attach($user2, ['status' => 'driver']);
         $ride6->users()->attach($this->user, ['status' => 'rejected']);
 
-        $response = $this->json('GET', 'ride/getRidesHistory', [], $this->headers);
+        $response = $this->json('GET', 'rides/getRidesHistory', [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             [
@@ -576,7 +576,7 @@ class RideControllerTest extends TestCase
         $ride6 = factory(Ride::class)->create(['done' => true]); // rejected
         $ride6->users()->attach($this->user, ['status' => 'rejected']);
 
-        $response = $this->json('GET', 'ride/getRidesHistoryCount/' . $this->user->id, [], $this->headers);
+        $response = $this->json('GET', 'rides/getRidesHistoryCount/' . $this->user->id, [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'offeredCount' => 2,
@@ -601,7 +601,7 @@ class RideControllerTest extends TestCase
             ];
         })->all();
 
-        $response = $this->json('GET', 'ride/' . $ride->id . '/chat', [], $this->headers);
+        $response = $this->json('GET', 'rides/' . $ride->id . '/chat', [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'messages' => $messages
@@ -626,7 +626,7 @@ class RideControllerTest extends TestCase
         $this->expectsNotification($user2, RideMessageReceived::class);
         $this->expectsNotification($user3, RideMessageReceived::class);
 
-        $response = $this->json('POST', 'ride/' . $ride->id . '/chat', $request, $this->headers);
+        $response = $this->json('POST', 'rides/' . $ride->id . '/chat', $request, $this->headers);
         $response->assertStatus(201);
     }
 }
