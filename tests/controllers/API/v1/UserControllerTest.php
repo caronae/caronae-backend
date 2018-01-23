@@ -94,7 +94,7 @@ class UserControllerTest extends TestCase
         // add random ride from another user
         factory(Ride::class)->create();
 
-        $response = $this->json('POST', 'user/login', [
+        $response = $this->json('POST', 'users/login', [
             'id_ufrj' => $user->id_ufrj,
             'token' => $user->token
         ]);
@@ -143,7 +143,7 @@ class UserControllerTest extends TestCase
      */
     public function shouldNotSignInWithInvalidUser()
     {
-        $response = $this->json('POST', 'user/login', [
+        $response = $this->json('POST', 'users/login', [
             'id_ufrj' => str_random(11),
             'token' => str_random(6)
         ]);
@@ -172,7 +172,7 @@ class UserControllerTest extends TestCase
             'facebook_id' => '123ABC',
         ];
 
-        $response = $this->json('PUT', 'user', $body, $headers);
+        $response = $this->json('PUT', 'users', $body, $headers);
         $response->assertStatus(200);
 
         $user = $user->fresh();
@@ -203,7 +203,7 @@ class UserControllerTest extends TestCase
             'profile_pic_url' => 'http://example.com/image.jpg'
         ];
 
-        $response = $this->json('PUT', 'user', $body, $headers);
+        $response = $this->json('PUT', 'users', $body, $headers);
         $response->assertStatus(401);
     }
 
@@ -227,7 +227,7 @@ class UserControllerTest extends TestCase
         $pendingRide->users()->attach($pendingRideDriver, ['status' => 'driver']);
         $pendingRide->users()->attach($user, ['status' => 'pending']);
 
-        $response = $this->json('GET', 'user/' . $user->id . '/rides', [], ['token' => $user->token]);
+        $response = $this->json('GET', 'users/' . $user->id . '/rides', [], ['token' => $user->token]);
 
         $response->assertStatus(200);
         $response->assertExactJson([
@@ -311,7 +311,7 @@ class UserControllerTest extends TestCase
         $pendingRide->users()->attach($this->someUser(), ['status' => 'driver']);
         $pendingRide->users()->attach($user, ['status' => 'pending']);
 
-        $response = $this->json('GET', 'user/' . $user->id . '/rides', [], ['token' => $user->token]);
+        $response = $this->json('GET', 'users/' . $user->id . '/rides', [], ['token' => $user->token]);
 
         $response->assertStatus(200);
         $response->assertExactJson([
@@ -368,7 +368,7 @@ class UserControllerTest extends TestCase
         $user = $this->someUser();
         $user2 = $this->someUser();
 
-        $response = $this->json('GET', 'user/' . $user2->id . '/rides', [], [
+        $response = $this->json('GET', 'users/' . $user2->id . '/rides', [], [
             'token' => $user->token
         ]);
 
@@ -399,7 +399,7 @@ class UserControllerTest extends TestCase
         // add random ride from another user
         factory(Ride::class)->create();
 
-        $response = $this->json('GET', 'user/' . $user->id . '/offeredRides', [], [
+        $response = $this->json('GET', 'users/' . $user->id . '/offeredRides', [], [
             'token' => $user->token
         ]);
 
@@ -438,7 +438,7 @@ class UserControllerTest extends TestCase
         $user = $this->someUser();
         $user2 = $this->someUser();
 
-        $response = $this->json('GET', 'user/' . $user2->id . '/offeredRides', [], [
+        $response = $this->json('GET', 'users/' . $user2->id . '/offeredRides', [], [
             'token' => $user->token
         ]);
 
@@ -455,7 +455,7 @@ class UserControllerTest extends TestCase
 
         $ride = $this->createPendingRideForUser($driver, $user);
 
-        $response = $this->json('GET', 'user/' . $user->id . '/pendingRides', [], [
+        $response = $this->json('GET', 'users/' . $user->id . '/pendingRides', [], [
             'token' => $user->token
         ]);
 
@@ -491,7 +491,7 @@ class UserControllerTest extends TestCase
         $user = $this->someUser();
         $user2 = $this->someUser();
 
-        $response = $this->json('GET', 'user/' . $user2->id . '/pendingRides', [], [
+        $response = $this->json('GET', 'users/' . $user2->id . '/pendingRides', [], [
             'token' => $user->token
         ]);
 
@@ -507,7 +507,7 @@ class UserControllerTest extends TestCase
         $headers = ['token' => $user->token];
         $newId = 'new-facebook-id';
 
-        $response = $this->json('PUT', 'user/saveFaceId', [
+        $response = $this->json('PUT', 'users/saveFaceId', [
             'id' => $newId
         ], $headers);
 
@@ -526,7 +526,7 @@ class UserControllerTest extends TestCase
         $headers = ['token' => $user->token];
         $newURL = 'https://example.com/new-profile-picture-url.jpg';
 
-        $response = $this->json('PUT', 'user/saveProfilePicUrl', [
+        $response = $this->json('PUT', 'users/saveProfilePicUrl', [
             'url' => $newURL
         ], $headers);
 

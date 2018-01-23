@@ -3,14 +3,17 @@
 // User
 
 Route::post('users', 'UserController@store');
-Route::post('user/login', 'UserController@login');
-Route::put('user', 'UserController@update');
-Route::get('user/{user}/rides', 'UserController@getRides');
-Route::get('user/{user}/offeredRides', 'UserController@getOfferedRides');
-Route::get('user/{user}/pendingRides', 'UserController@getPendingRides');
-Route::put('user/saveFaceId', 'UserController@saveFacebookId');
-Route::put('user/saveProfilePicUrl', 'UserController@saveProfilePicUrl');
-Route::get('user/{id}/mutualFriends', 'UserController@getMutualFriends');
+Route::put('users', 'UserController@update');
+Route::post('users/login', 'UserController@login');
+Route::get('users/{user}/rides', 'UserController@getRides');
+Route::get('users/{user}/offeredRides', 'UserController@getOfferedRides');
+Route::get('users/{user}/pendingRides', 'UserController@getPendingRides');
+Route::get('users/{id}/mutualFriends', 'UserController@getMutualFriends');
+
+/** @deprecated  */
+Route::put('users/saveFaceId', 'UserController@saveFacebookId');
+/** @deprecated  */
+Route::put('users/saveProfilePicUrl', 'UserController@saveProfilePicUrl');
 
 
 // Ride
