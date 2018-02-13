@@ -16,28 +16,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends BaseController
 {
-    public function __construct()
-    {
-        $this->middleware('api.v1.auth', ['only' => [
-            'getRides',
-            'getOfferedRides',
-            'getPendingRides',
-            'update',
-            'saveFacebookId',
-            'saveProfilePicUrl',
-            'getMutualFriends',
-            'getIntranetPhotoUrl',
-        ]]);
-
-        $this->middleware('api.v1.userMatchesRequestedUser', ['only' => [
-            'getRides',
-            'getOfferedRides',
-            'getPendingRides',
-        ]]);
-
-        $this->middleware('api.institution', ['only' => ['store']]);
-    }
-
     public function store(SignUpRequest $request)
     {
         $institutionID = $request->input('id_ufrj');
@@ -105,9 +83,12 @@ class UserController extends BaseController
         return ['rides' => RideResource::collection($rides)];
     }
 
-    public function update(UpdateUserRequest $request)
+    public function update(User $user = null, UpdateUserRequest $request)
     {
-        $user = $request->currentUser;
+        if (!$user) {
+            $user = $request->currentUser;
+        }
+
         $user->update($request->profile());
     }
 

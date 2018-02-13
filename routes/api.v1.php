@@ -2,13 +2,22 @@
 
 // User
 
-Route::post('users', 'UserController@store');
-Route::put('users', 'UserController@update');
+Route::post('users', 'UserController@store')->middleware('api.institution');
 Route::post('users/login', 'UserController@login');
-Route::get('users/{user}/rides', 'UserController@getRides');
-Route::get('users/{user}/offeredRides', 'UserController@getOfferedRides');
-Route::get('users/{user}/pendingRides', 'UserController@getPendingRides');
-Route::get('users/{id}/mutualFriends', 'UserController@getMutualFriends');
+
+Route::middleware('api.v1.auth')->group(function () {
+
+    Route::get('users/{id}/mutualFriends', 'UserController@getMutualFriends');
+
+    Route::middleware('api.v1.userMatchesRequestedUser')->group(function () {
+        Route::put('users/{user}', 'UserController@update');
+        Route::get('users/{user}/rides', 'UserController@getRides');
+        Route::get('users/{user}/offeredRides', 'UserController@getOfferedRides');
+        Route::get('users/{user}/pendingRides', 'UserController@getPendingRides');
+    });
+
+});
+
 
 
 // Ride

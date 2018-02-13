@@ -37,6 +37,18 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
+    public function shouldNotCreateUserWithoutAuthorizationHeaders()
+    {
+        $user = $this->newUser();
+        $response = $this->json('POST', 'api/v1/users', $user);
+
+        $response->assertStatus(401);
+        $this->assertDatabaseMissing('users', $user);
+    }
+
+    /**
+     * @test
+     */
     public function shouldNotCreateDuplicatedUser()
     {
         $user = $this->newUser();
@@ -151,6 +163,39 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
+    public function shouldUpdateUserProfileWithLegacyAPI()
+    {
+        $user = $this->someUser();
+        $headers = ['token' => $user->token];
+        $body = [
+            'phone_number' => '021998781890',
+            'email' => 'TEST@example.com',
+            'location' => 'Madureira',
+            'car_owner' => true,
+            'car_model' => 'Fiat Uno',
+            'car_color' => 'azul',
+            'car_plate' => 'ABC-1234',
+            'profile_pic_url' => 'http://example.com/image.jpg',
+            'facebook_id' => 'facebookid123456',
+        ];
+
+        $response = $this->json('PUT', 'user', $body, $headers);
+        $response->assertStatus(200);
+
+        $user = $user->fresh();
+        $this->assertEquals($body['phone_number'], $user->phone_number);
+        $this->assertEquals('test@example.com', $user->email);
+        $this->assertEquals($body['location'], $user->location);
+        $this->assertEquals($body['car_owner'], $user->car_owner);
+        $this->assertEquals($body['car_model'], $user->car_model);
+        $this->assertEquals($body['car_plate'], $user->car_plate);
+        $this->assertEquals($body['profile_pic_url'], $user->profile_pic_url);
+        $this->assertEquals($body['facebook_id'], $user->face_id);
+    }
+
+    /**
+     * @test
+     */
     public function shouldUpdateUserProfile()
     {
         $user = $this->someUser();
@@ -167,7 +212,7 @@ class UserControllerTest extends TestCase
             'facebook_id' => 'facebookid123456',
         ];
 
-        $response = $this->json('PUT', 'api/v1/users', $body, $headers);
+        $response = $this->json('PUT', 'api/v1/users/' . $user->id, $body, $headers);
         $response->assertStatus(200);
 
         $user = $user->fresh();
@@ -202,7 +247,7 @@ class UserControllerTest extends TestCase
             'profile' => 'newprofile',
         ];
 
-        $response = $this->json('PUT', 'api/v1/users', $body, ['token' => $user->token]);
+        $response = $this->json('PUT', 'api/v1/users/' . $user->id, $body, ['token' => $user->token]);
         $response->assertStatus(200);
 
         $user = $user->fresh();
@@ -216,9 +261,11 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotUpdateUserProfileWithInvalidUser()
+    public function shouldNotUpdateOtherUser()
     {
-        $headers = ['token' => ''];
+        $user = $this->someUser();
+        $otherUser = $this->someUser();
+
         $body = [
             'phone_number' => '021999999999',
             'email' => 'test@example.com',
@@ -230,8 +277,8 @@ class UserControllerTest extends TestCase
             'profile_pic_url' => 'http://example.com/image.jpg'
         ];
 
-        $response = $this->json('PUT', 'api/v1/users', $body, $headers);
-        $response->assertStatus(401);
+        $response = $this->json('PUT', 'api/v1/users/' . $otherUser->id, $body, [ 'token' => $user->token ]);
+        $response->assertStatus(403);
     }
 
     /**
