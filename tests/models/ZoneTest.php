@@ -11,9 +11,9 @@ class ZoneTest extends TestCase
 
     public function testFindsByName()
     {
-        $zone1 = Zone::create(['name' => 'Zona Norte'])->fresh();
+        $zone1 = Zone::create(['name' => 'Zona 123'])->fresh();
         $zone2 = Zone::create(['name' => 'Centro']);
-        $this->assertEquals($zone1, Zone::findByName('Zona Norte'));
+        $this->assertEquals($zone1, Zone::findByName('Zona 123'));
     }
 
     public function testReturnsColor()
