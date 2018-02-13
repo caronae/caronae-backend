@@ -10,10 +10,6 @@ Route::get('users/{user}/offeredRides', 'UserController@getOfferedRides');
 Route::get('users/{user}/pendingRides', 'UserController@getPendingRides');
 Route::get('users/{id}/mutualFriends', 'UserController@getMutualFriends');
 
-/** @deprecated  */
-Route::put('users/saveFaceId', 'UserController@saveFacebookId');
-Route::put('users/saveProfilePicUrl', 'UserController@saveProfilePicUrl');
-
 
 // Ride
 
@@ -34,11 +30,6 @@ Route::get('rides/validateDuplicate', 'RideController@validateDuplicate');
 Route::get('rides/{ride}', 'RideController@show');
 Route::post('rides/{ride}/messages', 'RideController@sendChatMessage');
 Route::get('rides/{ride}/messages', 'RideController@getChatMessages');
-
-/** @deprecated  */
-Route::post('rides/listFiltered', 'RideController@listFiltered');
-Route::get('rides/getMyActiveRides', 'RideController@getMyActiveRides');
-
 
 // Etc
 
