@@ -12,8 +12,6 @@ Route::middleware('api.v1.auth')->group(function () {
     Route::middleware('api.v1.userMatchesRequestedUser')->group(function () {
         Route::put('users/{user}', 'UserController@update');
         Route::get('users/{user}/rides', 'UserController@getRides');
-        Route::get('users/{user}/offeredRides', 'UserController@getOfferedRides');
-        Route::get('users/{user}/pendingRides', 'UserController@getPendingRides');
     });
 
 });
