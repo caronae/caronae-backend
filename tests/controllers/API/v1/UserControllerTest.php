@@ -157,14 +157,14 @@ class UserControllerTest extends TestCase
         $headers = ['token' => $user->token];
         $body = [
             'phone_number' => '021998781890',
-            'email' => 'test@example.com',
+            'email' => 'TEST@example.com',
             'location' => 'Madureira',
             'car_owner' => true,
             'car_model' => 'Fiat Uno',
             'car_color' => 'azul',
             'car_plate' => 'ABC-1234',
             'profile_pic_url' => 'http://example.com/image.jpg',
-            'facebook_id' => '123ABC',
+            'facebook_id' => 'facebookid123456',
         ];
 
         $response = $this->json('PUT', 'api/v1/users', $body, $headers);
@@ -172,13 +172,45 @@ class UserControllerTest extends TestCase
 
         $user = $user->fresh();
         $this->assertEquals($body['phone_number'], $user->phone_number);
-        $this->assertEquals($body['email'], $user->email);
+        $this->assertEquals('test@example.com', $user->email);
         $this->assertEquals($body['location'], $user->location);
         $this->assertEquals($body['car_owner'], $user->car_owner);
         $this->assertEquals($body['car_model'], $user->car_model);
         $this->assertEquals($body['car_plate'], $user->car_plate);
         $this->assertEquals($body['profile_pic_url'], $user->profile_pic_url);
         $this->assertEquals($body['facebook_id'], $user->face_id);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotUpdateProtectedFields()
+    {
+        $user = $this->someUser();
+        $previousName = $user->name;
+        $previousToken = $user->token;
+        $previousInstitutionID = $user->id_ufrj;
+        $previousCourse = $user->course;
+        $previousProfile = $user->profile;
+
+        $body = [
+            'name' => 'New Name',
+            'token' => 'newtoken',
+            'id_ufrj' => 'newid',
+            'institution_id' => null,
+            'course' => 'newcourse',
+            'profile' => 'newprofile',
+        ];
+
+        $response = $this->json('PUT', 'api/v1/users', $body, ['token' => $user->token]);
+        $response->assertStatus(200);
+
+        $user = $user->fresh();
+        $this->assertEquals($previousName, $user->name);
+        $this->assertEquals($previousToken, $user->token);
+        $this->assertEquals($previousInstitutionID, $user->id_ufrj);
+        $this->assertEquals($previousCourse, $user->course);
+        $this->assertEquals($previousProfile, $user->profile);
     }
 
     /**

@@ -17,8 +17,37 @@ class User extends Model implements AuthenticatableContract
     use CrudTrait;
     use Authenticatable;
 
-    protected $fillable = ['name', 'email', 'profile', 'course', 'id_ufrj', 'profile_pic_url', 'token', 'institution_id'];
-    protected $hidden = ['token', 'pivot', 'id_ufrj', 'deleted_at', 'updated_at', 'app_platform', 'app_version', 'banned', 'institution_id'];
+    protected $fillable = [
+        'name',
+        'email',
+        'profile',
+        'course',
+        'id_ufrj',
+        'profile_pic_url',
+        'token',
+        'institution_id',
+        'phone_number',
+        'location',
+        'email',
+        'car_owner',
+        'car_model',
+        'car_color',
+        'car_plate',
+        'face_id',
+    ];
+
+    protected $hidden = [
+        'token',
+        'pivot',
+        'id_ufrj',
+        'deleted_at',
+        'updated_at',
+        'app_platform',
+        'app_version',
+        'banned',
+        'institution_id',
+    ];
+
     protected $dates = ['deleted_at'];
 
     public static function findByInstitutionId($id)

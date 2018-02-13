@@ -4,6 +4,7 @@ namespace Caronae\Http\Controllers\API\v1;
 
 use Caronae\Http\Controllers\BaseController;
 use Caronae\Http\Requests\SignUpRequest;
+use Caronae\Http\Requests\UpdateUserRequest;
 use Caronae\Http\Resources\RideResource;
 use Caronae\Http\Resources\UserResource;
 use Caronae\Models\User;
@@ -104,41 +105,10 @@ class UserController extends BaseController
         return ['rides' => RideResource::collection($rides)];
     }
 
-    public function update(Request $request)
+    public function update(UpdateUserRequest $request)
     {
-        $this->validate($request, [
-            'phone_number' => 'numeric|max:999999999999',
-            'email' => 'email',
-            'location' => 'string',
-            'car_owner' => 'boolean',
-            'car_model' => 'required_if:car_owner,true,1|string|max:25',
-            'car_color' => 'required_if:car_owner,true,1|string|max:25',
-            'car_plate' => 'required_if:car_owner,true,1|regex:/[a-zA-Z]{3}-?[0-9]{4}$/',
-            'profile_pic_url' => 'url'
-        ]);
-
         $user = $request->currentUser;
-
-        $user->phone_number = $request->phone_number;
-        $user->email = strtolower($request->email);
-        $user->location = $request->location;
-
-        $user->car_owner = $request->car_owner;
-        if ($request->car_owner) {
-            $user->car_model = $request->car_model;
-            $user->car_color = $request->car_color;
-            $user->car_plate = strtoupper($request->car_plate);
-        }
-
-        if ($request->filled('profile_pic_url')) {
-            $user->profile_pic_url = $request->profile_pic_url;
-        }
-
-        if ($request->filled('facebook_id')) {
-            $user->face_id = $request->input('facebook_id');
-        }
-
-        $user->save();
+        $user->update($request->profile());
     }
 
     public function saveFacebookId(Request $request)
