@@ -1,11 +1,11 @@
 <?php
 namespace Caronae\Http\Controllers\Admin\Auth;
 
-use Caronae\Http\Controllers\Controller;
+use Caronae\Http\Controllers\BaseController;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 
-class LoginController extends Controller
+class LoginController extends BaseController
 {
     use AuthenticatesUsers;
 

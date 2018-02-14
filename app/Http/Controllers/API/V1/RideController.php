@@ -1,8 +1,9 @@
 <?php
 
-namespace Caronae\Http\Controllers;
+namespace Caronae\Http\Controllers\API\v1;
 
 use Carbon\Carbon;
+use Caronae\Http\Controllers\BaseController;
 use Caronae\Http\Requests\CreateRideRequest;
 use Caronae\Http\Requests\ValidateDuplicateRequest;
 use Caronae\Http\Resources\MessageResource;
@@ -22,7 +23,7 @@ use DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
-class RideController extends Controller
+class RideController extends BaseController
 {
     public function __construct()
     {
@@ -434,6 +435,9 @@ class RideController extends Controller
         return ['message' => 'Ride finished.'];
     }
 
+    /**
+     * @deprecated
+     */
     public function getRidesHistory(Request $request)
     {
         $user = $request->currentUser;
@@ -464,6 +468,9 @@ class RideController extends Controller
         return $resultJson;
     }
 
+    /**
+     * @deprecated
+     */
     public function getRidesHistoryCount($userId)
     {
         $user = User::find($userId);

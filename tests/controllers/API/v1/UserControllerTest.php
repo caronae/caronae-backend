@@ -25,13 +25,25 @@ class UserControllerTest extends TestCase
     public function shouldCreateUser()
     {
         $user = $this->newUser();
-        $response = $this->json('POST', 'users', $user, $this->institutionAuthorizationHeaders());
+        $response = $this->json('POST', 'api/v1/users', $user, $this->institutionAuthorizationHeaders());
 
         $createdUser = User::where('id_ufrj', $user['id_ufrj'])->first();
 
         $response->assertStatus(200);
         $response->assertJson(['user' => $createdUser->toArray()]);
         $response->assertJsonStructure(['token']);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotCreateUserWithoutAuthorizationHeaders()
+    {
+        $user = $this->newUser();
+        $response = $this->json('POST', 'api/v1/users', $user);
+
+        $response->assertStatus(401);
+        $this->assertDatabaseMissing('users', $user);
     }
 
     /**
@@ -45,7 +57,7 @@ class UserControllerTest extends TestCase
         $existingUser->generateToken();
         $existingUser->save();
 
-        $response = $this->json('POST', 'users', $user, $this->institutionAuthorizationHeaders());
+        $response = $this->json('POST', 'api/v1/users', $user, $this->institutionAuthorizationHeaders());
 
         $response->assertStatus(200);
         $response->assertJson(['user' => $existingUser->fresh()->toArray()]);
@@ -65,7 +77,7 @@ class UserControllerTest extends TestCase
         $oldToken = $existingUser->token;
 
         $data = array_merge($user, [ 'token' => 'new token']);
-        $response = $this->json('POST', 'users', $data, $this->institutionAuthorizationHeaders());
+        $response = $this->json('POST', 'api/v1/users', $data, $this->institutionAuthorizationHeaders());
 
         $response->assertStatus(200);
         $this->assertEquals($oldToken, $existingUser->fresh()->token);
@@ -89,7 +101,7 @@ class UserControllerTest extends TestCase
         // add random ride from another user
         factory(Ride::class)->create();
 
-        $response = $this->json('POST', 'user/login', [
+        $response = $this->json('POST', 'api/v1/users/login', [
             'id_ufrj' => $user->id_ufrj,
             'token' => $user->token
         ]);
@@ -138,7 +150,7 @@ class UserControllerTest extends TestCase
      */
     public function shouldNotSignInWithInvalidUser()
     {
-        $response = $this->json('POST', 'user/login', [
+        $response = $this->json('POST', 'api/v1/users/login', [
             'id_ufrj' => str_random(11),
             'token' => str_random(6)
         ]);
@@ -151,19 +163,20 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldUpdateUserProfile()
+    public function shouldUpdateUserProfileWithLegacyAPI()
     {
         $user = $this->someUser();
         $headers = ['token' => $user->token];
         $body = [
             'phone_number' => '021998781890',
-            'email' => 'test@example.com',
+            'email' => 'TEST@example.com',
             'location' => 'Madureira',
             'car_owner' => true,
             'car_model' => 'Fiat Uno',
             'car_color' => 'azul',
             'car_plate' => 'ABC-1234',
-            'profile_pic_url' => 'http://example.com/image.jpg'
+            'profile_pic_url' => 'http://example.com/image.jpg',
+            'facebook_id' => 'facebookid123456',
         ];
 
         $response = $this->json('PUT', 'user', $body, $headers);
@@ -171,20 +184,88 @@ class UserControllerTest extends TestCase
 
         $user = $user->fresh();
         $this->assertEquals($body['phone_number'], $user->phone_number);
-        $this->assertEquals($body['email'], $user->email);
+        $this->assertEquals('test@example.com', $user->email);
         $this->assertEquals($body['location'], $user->location);
         $this->assertEquals($body['car_owner'], $user->car_owner);
         $this->assertEquals($body['car_model'], $user->car_model);
         $this->assertEquals($body['car_plate'], $user->car_plate);
         $this->assertEquals($body['profile_pic_url'], $user->profile_pic_url);
+        $this->assertEquals($body['facebook_id'], $user->face_id);
     }
 
     /**
      * @test
      */
-    public function shouldNotUpdateUserProfileWithInvalidUser()
+    public function shouldUpdateUserProfile()
     {
-        $headers = ['token' => ''];
+        $user = $this->someUser();
+        $headers = ['token' => $user->token];
+        $body = [
+            'phone_number' => '021998781890',
+            'email' => 'TEST@example.com',
+            'location' => 'Madureira',
+            'car_owner' => true,
+            'car_model' => 'Fiat Uno',
+            'car_color' => 'azul',
+            'car_plate' => 'ABC-1234',
+            'profile_pic_url' => 'http://example.com/image.jpg',
+            'facebook_id' => 'facebookid123456',
+        ];
+
+        $response = $this->json('PUT', 'api/v1/users/' . $user->id, $body, $headers);
+        $response->assertStatus(200);
+
+        $user = $user->fresh();
+        $this->assertEquals($body['phone_number'], $user->phone_number);
+        $this->assertEquals('test@example.com', $user->email);
+        $this->assertEquals($body['location'], $user->location);
+        $this->assertEquals($body['car_owner'], $user->car_owner);
+        $this->assertEquals($body['car_model'], $user->car_model);
+        $this->assertEquals($body['car_plate'], $user->car_plate);
+        $this->assertEquals($body['profile_pic_url'], $user->profile_pic_url);
+        $this->assertEquals($body['facebook_id'], $user->face_id);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotUpdateProtectedFields()
+    {
+        $user = $this->someUser();
+        $previousName = $user->name;
+        $previousToken = $user->token;
+        $previousInstitutionID = $user->id_ufrj;
+        $previousCourse = $user->course;
+        $previousProfile = $user->profile;
+
+        $body = [
+            'name' => 'New Name',
+            'token' => 'newtoken',
+            'id_ufrj' => 'newid',
+            'institution_id' => null,
+            'course' => 'newcourse',
+            'profile' => 'newprofile',
+        ];
+
+        $response = $this->json('PUT', 'api/v1/users/' . $user->id, $body, ['token' => $user->token]);
+        $response->assertStatus(200);
+
+        $user = $user->fresh();
+        $this->assertEquals($previousName, $user->name);
+        $this->assertEquals($previousToken, $user->token);
+        $this->assertEquals($previousInstitutionID, $user->id_ufrj);
+        $this->assertEquals($previousCourse, $user->course);
+        $this->assertEquals($previousProfile, $user->profile);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotUpdateOtherUser()
+    {
+        $user = $this->someUser();
+        $otherUser = $this->someUser();
+
         $body = [
             'phone_number' => '021999999999',
             'email' => 'test@example.com',
@@ -196,8 +277,8 @@ class UserControllerTest extends TestCase
             'profile_pic_url' => 'http://example.com/image.jpg'
         ];
 
-        $response = $this->json('PUT', 'user', $body, $headers);
-        $response->assertStatus(401);
+        $response = $this->json('PUT', 'api/v1/users/' . $otherUser->id, $body, [ 'token' => $user->token ]);
+        $response->assertStatus(403);
     }
 
     /**
@@ -220,7 +301,7 @@ class UserControllerTest extends TestCase
         $pendingRide->users()->attach($pendingRideDriver, ['status' => 'driver']);
         $pendingRide->users()->attach($user, ['status' => 'pending']);
 
-        $response = $this->json('GET', 'user/' . $user->id . '/rides', [], ['token' => $user->token]);
+        $response = $this->json('GET', 'api/v1/users/' . $user->id . '/rides', [], ['token' => $user->token]);
 
         $response->assertStatus(200);
         $response->assertExactJson([
@@ -304,7 +385,7 @@ class UserControllerTest extends TestCase
         $pendingRide->users()->attach($this->someUser(), ['status' => 'driver']);
         $pendingRide->users()->attach($user, ['status' => 'pending']);
 
-        $response = $this->json('GET', 'user/' . $user->id . '/rides', [], ['token' => $user->token]);
+        $response = $this->json('GET', 'api/v1/users/' . $user->id . '/rides', [], ['token' => $user->token]);
 
         $response->assertStatus(200);
         $response->assertExactJson([
@@ -361,7 +442,7 @@ class UserControllerTest extends TestCase
         $user = $this->someUser();
         $user2 = $this->someUser();
 
-        $response = $this->json('GET', 'user/' . $user2->id . '/rides', [], [
+        $response = $this->json('GET', 'api/v1/users/' . $user2->id . '/rides', [], [
             'token' => $user->token
         ]);
 
@@ -525,6 +606,92 @@ class UserControllerTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertEquals($newURL, $user->fresh()->profile_pic_url);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldReturnRideHistoryCount()
+    {
+        $user = $this->someUser();
+        $otherUser = $this->someUser();
+        $offeredRide = factory(Ride::class)->create(['done' => true]);
+        $offeredRide->users()->attach($otherUser, ['status' => 'driver']);
+        $takenRide1 = factory(Ride::class)->create(['done' => true]);
+        $takenRide1->users()->attach($otherUser, ['status' => 'accepted']);
+        $takenRide2 = factory(Ride::class)->create(['done' => true]);
+        $takenRide2->users()->attach($otherUser, ['status' => 'accepted']);
+
+        $response = $this->json('GET', 'api/v1/users/' . $otherUser->id . '/rides/history', [], ['token' => $user->token]);
+
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'offered_rides_count' => 1,
+            'taken_rides_count' => 2,
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldReturnDetailedRideHistoryForCurrentUser()
+    {
+        $user = $this->someUser();
+        $otherUser = $this->someUser();
+
+        $offeredRide = factory(Ride::class)->create(['done' => true])->fresh();
+        $offeredRide->users()->attach($user, ['status' => 'driver']);
+        $takenRide = factory(Ride::class)->create(['done' => true])->fresh();
+        $takenRide->users()->attach($otherUser, ['status' => 'driver']);
+        $takenRide->users()->attach($user, ['status' => 'accepted']);
+
+        $response = $this->json('GET', 'api/v1/users/' . $user->id . '/rides/history', [], ['token' => $user->token]);
+
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'offered_rides_count' => 1,
+            'taken_rides_count' => 1,
+            'rides' => [
+                [
+                    'id' => $offeredRide->id,
+                    'myzone' => $offeredRide->myzone,
+                    'neighborhood' => $offeredRide->neighborhood,
+                    'going' => $offeredRide->going,
+                    'place' => $offeredRide->place,
+                    'route' => $offeredRide->route,
+                    'routine_id' => $offeredRide->routine_id,
+                    'hub' => $offeredRide->hub,
+                    'slots' => $offeredRide->slots,
+                    'mytime' => $offeredRide->date->format('H:i:s'),
+                    'mydate' => $offeredRide->date->format('Y-m-d'),
+                    'description' => $offeredRide->description,
+                    'week_days' => $offeredRide->week_days,
+                    'repeats_until' => $offeredRide->repeats_until,
+                    'driver' => $user->toArray(),
+                    'riders' => [],
+                ],
+                [
+                    'id' => $takenRide->id,
+                    'myzone' => $takenRide->myzone,
+                    'neighborhood' => $takenRide->neighborhood,
+                    'going' => $takenRide->going,
+                    'place' => $takenRide->place,
+                    'route' => $takenRide->route,
+                    'routine_id' => $takenRide->routine_id,
+                    'hub' => $takenRide->hub,
+                    'slots' => $takenRide->slots,
+                    'mytime' => $takenRide->date->format('H:i:s'),
+                    'mydate' => $takenRide->date->format('Y-m-d'),
+                    'description' => $takenRide->description,
+                    'week_days' => $takenRide->week_days,
+                    'repeats_until' => $takenRide->repeats_until,
+                    'driver' => $otherUser->toArray(),
+                    'riders' => [
+                        $user->toArray(),
+                    ],
+                ],
+            ],
+        ]);
     }
 
     private function someUser()

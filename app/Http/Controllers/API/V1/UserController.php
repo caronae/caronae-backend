@@ -1,8 +1,10 @@
 <?php
 
-namespace Caronae\Http\Controllers;
+namespace Caronae\Http\Controllers\API\v1;
 
+use Caronae\Http\Controllers\BaseController;
 use Caronae\Http\Requests\SignUpRequest;
+use Caronae\Http\Requests\UpdateUserRequest;
 use Caronae\Http\Resources\RideResource;
 use Caronae\Http\Resources\UserResource;
 use Caronae\Models\User;
@@ -12,30 +14,8 @@ use Illuminate\Http\Request;
 use Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class UserController extends Controller
+class UserController extends BaseController
 {
-    public function __construct()
-    {
-        $this->middleware('api.v1.auth', ['only' => [
-            'getRides',
-            'getOfferedRides',
-            'getPendingRides',
-            'update',
-            'saveFacebookId',
-            'saveProfilePicUrl',
-            'getMutualFriends',
-            'getIntranetPhotoUrl',
-        ]]);
-
-        $this->middleware('api.v1.userMatchesRequestedUser', ['only' => [
-            'getRides',
-            'getOfferedRides',
-            'getPendingRides',
-        ]]);
-
-        $this->middleware('api.institution', ['only' => ['store']]);
-    }
-
     public function store(SignUpRequest $request)
     {
         $institutionID = $request->input('id_ufrj');
@@ -103,37 +83,34 @@ class UserController extends Controller
         return ['rides' => RideResource::collection($rides)];
     }
 
-    public function update(Request $request)
+    public function getRidesHistory(User $user, Request $request)
     {
-        $this->validate($request, [
-            'phone_number' => 'numeric|max:999999999999',
-            'email' => 'email',
-            'location' => 'string',
-            'car_owner' => 'boolean',
-            'car_model' => 'required_if:car_owner,true,1|string|max:25',
-            'car_color' => 'required_if:car_owner,true,1|string|max:25',
-            'car_plate' => 'required_if:car_owner,true,1|regex:/[a-zA-Z]{3}-?[0-9]{4}$/',
-            'profile_pic_url' => 'url'
-        ]);
+        $offeredRides = $user->offeredRides()->finished();
+        $takenRides = $user->acceptedRides()->finished();
 
-        $user = $request->currentUser;
+        $response = [
+            'offered_rides_count' => $offeredRides->count(),
+            'taken_rides_count' => $takenRides->count(),
+        ];
 
-        $user->phone_number = $request->phone_number;
-        $user->email = strtolower($request->email);
-        $user->location = $request->location;
+        if ($user == $request->currentUser) {
+            $rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->with('riders')->get();
 
-        $user->car_owner = $request->car_owner;
-        if ($request->car_owner) {
-            $user->car_model = $request->car_model;
-            $user->car_color = $request->car_color;
-            $user->car_plate = strtoupper($request->car_plate);
+            $response += [
+                'rides' => RideResource::collection($rides),
+            ];
         }
 
-        if (isset($request->profile_pic_url)) {
-            $user->profile_pic_url = $request->profile_pic_url;
+        return $response;
+    }
+
+    public function update(User $user = null, UpdateUserRequest $request)
+    {
+        if (!$user) {
+            $user = $request->currentUser;
         }
 
-        $user->save();
+        $user->update($request->profile());
     }
 
     public function saveFacebookId(Request $request)

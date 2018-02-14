@@ -2,10 +2,10 @@
 
 namespace Caronae\Http\Controllers\Admin\Auth;
 
-use Caronae\Http\Controllers\Controller;
+use Caronae\Http\Controllers\BaseController;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 
-class ForgotPasswordController extends Controller
+class ForgotPasswordController extends BaseController
 {
     /*
     |--------------------------------------------------------------------------
