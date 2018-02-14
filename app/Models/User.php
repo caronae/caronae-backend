@@ -100,6 +100,12 @@ class User extends Model implements AuthenticatableContract
             ->inTheFuture();
     }
 
+    public function acceptedRides()
+    {
+        return $this->rides()
+            ->wherePivot('status', 'accepted');
+    }
+
     public function belongsToRide(Ride $ride)
     {
         return !is_null(

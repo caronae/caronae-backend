@@ -435,6 +435,9 @@ class RideController extends BaseController
         return ['message' => 'Ride finished.'];
     }
 
+    /**
+     * @deprecated
+     */
     public function getRidesHistory(Request $request)
     {
         $user = $request->currentUser;
@@ -465,6 +468,9 @@ class RideController extends BaseController
         return $resultJson;
     }
 
+    /**
+     * @deprecated
+     */
     public function getRidesHistoryCount($userId)
     {
         $user = User::find($userId);

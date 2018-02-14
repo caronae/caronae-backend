@@ -519,7 +519,7 @@ class RideControllerTest extends TestCase
         $ride5->users()->attach($user2, ['status' => 'driver']);
         $ride6->users()->attach($this->user, ['status' => 'rejected']);
 
-        $response = $this->json('GET', 'api/v1/rides/getRidesHistory', [], $this->headers);
+        $response = $this->json('GET', 'ride/getRidesHistory', [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             [
@@ -589,7 +589,7 @@ class RideControllerTest extends TestCase
         $ride6 = factory(Ride::class)->create(['done' => true]); // rejected
         $ride6->users()->attach($this->user, ['status' => 'rejected']);
 
-        $response = $this->json('GET', 'api/v1/rides/getRidesHistoryCount/' . $this->user->id, [], $this->headers);
+        $response = $this->json('GET', 'ride/getRidesHistoryCount/' . $this->user->id, [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'offeredCount' => 2,

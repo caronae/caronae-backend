@@ -608,6 +608,29 @@ class UserControllerTest extends TestCase
         $this->assertEquals($newURL, $user->fresh()->profile_pic_url);
     }
 
+    /**
+     * @test
+     */
+    public function shouldReturnRideHistoryCount()
+    {
+        $user = $this->someUser();
+        $otherUser = $this->someUser();
+        $offeredRide = factory(Ride::class)->create(['done' => true]);
+        $offeredRide->users()->attach($otherUser, ['status' => 'driver']);
+        $takenRide1 = factory(Ride::class)->create(['done' => true]);
+        $takenRide1->users()->attach($otherUser, ['status' => 'accepted']);
+        $takenRide2 = factory(Ride::class)->create(['done' => true]);
+        $takenRide2->users()->attach($otherUser, ['status' => 'accepted']);
+
+        $response = $this->json('GET', 'api/v1/users/' . $otherUser->id . '/rides/history', [], ['token' => $user->token]);
+
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'offered_rides_count' => 1,
+            'taken_rides_count' => 2,
+        ]);
+    }
+
     private function someUser()
     {
         return factory(User::class)->create()->fresh();

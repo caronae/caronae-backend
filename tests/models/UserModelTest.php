@@ -152,6 +152,29 @@ class UserModelTest extends TestCase
         $this->assertEmpty($pendingRides);
     }
 
+    /**
+     * @test
+     */
+    public function shouldReturnAcceptedRides()
+    {
+        $user = factory(User::class)->create();
+
+        $ride1 = $this->createRide();
+        $ride1->users()->attach($user, ['status' => 'accepted']);
+        $ride2 = $this->createRide();
+        $ride2->users()->attach($user, ['status' => 'pending']);
+        $ride3 = $this->createRide();
+        $ride3->users()->attach($user, ['status' => 'refused']);
+        $ride4 = $this->createRide();
+        $ride4->users()->attach($user, ['status' => 'driver']);
+
+        $rides = $user->acceptedRides()->get();
+        $this->assertTrue($rides->contains($ride1));
+        $this->assertFalse($rides->contains($ride2));
+        $this->assertFalse($rides->contains($ride3));
+        $this->assertFalse($rides->contains($ride4));
+    }
+
     private function createRideAsDriver($attributes = [])
     {
         $ride = $this->createRide($attributes);
