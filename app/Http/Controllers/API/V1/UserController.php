@@ -83,15 +83,25 @@ class UserController extends BaseController
         return ['rides' => RideResource::collection($rides)];
     }
 
-    public function getRidesHistory(User $user)
+    public function getRidesHistory(User $user, Request $request)
     {
-        $offeredRidesCount = $user->offeredRides()->finished()->count();
-        $takenRidesCount = $user->acceptedRides()->finished()->count();
+        $offeredRides = $user->offeredRides()->finished();
+        $takenRides = $user->acceptedRides()->finished();
 
-        return [
-            'offered_rides_count' => $offeredRidesCount,
-            'taken_rides_count' => $takenRidesCount,
+        $response = [
+            'offered_rides_count' => $offeredRides->count(),
+            'taken_rides_count' => $takenRides->count(),
         ];
+
+        if ($user == $request->currentUser) {
+            $rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->with('riders')->get();
+
+            $response += [
+                'rides' => RideResource::collection($rides),
+            ];
+        }
+
+        return $response;
     }
 
     public function update(User $user = null, UpdateUserRequest $request)

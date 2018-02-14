@@ -631,6 +631,69 @@ class UserControllerTest extends TestCase
         ]);
     }
 
+    /**
+     * @test
+     */
+    public function shouldReturnDetailedRideHistoryForCurrentUser()
+    {
+        $user = $this->someUser();
+        $otherUser = $this->someUser();
+
+        $offeredRide = factory(Ride::class)->create(['done' => true])->fresh();
+        $offeredRide->users()->attach($user, ['status' => 'driver']);
+        $takenRide = factory(Ride::class)->create(['done' => true])->fresh();
+        $takenRide->users()->attach($otherUser, ['status' => 'driver']);
+        $takenRide->users()->attach($user, ['status' => 'accepted']);
+
+        $response = $this->json('GET', 'api/v1/users/' . $user->id . '/rides/history', [], ['token' => $user->token]);
+
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'offered_rides_count' => 1,
+            'taken_rides_count' => 1,
+            'rides' => [
+                [
+                    'id' => $offeredRide->id,
+                    'myzone' => $offeredRide->myzone,
+                    'neighborhood' => $offeredRide->neighborhood,
+                    'going' => $offeredRide->going,
+                    'place' => $offeredRide->place,
+                    'route' => $offeredRide->route,
+                    'routine_id' => $offeredRide->routine_id,
+                    'hub' => $offeredRide->hub,
+                    'slots' => $offeredRide->slots,
+                    'mytime' => $offeredRide->date->format('H:i:s'),
+                    'mydate' => $offeredRide->date->format('Y-m-d'),
+                    'description' => $offeredRide->description,
+                    'week_days' => $offeredRide->week_days,
+                    'repeats_until' => $offeredRide->repeats_until,
+                    'driver' => $user->toArray(),
+                    'riders' => [],
+                ],
+                [
+                    'id' => $takenRide->id,
+                    'myzone' => $takenRide->myzone,
+                    'neighborhood' => $takenRide->neighborhood,
+                    'going' => $takenRide->going,
+                    'place' => $takenRide->place,
+                    'route' => $takenRide->route,
+                    'routine_id' => $takenRide->routine_id,
+                    'hub' => $takenRide->hub,
+                    'slots' => $takenRide->slots,
+                    'mytime' => $takenRide->date->format('H:i:s'),
+                    'mydate' => $takenRide->date->format('Y-m-d'),
+                    'description' => $takenRide->description,
+                    'week_days' => $takenRide->week_days,
+                    'repeats_until' => $takenRide->repeats_until,
+                    'driver' => $otherUser->toArray(),
+                    'riders' => [
+                        $user->toArray(),
+                    ],
+                ],
+            ],
+        ]);
+    }
+
     private function someUser()
     {
         return factory(User::class)->create()->fresh();
