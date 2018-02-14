@@ -473,7 +473,7 @@ class UserControllerTest extends TestCase
         // add random ride from another user
         factory(Ride::class)->create();
 
-        $response = $this->json('GET', 'api/v1/users/' . $user->id . '/offeredRides', [], [
+        $response = $this->json('GET', 'user/' . $user->id . '/offeredRides', [], [
             'token' => $user->token
         ]);
 
@@ -512,7 +512,7 @@ class UserControllerTest extends TestCase
         $user = $this->someUser();
         $user2 = $this->someUser();
 
-        $response = $this->json('GET', 'api/v1/users/' . $user2->id . '/offeredRides', [], [
+        $response = $this->json('GET', 'user/' . $user2->id . '/offeredRides', [], [
             'token' => $user->token
         ]);
 
@@ -529,7 +529,7 @@ class UserControllerTest extends TestCase
 
         $ride = $this->createPendingRideForUser($driver, $user);
 
-        $response = $this->json('GET', 'api/v1/users/' . $user->id . '/pendingRides', [], [
+        $response = $this->json('GET', 'user/' . $user->id . '/pendingRides', [], [
             'token' => $user->token
         ]);
 
@@ -565,7 +565,7 @@ class UserControllerTest extends TestCase
         $user = $this->someUser();
         $user2 = $this->someUser();
 
-        $response = $this->json('GET', 'api/v1/users/' . $user2->id . '/pendingRides', [], [
+        $response = $this->json('GET', 'user/' . $user2->id . '/pendingRides', [], [
             'token' => $user->token
         ]);
 
