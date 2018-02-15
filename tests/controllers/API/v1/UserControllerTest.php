@@ -641,9 +641,11 @@ class UserControllerTest extends TestCase
 
         $offeredRide = factory(Ride::class)->create(['done' => true])->fresh();
         $offeredRide->users()->attach($user, ['status' => 'driver']);
-        $takenRide = factory(Ride::class)->create(['done' => true])->fresh();
-        $takenRide->users()->attach($otherUser, ['status' => 'driver']);
-        $takenRide->users()->attach($user, ['status' => 'accepted']);
+        $takenRide1 = factory(Ride::class)->create(['done' => true])->fresh();
+        $takenRide1->users()->attach($otherUser, ['status' => 'driver']);
+        $takenRide1->users()->attach($user, ['status' => 'accepted']);
+        $takenRide2 = factory(Ride::class)->create(['done' => false])->fresh();
+        $takenRide2->users()->attach($user, ['status' => 'accepted']);
 
         $response = $this->json('GET', 'api/v1/users/' . $user->id . '/rides/history', [], ['token' => $user->token]);
 
@@ -671,20 +673,20 @@ class UserControllerTest extends TestCase
                     'riders' => [],
                 ],
                 [
-                    'id' => $takenRide->id,
-                    'myzone' => $takenRide->myzone,
-                    'neighborhood' => $takenRide->neighborhood,
-                    'going' => $takenRide->going,
-                    'place' => $takenRide->place,
-                    'route' => $takenRide->route,
-                    'routine_id' => $takenRide->routine_id,
-                    'hub' => $takenRide->hub,
-                    'slots' => $takenRide->slots,
-                    'mytime' => $takenRide->date->format('H:i:s'),
-                    'mydate' => $takenRide->date->format('Y-m-d'),
-                    'description' => $takenRide->description,
-                    'week_days' => $takenRide->week_days,
-                    'repeats_until' => $takenRide->repeats_until,
+                    'id' => $takenRide1->id,
+                    'myzone' => $takenRide1->myzone,
+                    'neighborhood' => $takenRide1->neighborhood,
+                    'going' => $takenRide1->going,
+                    'place' => $takenRide1->place,
+                    'route' => $takenRide1->route,
+                    'routine_id' => $takenRide1->routine_id,
+                    'hub' => $takenRide1->hub,
+                    'slots' => $takenRide1->slots,
+                    'mytime' => $takenRide1->date->format('H:i:s'),
+                    'mydate' => $takenRide1->date->format('Y-m-d'),
+                    'description' => $takenRide1->description,
+                    'week_days' => $takenRide1->week_days,
+                    'repeats_until' => $takenRide1->repeats_until,
                     'driver' => $otherUser->toArray(),
                     'riders' => [
                         $user->toArray(),

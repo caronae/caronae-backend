@@ -94,7 +94,9 @@ class UserController extends BaseController
         ];
 
         if ($user == $request->currentUser) {
-            $rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->with('riders')->get();
+            $offeredRides = $offeredRides->with('riders')->get();
+            $takenRides = $takenRides->with('riders')->get();
+            $rides = $offeredRides->concat($takenRides);
 
             $response += [
                 'rides' => RideResource::collection($rides),
