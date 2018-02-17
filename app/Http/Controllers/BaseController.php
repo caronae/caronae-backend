@@ -17,4 +17,9 @@ abstract class BaseController extends Controller
         Log::warning(get_class($this) . ': ' . $message);
         return response()->json(['error' => $message], $statusCode);
     }
+
+    protected function isLegacyAPI($request)
+    {
+        return strpos($request->path(), 'api/v') === false;
+    }
 }

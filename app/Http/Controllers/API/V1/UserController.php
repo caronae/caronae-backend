@@ -41,15 +41,19 @@ class UserController extends BaseController
             'token' => 'required'
         ]);
 
-        $user = User::where(['id_ufrj' => $request->id_ufrj, 'token' => $request->token])->first();
+        $user = User::where(['id_ufrj' => $request->input('id_ufrj'), 'token' => $request->input('token')])->first();
         if ($user == null || $user->banned) {
             return $this->error('User not found with provided credentials.', 401);
         }
 
-        // get user's rides as driver
-        $drivingRides = $user->rides()->where(['status' => 'driver', 'done' => false])->get();
+        $response = ['user' => new UserResource($user)];
 
-        return ['user' => new UserResource($user), 'rides' => $drivingRides];
+        if ($this->isLegacyAPI($request)) {
+            $drivingRides = $user->rides()->where(['status' => 'driver', 'done' => false])->get();
+            $response += ['rides' => $drivingRides];
+        }
+
+        return $response;
     }
 
     public function getRides(User $user)

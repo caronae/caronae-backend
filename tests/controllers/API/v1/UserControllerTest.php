@@ -90,6 +90,39 @@ class UserControllerTest extends TestCase
     {
         $user = $this->someUser();
 
+        $response = $this->json('POST', 'api/v1/users/login', [
+            'id_ufrj' => $user->id_ufrj,
+            'token' => $user->token
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'profile' => $user->profile,
+                'course' => $user->course,
+                'phone_number' => $user->phone_number,
+                'email' => $user->email,
+                'car_owner' => $user->car_owner,
+                'car_model' => $user->car_model,
+                'car_color' => $user->car_color,
+                'car_plate' => $user->car_plate,
+                'created_at' => $user->created_at->format('Y-m-d H:i:s'),
+                'location' => $user->location,
+                'face_id' => $user->face_id,
+                'profile_pic_url' => $user->profile_pic_url
+            ],
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldReturnUserRidesOnLegacySignIn()
+    {
+        $user = $this->someUser();
+
         // add unfinished rides, which should be returned
         $ride = factory(Ride::class)->create(['done' => false])->fresh();
         $user->rides()->attach($ride, ['status' => 'driver']);
@@ -101,7 +134,7 @@ class UserControllerTest extends TestCase
         // add random ride from another user
         factory(Ride::class)->create();
 
-        $response = $this->json('POST', 'api/v1/users/login', [
+        $response = $this->json('POST', 'user/login', [
             'id_ufrj' => $user->id_ufrj,
             'token' => $user->token
         ]);
