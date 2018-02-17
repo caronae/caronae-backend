@@ -30,7 +30,6 @@ Route::get('rides/getRequesters/{rideId}', 'RideController@getRequesters');
 Route::post('rides/answerJoinRequest', 'RideController@answerJoinRequest');
 Route::post('rides/leaveRide', 'RideController@leaveRide');
 Route::post('rides/finishRide', 'RideController@finishRide');
-Route::post('rides/saveFeedback', 'RideController@saveFeedback');
 Route::get('rides/validateDuplicate', 'RideController@validateDuplicate');
 Route::get('rides/{ride}', 'RideController@show');
 Route::post('rides/{ride}/messages', 'RideController@sendChatMessage');
