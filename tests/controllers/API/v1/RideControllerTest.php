@@ -365,7 +365,8 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testGetRequesters()
+    /** @test */
+    public function shouldReturnRequests()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -376,7 +377,7 @@ class RideControllerTest extends TestCase
         $ride->users()->attach(factory(User::class)->create(), ['status' => 'accepted']);
         $ride->users()->attach(factory(User::class)->create(), ['status' => 'rejected']);
 
-        $response = $this->json('GET', 'api/v1/rides/getRequesters/' . $ride->id, [], $this->headers);
+        $response = $this->json('GET', 'api/v1/rides/' . $ride->id . '/requests', [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             [

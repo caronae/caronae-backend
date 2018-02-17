@@ -26,7 +26,7 @@ Route::post('rides', 'RideController@store');
 Route::delete('rides/{rideId}', 'RideController@delete');
 Route::delete('rides/allFromRoutine/{routineId}', 'RideController@deleteAllFromRoutine');
 Route::post('rides/requestJoin', 'RideController@requestJoin');
-Route::get('rides/getRequesters/{rideId}', 'RideController@getRequesters');
+Route::get('rides/{ride}/requests', 'RideController@getRequests');
 Route::post('rides/answerJoinRequest', 'RideController@answerJoinRequest');
 Route::post('rides/leaveRide', 'RideController@leaveRide');
 Route::post('rides/finishRide', 'RideController@finishRide');

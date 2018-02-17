@@ -324,13 +324,8 @@ class RideController extends BaseController
         return ['message' => 'Request sent.'];
     }
 
-    public function getRequesters($rideId)
+    public function getRequests(Ride $ride)
     {
-        $ride = Ride::find($rideId);
-        if ($ride == null) {
-            return $this->error('ride not found with id = ' . $rideId, 400);
-        }
-
         return $ride->users()->where('status', 'pending')->get();
     }
 

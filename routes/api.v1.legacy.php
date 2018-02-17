@@ -32,7 +32,7 @@ Route::delete('ride/allFromUser/{userId}/{going}', 'RideController@deleteAllFrom
 Route::delete('ride/allFromRoutine/{routineId}', 'RideController@deleteAllFromRoutine');
 Route::post('ride/listFiltered', 'RideController@listFiltered');
 Route::post('ride/requestJoin', 'RideController@requestJoin');
-Route::get('ride/getRequesters/{rideId}', 'RideController@getRequesters');
+Route::get('ride/getRequesters/{rideId}', 'RideController@getRequests');
 Route::post('ride/answerJoinRequest', 'RideController@answerJoinRequest');
 Route::get('ride/getMyActiveRides', 'RideController@getMyActiveRides');
 Route::post('ride/leaveRide', 'RideController@leaveRide');
