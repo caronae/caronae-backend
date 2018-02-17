@@ -34,7 +34,9 @@ class RideController extends BaseController
             'validateDuplicate',
             'delete', 'deleteAllFromRoutine', 'deleteAllFromUser',
             'listFiltered',
-            'requestJoin',
+            'getRequests',
+            'createRequest',
+            'updateRequest',
             'getMyActiveRides',
             'leaveRide', 'finishRide',
             'getRidesHistory',
@@ -298,55 +300,62 @@ class RideController extends BaseController
         return $results;
     }
 
-    public function requestJoin(Request $request)
-    {
-        $this->validate($request, [
-            'rideId' => 'required|int'
-        ]);
-
-        $user = $request->currentUser;
-        $rideID = $request->rideId;
-
-        //if a relationship already exists, do not create another one
-        $previousRequest = $user->rides()->where('rides.id', $rideID)->first();
-        if ($previousRequest != null) {
-            return ['message' => 'Relationship between user and ride already exists as ' . $previousRequest->pivot->status];
-        }
-
-        //save relationship between ride and user
-        $user->rides()->attach($rideID, ['status' => 'pending']);
-
-        //send notification
-        $ride = Ride::find($rideID);
-        $driver = $ride->driver();
-        $driver->notify(new RideJoinRequested($ride, $user));
-
-        return ['message' => 'Request sent.'];
-    }
-
     public function getRequests(Ride $ride)
     {
         return $ride->users()->where('status', 'pending')->get();
     }
 
-    public function answerJoinRequest(Request $request)
+    public function createRequest(Ride $ride = null, Request $request)
     {
-        //find existing relationship which should be pending
-        $matchThese = ['ride_id' => $request->rideId, 'user_id' => $request->userId, 'status' => 'pending'];
-        $rideUser = RideUser::where($matchThese)->first();
-        if ($rideUser == null) {
+        if ($ride == null) {
+            $this->validate($request, [
+                'rideId' => 'required|int'
+            ]);
+            $ride = Ride::find($request->input('rideId'));
+        }
+
+        $user = $request->currentUser;
+
+        //if a relationship already exists, do not create another one
+        $previousRequest = $ride->users()->where('users.id', $user->id);
+        if ($previousRequest->exists()) {
+            return ['message' => 'Ride request already exists.'];
+        }
+
+        $ride->users()->attach($user, ['status' => 'pending']);
+
+        $driver = $ride->driver();
+        $driver->notify(new RideJoinRequested($ride, $user));
+
+        return ['message' => 'Request created.'];
+    }
+
+    public function updateRequest(Ride $ride = null, Request $request)
+    {
+        if ($ride == null) {
+            $this->validate($request, [
+                'rideId' => 'required|int'
+            ]);
+            $ride = Ride::find($request->input('rideId'));
+        }
+
+        $this->validate($request, [
+            'userId' => 'required|int',
+            'accepted' => 'required|boolean',
+        ]);
+
+        $user = User::find($request->input('userId'));
+        $previousRequest = $ride->users()->where(['users.id' => $user->id, 'status' => 'pending']);
+        if (!$previousRequest->exists()) {
             return $this->error('Ride request not found.', 400);
         }
 
-        $rideUser->status = $request->accepted ? 'accepted' : 'refused';
-        $rideUser->save();
+        $status = $request->input('accepted') ? 'accepted' : 'refused';
+        $ride->users()->updateExistingPivot($user->id, ['status' => $status]);
 
-        //send notification
-        $ride = Ride::find($request->rideId);
-        $user = User::find($request->userId);
-        $user->notify(new RideJoinRequestAnswered($ride, $request->accepted));
+        $user->notify(new RideJoinRequestAnswered($ride, $request->input('accepted')));
 
-        return ['message' => 'Request answered.'];
+        return ['message' => 'Request updated.'];
     }
 
     public function getMyActiveRides(Request $request)

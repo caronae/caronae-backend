@@ -347,7 +347,8 @@ class RideControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testJoin()
+    /** @test */
+    public function shouldCreateRequestForRideUsingLegacyAPI()
     {
         $ride = factory(Ride::class, 'next')->create();
         $user = factory(User::class)->create();
@@ -358,15 +359,44 @@ class RideControllerTest extends TestCase
             'rideId' => $ride->id
         ];
 
-        $response = $this->json('POST', 'api/v1/rides/requestJoin', $request, $this->headers);
+        $response = $this->json('POST', 'ride/requestJoin', $request, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
-            'message' => 'Request sent.'
+            'message' => 'Request created.'
         ]);
     }
 
     /** @test */
-    public function shouldReturnRequests()
+    public function shouldCreateRequestForRide()
+    {
+        $ride = factory(Ride::class, 'next')->create();
+        $user = factory(User::class)->create();
+        $ride->users()->attach($user, ['status' => 'driver']);
+
+        $this->expectsNotification($user, RideJoinRequested::class);
+
+        $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/requests', [], $this->headers);
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'message' => 'Request created.'
+        ]);
+    }
+
+    /** @test */
+    public function shouldNotCreateDuplicateRequestForRide()
+    {
+        $ride = factory(Ride::class, 'next')->create();
+        $ride->users()->attach($this->user, ['status' => 'pending']);
+
+        $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/requests', [], $this->headers);
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'message' => 'Ride request already exists.'
+        ]);
+    }
+
+    /** @test */
+    public function shouldListRequests()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -399,7 +429,8 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testAnswerJoinRequest()
+    /** @test */
+    public function shouldUpdateRequestUsingLegacyAPI()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -412,13 +443,54 @@ class RideControllerTest extends TestCase
         $request = [
             'rideId' => $ride->id,
             'userId' => $rider->id,
-            'accepted' => true
+            'accepted' => true,
         ];
 
-        $response = $this->json('POST', 'api/v1/rides/answerJoinRequest', $request, $this->headers);
+        $response = $this->json('POST', 'ride/answerJoinRequest', $request, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
-            'message' => 'Request answered.'
+            'message' => 'Request updated.'
+        ]);
+    }
+
+    /** @test */
+    public function shouldUpdateRequest()
+    {
+        $ride = factory(Ride::class, 'next')->create();
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $rider = factory(User::class)->create();
+        $ride->users()->attach($rider, ['status' => 'pending']);
+
+        $this->expectsNotification($rider, RideJoinRequestAnswered::class);
+
+        $request = [
+            'userId' => $rider->id,
+            'accepted' => true,
+        ];
+
+        $response = $this->json('PUT', 'api/v1/rides/' . $ride->id . '/requests', $request, $this->headers);
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'message' => 'Request updated.'
+        ]);
+    }
+
+    /** @test */
+    public function shouldNotUpdateRequestThatDoesNotExist()
+    {
+        $ride = factory(Ride::class, 'next')->create();
+        $rider = factory(User::class)->create();
+
+        $request = [
+            'userId' => $rider->id,
+            'accepted' => true,
+        ];
+
+        $response = $this->json('PUT', 'api/v1/rides/' . $ride->id . '/requests', $request, $this->headers);
+        $response->assertStatus(400);
+        $response->assertExactJson([
+            'error' => 'Ride request not found.'
         ]);
     }
 
