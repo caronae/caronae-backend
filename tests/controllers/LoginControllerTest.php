@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Caronae\Http\Controllers\Web\LoginController;
 use Caronae\Models\Institution;
 use Caronae\Models\User;
 use Crypt;
@@ -48,15 +49,15 @@ class LoginControllerTest extends TestCase
     {
         $response = $this->call('GET', 'login', [ 'type' => 'app' ]);
 
-        $response->assertSessionHas('login_type', 'app');
+        $response->assertSessionHas(LoginController::SESSION_LOGIN_TYPE, 'app');
     }
 
     /** @test */
     public function shouldRememberOnlyMostRecentLoginType()
     {
-        $response = $this->withSession([ 'type' => 'app' ])->call('GET', 'login', [ 'type' => 'web' ]);
+        $response = $this->withLoginType('app')->call('GET', 'login', [ 'type' => 'web' ]);
 
-        $response->assertSessionHas('login_type', 'web');
+        $response->assertSessionHas(LoginController::SESSION_LOGIN_TYPE, 'web');
     }
 
     /** @test */
@@ -64,7 +65,7 @@ class LoginControllerTest extends TestCase
     {
         $response = $this->call('GET', 'login');
 
-        $response->assertSessionHas('login_type', 'web');
+        $response->assertSessionHas(LoginController::SESSION_LOGIN_TYPE, 'web');
     }
 
     /** @test */
@@ -73,7 +74,7 @@ class LoginControllerTest extends TestCase
         $user = factory(User::class)->create();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $response = $this->withSession([ 'type' => 'web' ])->call('GET', 'login', [ 'token' => $jwtToken ]);
+        $response = $this->withLoginType('web')->call('GET', 'login', [ 'token' => $jwtToken ]);
 
         $response->assertStatus(200);
         $response->assertViewIs('login.token');
@@ -83,12 +84,12 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldRedirectToAppWithMobileType()
+    public function shouldRedirectToAppWithAppLoginType()
     {
         $user = factory(User::class)->create();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $response = $this->withSession([ 'type' => 'app' ])->call('GET', 'login', [ 'token' => $jwtToken ]);
+        $response = $this->withLoginType('app')->call('GET', 'login', [ 'token' => $jwtToken ]);
 
         $response->assertRedirect('caronae://login?id=' . $user->id . '&id_ufrj=' . $user->id_ufrj . '&token=' . $user->token);
     }
@@ -131,5 +132,10 @@ class LoginControllerTest extends TestCase
 
         $response->assertRedirect(route('chave', [ 'token' => $jwtToken ]));
         $this->assertNotEquals($user->fresh()->token, $previousToken);
+    }
+
+    private function withLoginType($type)
+    {
+        return $this->withSession([LoginController::SESSION_LOGIN_TYPE => $type]);
     }
 }

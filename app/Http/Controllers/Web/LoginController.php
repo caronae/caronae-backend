@@ -12,6 +12,8 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 class LoginController extends BaseController
 {
+    const SESSION_LOGIN_TYPE = 'login_type';
+
     public function index(Request $request)
     {
         $this->rememberLoginType($request);
@@ -37,7 +39,7 @@ class LoginController extends BaseController
             $user = $this->authenticateUser($request);
             Log::info('Login: usuário autenticado.', [
                 'id' => $user->id,
-                'login_type' => $this->getLoginType($request),
+                self::SESSION_LOGIN_TYPE => $this->getLoginType($request),
                 'referer' => $request->headers->get('referer'),
             ]);
         } catch (JWTException $e) {
@@ -92,17 +94,22 @@ class LoginController extends BaseController
 
     private function rememberLoginType(Request $request)
     {
+        $session = $request->session();
         if ($request->filled('type')) {
             $login_type = $request->input('type');
-            $request->session()->put('login_type', $login_type);
-        } else {
-            $request->session()->put('login_type', 'web');
+            $session->put(self::SESSION_LOGIN_TYPE, $login_type);
+
+            return;
+        }
+
+        if (!$session->has(self::SESSION_LOGIN_TYPE)) {
+            $session->put(self::SESSION_LOGIN_TYPE, 'web');
         }
     }
 
     private function getLoginType(Request $request)
     {
-        return $request->session()->get('type', 'web');
+        return $request->session()->get(self::SESSION_LOGIN_TYPE, 'web');
     }
 
     private function isAppLogin(Request $request)
