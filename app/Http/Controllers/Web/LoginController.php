@@ -14,6 +14,8 @@ class LoginController extends BaseController
 {
     public function index(Request $request)
     {
+        $this->rememberLoginType($request);
+
         if ($request->filled('error')) {
             $error = $request->input('error');
             Log::info('Login: instituição não autorizou login.', [ 'error' => $error, 'referer' => $request->headers->get('referer') ]);
@@ -37,6 +39,10 @@ class LoginController extends BaseController
         } catch (JWTException $e) {
             Log::warning('Login: erro autenticando token.', [ 'error' => $e->getMessage(), 'token' => $request->input('token') ]);
             return response()->view('login.error', [ 'error' => 'Token inválido.' ], 401);
+        }
+
+        if ($this->isAppLogin($request)) {
+            return redirect()->away('caronae://login?id=' . $user->id . '&id_ufrj=' . $user->id_ufrj . '&token=' . $user->token);
         }
 
         return view('login.token', [
@@ -78,5 +84,20 @@ class LoginController extends BaseController
         }
 
         return $request->cookie('acceptedTermsOfUse', false);
+    }
+
+    private function rememberLoginType(Request $request)
+    {
+        if ($request->filled('type')) {
+            $login_type = $request->input('type');
+            $request->session()->put('login_type', $login_type);
+        } else {
+            $request->session()->put('login_type', 'web');
+        }
+    }
+
+    private function isAppLogin(Request $request)
+    {
+        return $request->session()->get('type') == 'app';
     }
 }

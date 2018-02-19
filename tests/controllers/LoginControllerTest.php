@@ -12,7 +12,8 @@ class LoginControllerTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testReturnsInstitutionsViewWhenThereAreManyInstitutions()
+    /** @test */
+    public function shouldReturnInstitutionsViewWhenThereAreManyInstitutions()
     {
         factory(Institution::class, 2)->create();
         $response = $this->get('login');
@@ -22,7 +23,8 @@ class LoginControllerTest extends TestCase
         $response->assertViewHas('institutions');
     }
 
-    public function testRedirectsToInstitutionWhenThereIsOneInstitution()
+    /** @test */
+    public function shouldRedirectToInstitutionWhenThereIsOneInstitution()
     {
         $institution = factory(Institution::class)->create();
         $response = $this->get('login');
@@ -30,7 +32,8 @@ class LoginControllerTest extends TestCase
         $response->assertRedirect($institution->authentication_url);
     }
 
-    public function testReturnsErrorView()
+    /** @test */
+    public function shouldReturnErrorView()
     {
         $errorMessage = 'Error message';
         $response = $this->call('GET', 'login', [ 'error' => $errorMessage ]);
@@ -40,12 +43,37 @@ class LoginControllerTest extends TestCase
         $response->assertViewHas('error', $errorMessage);
     }
 
-    public function testReturnsTokenView()
+    /** @test */
+    public function shouldRememberLoginType()
+    {
+        $response = $this->call('GET', 'login', [ 'type' => 'app' ]);
+
+        $response->assertSessionHas('login_type', 'app');
+    }
+
+    /** @test */
+    public function shouldRememberOnlyMostRecentLoginType()
+    {
+        $response = $this->withSession([ 'type' => 'app' ])->call('GET', 'login', [ 'type' => 'web' ]);
+
+        $response->assertSessionHas('login_type', 'web');
+    }
+
+    /** @test */
+    public function shouldDefaultToWebLoginTypeWhenNotSpecified()
+    {
+        $response = $this->call('GET', 'login');
+
+        $response->assertSessionHas('login_type', 'web');
+    }
+
+    /** @test */
+    public function shouldReturnTokenViewWithWebType()
     {
         $user = factory(User::class)->create();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $response = $this->call('GET', 'login', [ 'token' => $jwtToken ]);
+        $response = $this->withSession([ 'type' => 'web' ])->call('GET', 'login', [ 'token' => $jwtToken ]);
 
         $response->assertStatus(200);
         $response->assertViewIs('login.token');
@@ -54,7 +82,19 @@ class LoginControllerTest extends TestCase
         $response->assertViewHas('displayTermsOfUse', true);
     }
 
-    public function testAcceptsTermsOfUse()
+    /** @test */
+    public function shouldRedirectToAppWithMobileType()
+    {
+        $user = factory(User::class)->create();
+        $jwtToken = JWTAuth::fromUser($user);
+
+        $response = $this->withSession([ 'type' => 'app' ])->call('GET', 'login', [ 'token' => $jwtToken ]);
+
+        $response->assertRedirect('caronae://login?id=' . $user->id . '&id_ufrj=' . $user->id_ufrj . '&token=' . $user->token);
+    }
+
+    /** @test */
+    public function shouldSaveCookieWhenAcceptingTermsOfUse()
     {
         $user = factory(User::class)->create();
         $jwtToken = JWTAuth::fromUser($user);
@@ -68,7 +108,8 @@ class LoginControllerTest extends TestCase
         $response->assertCookie('acceptedTermsOfUse', true);
     }
 
-    public function testTokenViewDoesNotDisplayTermsAgain()
+    /** @test */
+    public function shouldNotDisplayTermsAgainIfHasAcceptedTerms()
     {
         $user = factory(User::class)->create();
         $jwtToken = JWTAuth::fromUser($user);
@@ -79,7 +120,8 @@ class LoginControllerTest extends TestCase
         $response->assertViewHas('displayTermsOfUse', false);
     }
 
-    public function testRefreshToken()
+    /** @test */
+    public function shouldRefreshToken()
     {
         $user = factory(User::class)->create();
         $jwtToken = JWTAuth::fromUser($user);
