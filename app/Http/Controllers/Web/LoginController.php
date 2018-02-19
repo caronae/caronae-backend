@@ -35,7 +35,11 @@ class LoginController extends BaseController
 
         try {
             $user = $this->authenticateUser($request);
-            Log::info('Login: usuário autenticado.', [ 'id' => $user->id, 'referer' => $request->headers->get('referer') ]);
+            Log::info('Login: usuário autenticado.', [
+                'id' => $user->id,
+                'login_type' => $this->getLoginType($request),
+                'referer' => $request->headers->get('referer'),
+            ]);
         } catch (JWTException $e) {
             Log::warning('Login: erro autenticando token.', [ 'error' => $e->getMessage(), 'token' => $request->input('token') ]);
             return response()->view('login.error', [ 'error' => 'Token inválido.' ], 401);
@@ -96,8 +100,13 @@ class LoginController extends BaseController
         }
     }
 
+    private function getLoginType(Request $request)
+    {
+        return $request->session()->get('type', 'web');
+    }
+
     private function isAppLogin(Request $request)
     {
-        return $request->session()->get('type') == 'app';
+        return $this->getLoginType($request) == 'app';
     }
 }
