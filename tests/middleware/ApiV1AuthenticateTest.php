@@ -26,7 +26,7 @@ class ApiV1AuthenticateTest extends TestCase
 
         $response = $this->middleware->handle($request, function($r){ });
 
-        $this->assertResponseIs401TokenNotAuthorized($response);
+        $this->assertResponseIs401($response);
     }
 
     public function testHandleShouldReturn401WithoutToken()
@@ -35,7 +35,7 @@ class ApiV1AuthenticateTest extends TestCase
 
         $response = $this->middleware->handle($request, function($r){ });
 
-        $this->assertResponseIs401TokenNotAuthorized($response);
+        $this->assertResponseIs401($response);
     }
 
     public function testShouldContinueWithValidToken()
@@ -60,12 +60,10 @@ class ApiV1AuthenticateTest extends TestCase
         $this->assertNotNull($result->currentUser);
     }
 
-    private function assertResponseIs401TokenNotAuthorized($response)
+    private function assertResponseIs401($response)
     {
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertEquals([
-            'error' => 'User token not authorized.'
-        ], (array)$response->getData());
+        $this->assertArrayHasKey('error', (array)$response->getData());
     }
 
     private function authenticatedRequest(): Request
