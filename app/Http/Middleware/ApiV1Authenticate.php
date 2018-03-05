@@ -60,30 +60,34 @@ class ApiV1Authenticate
 
     private function handleJWTAuthentication($request, Closure $next)
     {
+        $response = $next($request);
+
         try {
-            if (!$user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['error' => 'User not found.'], 404);
-            }
-
-            if ($user->banned) {
-                return response()->json(['error' => 'User is banned.'], 401);
-            }
-
-            $request->merge([
-                'currentUser' => $user
-            ]);
-
-            auth()->setUser($user);
-
-            $this->updateUserAppInfo($request);
-            return $next($request);
-
+            $user = JWTAuth::parseToken()->authenticate();
         } catch (TokenExpiredException $e) {
-            return response()->json(['error' => 'Token is expired.'], $e->getStatusCode());
+            try {
+                $refreshed = JWTAuth::refresh(JWTAuth::getToken());
+                $user = JWTAuth::setToken($refreshed)->toUser();
+                if ($user->banned) {
+                    return response()->json(['error' => 'User is banned.'], 401);
+                }
+
+                $response->header('Authorization', "Bearer $refreshed");
+            } catch (JWTException $e) {
+                return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
+            }
         } catch (TokenInvalidException $e) {
             return response()->json(['error' => 'Token is invalid.', JWTAuth::parseToken()], $e->getStatusCode());
         } catch (JWTException $e) {
             return response()->json(['error' => 'Error validating token.', 'exception' => $e->getMessage()], $e->getStatusCode());
         }
+
+        $request->merge([
+            'currentUser' => $user
+        ]);
+        auth()->setUser($user);
+
+        $this->updateUserAppInfo($request);
+        return $response;
     }
 }

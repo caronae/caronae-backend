@@ -6,6 +6,7 @@ use Caronae\Http\Middleware\ApiV1Authenticate;
 use Caronae\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use JWTAuth;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -73,28 +74,52 @@ class ApiV1AuthenticateTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturn401WhenUserIsBanned()
-    {
-        $user = factory(User::class)->create(['banned' => true])->fresh();
-        JWTAuth::shouldReceive('parseToken->authenticate')->andReturn($user);
-
-        $request = $this->jwtRequest();
-
-        $response = $this->middleware->handle($request, function($r){ });
-
-        $this->assertResponseIsUnauthorized($response);
-    }
-
-    /** @test */
-    public function shouldReturn401WhenTokenIsExpired()
+    public function shouldReturn401WhenTokenIsExpiredAndCannotBeRefreshed()
     {
         JWTAuth::shouldReceive('parseToken->authenticate')->andThrow(new TokenExpiredException());
+        JWTAuth::shouldReceive('getToken')->andReturn('oldtoken');
+        JWTAuth::shouldReceive('refresh')->andThrow(new TokenExpiredException('Token expired'));
         $request = $this->jwtRequest();
 
         $response = $this->middleware->handle($request, function($r){ });
 
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertArraySubset([ 'error' => 'Token is expired.' ], (array)$response->getData());
+        $this->assertArraySubset(['error' => 'Token expired'], (array)$response->getData());
+    }
+
+    /** @test */
+    public function shouldRefreshAndAuthorizeExpiredToken()
+    {
+        $user = factory(User::class)->create()->fresh();
+        JWTAuth::shouldReceive('parseToken->authenticate')->andThrow(new TokenExpiredException());
+        JWTAuth::shouldReceive('getToken')->andReturn('oldtoken');
+        JWTAuth::shouldReceive('refresh')->andReturn('newtoken');
+        JWTAuth::shouldReceive('setToken->toUser')->andReturn($user);
+
+        $request = $this->jwtRequest();
+
+        $response = $this->middleware->handle($request, function() {
+            return new Response();
+        });
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('Bearer newtoken', $response->headers->get('Authorization'));
+    }
+
+    /** @test */
+    public function shouldReturn401WhenUserIsBannedAndTokenExpired()
+    {
+        $user = factory(User::class)->create(['banned' => true])->fresh();
+        JWTAuth::shouldReceive('parseToken->authenticate')->andThrow(new TokenExpiredException());
+        JWTAuth::shouldReceive('getToken')->andReturn('oldtoken');
+        JWTAuth::shouldReceive('refresh')->andReturn('newtoken');
+        JWTAuth::shouldReceive('setToken->toUser')->andReturn($user);
+
+        $request = $this->jwtRequest();
+
+        $response = $this->middleware->handle($request, function($r){ return new Response(); });
+
+        $this->assertResponseIsUnauthorized($response);
     }
 
     /** @test */
@@ -134,10 +159,11 @@ class ApiV1AuthenticateTest extends TestCase
         $this->assertNotNull($result->currentUser);
     }
 
-    private function assertResponseIsUnauthorized($response, $statusCode = 401)
+    private function assertResponseIsUnauthorized($response)
     {
-        $this->assertEquals($statusCode, $response->getStatusCode());
+        $this->assertEquals(401, $response->getStatusCode());
         $this->assertArrayHasKey('error', (array)$response->getData());
+        $this->assertNull($response->headers->get('Authorization'));
     }
 
     private function authenticatedLegacyRequest()
