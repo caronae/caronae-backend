@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Auth;
 use Caronae\Http\Middleware\ApiV1Authenticate;
 use Caronae\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -148,15 +149,13 @@ class ApiV1AuthenticateTest extends TestCase
     }
 
     /** @test */
-    public function shouldSetCurrentUserInRequest()
+    public function shouldSetAuthenticatedUser()
     {
         $request = $this->authenticatedLegacyRequest();
 
-        $result = $this->middleware->handle($request, function($request) {
-            return $request;
-        });
+        $this->middleware->handle($request, function($request) {});
 
-        $this->assertNotNull($result->currentUser);
+        $this->assertNotNull(Auth::user());
     }
 
     private function assertResponseIsUnauthorized($response)

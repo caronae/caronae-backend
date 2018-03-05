@@ -129,7 +129,7 @@ class RideController extends BaseController
 
     public function store(CreateRideRequest $request)
     {
-        $user = $request->currentUser;
+        $user = $request->user();
 
         $ridesCreated = collect();
         DB::transaction(function() use ($request, $user, &$ridesCreated) {
@@ -172,7 +172,7 @@ class RideController extends BaseController
     {
         $searchDate = $request->searchDate();
 
-        $ridesFound = $request->currentUser->rides()
+        $ridesFound = $request->user()->rides()
             ->whereBetween('date', $request->searchRange())
             ->where('going', $request->input('going'))
             ->get();
@@ -207,7 +207,7 @@ class RideController extends BaseController
     public function delete(Request $request, $rideId)
     {
         return DB::transaction(function() use ($request, $rideId) {
-            $user = $request->currentUser;
+            $user = $request->user();
             $ride = $user->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
             if ($ride == null) {
                 return $this->error('User is not the driver on this ride or ride does not exist.', 403);
@@ -221,7 +221,7 @@ class RideController extends BaseController
     public function deleteAllFromUser(Request $request, $userId, $going)
     {
         return DB::transaction(function() use ($request, $going) {
-            $user = $request->currentUser;
+            $user = $request->user();
 
             $matchThese = ['status' => 'driver', 'going' => $going, 'done' => false];
             $rideIdList = $user->rides()->where($matchThese)->pluck('ride_id')->toArray();
@@ -234,7 +234,7 @@ class RideController extends BaseController
     public function deleteAllFromRoutine(Request $request, $routineId)
     {
         return DB::transaction(function() use ($request, $routineId) {
-            $user = $request->currentUser;
+            $user = $request->user();
 
             $matchThese = ['routine_id' => $routineId, 'done' => false];
             $rideIdList = Ride::where($matchThese)->pluck('id')->toArray();
@@ -314,7 +314,7 @@ class RideController extends BaseController
             $ride = Ride::find($request->input('rideId'));
         }
 
-        $user = $request->currentUser;
+        $user = $request->user();
 
         //if a relationship already exists, do not create another one
         $previousRequest = $ride->users()->where('users.id', $user->id);
@@ -360,7 +360,7 @@ class RideController extends BaseController
 
     public function getMyActiveRides(Request $request)
     {
-        $user = $request->currentUser;
+        $user = $request->user();
 
         //active rides have 'driver' or 'accepted' status
         $rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->where('done', false)->get();
@@ -394,7 +394,7 @@ class RideController extends BaseController
 
     public function leaveRide(Request $request)
     {
-        $user = $request->currentUser;
+        $user = $request->user();
         $rideID = $request->rideId;
 
         $rideUser = RideUser::where(['ride_id' => $rideID, 'user_id' => $user->id])->first();
@@ -420,7 +420,7 @@ class RideController extends BaseController
 
     public function finishRide(Request $request)
     {
-        $ride = $request->currentUser->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
+        $ride = $request->user()->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
         if ($ride == null) {
             return $this->error('User is not the driver of this ride', 403);
         }
@@ -432,7 +432,7 @@ class RideController extends BaseController
         $ride->done = true;
         $ride->save();
 
-        $rideFinishedNotification = new RideFinished($ride, $request->currentUser);
+        $rideFinishedNotification = new RideFinished($ride, $request->user());
         $riders = $ride->riders()->get();
         $riders->each->notify($rideFinishedNotification);
 
@@ -444,7 +444,7 @@ class RideController extends BaseController
      */
     public function getRidesHistory(Request $request)
     {
-        $user = $request->currentUser;
+        $user = $request->user();
         $rides = $user->rides()->where('done', true)->whereIn('status', ['driver', 'accepted'])->get();
 
         $resultJson = [];
@@ -525,14 +525,14 @@ class RideController extends BaseController
 
         $message = Message::create([
             'ride_id' => $ride->id,
-            'user_id' => $request->currentUser->id,
+            'user_id' => $request->user()->id,
             'body' => $request->message
         ]);
         $notification = new RideMessageReceived($message);
         
         $subscribers = $ride->users()
             ->whereIn('status', ['accepted', 'driver'])
-            ->where('user_id', '!=', $request->currentUser->id)
+            ->where('user_id', '!=', $request->user()->id)
             ->get();
         $subscribers->each->notify($notification);
 

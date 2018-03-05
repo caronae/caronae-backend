@@ -97,7 +97,7 @@ class UserController extends BaseController
             'taken_rides_count' => $takenRides->count(),
         ];
 
-        if ($user == $request->currentUser) {
+        if ($user == $request->user()) {
             $offeredRides = $offeredRides->with('riders')->get();
             $takenRides = $takenRides->with('riders')->get();
             $rides = $offeredRides->concat($takenRides);
@@ -113,7 +113,7 @@ class UserController extends BaseController
     public function update(User $user = null, UpdateUserRequest $request)
     {
         if (!$user) {
-            $user = $request->currentUser;
+            $user = $request->user();
         }
 
         $user->update($request->profile());
@@ -125,7 +125,7 @@ class UserController extends BaseController
             'id' => 'required'
         ]);
 
-        $user = $request->currentUser;
+        $user = $request->user();
         $user->face_id = $request->input('id');
         $user->save();
     }
@@ -136,8 +136,8 @@ class UserController extends BaseController
             'url' => 'required'
         ]);
 
-        $request->currentUser->profile_pic_url = $request->url;
-        $request->currentUser->save();
+        $request->user()->profile_pic_url = $request->url;
+        $request->user()->save();
     }
 
     public function getMutualFriends(Request $request, Facebook $fb, $fbID)

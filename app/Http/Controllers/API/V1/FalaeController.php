@@ -15,7 +15,7 @@ class FalaeController extends BaseController
 
     public function sendMessage(Request $request)
     {
-        $user = $request->currentUser;
+        $user = $request->user();
         $subject = $request->subject;
         $body = $request->message . "\nID UFRJ: " . $user->id_ufrj;
 

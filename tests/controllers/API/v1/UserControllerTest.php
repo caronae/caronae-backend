@@ -667,7 +667,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnDetailedRideHistoryForCurrentUser()
+    public function shouldReturnDetailedRideHistoryForAuthenticatedUser()
     {
         $user = $this->someUser();
         $otherUser = $this->someUser();

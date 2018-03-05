@@ -34,27 +34,22 @@ class ApiV1Authenticate
             $version = $matches['version'];
 
             if ($platform == 'iOS' || $platform == 'Android') {
-                $request->currentUser->app_platform = $platform;
-                $request->currentUser->app_version = $version;
-                $request->currentUser->save();
+                $request->user()->app_platform = $platform;
+                $request->user()->app_version = $version;
+                $request->user()->save();
             }
         }
     }
 
+    /** @deprecated */
     private function handleLegacyTokenAuthentication($request, Closure $next)
     {
         if (($user = User::where('token', $request->header('token'))->first()) == NULL || $user->banned) {
             return response()->json(['error' => 'User token not authorized.'], 401);
         }
 
-        $request->merge([
-            'currentUser' => $user
-        ]);
-
         auth()->setUser($user);
-
         $this->updateUserAppInfo($request);
-
         return $next($request);
     }
 
@@ -82,11 +77,7 @@ class ApiV1Authenticate
             return response()->json(['error' => 'Error validating token.', 'exception' => $e->getMessage()], $e->getStatusCode());
         }
 
-        $request->merge([
-            'currentUser' => $user
-        ]);
         auth()->setUser($user);
-
         $this->updateUserAppInfo($request);
         return $response;
     }
