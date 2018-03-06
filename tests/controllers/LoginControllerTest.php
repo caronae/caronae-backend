@@ -104,7 +104,7 @@ class LoginControllerTest extends TestCase
 
         $response->assertRedirect();
         $redirectURL = $response->headers->get('Location');
-        $this->assertStringStartsWith('caronae://login?token=', $redirectURL);
+        $this->assertStringStartsWith('caronae://login?id=' . $user->id . '&token=', $redirectURL);
     }
 
     /** @test */

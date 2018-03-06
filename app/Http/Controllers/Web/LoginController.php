@@ -52,7 +52,7 @@ class LoginController extends BaseController
         }
 
         if ($this->isAppJWTLogin($request)) {
-            return redirect()->away('caronae://login?token=' . JWTAuth::getToken());
+            return redirect()->away('caronae://login?id=' . $user->id . '&token=' . JWTAuth::getToken());
         }
 
         return view('login.token', [
