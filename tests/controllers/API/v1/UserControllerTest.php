@@ -196,6 +196,47 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
+    public function shouldReturnUser()
+    {
+        $user = $this->someUser();
+        $response = $this->jsonAs($user, 'GET', 'api/v1/users/' . $user->id);
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'profile' => $user->profile,
+                'course' => $user->course,
+                'phone_number' => $user->phone_number,
+                'email' => $user->email,
+                'car_owner' => $user->car_owner,
+                'car_model' => $user->car_model,
+                'car_color' => $user->car_color,
+                'car_plate' => $user->car_plate,
+                'created_at' => $user->created_at->format('Y-m-d H:i:s'),
+                'location' => $user->location,
+                'face_id' => $user->face_id,
+                'profile_pic_url' => $user->profile_pic_url
+            ],
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotReturnOtherUser()
+    {
+        $user = $this->someUser();
+        $user2 = $this->someUser();
+
+        $response = $this->jsonAs($user,'GET', 'api/v1/users/' . $user2->id);
+
+        $response->assertStatus(403);
+    }
+
+    /**
+     * @test
+     */
     public function shouldUpdateUserProfileWithLegacyAPI()
     {
         $user = $this->someUser();

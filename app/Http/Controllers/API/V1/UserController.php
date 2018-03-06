@@ -56,6 +56,11 @@ class UserController extends BaseController
         return $response;
     }
 
+    public function show(User $user)
+    {
+        return ['user' => new UserResource($user)];
+    }
+
     public function getRides(User $user)
     {
         $pendingRides = $user->pendingRides()->with('riders')->get();
