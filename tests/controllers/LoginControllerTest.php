@@ -95,6 +95,19 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
+    public function shouldRedirectToAppWithJWTTokenWithAppLoginType()
+    {
+        $user = factory(User::class)->create();
+        $jwtToken = JWTAuth::fromUser($user);
+
+        $response = $this->withLoginType('app_jwt')->call('GET', 'login', [ 'token' => $jwtToken ]);
+
+        $response->assertRedirect();
+        $redirectURL = $response->headers->get('Location');
+        $this->assertStringStartsWith('caronae://login?token=', $redirectURL);
+    }
+
+    /** @test */
     public function shouldSaveCookieWhenAcceptingTermsOfUse()
     {
         $user = factory(User::class)->create();

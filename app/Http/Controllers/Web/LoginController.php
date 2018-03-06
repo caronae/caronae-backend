@@ -51,6 +51,10 @@ class LoginController extends BaseController
             return redirect()->away('caronae://login?id=' . $user->id . '&id_ufrj=' . $user->id_ufrj . '&token=' . $user->token);
         }
 
+        if ($this->isAppJWTLogin($request)) {
+            return redirect()->away('caronae://login?token=' . JWTAuth::getToken());
+        }
+
         return view('login.token', [
             'user' => $user,
             'token' => $request->input('token'),
@@ -115,5 +119,10 @@ class LoginController extends BaseController
     private function isAppLogin(Request $request)
     {
         return $this->getLoginType($request) == 'app';
+    }
+
+    private function isAppJWTLogin(Request $request)
+    {
+        return $this->getLoginType($request) == 'app_jwt';
     }
 }
