@@ -7,6 +7,7 @@ if [ $# -eq 0 ]; then
 fi
 
 sudo CARONAE_ENV_TAG=$1 su
+set -eo pipefail
 
 echo "Updating caronae-docker..."
 cd /var/caronae/caronae-docker
