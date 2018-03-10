@@ -55,8 +55,7 @@ class ApiV1Authenticate
 
     private function handleJWTAuthentication($request, Closure $next)
     {
-        $response = $next($request);
-
+        $response = null;
         try {
             $user = JWTAuth::parseToken()->authenticate();
         } catch (TokenExpiredException $e) {
@@ -67,6 +66,7 @@ class ApiV1Authenticate
                     return response()->json(['error' => 'User is banned.'], 401);
                 }
 
+                $response = $next($request);
                 $response->header('Authorization', "Bearer $refreshed");
             } catch (JWTException $e) {
                 return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
@@ -77,8 +77,7 @@ class ApiV1Authenticate
             return response()->json(['error' => 'Error validating token.', 'exception' => $e->getMessage()], $e->getStatusCode());
         }
 
-        auth()->setUser($user);
         $this->updateUserAppInfo($request);
-        return $response;
+        return ($response != null) ? $response : $next($request);
     }
 }
