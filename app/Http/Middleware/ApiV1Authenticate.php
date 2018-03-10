@@ -72,7 +72,7 @@ class ApiV1Authenticate
                 return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
             }
         } catch (TokenInvalidException $e) {
-            return response()->json(['error' => 'Token is invalid.', JWTAuth::parseToken()], $e->getStatusCode());
+            return response()->json(['error' => 'Token is invalid.'], $e->getStatusCode());
         } catch (JWTException $e) {
             return response()->json(['error' => 'Error validating token.', 'exception' => $e->getMessage()], $e->getStatusCode());
         }
