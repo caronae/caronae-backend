@@ -96,7 +96,7 @@ class UserControllerTest extends TestCase
         ]);
 
         $response->assertStatus(200);
-        $response->assertExactJson([
+        $response->assertJson([
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -112,6 +112,27 @@ class UserControllerTest extends TestCase
                 'location' => $user->location,
                 'face_id' => $user->face_id,
                 'profile_pic_url' => $user->profile_pic_url
+            ],
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldReturnInstitutionOnSignIn()
+    {
+        $user = $this->someUser();
+        $institution = $user->institution()->first();
+
+        $response = $this->json('POST', 'api/v1/users/login', [
+            'id_ufrj' => $user->id_ufrj,
+            'token' => $user->token
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'institution' => [
+                'name' => $institution->name,
             ],
         ]);
     }

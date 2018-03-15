@@ -5,6 +5,7 @@ namespace Caronae\Http\Controllers\API\v1;
 use Caronae\Http\Controllers\BaseController;
 use Caronae\Http\Requests\SignUpRequest;
 use Caronae\Http\Requests\UpdateUserRequest;
+use Caronae\Http\Resources\InstitutionResource;
 use Caronae\Http\Resources\RideResource;
 use Caronae\Http\Resources\UserResource;
 use Caronae\Models\User;
@@ -51,6 +52,9 @@ class UserController extends BaseController
         if ($this->isLegacyAPI($request)) {
             $drivingRides = $user->rides()->where(['status' => 'driver', 'done' => false])->get();
             $response += ['rides' => $drivingRides];
+        } else {
+            $institution = $user->institution()->first();
+            $response += ['institution' => new InstitutionResource($institution)];
         }
 
         return $response;
