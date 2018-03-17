@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mcecchi
- * Date: 15/03/2018
- * Time: 00:06
- */
 
 namespace Caronae\Http\Resources;
-
 
 use Caronae\Models\Institution;
 use Illuminate\Http\Request;
@@ -24,6 +17,8 @@ class InstitutionResourceTest extends TestCase
         $resource = new InstitutionResource($institution);
         $expectedJson = [
             'name' => $institution->name,
+            'going_label' => $institution->going_label,
+            'leaving_label' => $institution->leaving_label,
         ];
 
         $response = $resource->toArray(new Request());

@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Caronae\Http\Resources\InstitutionResource;
 use Caronae\Models\Institution;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
@@ -131,9 +132,7 @@ class UserControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson([
-            'institution' => [
-                'name' => $institution->name,
-            ],
+            'institution' => (new InstitutionResource($institution))->resolve(),
         ]);
     }
 

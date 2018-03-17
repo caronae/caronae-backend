@@ -10,6 +10,8 @@ class InstitutionResource extends Resource
     {
         return [
             'name' => $this->name,
+            'going_label' => $this->going_label,
+            'leaving_label' => $this->leaving_label,
         ];
     }
 }
