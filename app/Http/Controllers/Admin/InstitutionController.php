@@ -36,6 +36,8 @@ class InstitutionController extends CrudController
                 ],
                 'min' => 1
             ],
+            [ 'name' => 'going_label', 'label' => 'Label de chegada' ],
+            [ 'name' => 'leaving_label', 'label' => 'Label de saída' ],
         ]);
     }
 
@@ -56,14 +58,18 @@ class InstitutionController extends CrudController
     public function update(CrudRequest $request)
     {
          $this->validate($request, [
-            'name' => 'required|string',
-            'authentication_url' => 'required|url',
-        ]);
+             'name' => 'required|string',
+             'authentication_url' => 'required|url',
+             'going_label' => 'required|string',
+             'leaving_label' => 'required|string',
+         ]);
 
         $institution = Institution::find($request->institution);
 
         $campi = collect(json_decode($request->input('campi'), true));
         $campi->each(function($campusRequest) use ($institution) {
+            if (empty($campusRequest)) return;
+
             if (isset($campusRequest['id'])) {
                 $campus = Campus::findOrFail($campusRequest['id']);
             } else {

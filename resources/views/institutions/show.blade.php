@@ -27,6 +27,7 @@
                 <ul class="properties">
                     <li class="property"><span class="column-name">ID</span> {{ $institution->id }}</li>
                     <li class="property"><span class="column-name">Nome</span> {{ $institution->name }}</li>
+                    <li class="property"><span class="column-name">Labels</span> {{ $institution->going_label }} / {{ $institution->leaving_label }}</li>
                     <li class="property">
                         <span class="column-name">URL de autenticação</span>
                         <a href="{{ $institution->authentication_url }}">{{ $institution->authentication_url }}</a>

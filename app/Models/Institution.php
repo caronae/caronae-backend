@@ -9,7 +9,13 @@ class Institution extends Model
 {
     use CrudTrait;
     
-    protected $fillable = ['name', 'password', 'authentication_url'];
+    protected $fillable = [
+        'name',
+        'password',
+        'authentication_url',
+        'going_label',
+        'leaving_label',
+    ];
 
     public static function create(array $attributes = [])
     {
