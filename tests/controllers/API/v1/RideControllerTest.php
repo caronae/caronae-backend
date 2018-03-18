@@ -494,12 +494,31 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testLeaveAsUser()
+    /** @test */
+    public function shouldLetUserLeaveRideAndNotifyDriver()
     {
         $ride = factory(Ride::class, 'next')->create();
         $driver = factory(User::class)->create();
         $ride->users()->attach($driver, ['status' => 'driver']);
+        $ride->users()->attach($this->user, ['status' => 'accepted']);
 
+        $this->expectsNotification($driver, RideUserLeft::class);
+
+        $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/leave', [], $this->headers);
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'message' => 'Left ride.'
+        ]);
+
+        $this->assertDatabaseHas('ride_user', ['ride_id' => $ride->id, 'user_id' => $this->user->id, 'status' => 'quit']);
+    }
+
+    /** @deprecated */
+    public function testLeaveAsUser_legacy()
+    {
+        $ride = factory(Ride::class, 'next')->create();
+        $driver = factory(User::class)->create();
+        $ride->users()->attach($driver, ['status' => 'driver']);
         $ride->users()->attach($this->user, ['status' => 'accepted']);
 
         $this->expectsNotification($driver, RideUserLeft::class);
@@ -508,14 +527,15 @@ class RideControllerTest extends TestCase
             'rideId' => $ride->id
         ];
 
-        $response = $this->json('POST', 'api/v1/rides/leaveRide', $request, $this->headers);
+        $response = $this->json('POST', 'ride/leaveRide', $request, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'message' => 'Left ride.'
         ]);
     }
 
-    public function testLeaveAsDriver()
+    /** @test */
+    public function shouldLetDriverLeaveRideAndNotifyRiders()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -525,20 +545,39 @@ class RideControllerTest extends TestCase
 
         $this->expectsNotification($rider, RideCanceled::class);
 
-        $request = [
-            'rideId' => $ride->id
-        ];
-
-        $response = $this->json('POST', 'api/v1/rides/leaveRide', $request, $this->headers);
+        $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/leave', [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'message' => 'Left ride.'
         ]);
+
+        $this->assertDatabaseMissing('rides', ['id' => $ride->id, 'deleted_at' => null]);
     }
 
-    public function testFinishOldRideSucceeds()
+    /** @test */
+    public function shouldLetDriverFinishRideAndNotifyRiders()
     {
         $ride = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00']);
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $rider = factory(User::class)->create();
+        $ride->users()->attach($rider, ['status' => 'accepted']);
+
+        $this->expectsNotification($rider, RideFinished::class);
+
+        $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/finish', [], $this->headers);
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'message' => 'Ride finished.'
+        ]);
+
+        $this->assertDatabaseHas('rides', ['id' => $ride->id, 'done' => true]);
+    }
+
+    /** @deprecated  */
+    public function testFinishRide_legacy()
+    {
+        $ride = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00', 'done' => false]);
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
         $rider = factory(User::class)->create();
@@ -550,27 +589,38 @@ class RideControllerTest extends TestCase
             'rideId' => $ride->id
         ];
 
-        $response = $this->json('POST', 'api/v1/rides/finishRide', $request, $this->headers);
+        $response = $this->json('POST', 'ride/finishRide', $request, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'message' => 'Ride finished.'
         ]);
     }
 
-    public function testFinishFutureRideFails()
+    /** @test */
+    public function shouldNotAllowFinishingFutureRides()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
-        $request = [
-            'rideId' => $ride->id
-        ];
-
-        $response = $this->json('POST', 'api/v1/rides/finishRide', $request, $this->headers);
+        $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/finish', [], $this->headers);
         $response->assertStatus(403);
         $response->assertExactJson([
             'error' => 'A ride in the future cannot be marked as finished'
         ]);
+
+        $this->assertDatabaseHas('rides', ['id' => $ride->id, 'done' => false]);
+    }
+
+    /** @test */
+    public function shouldNotAllowToFinishRideWhereUserIsNotDriver()
+    {
+        $ride = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00', 'done' => false]);
+        $ride->users()->attach($this->user, ['status' => 'accepted']);
+
+        $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/finish', [], $this->headers);
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('rides', ['id' => $ride->id, 'done' => false]);
     }
 
     public function testGetHistory()

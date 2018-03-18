@@ -20,22 +20,32 @@ Route::middleware('api.v1.auth')->group(function () {
 });
 
 
-
 // Ride
 
-Route::get('rides', 'RideController@index');
-Route::post('rides', 'RideController@store');
-Route::delete('rides/{rideId}', 'RideController@delete');
-Route::delete('rides/allFromRoutine/{routineId}', 'RideController@deleteAllFromRoutine');
-Route::post('rides/{ride}/requests', 'RideController@createRequest');
-Route::get('rides/{ride}/requests', 'RideController@getRequests');
-Route::put('rides/{ride}/requests', 'RideController@updateRequest');
-Route::post('rides/leaveRide', 'RideController@leaveRide');
-Route::post('rides/finishRide', 'RideController@finishRide');
-Route::get('rides/validateDuplicate', 'RideController@validateDuplicate');
-Route::get('rides/{ride}', 'RideController@show');
-Route::post('rides/{ride}/messages', 'RideController@sendChatMessage');
-Route::get('rides/{ride}/messages', 'RideController@getChatMessages');
+Route::middleware('api.v1.auth')->group(function () {
+
+    Route::get('rides', 'RideController@index');
+    Route::post('rides', 'RideController@store');
+    Route::delete('rides/{rideId}', 'RideController@delete');
+    Route::delete('rides/allFromRoutine/{routineId}', 'RideController@deleteAllFromRoutine');
+    Route::post('rides/{ride}/requests', 'RideController@createRequest');
+    Route::get('rides/{ride}/requests', 'RideController@getRequests');
+    Route::put('rides/{ride}/requests', 'RideController@updateRequest');
+    Route::post('rides/{ride}/leave', 'RideController@leaveRide');
+    Route::get('rides/validateDuplicate', 'RideController@validateDuplicate');
+    Route::get('rides/{ride}', 'RideController@show');
+
+    Route::middleware('api.v1.userBelongsToRide')->group(function () {
+        Route::post('rides/{ride}/messages', 'RideController@sendChatMessage');
+        Route::get('rides/{ride}/messages', 'RideController@getChatMessages');
+    });
+
+    Route::middleware('api.v1.userIsTheDriver')->group(function () {
+        Route::post('rides/{ride}/finish', 'RideController@finishRide');
+    });
+
+});
+
 
 // Etc
 

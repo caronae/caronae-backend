@@ -25,31 +25,7 @@ use Illuminate\Http\Request;
 
 class RideController extends BaseController
 {
-    public function __construct()
-    {
-        $this->middleware('api.v1.auth', ['only' => [
-            'index',
-            'show',
-            'store',
-            'validateDuplicate',
-            'delete', 'deleteAllFromRoutine', 'deleteAllFromUser',
-            'listFiltered',
-            'getRequests',
-            'createRequest',
-            'updateRequest',
-            'getMyActiveRides',
-            'leaveRide', 'finishRide',
-            'getRidesHistory',
-            'getChatMessages',
-            'sendChatMessage'
-        ]]);
-
-        $this->middleware('api.v1.userBelongsToRide', ['only' => [
-            'getChatMessages',
-            'sendChatMessage'
-        ]]);
-    }
-
+    
     public function index(Request $request)
     {
         $this->validate($request, [
@@ -392,20 +368,21 @@ class RideController extends BaseController
         return $resultArray;
     }
 
-    public function leaveRide(Request $request)
+    public function leaveRide(Ride $ride = null, Request $request)
     {
         $user = $request->user();
-        $rideID = $request->rideId;
+        if ($ride == null) {
+            $ride = Ride::find($request->rideId);
+        }
 
-        $rideUser = RideUser::where(['ride_id' => $rideID, 'user_id' => $user->id])->first();
-        $ride = Ride::find($rideID);
+        $rideUser = RideUser::where(['ride_id' => $ride->id, 'user_id' => $user->id])->first();
 
         if ($rideUser->status == 'driver') {
             $rideCanceledNotification = new RideCanceled($ride, $user);
             $riders = $ride->riders()->get();
             $riders->each->notify($rideCanceledNotification);
 
-            RideUser::where('ride_id', $rideID)->delete();
+            RideUser::where('ride_id', $ride->id)->delete();
 
             $ride->delete();
         } else {
@@ -418,11 +395,13 @@ class RideController extends BaseController
         return ['message' => 'Left ride.'];
     }
 
-    public function finishRide(Request $request)
+    public function finishRide(Ride $ride = null, Request $request)
     {
-        $ride = $request->user()->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
         if ($ride == null) {
-            return $this->error('User is not the driver of this ride', 403);
+            $ride = $request->user()->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
+            if ($ride == null) {
+                return $this->error('User is not the driver of this ride', 403);
+            }
         }
 
         if ($ride->date->isFuture()) {
