@@ -14,6 +14,7 @@ Route::middleware('api.v1.auth')->group(function () {
         Route::get('users/{user}', 'UserController@show');
         Route::put('users/{user}', 'UserController@update');
         Route::get('users/{user}/rides', 'UserController@getRides');
+        Route::get('users/{user}/token', 'UserController@getToken');
     });
 
 });

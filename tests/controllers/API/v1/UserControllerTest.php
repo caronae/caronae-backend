@@ -216,6 +216,20 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
+    public function shouldReturnTokenWithLegacyAuthentication()
+    {
+        $user = $this->someUser();
+        $headers = ['token' => $user->token];
+
+        $response = $this->json('GET', 'api/v1/users/' . $user->id . '/token', [], $headers);
+
+        $response->assertStatus(200);
+        $this->assertStringStartsWith('Bearer ', $response->headers->get('Authorization'));
+    }
+
+    /**
+     * @test
+     */
     public function shouldReturnUser()
     {
         $user = $this->someUser();

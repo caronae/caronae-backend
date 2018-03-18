@@ -65,6 +65,15 @@ class UserController extends BaseController
         return ['user' => new UserResource($user)];
     }
 
+    /**
+     * @todo Remove this after apps have migrated to using JWT token
+     */
+    public function getToken(User $user)
+    {
+        $token = JWTAuth::fromUser($user);
+        return response(['message' => 'Ok'])->header('Authorization', "Bearer $token");
+    }
+
     public function getRides(User $user)
     {
         $pendingRides = $user->pendingRides()->with('riders')->get();
