@@ -430,7 +430,17 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldUpdateRequestUsingLegacyAPI()
+    public function shouldNotListRequestsIfIsNotDriver()
+    {
+        $ride = factory(Ride::class, 'next')->create();
+        $ride->users()->attach($this->user, ['status' => 'accepted']);
+
+        $response = $this->json('GET', 'api/v1/rides/' . $ride->id . '/requests', [], $this->headers);
+        $response->assertStatus(403);
+    }
+
+    /** @test */
+    public function shouldUpdateRequest_legacy()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -480,6 +490,7 @@ class RideControllerTest extends TestCase
     public function shouldNotUpdateRequestThatDoesNotExist()
     {
         $ride = factory(Ride::class, 'next')->create();
+        $ride->users()->attach($this->user, ['status' => 'driver']);
         $rider = factory(User::class)->create();
 
         $request = [
@@ -492,6 +503,23 @@ class RideControllerTest extends TestCase
         $response->assertExactJson([
             'error' => 'Ride request not found.'
         ]);
+    }
+
+    /** @test */
+    public function shouldNotUpdateRequestIfIsNotDriver()
+    {
+        $ride = factory(Ride::class, 'next')->create();
+        $ride->users()->attach($this->user, ['status' => 'accepted']);
+        $rider = factory(User::class)->create();
+        $ride->users()->attach($rider, ['status' => 'pending']);
+
+        $request = [
+            'userId' => $rider->id,
+            'accepted' => true,
+        ];
+
+        $response = $this->json('PUT', 'api/v1/rides/' . $ride->id . '/requests', $request, $this->headers);
+        $response->assertStatus(403);
     }
 
     /** @test */
