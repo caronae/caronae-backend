@@ -43,6 +43,8 @@ class HubController extends CrudController
 
     public function store(CrudRequest $request)
     {
+        $this->validateHub($request);
+
         Log::info('Adding hub ' . $request->name);
         $this->clearCache();
         return parent::storeCrud($request);
@@ -50,11 +52,7 @@ class HubController extends CrudController
 
     public function update(CrudRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string',
-            'center' => 'required|string',
-            'campus' => 'required|string',
-        ]);
+        $this->validateHub($request);
 
         Log::info('Updating hub ' . $request->name);
         $this->clearCache();
@@ -72,5 +70,14 @@ class HubController extends CrudController
     {
         Log::info('Clearing campi cache.');
         Cache::forget('campi');
+    }
+
+    private function validateHub(CrudRequest $request): void
+    {
+        $this->validate($request, [
+            'name' => 'required|string',
+            'center' => 'required|string',
+            'campus_id' => 'required|int',
+        ]);
     }
 }
