@@ -20,7 +20,7 @@ class LoginController extends BaseController
 
         if ($request->filled('error')) {
             $error = $request->input('error');
-            Log::info('Login: instituição não autorizou login.', [ 'error' => $error, 'referer' => $request->headers->get('referer') ]);
+            Log::info('Login: instituição não autorizou login.', [ 'error' => $error ]);
             return response()->view('login.error', [ 'error' => $error ], 401);
         }
 
@@ -40,7 +40,6 @@ class LoginController extends BaseController
             Log::info('Login: usuário autenticado.', [
                 'id' => $user->id,
                 self::SESSION_LOGIN_TYPE => $this->getLoginType($request),
-                'referer' => $request->headers->get('referer'),
             ]);
         } catch (JWTException $e) {
             Log::warning('Login: erro autenticando token.', [ 'error' => $e->getMessage(), 'token' => $request->input('token') ]);
@@ -74,7 +73,7 @@ class LoginController extends BaseController
         $user->generateToken();
         $user->save();
 
-        Log::info('refreshToken: nova chave gerada.', [ 'id' => $user->id, 'referer' => $request->headers->get('referer') ]);
+        Log::info('refreshToken: nova chave gerada.', [ 'id' => $user->id ]);
         return redirect(route('chave', $request->only(['token'])));
     }
 
