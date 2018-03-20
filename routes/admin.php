@@ -1,7 +1,5 @@
 <?php
 
-Route::name('logs')->get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
-
 Route::name('home')->get('/', function() {
 	return redirect()->route('dashboard');
 });
