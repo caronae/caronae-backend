@@ -82,6 +82,10 @@ img { max-width: 100%; }
     margin: 8vw auto;
 }
 
+.logo-img {
+    max-width: 250px;
+}
+
 .form-top {
     overflow: hidden;
     padding: 0 25px 15px 25px;
