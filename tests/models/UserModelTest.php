@@ -18,9 +18,7 @@ class UserModelTest extends TestCase
         $this->driver = factory(User::class)->create();
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function shouldFindUserByInstitutionID()
     {
         $user = factory(User::class)->create(['id_ufrj' => '666'])->fresh();
@@ -28,7 +26,8 @@ class UserModelTest extends TestCase
         $this->assertEquals($user, User::findByInstitutionId('666'));
     }
 
-    public function testActiveReturnsRidesWithAcceptedUsers()
+    /** @test */
+    public function activeShouldReturnRidesWithAcceptedUsers()
     {
         $rider = factory(User::class)->create();
 
@@ -39,26 +38,49 @@ class UserModelTest extends TestCase
         $this->assertTrue($rides->contains($ride));
 
         $rides = $rider->activeRides()->get();
+
         $this->assertTrue($rides->contains($ride));
     }
 
-    public function testActiveDoesNotReturnFinishedRides()
+    /** @test */
+    public function activeShouldNotReturnFinishedRides()
     {
         $this->createRideAsDriver(['done' => true]);
 
         $activeRides = $this->driver->activeRides()->get();
+
         $this->assertEmpty($activeRides);
     }
 
-    public function testActiveDoesNotReturnEmptyRides()
+    /** @test */
+    public function activeShouldNotReturnEmptyRides()
     {
         $this->createRideAsDriver();
 
         $activeRides = $this->driver->activeRides()->get();
+
         $this->assertEmpty($activeRides);
     }
 
-    public function testReturnsOfferedRides()
+    /** @test */
+    public function activeShouldNotReturnPendingOrRefusedRides()
+    {
+        $otherUser = factory(User::class)->create();
+
+        $ride1 = $this->createRide();
+        $ride1->users()->attach($otherUser, ['status' => 'accepted']);
+        $ride1->users()->attach($this->driver, ['status' => 'pending']);
+        $ride2 = $this->createRide();
+        $ride2->users()->attach($otherUser, ['status' => 'accepted']);
+        $ride2->users()->attach($this->driver, ['status' => 'refused']);
+
+        $activeRides = $this->driver->activeRides()->get();
+
+        $this->assertEmpty($activeRides);
+    }
+
+    /** @test */
+    public function shouldReturnOfferedRides()
     {
         $otherUser = factory(User::class)->create();
 
