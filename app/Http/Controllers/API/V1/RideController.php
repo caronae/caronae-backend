@@ -83,10 +83,16 @@ class RideController extends BaseController
         return $results;
     }
     
-    public function show(Ride $ride)
+    public function show(Ride $ride, Request $request)
     {
         RideResource::withoutWrapping();
-        return (new RideResource($ride))->withAvailableSlots();
+
+        if ($request->user()->belongsToRide($ride)) {
+            $ride = $ride->with('riders')->first();
+        }
+
+        $rideResource = new RideResource($ride);
+        return $rideResource->withAvailableSlots();
     }
 
     public function showWeb($id)

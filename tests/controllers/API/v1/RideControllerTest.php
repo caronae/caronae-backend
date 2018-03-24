@@ -123,14 +123,50 @@ class RideControllerTest extends TestCase
     public function shouldReturnRide()
     {
         $ride = factory(Ride::class)->create();
-        $ride->users()->attach($this->user, ['status' => 'driver']);
+        $driver = factory(User::class)->create();
+        $rider = factory(User::class)->create();
+        $ride->users()->attach($driver, ['status' => 'driver']);
+        $ride->users()->attach($rider, ['status' => 'accepted']);
 
         $response = $this->json('GET', 'api/v1/rides/' . $ride->id, [], $this->headers);
 
         $response->assertStatus(200);
         $response->assertJson($ride->toArray());
-        $response->assertJson(['driver' => $this->user->toArray()]);
+        $response->assertJson(['driver' => $driver->toArray()]);
         $response->assertJson(['availableSlots' => $ride->availableSlots()]);
+        $response->assertJsonMissing(['riders']);
+    }
+
+    /** @test */
+    public function shouldIncludeRidersWhenUserIsRider()
+    {
+        $ride = factory(Ride::class)->create();
+        $driver = factory(User::class)->create();
+        $ride->users()->attach($driver, ['status' => 'driver']);
+        $ride->users()->attach($this->user, ['status' => 'accepted']);
+
+        $response = $this->json('GET', 'api/v1/rides/' . $ride->id, [], $this->headers);
+
+        $response->assertStatus(200);
+        $response->assertJson(['riders' => [
+            $this->user->toArray(),
+        ]]);
+    }
+
+    /** @test */
+    public function shouldIncludeRidersWhenUserIsDriver()
+    {
+        $ride = factory(Ride::class)->create();
+        $rider = factory(User::class)->create();
+        $ride->users()->attach($rider, ['status' => 'accepted']);
+        $ride->users()->attach($this->user, ['status' => 'driver']);
+
+        $response = $this->json('GET', 'api/v1/rides/' . $ride->id, [], $this->headers);
+
+        $response->assertStatus(200);
+        $response->assertJson(['riders' => [
+            $rider->toArray(),
+        ]]);
     }
 
     /** @test */
