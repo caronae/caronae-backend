@@ -148,7 +148,7 @@ class RideController extends BaseController
     {
         $searchDate = $request->searchDate();
 
-        $ridesFound = $request->user()->rides()
+        $ridesFound = $request->user()->offeredRides()
             ->whereBetween('date', $request->searchRange())
             ->where('going', $request->input('going'))
             ->get();

@@ -119,7 +119,8 @@ class RideControllerTest extends TestCase
         $response->assertJson(['data' => [ $ride2->toArray(), $ride1->toArray() ]]);
     }
 
-    public function testFindsRide()
+    /** @test */
+    public function shouldReturnRide()
     {
         $ride = factory(Ride::class)->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -132,7 +133,8 @@ class RideControllerTest extends TestCase
         $response->assertJson(['availableSlots' => $ride->availableSlots()]);
     }
 
-    public function testValidateValidRide()
+    /** @test */
+    public function shouldValidateRideWithoutCloseMatches()
     {
         $ride = factory(Ride::class)->create(['date' => '2016-12-18 16:00:00', 'going' => false]);
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -151,7 +153,32 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testValidatePossibleDuplicate()
+    /** @test */
+    public function shouldNotConsiderParticipatingRidesOnValidation()
+    {
+        $ride1 = factory(Ride::class)->create(['date' => '2016-12-18 16:00:00', 'going' => true]);
+        $ride1->users()->attach($this->user, ['status' => 'accepted']);
+        $ride2 = factory(Ride::class)->create(['date' => '2016-12-18 16:00:00', 'going' => true]);
+        $ride2->users()->attach($this->user, ['status' => 'pending']);
+        $ride3 = factory(Ride::class)->create(['date' => '2016-12-18 16:00:00', 'going' => true]);
+        $ride3->users()->attach($this->user, ['status' => 'refused']);
+
+        $parameters = [
+            'date' => '18/12/2016',
+            'time' => '16:00:00',
+            'going' => 1
+        ];
+        $response = $this->json('GET', 'api/v1/rides/validateDuplicate', $parameters, $this->headers);
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'valid' => true,
+            'status' => 'valid',
+            'message' => 'No conflicting rides were found close to the specified date.'
+        ]);
+    }
+
+    /** @test */
+    public function shouldReturnInvalidWhenRideIsPossiblyDuplicated()
     {
         $ride = factory(Ride::class)->create(['date' => '2016-12-18 10:00:00', 'going' => true]);
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -170,7 +197,8 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testValidateDuplicate()
+    /** @test */
+    public function shouldReturnInvalidWhenRideIsDuplicated()
     {
         $ride = factory(Ride::class)->create(['date' => '2016-12-18 16:20:00', 'going' => true]);
         $ride->users()->attach($this->user, ['status' => 'driver']);
