@@ -1,8 +1,6 @@
 @extends('templates.base')
 
 @section('body')
-<div class="top-content">
-    <div class="inner-bg">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-12 logo">
@@ -16,6 +14,4 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
 @endsection

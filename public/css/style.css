@@ -51,6 +51,7 @@ body {
     line-height: 30px;
     text-align: center;
     background-color: #fff;
+    padding-bottom: 100px;
 }
 
 strong { font-weight: 500; }
@@ -116,9 +117,9 @@ img { max-width: 100%; }
 }
 
 .form-bottom {
-    padding: 25px 25px 30px 25px;
+    padding: 25px;
     border: 1px solid rgba(0,0,0,0.3);
-    -moz-border-radius: 0 0 4px 4px; -webkit-border-radius: 0 0 4px 4px; border-radius: 0 0 4px 4px;
+    border-radius: 0 0 4px 4px;
     text-align: left;
 }
 
@@ -187,6 +188,17 @@ img { max-width: 100%; }
 
 .error .message {
     font-size: 0.8em;
+}
+
+.error .help-message {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #ccc;
+}
+
+.error .help-message a {
+    color: #999999;
+    text-decoration: underline;
 }
 
 .terms-alert {
