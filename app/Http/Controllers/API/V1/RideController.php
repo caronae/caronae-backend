@@ -88,7 +88,7 @@ class RideController extends BaseController
         RideResource::withoutWrapping();
 
         if ($request->user()->belongsToRide($ride)) {
-            $ride = $ride->with('riders')->first();
+            $ride->load('riders');
         }
 
         $rideResource = new RideResource($ride);

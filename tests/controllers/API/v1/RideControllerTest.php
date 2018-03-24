@@ -148,6 +148,9 @@ class RideControllerTest extends TestCase
         $response = $this->json('GET', 'api/v1/rides/' . $ride->id, [], $this->headers);
 
         $response->assertStatus(200);
+        $response->assertJson($ride->toArray());
+        $response->assertJson(['driver' => $driver->toArray()]);
+        $response->assertJson(['availableSlots' => $ride->availableSlots()]);
         $response->assertJson(['riders' => [
             $this->user->toArray(),
         ]]);
@@ -164,6 +167,9 @@ class RideControllerTest extends TestCase
         $response = $this->json('GET', 'api/v1/rides/' . $ride->id, [], $this->headers);
 
         $response->assertStatus(200);
+        $response->assertJson($ride->toArray());
+        $response->assertJson(['driver' => $this->user->toArray()]);
+        $response->assertJson(['availableSlots' => $ride->availableSlots()]);
         $response->assertJson(['riders' => [
             $rider->toArray(),
         ]]);
