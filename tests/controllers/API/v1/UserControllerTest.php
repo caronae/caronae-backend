@@ -87,6 +87,24 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
+    public function shouldNotChangeProfilePictureIfItAlreadyExists()
+    {
+        $oldProfilePicture = 'http://example.com/existing_pic.jpg';
+        $user = $this->newUser();
+        $user['institution_id'] = $this->institution->id;
+        $user['profile_pic_url'] = $oldProfilePicture;
+        $existingUser = User::create($user);
+
+        $data = array_merge($user, [ 'profile_pic_url' => 'http://example.com/new_pic.jpg' ]);
+        $response = $this->json('POST', 'api/v1/users', $data, $this->institutionAuthorizationHeaders());
+
+        $response->assertStatus(200);
+        $this->assertEquals($oldProfilePicture, $existingUser->fresh()->profile_pic_url);
+    }
+
+    /**
+     * @test
+     */
     public function shouldSignIn()
     {
         $user = $this->someUser();

@@ -28,7 +28,12 @@ class UserController extends BaseController
             Log::info("Novo cadastro (id institucional: $institutionID)");
         }
 
-        $user->fill($request->except('token'));
+        $ignoredFields = ['token'];
+        if (!empty($user->profile_pic_url)) {
+            $ignoredFields[] = 'profile_pic_url';
+        }
+
+        $user->fill($request->except($ignoredFields));
         $user->save();
 
         $token = JWTAuth::fromUser($user);
