@@ -1,14 +1,13 @@
 version: '2'
 
 services:
-  caronae-backend:
-    container_name: caronae-backend
+  caronae-backend-tests:
+    container_name: caronae-backend-tests
     image: caronae/backend
     depends_on:
       - postgres
     volumes:
       - ../:/var/www
-      - $CIRCLE_TEST_REPORTS:/var/www/reports
     environment:
       - TESTING_DB_HOST=postgres
     command: ./vendor/bin/phpunit --debug --log-junit reports/phpunit/junit.xml

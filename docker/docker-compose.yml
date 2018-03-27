@@ -1,0 +1,67 @@
+version: '2'
+
+services:
+  caronae-backend:
+    container_name: caronae-backend
+    image: caronae/backend
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.app
+    depends_on:
+      - postgres
+      - redis
+    env_file: config.env
+    volumes:
+      - ../app:/var/www/app
+      - ../bootstrap:/var/www/bootstrap
+      - ../config:/var/www/config
+      - ../database:/var/www/database
+      - ../public:/var/www/public
+      - ../resources:/var/www/resources
+      - ../routes:/var/www/routes
+      - ../scripts:/var/www/scripts
+      - ../storage:/var/www/storage
+      - ../tests:/var/www/tests
+      - ../artisan:/var/www/artisan
+      - ../composer.json:/var/www/composer.json
+      - ../composer.lock:/var/www/composer.lock
+      - ../phpunit.xml:/var/www/phpunit.xml
+
+  caronae-backend-worker:
+    container_name: caronae-backend-worker
+    image: caronae/backend-worker
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    depends_on:
+      - caronae-backend
+    env_file: config.env
+
+  nginx:
+    container_name: nginx
+    image: caronae/nginx
+    volumes_from:
+      - caronae-backend
+    ports:
+      - 8000:8000
+
+  postgres:
+    container_name: postgres
+    image: postgres:9.6-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=caronae
+      - POSTGRES_DB=caronae
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    volumes:
+      - redis:/data
+
+volumes:
+  postgres:
+  redis:

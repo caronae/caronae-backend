@@ -8,13 +8,19 @@ composto da API mobile e da área administrativa.
 
 ## Instalação
 
-O backend do Caronaê executa em um ambiente com PHP 7.1, PostgreSQL e Redis.
+O backend do Caronaê executa em um ambiente com PHP 7, PostgreSQL e Redis.
 
 O jeito mais fácil de executar este projeto localmente é utilizando nossas imagens 
-Docker. A documentação encontra-se no repositório [caronae-docker](https://github.com/caronae/caronae-docker).
+Docker. No diretório `docker` há uma configuração do [Docker Compose](https://docs.docker.com/compose/overview/).
+Para iniciar o projeto junto com as dependências, execute:
 
-**Todos os comandos abaixo devem ser executados de dentro do container Docker.
-Você pode criar uma sessão dentro do container do caronae-backend através do comando abaixo:**
+```bash
+cd docker
+docker-compose up
+```
+
+Todos os comandos deste README devem ser executados de dentro do container do backend.
+Você pode criar uma sessão dentro do container do caronae-backend através do comando abaixo:
 
 ```bash
 docker exec -it caronae-backend sh
@@ -63,7 +69,7 @@ Para criá-la, execute o comando abaixo de dentro do container:
 createdb -h $DB_HOST -U $DB_USERNAME -O $DB_USERNAME -E utf8 caronae_testing
 ```
 
-Para executar os testes, basta utilizar o **PHPUnit**:
+Para executar os testes, execute o **PHPUnit**:
 
 ```
 ./vendor/bin/phpunit
