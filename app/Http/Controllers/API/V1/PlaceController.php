@@ -3,6 +3,7 @@
 namespace Caronae\Http\Controllers\API\v1;
 
 use Caronae\Http\Controllers\BaseController;
+use Caronae\Http\Resources\InstitutionResource;
 use Caronae\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -17,6 +18,7 @@ class PlaceController extends BaseController
         return [
             'zones' => $this->getZones(),
             'campi' => $this->getCampi($request),
+            'institution' => $this->getInstitution($request),
         ];
     }
 
@@ -52,5 +54,10 @@ class PlaceController extends BaseController
                 ];
             });
         });
+    }
+
+    private function getInstitution($request)
+    {
+        return new InstitutionResource($request->user()->institution);
     }
 }

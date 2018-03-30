@@ -128,10 +128,13 @@ $factory->define(Message::class, function (Faker\Generator $faker) {
 });
 
 $factory->define(Institution::class, function (Faker\Generator $faker) {
+    $name = $faker->unique()->company;
     return [
-        'name' => $faker->unique()->company,
+        'name' => $name,
         'password' => $faker->password,
-        'authentication_url' => $faker->url
+        'authentication_url' => $faker->url,
+        'going_label' => 'Chegando na ' . $name,
+        'leaving_label' => 'Saindo da ' . $name,
     ];
 });
 

@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Caronae\Http\Resources\InstitutionResource;
 use Caronae\Models\Campus;
 use Caronae\Models\Hub;
 use Caronae\Models\Institution;
@@ -50,6 +51,17 @@ class PlaceControllerTest extends TestCase
                     'neighborhoods' => [ $this->neighborhood->name ]
                 ],
             ],
+        ]);
+    }
+
+    /** @test */
+    public function should_return_users_institution()
+    {
+        $response = $this->jsonAs($this->user,'GET', 'api/v1/places');
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'institution' => (new InstitutionResource($this->institution))->resolve(),
         ]);
     }
 
