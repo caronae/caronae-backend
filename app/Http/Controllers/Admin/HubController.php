@@ -66,15 +66,14 @@ class HubController extends CrudController
     {
         $hub = Hub::find($id);
         Log::info('Deleting hub ' . $hub->id);
-        $this->clearInstitutionCache($hub->campus->institution());
+        $this->clearInstitutionCache($hub->campus->institution);
         return parent::destroy($id);
     }
 
     private function clearCache(CrudRequest $request)
     {
         $campus = Campus::find($request->input('campus_id'));
-        $institution = $campus->institution();
-        $this->clearInstitutionCache($institution);
+        $this->clearInstitutionCache($campus->institution);
     }
 
     private function clearInstitutionCache(Institution $institution)

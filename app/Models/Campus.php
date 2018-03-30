@@ -16,7 +16,7 @@ class Campus extends Model
 
     public function institution()
     {
-        return $this->belongsTo(Institution::class)->first();
+        return $this->belongsTo(Institution::class);
     }
 
     public function hubs()
@@ -31,7 +31,7 @@ class Campus extends Model
 
     public function getFullNameAttribute()
     {
-        return $this->institution()->name . ' - ' . $this->name;
+        return $this->institution->name . ' - ' . $this->name;
     }
 
     public static function findByName($name)
