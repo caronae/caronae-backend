@@ -17,12 +17,6 @@ Route::middleware('api.v1.auth')->group(function () {
         Route::get('users/{user}/token', 'UserController@getToken');
     });
 
-});
-
-
-// Ride
-
-Route::middleware('api.v1.auth')->group(function () {
 
     Route::get('rides', 'RideController@index');
     Route::post('rides', 'RideController@store');
@@ -44,11 +38,8 @@ Route::middleware('api.v1.auth')->group(function () {
         Route::post('rides/{ride}/finish', 'RideController@finishRide');
     });
 
+    Route::get('places', 'PlaceController@index');
+
 });
 
-
-// Etc
-
-Route::get('places', 'PlaceController@index');
 Route::post('falae/messages', 'FalaeController@sendMessage');
-

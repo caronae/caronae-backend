@@ -3,6 +3,9 @@ namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Http\Requests\CrudRequest;
+use Caronae\Models\Campus;
+use Caronae\Models\Hub;
+use Caronae\Models\Institution;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -46,7 +49,7 @@ class HubController extends CrudController
         $this->validateHub($request);
 
         Log::info('Adding hub ' . $request->name);
-        $this->clearCache();
+        $this->clearCache($request);
         return parent::storeCrud($request);
     }
 
@@ -55,24 +58,32 @@ class HubController extends CrudController
         $this->validateHub($request);
 
         Log::info('Updating hub ' . $request->name);
-        $this->clearCache();
+        $this->clearCache($request);
         return parent::updateCrud($request);
     }
 
     public function destroy($id)
     {
-        Log::info('Deleting hub ' . $id);
-        $this->clearCache();
+        $hub = Hub::find($id);
+        Log::info('Deleting hub ' . $hub->id);
+        $this->clearInstitutionCache($hub->campus->institution());
         return parent::destroy($id);
     }
 
-    private function clearCache()
+    private function clearCache(CrudRequest $request)
     {
-        Log::info('Clearing campi cache.');
-        Cache::forget('campi');
+        $campus = Campus::find($request->input('campus_id'));
+        $institution = $campus->institution();
+        $this->clearInstitutionCache($institution);
     }
 
-    private function validateHub(CrudRequest $request): void
+    private function clearInstitutionCache(Institution $institution)
+    {
+        Log::info("Clearing campi cache for institution {$institution->name}.");
+        Cache::forget('campi_institution_' . $institution->id);
+    }
+
+    private function validateHub(CrudRequest $request)
     {
         $this->validate($request, [
             'name' => 'required|string',

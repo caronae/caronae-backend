@@ -3,8 +3,8 @@
 namespace Caronae\Http\Controllers\API\v1;
 
 use Caronae\Http\Controllers\BaseController;
-use Caronae\Models\Campus;
 use Caronae\Models\Zone;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -12,11 +12,11 @@ class PlaceController extends BaseController
 {
     const CACHE_TIME_MINUTES = 60 * 24 * 365;
 
-    public function index()
+    public function index(Request $request)
     {
         return [
             'zones' => $this->getZones(),
-            'campi' => $this->getCampi(),
+            'campi' => $this->getCampi($request),
         ];
     }
 
@@ -35,11 +35,12 @@ class PlaceController extends BaseController
         });
     }
 
-    private function getCampi()
+    private function getCampi(Request $request)
     {
-        return Cache::remember('campi', self::CACHE_TIME_MINUTES, function () {
-            Log::info('Loading campi from database.');
-            $campi = Campus::all();
+        $institution = $request->user()->institution;
+        return Cache::remember('campi_institution_' . $institution->id, self::CACHE_TIME_MINUTES, function () use ($institution) {
+            Log::info("Loading campi for {$institution->name} from database.");
+            $campi = $institution->campi;
             return $campi->filter(function ($campus) {
                 return $campus->hubs()->count() > 0;
             })->map(function ($campus) {

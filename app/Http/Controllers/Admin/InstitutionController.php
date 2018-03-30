@@ -80,13 +80,13 @@ class InstitutionController extends CrudController
             $institution->campi()->save($campus);
         });
 
-        $this->clearCache();
+        $this->clearCache($institution);
         return parent::updateCrud($request);
     }
 
-    private function clearCache()
+    private function clearCache(Institution $institution)
     {
-        Log::info('Clearing campi cache.');
-        Cache::forget('campi');
+        Log::info("Clearing campi cache for institution {$institution->name}.");
+        Cache::forget('campi_institution_' . $institution->id);
     }
 }

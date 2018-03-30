@@ -6,7 +6,7 @@ use Caronae\Models\Campus;
 use Caronae\Models\Hub;
 use Caronae\Models\Institution;
 use Caronae\Models\Neighborhood;
-use Caronae\Models\Zone;
+use Caronae\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class PlaceControllerTest extends TestCase
@@ -17,50 +17,77 @@ class PlaceControllerTest extends TestCase
     private $institution;
     private $campus;
     private $zone;
+    private $user;
+    private $hub;
 
     public function setUp()
     {
         parent::setUp();
 
-        $this->zone = factory(Zone::class)->create();
-        $this->neighborhood = factory(Neighborhood::class)->create(['zone_id' => $this->zone->id]);
+        $this->neighborhood = factory(Neighborhood::class)->create();
+        $this->zone = $this->neighborhood->zone()->first();
         $this->institution = factory(Institution::class)->create();
         $this->campus = factory(Campus::class)->create(['institution_id' => $this->institution->id]);
+        $this->hub = factory(Hub::class)->create(['campus_id' => $this->campus->id]);
+        $this->user = factory(User::class)->create(['institution_id' => $this->institution->id]);
+
+        $otherInstitution = factory(Institution::class)->create();
+        $otherCampus = factory(Campus::class)->create(['institution_id' => $otherInstitution->id]);
+        $otherHub = factory(Hub::class)->create(['campus_id' => $otherCampus->id]);
     }
 
-    public function testReturnsZonesAndCampi()
+    /** @test */
+    public function should_return_zones()
     {
-        $hub = factory(Hub::class)->create(['campus_id' => $this->campus->id]);
-
-        $response = $this->json('GET', 'places');
+        $response = $this->jsonAs($this->user,'GET', 'api/v1/places');
 
         $response->assertStatus(200);
-        $response->assertJson([
+        $response->assertJsonFragment([
             'zones' => [
                 [
                     'name' => $this->zone->name,
                     'color' => $this->zone->color,
                     'neighborhoods' => [ $this->neighborhood->name ]
-                ]
+                ],
             ],
+        ]);
+    }
+
+    /** @test */
+    public function should_return_campi_from_users_institution()
+    {
+        $response = $this->jsonAs($this->user,'GET', 'api/v1/places');
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
             'campi' => [
                 [
                     'name' => $this->campus->name,
                     'color' => $this->campus->color,
-                    'centers' => [ $hub->center ],
-                    'hubs' => [ $hub->name ]
-                ]
+                    'centers' => [ $this->hub->center ],
+                    'hubs' => [ $this->hub->name ]
+                ],
             ]
         ]);
     }
 
-    public function testDoesNotIncludeCampiWithoutHubs()
+    /** @test */
+    public function should_not_include_campi_without_hubs()
     {
-        $response = $this->json('GET', 'places');
+        $campusWithoutHubs = factory(Campus::class)->create(['institution_id' => $this->institution->id]);
+
+        $response = $this->jsonAs($this->user,'GET', 'api/v1/places');
 
         $response->assertStatus(200);
-        $response->assertJsonFragment([
-            'campi' => []
-        ]);
+        $campi = $response->getOriginalContent()['campi'];
+        $this->assertEquals(1, $campi->count());
+    }
+
+    /** @test */
+    public function should_return_error_when_not_authenticated()
+    {
+        $response = $this->json('GET', 'api/v1/places');
+
+        $response->assertStatus(401);
     }
 }
