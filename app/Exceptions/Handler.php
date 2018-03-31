@@ -3,7 +3,6 @@
 namespace Caronae\Exceptions;
 
 use Exception;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
@@ -19,16 +18,16 @@ class Handler extends ExceptionHandler
         \Illuminate\Validation\ValidationException::class,
     ];
 
-    public function report(Exception $e)
-    {
-        return parent::report($e);
-    }
+    protected $dontFlash = [
+        'password',
+        'password_confirmation',
+    ];
 
     public function render($request, Exception $e)
     {
         if ($request->expectsJson() && !($e instanceof ValidationException)) {
             if ($e instanceof ModelNotFoundException) {
-                return response()->json([ 'error' => 'Not found' ], 404);
+                return response()->json(['error' => 'Not found'], 404);
             }
 
             $response = [
@@ -49,24 +48,4 @@ class Handler extends ExceptionHandler
         return parent::render($request, $e);
     }
 
-    protected function unauthenticated($request, AuthenticationException $exception)
-    {
-        if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
-        }
-
-        return redirect()->guest('login');
-    }
-
-    /**
-     * Convert a validation exception into a JSON response.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Validation\ValidationException  $exception
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function invalidJson($request, ValidationException $exception)
-    {
-        return response()->json($exception->errors(), $exception->status);
-    }
 }

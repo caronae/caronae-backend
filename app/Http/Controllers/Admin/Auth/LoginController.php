@@ -13,11 +13,11 @@ class LoginController extends BaseController
 
     public function __construct()
     {
-        $this->middleware('guest', ['except' => 'logout']);
+        $this->middleware('guest:admin', ['except' => 'logout']);
     }
 
     protected function guard()
     {
-        return Auth::guard('web');
+        return Auth::guard('admin');
     }
 }

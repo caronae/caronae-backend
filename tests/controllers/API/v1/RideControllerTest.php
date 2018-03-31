@@ -373,7 +373,7 @@ class RideControllerTest extends TestCase
 
         $response = $this->json('POST', 'api/v1/rides', $request, $this->headers);
         $response->assertStatus(422);
-        $response->assertExactJson([
+        $response->assertJsonFragment([
             'mydate' => ['You cannot create a ride in the past.']
         ]);
     }

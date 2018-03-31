@@ -124,4 +124,5 @@ class LoginController extends BaseController
     {
         return $this->getLoginType($request) == 'app_jwt';
     }
+
 }
