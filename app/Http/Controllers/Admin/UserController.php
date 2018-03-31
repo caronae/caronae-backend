@@ -10,7 +10,6 @@ class UserController extends CrudController
         $this->crud->setModel('Caronae\Models\User');
         $this->crud->setRoute('admin/users');
         $this->crud->setEntityNameStrings('usuário', 'usuários');
-        $this->crud->enableAjaxTable();
         $this->crud->enableDetailsRow();
         $this->crud->removeButton('delete');
         $this->crud->addButtonFromView('line', 'Banir', 'ban', 1);

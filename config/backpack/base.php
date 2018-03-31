@@ -66,6 +66,10 @@ return [
     // (you then need to overwrite the login route on your AuthController)
     'setup_dashboard_routes' => false,
 
+    // Set this to false if you would like to skip adding "my account" routes
+    // (you then need to manually define the routes in your web.php)
+    'setup_my_account_routes' => false,
+
     /*
     |--------------------------------------------------------------------------
     | User Model
@@ -74,5 +78,12 @@ return [
 
     // Fully qualified namespace of the User model
     'user_model_fqn' => '\Caronae\Models\Admin',
+
+    // What kind of avatar will you like to show to the user?
+    // Default: gravatar (automatically use the gravatar for his email)
+    // Other options:
+    // - placehold (generic image with his first letter)
+    // - example_method_name (specify the method on the User model that returns the URL)
+    'avatar_type' => 'gravatar',
 
 ];

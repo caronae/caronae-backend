@@ -6,8 +6,8 @@
     "type": "project",
     "require": {
         "php": ">=7.1.0",
-        "backpack/base": "^0.7.18",
-        "backpack/crud": "^3.2",
+        "backpack/base": "^0.8.0",
+        "backpack/crud": "^3.3",
         "barryvdh/laravel-ide-helper": "^2.1",
         "doctrine/dbal": "^2.5",
         "facebook/graph-sdk": "^5.4",
