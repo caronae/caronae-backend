@@ -69,8 +69,6 @@ class UserController extends CrudController
         ]);
     }
 
-
-
     public function store()
     {
         return parent::storeCrud();

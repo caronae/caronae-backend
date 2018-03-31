@@ -10,10 +10,7 @@ Route::group([
         Route::post('users/{user}/unban', 'UserController@unban');
     });
 
-    Route::name('rides')->get('rides', 'RideController@index');
-    Route::get('rides.json', 'RideController@indexJson');
-    Route::name('ride')->get('rides/{ride}', 'RideController@show');
-
+    CRUD::resource('rides', 'RideController');
     CRUD::resource('admins', 'AdminController');
     CRUD::resource('institutions', 'InstitutionController');
     CRUD::resource('hubs', 'HubController');

@@ -1,27 +1,51 @@
-<?php 
+<?php
+
 namespace Caronae\Http\Controllers\Admin;
 
-use Backpack\Base\app\Http\Controllers\Controller as Controller;
-use Caronae\Models\Ride;
-use Caronae\Http\Requests\RankingRequest;
+use Backpack\CRUD\app\Http\Controllers\CrudController;
 
-class RideController extends Controller
+class RideController extends CrudController
 {
-    public function index()
+    public function setup()
     {
-        $this->data['title'] = 'Caronas';
-        return view('rides.index', $this->data);
+        $this->crud->setModel('Caronae\Models\Ride');
+        $this->crud->setRoute('admin/rides');
+        $this->crud->setEntityNameStrings('carona', 'caronas');
+        $this->crud->enableExportButtons();
+        $this->crud->setDefaultPageLength(10);
+        $this->crud->allowAccess(['show']);
+        $this->crud->removeButton('update');
+        $this->crud->denyAccess(['create', 'update', 'delete']);
+        $this->crud->setShowView('rides.show');
+
+        $this->crud->setColumns([
+            [
+                'label' => 'Motorista',
+                'type' => 'model_function_attribute',
+                'name' => 'driver',
+                'function_name' => 'driver',
+                'attribute' => 'name',
+            ],
+            ['name' => 'date', 'label' => 'Data', 'type' => 'datetime'],
+            ['name' => 'origin', 'label' => 'Origem'],
+            ['name' => 'destination', 'label' => 'Destino'],
+        ]);
+
+        $this->crud->addFilter(
+            [
+                'type' => 'date_range',
+                'name' => 'from_to',
+                'label' => 'Período'
+            ],
+            false,
+            function ($value) {
+                $dates = json_decode($value);
+                $this->crud->addClause('where', 'date', '>=', $dates->from);
+                $this->crud->addClause('where', 'date', '<=', $dates->to);
+            }
+        );
+
     }
 
-    public function indexJson(RankingRequest $request)
-    {
-        return Ride::getInPeriodWithUserInfo($request->getDate('start'), $request->getDate('end'));
-    }
-
-    public function show(Ride $ride)
-    {
-        $this->data['title'] = 'Carona ' . $ride->id;
-        return view('rides.show', $this->data, ['ride' => $ride]);
-    }
 
 }

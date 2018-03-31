@@ -86,6 +86,11 @@
 	width: 20px;
 }
 
+.ride-info {
+	font-size: 16px;
+	margin-bottom: 20px;
+}
+
 .campus-color {
 	display: inline-block;
 	width: 2em;

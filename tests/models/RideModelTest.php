@@ -169,4 +169,22 @@ class RideModelTest extends TestCase
         $this->assertTrue($results->contains($ride2));
         $this->assertTrue($results->contains($ride3));
     }
+
+    /** @test */
+    public function shouldReturnRightDirectionsWhenGoing()
+    {
+        $ride = factory(Ride::class)->create(['going' => true, 'hub' => 'Hub', 'neighborhood' => 'Bairro'])->fresh();
+
+        $this->assertEquals('Hub', $ride->origin);
+        $this->assertEquals('Bairro', $ride->destination);
+    }
+
+    /** @test */
+    public function shouldReturnRightDirectionsWhenReturning()
+    {
+        $ride = factory(Ride::class)->create(['going' => false, 'hub' => 'Hub', 'neighborhood' => 'Bairro'])->fresh();
+
+        $this->assertEquals('Bairro', $ride->origin);
+        $this->assertEquals('Hub', $ride->destination);
+    }
 }

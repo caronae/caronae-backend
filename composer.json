@@ -16,7 +16,6 @@
         "laravel/framework": "5.5.*",
         "laravel/tinker": "^1.0",
         "league/flysystem-aws-s3-v3": "^1.0",
-        "maatwebsite/excel": "~2.1.0",
         "predis/predis": "^1.1",
         "simshaun/recurr": "^1.2",
         "spatie/laravel-backup": "^5.0",

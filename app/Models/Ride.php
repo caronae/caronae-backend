@@ -2,6 +2,7 @@
 
 namespace Caronae\Models;
 
+use Backpack\CRUD\CrudTrait;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,7 @@ class Ride extends Model
 {
     use Notifiable;
     use SoftDeletes;
+    use CrudTrait;
 
     protected $fillable = ['myzone', 'neighborhood', 'place', 'route', 'slots', 'hub', 'description', 'going', 'date'];
     protected $hidden = ['pivot', 'created_at', 'deleted_at', 'updated_at', 'date', 'done'];
@@ -63,6 +65,16 @@ class Ride extends Model
         return $route . ' | ' . $this->date->format('d/m');
     }
 
+    public function getOriginAttribute()
+    {
+        return $this->going ? $this->hub : $this->neighborhood;
+    }
+
+    public function getDestinationAttribute()
+    {
+        return $this->going ? $this->neighborhood : $this->hub;
+    }
+
     public function availableSlots()
     {
         $ridersCount = $this->belongsToMany(User::class)->wherePivot('status', 'accepted')->count();
@@ -112,65 +124,5 @@ class Ride extends Model
         });
 
         return $query;
-    }
-
-    private static function userStats($periodStart, $periodEnd)
-    {
-        return DB::table('users')
-            ->join('ride_user', function($join){
-                $join->on('ride_user.user_id', '=', 'users.id');
-            })
-            ->join('rides', function($join){
-                $join->on('ride_user.ride_id', '=', 'rides.id');
-            })
-            ->leftJoin('neighborhoods', function($join){
-                $join->on('rides.neighborhood', '=', 'neighborhoods.name');
-            })
-            ->where('ride_user.status', '=', 'driver')
-            ->where('done', '=', true)
-            ->where('rides.date', '>=', $periodStart)
-            ->where('rides.date', '<=', $periodEnd)
-
-            ->groupBy('users.id')
-
-            ->select(
-                'users.id',
-                DB::raw('SUM(distance) as distancia_total'),
-                DB::raw('COUNT(*) as numero_de_caronas'),
-                DB::raw('(SUM(distance) / COUNT(distance)) as distancia_media')
-            );
-    }
-
-    public static function getInPeriodWithUserInfo(Carbon $periodStart, Carbon $periodEnd)
-    {
-        $join = self::userStats($periodStart, $periodEnd);
-
-        return Ride::leftJoin('neighborhoods', function($join){
-            $join->on('rides.neighborhood', '=', 'neighborhoods.name');
-        })
-            ->join('ride_user', function($join){
-                $join->on('ride_user.ride_id', '=', 'rides.id');
-            })
-            ->join('users', function($join){
-                $join->on('ride_user.user_id', '=', 'users.id');
-            })
-            ->join('institutions', function($join){
-                $join->on('users.institution_id', '=', 'institutions.id');
-            })
-            ->join(DB::raw('(' . $join->toSql() . ') as t1'), function($join){
-                $join->on('users.id' , '=', 't1.id');
-            })
-            ->mergeBindings($join)
-            ->where('ride_user.status', '=', 'driver')
-            ->where('done', '=', true)
-            ->where('rides.date', '>=', $periodStart)
-            ->where('rides.date', '<=', $periodEnd)
-            ->select('users.name as driver','institutions.name as institution', 'users.course', 'rides.id', 'date', 'myzone', 'neighborhood', 'going', 'hub', 'distance',
-                't1.distancia_total',
-                't1.numero_de_caronas',
-                't1.distancia_media'
-            )
-            ->orderBy('date', 'DESC')
-            ->get();
     }
 }
