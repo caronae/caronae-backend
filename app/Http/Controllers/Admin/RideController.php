@@ -11,6 +11,7 @@ class RideController extends CrudController
         $this->crud->setModel('Caronae\Models\Ride');
         $this->crud->setRoute('admin/rides');
         $this->crud->setEntityNameStrings('carona', 'caronas');
+        $this->crud->orderBy('date', 'DESC');
         $this->crud->enableExportButtons();
         $this->crud->setDefaultPageLength(10);
         $this->crud->allowAccess(['show']);
@@ -42,6 +43,18 @@ class RideController extends CrudController
                 $dates = json_decode($value);
                 $this->crud->addClause('where', 'date', '>=', $dates->from);
                 $this->crud->addClause('where', 'date', '<=', $dates->to);
+            }
+        );
+
+        $this->crud->addFilter(
+            [
+                'type' => 'simple',
+                'name' => 'finished',
+                'label' => 'Concluídas'
+            ],
+            false,
+            function () {
+                $this->crud->addClause('finished');
             }
         );
 
