@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -6,7 +7,8 @@ use Caronae\Models\User;
 
 class UserController extends CrudController
 {
-    public function setup() {
+    public function setup()
+    {
         $this->crud->setModel('Caronae\Models\User');
         $this->crud->setRoute('admin/users');
         $this->crud->setEntityNameStrings('usuário', 'usuários');
@@ -19,21 +21,27 @@ class UserController extends CrudController
 
         $this->crud->addFilter(
             [
-              'type' => 'simple',
-              'name' => 'banned',
-              'label' => 'Banidos'
+                'type' => 'simple',
+                'name' => 'banned',
+                'label' => 'Banidos'
             ],
             false,
-            function() {
+            function () {
                 $this->crud->query = $this->crud->query->where('banned', true);
             }
         );
 
         $this->crud->setColumns([
-            [ 'name' => 'name', 'label' => 'Nome' ],
-            [ 'name' => 'profile', 'label' => 'Perfil' ],
-            [ 'name' => 'course', 'label' => 'Curso' ],
-            [ 'name' => 'location', 'label' => 'Bairro' ],
+            [
+                'name' => 'name',
+                'label' => 'Nome',
+                'searchLogic' => function ($query, $column, $searchTerm) {
+                    $query->orWhere('name', 'ilike', "%$searchTerm%");
+                }
+            ],
+            ['name' => 'profile', 'label' => 'Perfil'],
+            ['name' => 'course', 'label' => 'Curso'],
+            ['name' => 'location', 'label' => 'Bairro'],
             [
                 'label' => 'Instituição',
                 'type' => 'select',
@@ -45,9 +53,9 @@ class UserController extends CrudController
         ]);
 
         $this->crud->addFields([
-            [ 'name' => 'profile_pic_url', 'label' => 'Foto', 'type' => 'image' ],
-            [ 'name' => 'name', 'label' => 'Nome' ],
-            [ 'name' => 'email', 'label' => 'E-mail', 'type' => 'email' ],
+            ['name' => 'profile_pic_url', 'label' => 'Foto', 'type' => 'image'],
+            ['name' => 'name', 'label' => 'Nome'],
+            ['name' => 'email', 'label' => 'E-mail', 'type' => 'email'],
             [
                 'label' => 'Instituição',
                 'type' => 'select2',
@@ -56,16 +64,16 @@ class UserController extends CrudController
                 'attribute' => 'name',
                 'model' => 'Caronae\Models\Institution',
             ],
-            [ 'name' => 'phone_number', 'label' => 'Telefone' ],
-            [ 'name' => 'profile', 'label' => 'Perfil' ],
-            [ 'name' => 'course', 'label' => 'Curso' ],
-            [ 'name' => 'location', 'label' => 'Bairro' ],
-            [ 'name' => 'id_ufrj', 'label' => 'ID UFRJ' ],
-            [ 'name' => 'token', 'label' => 'Chave', 'type' => 'password' ],
-            [ 'name' => 'car_owner', 'label' => 'Possui carro', 'type' => 'checkbox' ],
-            [ 'name' => 'car_model', 'label' => 'Modelo do carro' ],
-            [ 'name' => 'car_plate', 'label' => 'Placa do carro' ],
-            [ 'name' => 'car_color', 'label' => 'Cor do carro' ],
+            ['name' => 'phone_number', 'label' => 'Telefone'],
+            ['name' => 'profile', 'label' => 'Perfil'],
+            ['name' => 'course', 'label' => 'Curso'],
+            ['name' => 'location', 'label' => 'Bairro'],
+            ['name' => 'id_ufrj', 'label' => 'ID UFRJ'],
+            ['name' => 'token', 'label' => 'Chave', 'type' => 'password'],
+            ['name' => 'car_owner', 'label' => 'Possui carro', 'type' => 'checkbox'],
+            ['name' => 'car_model', 'label' => 'Modelo do carro'],
+            ['name' => 'car_plate', 'label' => 'Placa do carro'],
+            ['name' => 'car_color', 'label' => 'Cor do carro'],
         ]);
     }
 
