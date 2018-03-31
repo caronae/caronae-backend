@@ -3,19 +3,17 @@
 namespace Caronae\Models;
 
 use Backpack\CRUD\CrudTrait;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Model implements AuthenticatableContract
+class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
     use SoftDeletes;
     use CrudTrait;
-    use Authenticatable;
 
     protected $fillable = [
         'name',
@@ -156,5 +154,15 @@ class User extends Model implements AuthenticatableContract
     {
         $this->token = strtoupper(substr(base_convert(sha1(uniqid() . rand()), 16, 36), 0, 6));
         return $this;
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }

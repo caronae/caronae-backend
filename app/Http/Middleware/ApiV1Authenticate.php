@@ -69,12 +69,12 @@ class ApiV1Authenticate
                 $response = $next($request);
                 $response->header('Authorization', "Bearer $refreshed");
             } catch (JWTException $e) {
-                return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
+                return response()->json(['error' => $e->getMessage()], 401);
             }
         } catch (TokenInvalidException $e) {
-            return response()->json(['error' => 'Token is invalid.'], $e->getStatusCode());
+            return response()->json(['error' => 'Token is invalid.'], 400);
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Error validating token.', 'exception' => $e->getMessage()], $e->getStatusCode());
+            return response()->json(['error' => 'Error validating token.', 'exception' => $e->getMessage()], 500);
         }
 
         $this->updateUserAppInfo($request);
