@@ -10,11 +10,12 @@ class UserController extends CrudController
         $this->crud->setModel('Caronae\Models\User');
         $this->crud->setRoute('admin/users');
         $this->crud->setEntityNameStrings('usuário', 'usuários');
-        $this->crud->enableDetailsRow();
         $this->crud->removeButton('delete');
         $this->crud->addButtonFromView('line', 'Banir', 'ban', 1);
         $this->crud->enableExportButtons();
         $this->crud->setDefaultPageLength(10);
+        $this->crud->allowAccess(['show']);
+        $this->crud->setShowView('users.show');
 
         $this->crud->addFilter(
             [
@@ -68,6 +69,8 @@ class UserController extends CrudController
         ]);
     }
 
+
+
     public function store()
     {
         return parent::storeCrud();
@@ -76,12 +79,6 @@ class UserController extends CrudController
     public function update()
     {
         return parent::updateCrud();
-    }
-
-    public function showDetailsRow($id)
-    {
-        $user = User::find($id);
-        return view('vendor.backpack.crud.inc.user', ['u' => $user]);
     }
 
     public function ban(User $user)

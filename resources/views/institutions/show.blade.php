@@ -1,13 +1,16 @@
-@extends('backpack::layout')
+<?php
+$campi = $entry->campi;
+?>
+@extends('templates.admin')
 
 @section('header')
     <section class="content-header">
         <h1>
-            Instituição: {{ $institution->name }} <small>ID: {{ $institution->id }}</small>
+            Instituição: {{ $entry->name }} <small>ID: {{ $entry->id }}</small>
         </h1>
         <ol class="breadcrumb">
-            <li><a href="{{ url(config('backpack.base.route_prefix', 'admin')) }}">{{ config('backpack.base.project_name') }}</a></li>
-            <li><a href="./">Instituições</a></li>
+            <li><a href="{{ backpack_url('home') }}">{{ config('backpack.base.project_name') }}</a></li>
+            <li><a href="{{ backpack_url('institutions') }}">Instituições</a></li>
 
         </ol>
     </section>
@@ -25,14 +28,14 @@
         <div class="box-body">
             <div class="model-details institution-details">
                 <ul class="properties">
-                    <li class="property"><span class="column-name">ID</span> {{ $institution->id }}</li>
-                    <li class="property"><span class="column-name">Nome</span> {{ $institution->name }}</li>
-                    <li class="property"><span class="column-name">Labels</span> {{ $institution->going_label }} / {{ $institution->leaving_label }}</li>
+                    <li class="property"><span class="column-name">ID</span> {{ $entry->id }}</li>
+                    <li class="property"><span class="column-name">Nome</span> {{ $entry->name }}</li>
+                    <li class="property"><span class="column-name">Labels</span> {{ $entry->going_label }} / {{ $entry->leaving_label }}</li>
                     <li class="property">
                         <span class="column-name">URL de autenticação</span>
-                        <a href="{{ $institution->authentication_url }}">{{ $institution->authentication_url }}</a>
+                        <a href="{{ $entry->authentication_url }}">{{ $entry->authentication_url }}</a>
                     </li>
-                    <li class="property"><span class="column-name">Senha</span> {{ $institution->password }}</li>
+                    <li class="property"><span class="column-name">Senha</span> {{ $entry->password }}</li>
                 </ul>
             </div>
         </div>

@@ -1,4 +1,4 @@
-@extends('backpack::layout')
+@extends('templates.admin')
 
 @section('header')
     <section class="content-header">
@@ -6,7 +6,7 @@
         Painel
       </h1>
       <ol class="breadcrumb">
-        <li><a href="{{ url(config('backpack.base.route_prefix')) }}">{{ config('backpack.base.project_name') }}</a></li>
+          <li><a href="{{ backpack_url('home') }}">{{ config('backpack.base.project_name') }}</a></li>
         <li class="active">{{ trans('backpack::base.dashboard') }}</li>
       </ol>
     </section>

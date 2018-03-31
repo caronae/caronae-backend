@@ -15,6 +15,7 @@ class InstitutionController extends CrudController
         $this->crud->setRoute('admin/institutions');
         $this->crud->setEntityNameStrings('instituição', 'instituições');
         $this->crud->allowAccess(['show']);
+        $this->crud->setShowView('institutions.show');
 
         $this->crud->setColumns([
             [ 'name' => 'id', 'label' => 'ID' ],
@@ -38,15 +39,6 @@ class InstitutionController extends CrudController
             [ 'name' => 'going_label', 'label' => 'Label de chegada' ],
             [ 'name' => 'leaving_label', 'label' => 'Label de saída' ],
         ]);
-    }
-
-    public function show($id)
-    {
-        $institution = Institution::findOrFail($id);
-        $campi = $institution->campi()->get();
-        $this->data['title'] = $institution->name;
-
-        return view('institutions.show', $this->data, ['institution' => $institution, 'campi' => $campi]);
     }
 
     public function store()

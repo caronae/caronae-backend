@@ -13,109 +13,120 @@ return [
     |
     */
 
+    // Forms
+    'save_action_save_and_new' => 'Salvar e criar novo item',
+    'save_action_save_and_edit' => 'Salvar e editar item',
+    'save_action_save_and_back' => 'Salvar e voltar',
+    'save_action_changed_notification' => 'Comportamento padrão após salvar foi alterado.',
+
     // Create form
     'add'                 => 'Adicionar',
     'back_to_all'         => 'Voltar para todos ',
     'cancel'              => 'Cancelar',
-    'add_a_new'           => 'Criar ',
-    'user' => 'usuário',
-
-        // Create form - advanced options
-        'after_saving'            => 'Após a criação',
-        'go_to_the_table_view'    => 'ir para a lista',
-        'let_me_add_another_item' => 'adicionar um novo item',
-        'edit_the_new_item'       => 'editar o novo item',
+    'add_a_new'           => 'Adicionar um novo ',
 
     // Edit form
     'edit'                 => 'Editar',
     'save'                 => 'Salvar',
 
     // Revisions
-    'revisions'            => 'Revisions',
-    'no_revisions'         => 'No revisions found',
-    'created_this'          => 'created this',
-    'changed_the'          => 'changed the',
+    'revisions'            => 'Revisões',
+    'no_revisions'         => 'Nenhuma revisão encontrada',
+    'created_this'         => 'criou este',
+    'changed_the'          => 'alterou o',
     'restore_this_value'   => 'Restore this value',
-    'from'                 => 'from',
-    'to'                   => 'to',
-    'undo'                 => 'Undo',
-    'revision_restored'    => 'Revision successfully restored',
+    'from'                 => 'de',
+    'to'                   => 'para',
+    'undo'                 => 'Desfazer',
+    'revision_restored'    => 'Revisão restaurada com sucesso',
+    'guest_user'           => 'Convidado',
+
+    // Translatable models
+    'edit_translations' => 'EDITAR TRADUÇÕES',
+    'language'          => 'Idioma',
 
     // CRUD table view
     'all'                       => 'Todos ',
     'in_the_database'           => 'no banco de dados',
     'list'                      => 'Lista',
     'actions'                   => 'Ações',
-    'preview'                   => 'Ver',
-    'delete'                    => 'Deletar',
+    'preview'                   => 'Visualizar',
+    'delete'                    => 'Excluir',
     'admin'                     => 'Admin',
-    'details_row'               => 'This is the details row. Modify as you please.',
-    'details_row_loading_error' => 'There was an error loading the details. Please retry.',
+    'details_row'               => 'Esta são os detalhes do registro. Faça as modificações necessárias.',
+    'details_row_loading_error' => 'Ocorreu um erro durante o carregamento dos detalhes. Por favor, tente novamente.',
 
         // Confirmation messages and bubbles
-        'delete_confirm'                              => 'Você tem certeza que deseja deletar este item?',
-        'delete_confirmation_title'                   => 'Item Deletado',
-        'delete_confirmation_message'                 => 'O item foi deletado com sucesso.',
-        'delete_confirmation_not_title'               => 'NÃO deletado',
-        'delete_confirmation_not_message'             => 'Houve um erro. O item pode não ter sido deletado.',
-        'delete_confirmation_not_deleted_title'       => 'Não deleted',
-        'delete_confirmation_not_deleted_message'     => 'Nada feito. O item está seguro.',
+        'delete_confirm'                              => 'Tem certeza que deseja excluir este item?',
+        'delete_confirmation_title'                   => 'Item excluído',
+        'delete_confirmation_message'                 => 'Item excluído com sucesso.',
+        'delete_confirmation_not_title'               => 'Item não excluído',
+        'delete_confirmation_not_message'             => 'Ocorreu um erro. O item pode não ter sido excluído.',
+        'delete_confirmation_not_deleted_title'       => 'Item não excluído',
+        'delete_confirmation_not_deleted_message'     => 'Nada aconteceu. Seu item está seguro.',
 
         // DataTables translation
-        'emptyTable'     => 'Não há dados disponíveis na tabela',
-        'info'           => 'Mostrando registros de _START_ a _END_ de _TOTAL_',
-        'infoEmpty'      => 'Mostrando registros de 0 a 0 de 0',
-        'infoFiltered'   => '(filtered from _MAX_ total entries)',
+        'emptyTable'     => 'Nenhum dado cadastrado na tabela',
+        'info'           => 'Exibindo _START_ a _END_ de _TOTAL_ registros',
+        'infoEmpty'      => 'Exibindo 0 a 0 de 0 registros',
+        'infoFiltered'   => '(filtrados de _MAX_ registros)',
         'infoPostFix'    => '',
         'thousands'      => ',',
         'lengthMenu'     => '_MENU_ registros por página',
         'loadingRecords' => 'Carregando...',
         'processing'     => 'Processando...',
-        'search'         => 'Pesquisa: ',
-        'zeroRecords'    => 'Nenhuma correspondência encontrada',
+        'search'         => 'Pesquisar: ',
+        'zeroRecords'    => 'Nenhum registro encontrado',
         'paginate'       => [
-            'first'    => 'Primeiro',
-            'last'     => 'Último',
-            'next'     => 'Próximo',
+            'first'    => 'Primeira',
+            'last'     => 'Última',
+            'next'     => 'Próxima',
             'previous' => 'Anterior',
         ],
         'aria' => [
-            'sortAscending'  => ': activate to sort column ascending',
-            'sortDescending' => ': activate to sort column descending',
+            'sortAscending'  => ': clique para ordenar de forma ascendente',
+            'sortDescending' => ': clique para ordenar de forma descendente',
         ],
 
     // global crud - errors
-    'unauthorized_access' => 'Unauthorized access - you do not have the necessary permissions to see this page.',
-    'please_fix' => 'Please fix the following errors:',
+        'unauthorized_access' => 'Acesso negado - você não possui a permissão necessária para acessar esta página.',
+        'please_fix' => 'Por favor, corrija os seguintes erros:',
 
     // global crud - success / error notification bubbles
-    'insert_success' => 'O item foi adicionado com sucesso.',
-    'update_success' => 'O item foi alterado com sucesso.',
+        'insert_success' => 'Item cadastrado com sucesso.',
+        'update_success' => 'Item atualizado com sucesso.',
 
     // CRUD reorder view
-    'reorder'                      => 'Reorder',
-    'reorder_text'                 => 'Use drag&drop to reorder.',
-    'reorder_success_title'        => 'Done',
-    'reorder_success_message'      => 'Your order has been saved.',
-    'reorder_error_title'          => 'Error',
-    'reorder_error_message'        => 'Your order has not been saved.',
+        'reorder'                      => 'Reordenar',
+        'reorder_text'                 => 'Use arrastar-e-soltar para reordenar.',
+        'reorder_success_title'        => 'Pronto',
+        'reorder_success_message'      => 'Sua ordenação foi salva.',
+        'reorder_error_title'          => 'Erro',
+        'reorder_error_message'        => 'Sua ordenação não foi salva.',
 
     // CRUD yes/no
-    'yes' => 'Sim',
-    'no' => 'Não',
+        'yes' => 'Sim',
+        'no' => 'Não',
+
+    // CRUD filters navbar view
+        'filters' => 'Filtros',
+        'toggle_filters' => 'Alternar filtros',
+        'remove_filters' => 'Remover filtros',
 
     // Fields
-    'browse_uploads' => 'Browse uploads',
-    'clear' => 'Clear',
-    'page_link' => 'Page link',
-    'page_link_placeholder' => 'http://example.com/your-desired-page',
-    'internal_link' => 'Internal link',
-    'internal_link_placeholder' => 'Internal slug. Ex: \'admin/page\' (no quotes) for \':url\'',
-    'external_link' => 'External link',
-    'choose_file' => 'Choose file',
+        'browse_uploads' => 'Pesquisar uploads',
+        'clear' => 'Limpar',
+        'page_link' => 'URL da Página',
+        'page_link_placeholder' => 'http://exemplo.com',
+        'internal_link' => 'Link Interno',
+        'internal_link_placeholder' => 'Endereço interno. Ex: \'admin/pagina\' (sem aspas) para \':url\'',
+        'external_link' => 'Link Externo',
+        'choose_file' => 'Escolher arquivo',
 
     //Table field
-    'table_cant_add' => 'Cannot add new :entity',
-    'table_max_reached' => 'Maximum number of :max reached',
+        'table_cant_add' => 'Não foi possível adicionar um(a) novo(a) :entity',
+        'table_max_reached' => 'Máximo de :max alcançado',
 
+    // File manager
+    'file_manager' => 'Gerenciador de Arquivos',
 ];
