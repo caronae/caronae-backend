@@ -2,6 +2,9 @@
 namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Caronae\Http\Requests\AdminUpdateRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends CrudController
 {
@@ -9,7 +12,7 @@ class AdminController extends CrudController
         $this->crud->setModel('Caronae\Models\Admin');
         $this->crud->setRoute('admin/admins');
         $this->crud->setEntityNameStrings('administrador', 'administradores');
-        $this->crud->denyAccess(['edit', 'delete']);
+        $this->crud->allowAccess(['update', 'delete']);
 
         $this->crud->setColumns([
             [ 'name' => 'name', 'label' => 'Nome' ],
@@ -23,13 +26,13 @@ class AdminController extends CrudController
         ]);
     }
 
-    public function store()
+    public function store(AdminUpdateRequest $request)
     {
-        return parent::storeCrud();
+        return parent::storeCrud($request);
     }
 
-    public function update()
+    public function update(AdminUpdateRequest $request)
     {
-        return parent::updateCrud();
+        return parent::updateCrud($request);
     }
 }
