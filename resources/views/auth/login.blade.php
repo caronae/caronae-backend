@@ -24,7 +24,8 @@
         </div>
         <button type="submit" class="btn btn-primary">Login</button>
     </form>
-    <p class="text-center">
+
+    <p class="forgot-password-link">
         <a href="{{ route('password.request') }}">Esqueci minha senha</a>
     </p>
 </div>

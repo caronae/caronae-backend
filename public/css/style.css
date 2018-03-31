@@ -57,7 +57,7 @@ body {
 strong { font-weight: 500; }
 
 a, a:hover, a:focus {
-    color: #fff;
+    color: #666;
     text-decoration: none;
     transition: all .3s;
 }
@@ -133,6 +133,12 @@ img { max-width: 100%; }
 
 .form-bottom form .input-error {
     border-color: #de615e;
+}
+
+.forgot-password-link {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.9em;
 }
 
 .header-line {
