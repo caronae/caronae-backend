@@ -2,8 +2,8 @@
 $neighborhoodsCount = $entry->neighborhoods()->count();
 ?>
 
-<td>
+<span>
     {{ $neighborhoodsCount }} {{ $neighborhoodsCount > 1 ? 'bairros' : 'bairro' }}
 
     @include('vendor.backpack.crud.buttons.editNeighborhoods')
-</td>
+</span>

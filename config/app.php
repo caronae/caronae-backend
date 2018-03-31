@@ -166,17 +166,9 @@ return [
         Caronae\Providers\AuthServiceProvider::class,
         Caronae\Providers\EventServiceProvider::class,
         Caronae\Providers\RouteServiceProvider::class,
-
         Caronae\Providers\ViewComposerServiceProvider::class,
         Caronae\Providers\ValidatorServiceProvider::class,
-
         Caronae\Providers\FacebookSDKServiceProvider::class,
-
-        /*
-        * Backpack Service Providers...
-        */
-        Backpack\Base\BaseServiceProvider::class,
-        Backpack\CRUD\CrudServiceProvider::class,
     ],
 
     /*

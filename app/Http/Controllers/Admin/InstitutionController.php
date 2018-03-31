@@ -2,10 +2,10 @@
 namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
-use Backpack\CRUD\app\Http\Requests\CrudRequest;
 use Cache;
 use Caronae\Models\Campus;
 use Caronae\Models\Institution;
+use Illuminate\Http\Request;
 use Log;
 
 class InstitutionController extends CrudController
@@ -14,7 +14,6 @@ class InstitutionController extends CrudController
         $this->crud->setModel('Caronae\Models\Institution');
         $this->crud->setRoute('admin/institutions');
         $this->crud->setEntityNameStrings('instituição', 'instituições');
-        $this->crud->denyAccess(['edit', 'delete']);
         $this->crud->allowAccess(['show']);
 
         $this->crud->setColumns([
@@ -55,7 +54,7 @@ class InstitutionController extends CrudController
         return parent::storeCrud();
     }
 
-    public function update(CrudRequest $request)
+    public function update(Request $request)
     {
          $this->validate($request, [
              'name' => 'required|string',

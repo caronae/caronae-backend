@@ -2,10 +2,10 @@
 namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
-use Backpack\CRUD\app\Http\Requests\CrudRequest;
 use Caronae\Models\Campus;
 use Caronae\Models\Hub;
 use Caronae\Models\Institution;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -44,7 +44,7 @@ class HubController extends CrudController
         ]);
     }
 
-    public function store(CrudRequest $request)
+    public function store(Request $request)
     {
         $this->validateHub($request);
 
@@ -53,7 +53,7 @@ class HubController extends CrudController
         return parent::storeCrud($request);
     }
 
-    public function update(CrudRequest $request)
+    public function update(Request $request)
     {
         $this->validateHub($request);
 
@@ -70,7 +70,7 @@ class HubController extends CrudController
         return parent::destroy($id);
     }
 
-    private function clearCache(CrudRequest $request)
+    private function clearCache(Request $request)
     {
         $campus = Campus::find($request->input('campus_id'));
         $this->clearInstitutionCache($campus->institution);
@@ -82,7 +82,7 @@ class HubController extends CrudController
         Cache::forget('campi_institution_' . $institution->id);
     }
 
-    private function validateHub(CrudRequest $request)
+    private function validateHub(Request $request)
     {
         $this->validate($request, [
             'name' => 'required|string',
