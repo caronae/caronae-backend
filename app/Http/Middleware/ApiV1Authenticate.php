@@ -60,7 +60,7 @@ class ApiV1Authenticate
             $user = JWTAuth::parseToken()->authenticate();
         } catch (TokenExpiredException $e) {
             try {
-                $refreshed = JWTAuth::refresh(JWTAuth::getToken());
+                $refreshed = JWTAuth::refresh();
                 $user = JWTAuth::setToken($refreshed)->toUser();
                 if ($user->banned) {
                     return response()->json(['error' => 'User is banned.'], 401);
