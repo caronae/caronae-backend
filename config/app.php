@@ -49,7 +49,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://caronae.ufrj.br'),
+    'url' => env('APP_URL', 'https://api.caronae.org'),
 
     /*
     |--------------------------------------------------------------------------
