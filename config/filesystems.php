@@ -10,11 +10,14 @@ return [
             'root' => storage_path('app'),
         ],
 
-        'public' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+        'user_content' => [
+            'driver' => 's3',
+            'url' => 'https://s3.amazonaws.com/usercontent.caronae',
             'visibility' => 'public',
+            'bucket' => 'usercontent.caronae',
+            'region' => 'us-east-1',
+            'key' => null,
+            'secret' => null,
         ],
 
         's3' => [

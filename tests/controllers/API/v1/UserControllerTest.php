@@ -7,9 +7,12 @@ use Caronae\Models\Institution;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class UserControllerTest extends TestCase
 {
+    const USER_CONTENT_DISK = 'user_content';
     use DatabaseTransactions;
 
     protected $institution;
@@ -405,6 +408,38 @@ class UserControllerTest extends TestCase
 
         $response = $this->json('PUT', 'api/v1/users/' . $otherUser->id, $body, [ 'token' => $user->token ]);
         $response->assertStatus(403);
+    }
+
+    /**
+     * @test
+     */
+    public function should_save_profile_picture()
+    {
+        Storage::fake(self::USER_CONTENT_DISK);
+        $user = $this->someUser(['profile_pic_url' => null]);
+        $body = ['profile_picture' => UploadedFile::fake()->image('image.jpg')];
+
+        $response = $this->jsonAs($user,'POST', "api/v1/users/{$user->id}/profile_picture", $body);
+
+        $newPictureURL = $response->getOriginalContent()['user']->profile_pic_url;
+
+        $this->assertNotEmpty($newPictureURL);
+        $this->assertDatabaseHas('users', ['profile_pic_url' => $newPictureURL]);
+    }
+
+    /**
+     * @test
+     */
+    public function should_update_existing_profile_picture()
+    {
+        Storage::fake(self::USER_CONTENT_DISK);
+        $user = $this->someUser(['profile_pic_url' => 'http://example.com/old_pic.jpg']);
+        $body = ['profile_picture' => UploadedFile::fake()->image('image.jpg')];
+
+        $response = $this->jsonAs($user,'POST', "api/v1/users/{$user->id}/profile_picture", $body);
+
+        $newPictureURL = $response->getOriginalContent()['user']->profile_pic_url;
+        $this->assertNotEquals('http://example.com/old_pic.jpg', $newPictureURL);
     }
 
     /**
@@ -822,9 +857,9 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    private function someUser()
+    private function someUser($attributes = [])
     {
-        return factory(User::class)->create()->fresh();
+        return factory(User::class)->create($attributes)->fresh();
     }
 
     private function institutionAuthorizationHeaders()

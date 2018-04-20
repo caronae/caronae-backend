@@ -12,11 +12,14 @@ use Caronae\Models\User;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\Facebook;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends BaseController
 {
+    const USER_CONTENT_DISK = 'user_content';
+
     public function store(SignUpRequest $request)
     {
         $institutionID = $request->input('id_ufrj');
@@ -79,6 +82,7 @@ class UserController extends BaseController
         return response(['message' => 'Ok'])->header('Authorization', "Bearer $token");
     }
 
+
     public function getRides(User $user)
     {
         $pendingRides = $user->pendingRides()->with('riders')->get();
@@ -140,6 +144,24 @@ class UserController extends BaseController
         }
 
         $user->update($request->profile());
+
+        return ['user' => new UserResource($user)];
+    }
+
+    public function updateProfilePicture(User $user, Request $request)
+    {
+        $this->validate($request, [
+            'profile_picture' => 'required|image',
+        ]);
+
+        Log::info('Uploading profile picture.', ['user_id' => $user->id]);
+
+        $imagePath = $request->file('profile_picture')->store('profile_picture', self::USER_CONTENT_DISK);
+        $imageURL = Storage::disk(self::USER_CONTENT_DISK)->url($imagePath);
+
+        $user->update(['profile_pic_url' => $imageURL]);
+
+        return ['user' => new UserResource($user)];
     }
 
     public function saveFacebookId(Request $request)
