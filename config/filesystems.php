@@ -2,7 +2,7 @@
 
 return [
     'default' => 'local',
-    'cloud' => 's3',
+    'cloud' => 'user_content',
     'disks' => [
 
         'local' => [
@@ -20,32 +20,18 @@ return [
             'secret' => null,
         ],
 
-        's3' => [
-            'driver' => 's3',
-            'key' => null,
-            'secret' => null,
-            'region' => 'us-east-1',
-            'bucket' => 'caronae',
-        ],
-
         'uploads' => [
             'driver' => 'local',
             'root' => public_path('uploads'),
         ],
-        
-        // used for Backpack/LogManager
-        'storage' => [
-            'driver' => 'local',
-            'root'   => storage_path(),
-        ],
 
         'backups' => [
             'driver' => 's3',
-            'key' => env('AWS_KEY'),
-            'secret' => env('AWS_SECRET'),
-            'region' => env('AWS_REGION'),
-            'bucket' => env('AWS_BUCKET'),
-            'root' => 'backups'
+            'key' => null,
+            'secret' => null,
+            'region' => 'us-east-1',
+            'bucket' => 'backups.caronae',
+            'root' => '',
         ],
 
     ],
