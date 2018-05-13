@@ -161,7 +161,7 @@ class UserController extends BaseController
 
         $user->update(['profile_pic_url' => $imageURL]);
 
-        return ['user' => new UserResource($user)];
+        return ['profile_pic_url' => $imageURL];
     }
 
     public function saveFacebookId(Request $request)

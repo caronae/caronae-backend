@@ -420,8 +420,7 @@ class UserControllerTest extends TestCase
         $body = ['profile_picture' => UploadedFile::fake()->image('image.jpg')];
 
         $response = $this->jsonAs($user,'POST', "api/v1/users/{$user->id}/profile_picture", $body);
-
-        $newPictureURL = $response->getOriginalContent()['user']->profile_pic_url;
+        $newPictureURL = $response->getOriginalContent()['profile_pic_url'];
 
         $this->assertNotEmpty($newPictureURL);
         $this->assertDatabaseHas('users', ['profile_pic_url' => $newPictureURL]);
@@ -437,8 +436,8 @@ class UserControllerTest extends TestCase
         $body = ['profile_picture' => UploadedFile::fake()->image('image.jpg')];
 
         $response = $this->jsonAs($user,'POST', "api/v1/users/{$user->id}/profile_picture", $body);
+        $newPictureURL = $response->getOriginalContent()['profile_pic_url'];
 
-        $newPictureURL = $response->getOriginalContent()['user']->profile_pic_url;
         $this->assertNotEquals('http://example.com/old_pic.jpg', $newPictureURL);
     }
 
