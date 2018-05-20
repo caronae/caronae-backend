@@ -29,7 +29,7 @@ class ValidateDuplicateRequest extends FormRequest
     public function searchRange()
     {
         $date = $this->searchDate();
-        $dateMin = $date->copy()->setTime(0,0,0);
+        $dateMin = $date->copy()->setTime(0,0,0)->max(Carbon::now());
         $dateMax = $date->copy()->setTime(23,59,59);
         return [$dateMin, $dateMax];
     }

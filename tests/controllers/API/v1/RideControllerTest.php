@@ -176,7 +176,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldValidateRideWithoutCloseMatches()
+    public function should_validate_ride_without_close_matches()
     {
         $ride = factory(Ride::class)->create(['date' => '2016-12-18 16:00:00', 'going' => false]);
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -196,7 +196,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldNotConsiderParticipatingRidesOnValidation()
+    public function should_not_consider_participating_rides_on_validation()
     {
         $ride1 = factory(Ride::class)->create(['date' => '2016-12-18 16:00:00', 'going' => true]);
         $ride1->users()->attach($this->user, ['status' => 'accepted']);
@@ -220,8 +220,31 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturnInvalidWhenRideIsPossiblyDuplicated()
+    public function should_not_consider_past_rides_on_validation()
     {
+        Carbon::setTestNow('2016-12-18 15:45:00');
+        $pastRide = factory(Ride::class)->create(['date' => '2016-12-18 15:35:00', 'going' => true]);
+        $pastRide ->users()->attach($this->user, ['status' => 'driver']);
+
+        $parameters = [
+            'date' => '18/12/2016',
+            'time' => '16:00:00',
+            'going' => 1
+        ];
+        $response = $this->json('GET', 'api/v1/rides/validateDuplicate', $parameters, $this->headers);
+
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'valid' => true,
+            'status' => 'valid',
+            'message' => 'No conflicting rides were found close to the specified date.'
+        ]);
+    }
+
+    /** @test */
+    public function should_return_invalid_ride_when_there_is_a_possible_duplicate()
+    {
+        Carbon::setTestNow('2016-12-01 00:00:00');
         $ride = factory(Ride::class)->create(['date' => '2016-12-18 10:00:00', 'going' => true]);
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
@@ -240,8 +263,9 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturnInvalidWhenRideIsDuplicated()
+    public function should_return_invalid_ride_when_ride_is_duplicated()
     {
+        Carbon::setTestNow('2016-12-01 00:00:00');
         $ride = factory(Ride::class)->create(['date' => '2016-12-18 16:20:00', 'going' => true]);
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
