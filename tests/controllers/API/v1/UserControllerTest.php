@@ -413,32 +413,30 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function should_save_profile_picture()
+    public function should_upload_profile_picture()
     {
         Storage::fake(self::USER_CONTENT_DISK);
         $user = $this->someUser(['profile_pic_url' => null]);
         $body = ['profile_picture' => UploadedFile::fake()->image('image.jpg')];
 
-        $response = $this->jsonAs($user,'POST', "api/v1/users/{$user->id}/profile_picture", $body);
+        $response = $this->jsonAs($user, 'POST', "api/v1/users/{$user->id}/profile_picture", $body);
         $newPictureURL = $response->getOriginalContent()['profile_pic_url'];
 
         $this->assertNotEmpty($newPictureURL);
-        $this->assertDatabaseHas('users', ['profile_pic_url' => $newPictureURL]);
     }
 
     /**
      * @test
      */
-    public function should_update_existing_profile_picture()
+    public function should_not_update_existing_profile_picture()
     {
         Storage::fake(self::USER_CONTENT_DISK);
         $user = $this->someUser(['profile_pic_url' => 'http://example.com/old_pic.jpg']);
         $body = ['profile_picture' => UploadedFile::fake()->image('image.jpg')];
 
-        $response = $this->jsonAs($user,'POST', "api/v1/users/{$user->id}/profile_picture", $body);
-        $newPictureURL = $response->getOriginalContent()['profile_pic_url'];
+        $this->jsonAs($user,'POST', "api/v1/users/{$user->id}/profile_picture", $body);
 
-        $this->assertNotEquals('http://example.com/old_pic.jpg', $newPictureURL);
+        $this->assertEquals('http://example.com/old_pic.jpg', $user->fresh()->profile_pic_url);
     }
 
     /**

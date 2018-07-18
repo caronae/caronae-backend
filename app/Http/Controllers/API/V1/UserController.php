@@ -148,7 +148,7 @@ class UserController extends BaseController
         return ['user' => new UserResource($user)];
     }
 
-    public function updateProfilePicture(User $user, Request $request)
+    public function uploadProfilePicture(User $user, Request $request)
     {
         $this->validate($request, [
             'profile_picture' => 'required|image',
@@ -158,8 +158,6 @@ class UserController extends BaseController
 
         $imagePath = $request->file('profile_picture')->store('profile_picture', self::USER_CONTENT_DISK);
         $imageURL = Storage::disk(self::USER_CONTENT_DISK)->url($imagePath);
-
-        $user->update(['profile_pic_url' => $imageURL]);
 
         return ['profile_pic_url' => $imageURL];
     }

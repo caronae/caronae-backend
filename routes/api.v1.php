@@ -13,7 +13,7 @@ Route::middleware('api.v1.auth')->group(function () {
     Route::middleware('api.v1.userMatchesRequestedUser')->group(function () {
         Route::get('users/{user}', 'UserController@show');
         Route::put('users/{user}', 'UserController@update');
-        Route::post('users/{user}/profile_picture', 'UserController@updateProfilePicture');
+        Route::post('users/{user}/profile_picture', 'UserController@uploadProfilePicture');
         Route::get('users/{user}/rides', 'UserController@getRides');
         Route::get('users/{user}/token', 'UserController@getToken');
     });
