@@ -13,7 +13,6 @@ services:
     env_file: config.env
     volumes:
       - ../app:/var/www/app
-      - ../bootstrap:/var/www/bootstrap
       - ../config:/var/www/config
       - ../database:/var/www/database
       - ../public:/var/www/public
