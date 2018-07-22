@@ -4,6 +4,7 @@ namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Caronae\Models\User;
+use Illuminate\Http\Request;
 
 class UserController extends CrudController
 {
@@ -97,5 +98,25 @@ class UserController extends CrudController
     {
         $user->unban();
         return response()->json(['message' => 'User unbanned']);
+    }
+
+    public function searchJson(Request $request)
+    {
+        $search_term = $request->input('q');
+        $page = $request->input('page');
+
+        if ($search_term)
+        {
+            $results = User::where('name', 'LIKE', '%'.$search_term.'%')->paginate(10);
+        } else {
+            $results = User::paginate(10);
+        }
+
+        return $results;
+    }
+
+    public function showJson($id)
+    {
+        return User::find($id);
     }
 }

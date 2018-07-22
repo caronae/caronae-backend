@@ -28,4 +28,9 @@ class Admin extends Model implements AuthenticatableContract,
     {
         $this->notify(new ResetPasswordNotification($token));
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

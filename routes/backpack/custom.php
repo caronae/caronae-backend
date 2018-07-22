@@ -8,6 +8,8 @@ Route::group([
     CRUD::resource('users', 'UserController')->with(function() {
         Route::post('users/{user}/ban', 'UserController@ban');
         Route::post('users/{user}/unban', 'UserController@unban');
+        Route::get('users/search', 'UserController@searchJson')->name('admin-user-search-json');
+        Route::get('users/search/{id}', 'UserController@showJson');
     });
 
     CRUD::resource('rides', 'RideController');

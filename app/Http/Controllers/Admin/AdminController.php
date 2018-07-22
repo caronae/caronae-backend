@@ -17,12 +17,31 @@ class AdminController extends CrudController
         $this->crud->setColumns([
             [ 'name' => 'name', 'label' => 'Nome' ],
             [ 'name' => 'email', 'label' => 'E-mail' ],
+            [
+                'label' => 'Usuário',
+                'type' => 'select',
+                'name' => 'user_id',
+                'entity' => 'user',
+                'attribute' => 'name',
+                'model' => 'Caronae\Models\User',
+            ],
         ]);
 
         $this->crud->addFields([
             [ 'name' => 'name', 'label' => 'Nome' ],
             [ 'name' => 'email', 'label' => 'E-mail', 'type' => 'email' ],
             [ 'name' => 'password', 'label' => 'Senha', 'type' => 'password' ],
+            [
+                'label' => 'Usuário',
+                'type' => 'select2_from_ajax',
+                'name' => 'user_id',
+                'entity' => 'user',
+                'attribute' => 'name',
+                'model' => 'Caronae\Models\User',
+                'placeholder' => '',
+                'minimum_input_length' => 3,
+                'data_source' => route('admin-user-search-json')
+            ],
         ]);
     }
 
