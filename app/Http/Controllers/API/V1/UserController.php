@@ -196,11 +196,18 @@ class UserController extends BaseController
             return $this->error('Facebook SDK returned an error: ' . $e->getMessage(), 500);
         }
 
-        $mutualFriendsFB = $response->getGraphNode()['context']['mutual_friends'];
-        $totalFriendsCount = $mutualFriendsFB->getMetaData()['summary']['total_count'];
-        $mutualFriendsFB = collect($mutualFriendsFB)->pluck('id');
+        $context = $response->getGraphNode()['context'];
+        if (array_key_exists('mutual_friends', $context)) {
+            $mutualFriendsFB = $context['mutual_friends'];
+            $totalFriendsCount = $mutualFriendsFB->getMetaData()['summary']['total_count'];
+            $mutualFriendsFB = collect($mutualFriendsFB)->pluck('id');
+            $mutualFriends = User::whereIn('face_id', $mutualFriendsFB)->get();
+        } else {
+            Log::warning('Facebook SDK returned an empty response for mutual_friends.');
+            $mutualFriends = [];
+            $totalFriendsCount = 0;
+        }
 
-        $mutualFriends = User::whereIn('face_id', $mutualFriendsFB)->get();
         return ['total_count' => $totalFriendsCount, 'mutual_friends' => UserResource::collection($mutualFriends)];
     }
 }
