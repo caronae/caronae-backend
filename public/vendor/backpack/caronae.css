@@ -112,3 +112,12 @@
 .btn-edit-neighborhoods {
 	margin-left: 5px;
 }
+
+.self-service-token-header {
+	font-size: 1.1em;
+	margin-bottom: 20px;
+}
+
+.api-token {
+	white-space: pre-wrap;
+}

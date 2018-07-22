@@ -7,4 +7,5 @@
 <li><a href="{{ backpack_url('admins') }}"><i class="fa fa-lock"></i> <span>Administradores</span></a></li>
 
 <li class="header">{{ trans('backpack::base.user') }}</li>
+<li><a href="{{ route('self-service-token') }}"><i class="fa fa-key"></i> <span>API tokens</span></a></li>
 <li><a href="{{ url(config('backpack.base.route_prefix', 'admin').'/logout') }}"><i class="fa fa-sign-out"></i> <span>{{ trans('backpack::base.logout') }}</span></a></li>
