@@ -197,16 +197,15 @@ class UserController extends BaseController
         }
 
         $context = $response->getGraphNode()['context'];
-        if (array_key_exists('mutual_friends', $context)) {
-            $mutualFriendsFB = $context['mutual_friends'];
-            $totalFriendsCount = $mutualFriendsFB->getMetaData()['summary']['total_count'];
-            $mutualFriendsFB = collect($mutualFriendsFB)->pluck('id');
-            $mutualFriends = User::whereIn('face_id', $mutualFriendsFB)->get();
-        } else {
+        if (!array_key_exists('mutual_friends', $context)) {
             Log::warning('Facebook SDK returned an empty response for mutual_friends.');
-            $mutualFriends = [];
-            $totalFriendsCount = 0;
+            return ['total_count' => 0, 'mutual_friends' => []];
         }
+
+        $mutualFriendsFB = $context['mutual_friends'];
+        $totalFriendsCount = $mutualFriendsFB->getMetaData()['summary']['total_count'];
+        $mutualFriendsFB = collect($mutualFriendsFB)->pluck('id');
+        $mutualFriends = User::whereIn('face_id', $mutualFriendsFB)->get();
 
         return ['total_count' => $totalFriendsCount, 'mutual_friends' => UserResource::collection($mutualFriends)];
     }
