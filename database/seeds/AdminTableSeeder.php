@@ -2,6 +2,7 @@
 
 use Caronae\Models\Admin;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class AdminTableSeeder extends Seeder
 {
@@ -9,16 +10,10 @@ class AdminTableSeeder extends Seeder
     {
         DatabaseSeeder::emptyTable('admins');
 
-        $admins = [
-            [
-                'name' => 'Administrador',
-                'email' => 'user@example.com',
-                'password' => '123456'
-            ],
-        ];
-
-        foreach ($admins as $admin) {
-            Admin::create($admin);
-        };
+        Admin::create([
+            'name' => 'Administrador',
+            'email' => 'user@example.com',
+            'password' => Hash::make('123456'),
+        ]);
     }
 }

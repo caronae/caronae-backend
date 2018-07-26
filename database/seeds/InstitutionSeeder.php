@@ -7,19 +7,12 @@ use Illuminate\Database\Seeder;
 
 class InstitutionSeeder extends Seeder
 {
-    protected $faker;
-
-    public function __construct(Faker\Generator $faker)
-    {
-        $this->faker = $faker;
-    }
-
     public function run()
     {
         DatabaseSeeder::emptyTable('institutions');
         DatabaseSeeder::emptyTable('hubs');
 
-        $ufrj = Institution::create(['name' => 'UFRJ', 'authentication_url' => $this->faker->url]);
+        $ufrj = Institution::create(['name' => 'UFRJ', 'authentication_url' => 'http://cas.ufrj.br/example']);
 
         $fundao = Campus::create(['name' => 'Cidade Universitária', 'institution_id' => $ufrj->id]);
         collect([
