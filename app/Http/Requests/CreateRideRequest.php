@@ -26,7 +26,9 @@ class CreateRideRequest extends FormRequest
             'description' => 'string|max:255',
             'going' => 'required|boolean',
             'mydate' => 'required|string',
-            'mytime' => 'required|string'
+            'mytime' => 'required|string',
+            'repeats_until' => 'required_with:week_days|string',
+            'week_days' => 'required_with:repeats_until|string',
         ];
     }
 
