@@ -35,7 +35,7 @@
                 <p>
                     <span class="column-name">Rotina</span>
                     @if(!empty($entry->routine_id))
-                        Sim (<a href="{{ route('ride', ['ride' => $entry->routine_id]) }}">{{ $entry->routine_id }}</a>)
+                        Sim (<a href="{{ backpack_url('rides') . '/' . $entry->routine_id }}">{{ $entry->routine_id }}</a>)
                     @else
                         Não   
                     @endif
