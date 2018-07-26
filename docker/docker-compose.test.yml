@@ -2,21 +2,18 @@ version: '2'
 
 services:
   caronae-backend-tests:
-    container_name: caronae-backend-tests
     image: caronae/backend
-    depends_on:
-      - postgres
+    links:
+      - postgres-testing
     volumes:
       - ../:/var/www
     environment:
-      - TESTING_DB_HOST=postgres
+      - TESTING_DB_HOST=postgres-testing
     command: ./vendor/bin/phpunit --debug --log-junit reports/phpunit/junit.xml
 
-  postgres:
-    container_name: postgres
+  postgres-testing:
     image: postgres:9.6-alpine
-    ports:
-      - 5432:5432
+    hostname: postgres-testing
     environment:
       - POSTGRES_USER=caronae
       - POSTGRES_DB=caronae_testing

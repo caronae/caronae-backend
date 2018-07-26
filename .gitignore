@@ -1,5 +1,6 @@
 /vendor
 /node_modules
+/reports
 storage/framework/testing/disks
 Homestead.yaml
 Homestead.json
