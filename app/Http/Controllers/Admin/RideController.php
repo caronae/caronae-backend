@@ -58,6 +58,18 @@ class RideController extends CrudController
             }
         );
 
+        $this->crud->addFilter(
+            [
+                'type' => 'simple',
+                'name' => 'routine',
+                'label' => 'Rotinas'
+            ],
+            false,
+            function () {
+                $this->crud->addClause('whereHas', 'routine');
+            }
+        );
+
     }
 
 

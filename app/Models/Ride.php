@@ -45,14 +45,19 @@ class Ride extends Model
         return $this->hasMany(Message::class);
     }
 
+    public function routine()
+    {
+        return $this->belongsTo(self::class);
+    }
+
     public function getMyDateAttribute()
     {
-        return $this->date->format('Y-m-d');
+        return $this->date ? $this->date->format('Y-m-d') : null;
     }
 
     public function getMyTimeAttribute()
     {
-        return $this->date->format('H:i:s');
+        return $this->date ? $this->date->format('H:i:s') : null;
     }
 
     public function getTitleAttribute()
