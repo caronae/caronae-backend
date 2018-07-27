@@ -54,7 +54,6 @@ class TokenController extends Controller
     private function getTokenCacheKey(Admin $admin)
     {
         $user = $admin->user;
-        Log::info('admin, user', [$admin, $user]);
         return 'self-service-tokens-user-' . $user->id;
     }
 
