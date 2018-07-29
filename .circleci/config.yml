@@ -27,7 +27,7 @@ jobs:
       - checkout
       - run:
           name: Persist build number
-          command: $CIRCLE_WORKING_DIRECTORY/scripts/calcrev.sh > build_number.txt
+          command: pwd && ls -latr $CIRCLE_WORKING_DIRECTORY && $CIRCLE_WORKING_DIRECTORY/scripts/calcrev.sh > build_number.txt
       - run:
           name: Install dependencies
           command: composer install --no-interaction --no-ansi
