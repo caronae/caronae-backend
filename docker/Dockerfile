@@ -25,8 +25,8 @@ RUN mkdir -p storage/framework/cache
 RUN mkdir -p storage/framework/sessions
 RUN mkdir -p storage/framework/views
 
-RUN chown -R www-data:www-data bootstrap/cache 
-RUN chown -R www-data:www-data storage 
+RUN chown -R www-data:www-data bootstrap/cache
+RUN chown -R www-data:www-data storage
 
 # Install dependencies
 RUN composer install --no-interaction --no-ansi --no-dev
