@@ -25,14 +25,17 @@ services:
       - ../composer.json:/var/www/composer.json
       - ../composer.lock:/var/www/composer.lock
       - ../phpunit.xml:/var/www/phpunit.xml
+      - ./entrypoint.sh:/caronae-entrypoint.sh
 
   caronae-backend-worker:
     container_name: caronae-backend-worker
     image: caronae/backend
-    command: php /var/www/artisan queue:work
-    depends_on:
+    command: queue
+    volumes_from:
       - caronae-backend
     env_file: config.env
+    environment:
+      - LOG_STREAM=php://stdout
 
   nginx:
     container_name: nginx
