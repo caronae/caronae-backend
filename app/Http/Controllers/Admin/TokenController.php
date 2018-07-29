@@ -9,6 +9,7 @@ use Caronae\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class TokenController extends Controller
 {
@@ -21,10 +22,15 @@ class TokenController extends Controller
         $tokens = [];
 
         if ($caronaeUser) {
-            $tokens = cache($this->getTokenCacheKey($admin), []);
+            $tokens = collect(cache($this->getTokenCacheKey($admin), []));
 
-            $tokens = map($tokens, function ($token) {
-                $payload = JWTAuth::setToken($token)->payload();
+            $tokens = $tokens->map(function ($token) {
+                try {
+                    $payload = JWTAuth::setToken($token)->payload();
+                } catch (JWTException $exception) {
+                    return null;
+                }
+
                 $expirationDate = Carbon::createFromTimestampUTC($payload['exp']);
                 $issuedDate = Carbon::createFromTimestampUTC($payload['iat']);
                 return [
@@ -32,6 +38,8 @@ class TokenController extends Controller
                     'expiration' => $expirationDate->toDayDateTimeString(),
                     'issued_at' => $issuedDate->toDayDateTimeString(),
                 ];
+            })->reject(function($value) {
+                return is_null($value);
             });
         }
 
