@@ -56,17 +56,11 @@ jobs:
       - *restore_repo
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run:
-          name: Build backend
+          name: Docker build
           command: |
             export TAG=$(cat build_number.txt)
             docker build -t caronae/backend:$TAG -f docker/Dockerfile.app .
             docker push caronae/backend:$TAG
-      - run:
-          name: Build backend-worker
-          command: |
-            export TAG=$(cat build_number.txt)
-            docker build -t caronae/backend-worker:$TAG -f docker/Dockerfile.worker --build-arg BACKEND_TAG=$TAG docker
-            docker push caronae/backend-worker:$TAG
 
   deploy-dev:
     <<: *defaults

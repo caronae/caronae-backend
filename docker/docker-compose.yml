@@ -6,7 +6,7 @@ services:
     image: caronae/backend
     build:
       context: ..
-      dockerfile: docker/Dockerfile.app
+      dockerfile: docker/Dockerfile
     depends_on:
       - postgres
       - redis
@@ -28,10 +28,8 @@ services:
 
   caronae-backend-worker:
     container_name: caronae-backend-worker
-    image: caronae/backend-worker
-    build:
-      context: .
-      dockerfile: Dockerfile.worker
+    image: caronae/backend
+    command: php /var/www/artisan queue:work
     depends_on:
       - caronae-backend
     env_file: config.env
