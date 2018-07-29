@@ -107,13 +107,13 @@ workflows:
 
   build-and-deploy:
     jobs:
-      - test:
-          filters:
-            branches:
-              only: circleci-workflow
+      - test
       - build:
           requires:
             - test
+          filters:
+            branches:
+              only: master
       - deploy-dev:
           requires:
             - build
