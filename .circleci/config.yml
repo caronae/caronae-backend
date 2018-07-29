@@ -59,13 +59,13 @@ jobs:
           name: Build backend
           command: |
             export TAG=$(cat build_number.txt)
-            docker build -t caronae/backend:$TAG -f Dockerfile.app ..
+            docker build -t caronae/backend:$TAG -f docker/Dockerfile.app .
             docker push caronae/backend:$TAG
       - run:
           name: Build backend-worker
           command: |
             export TAG=$(cat build_number.txt)
-            docker build -t caronae/backend-worker:$TAG -f Dockerfile.worker --build-arg BACKEND_TAG=$TAG .
+            docker build -t caronae/backend-worker:$TAG -f docker/Dockerfile.worker --build-arg BACKEND_TAG=$TAG docker
             docker push caronae/backend-worker:$TAG
 
 workflows:
