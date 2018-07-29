@@ -9,7 +9,7 @@ services:
       - ../:/var/www
     environment:
       - TESTING_DB_HOST=postgres-testing
-    command: ./vendor/bin/phpunit --debug --log-junit reports/phpunit/junit.xml
+    entrypoint: ./vendor/bin/phpunit --debug --log-junit reports/phpunit/junit.xml
 
   postgres-testing:
     image: postgres:9.6-alpine
