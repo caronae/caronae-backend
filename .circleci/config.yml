@@ -68,6 +68,40 @@ jobs:
             docker build -t caronae/backend-worker:$TAG -f docker/Dockerfile.worker --build-arg BACKEND_TAG=$TAG docker
             docker push caronae/backend-worker:$TAG
 
+  deploy-dev:
+    <<: *defaults
+    steps:
+      - *restore_repo
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run:
+          name: Tag image as develop
+          command: |
+            export TAG=$(cat build_number.txt)
+            docker pull caronae/backend:$TAG
+            docker tag caronae/backend:$TAG caronae/backend:develop
+            docker push caronae/backend:develop
+      - run:
+          name: Deploy to dev
+          command: |
+            ssh -o StrictHostKeyChecking=No -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT bash -s < scripts/update_images.sh "develop"
+
+  deploy-prod:
+    <<: *defaults
+    steps:
+      - *restore_repo
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run:
+          name: Tag image as latest
+          command: |
+            export TAG=$(cat build_number.txt)
+            docker pull caronae/backend:$TAG
+            docker tag caronae/backend:$TAG caronae/backend:latest
+            docker push caronae/backend:latest
+      - run:
+          name: Deploy to prod
+          command: |
+            ssh -o StrictHostKeyChecking=No -A $CARONAE_PROD_USER@$CARONAE_PROD_HOST -p $CARONAE_PROD_PORT bash -s < scripts/update_images.sh "latest"
+
 workflows:
   version: 2
 
@@ -80,4 +114,13 @@ workflows:
       - build:
           requires:
             - test
-
+      - deploy-dev:
+          requires:
+            - build
+      - hold_prod:
+          type: approval
+          requires:
+            - deploy-dev
+      - deploy-prod:
+          requires:
+            - hold_prod
