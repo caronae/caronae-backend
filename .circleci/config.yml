@@ -2,7 +2,6 @@ version: 2
 
 references:
   defaults: &defaults
-    working_directory: /var/caronae
     machine:
       enabled: true
 
@@ -15,7 +14,6 @@ references:
 
 jobs:
   test:
-    working_directory: /var/caronae
     docker:
       - image: caronae/php:latest
         environment:
@@ -28,7 +26,7 @@ jobs:
       - checkout
       - run:
           name: Persist build number
-          command: ls -latr $CIRCLE_WORKING_DIRECTORY/scripts $CIRCLE_WORKING_DIRECTORY && $CIRCLE_WORKING_DIRECTORY/scripts/calcrev.sh > build_number.txt
+          command: $CIRCLE_WORKING_DIRECTORY/scripts/calcrev.sh > build_number.txt
       - run:
           name: Install dependencies
           command: composer install --no-interaction --no-ansi

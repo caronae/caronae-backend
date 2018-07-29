@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -eo pipefail
 
 commit_count=$(git rev-list HEAD | wc -l)
