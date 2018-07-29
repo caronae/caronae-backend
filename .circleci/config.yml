@@ -2,7 +2,7 @@ version: 2
 
 references:
   defaults: &defaults
-    working_directory: /var/caronae
+    working_directory: /tmp/caronae
     machine:
       enabled: true
 
@@ -15,7 +15,7 @@ references:
 
 jobs:
   test:
-    working_directory: /var/caronae
+    working_directory: /tmp/caronae
     docker:
       - image: caronae/php:latest
         environment:
