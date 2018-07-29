@@ -59,7 +59,7 @@ jobs:
           name: Docker build
           command: |
             export TAG=$(cat build_number.txt)
-            docker build -t caronae/backend:$TAG -f docker/Dockerfile.app .
+            docker build -t caronae/backend:$TAG -f docker/Dockerfile .
             docker push caronae/backend:$TAG
 
   deploy-dev:
