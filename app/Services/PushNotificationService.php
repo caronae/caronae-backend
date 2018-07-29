@@ -6,6 +6,7 @@ use Caronae\Exceptions\FirebaseException;
 use Caronae\Models\User;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Log;
 
 class PushNotificationService
 {
@@ -15,11 +16,16 @@ class PushNotificationService
 
     public function __construct()
     {
+        $fcmApiKey = env('FCM_API_KEY');
+        if (empty($fcmApiKey)) {
+            throw new FirebaseException("FCM API key must be provided");
+        }
+
         $this->client = new Client([
             'base_uri' => self::FCM_API_URL,
             'timeout' => 15.0,
             'headers' => [
-                'Authorization' => 'key=' . env('FCM_API_KEY')
+                'Authorization' => 'key=' . $fcmApiKey
             ]
         ]);
     }
@@ -32,8 +38,11 @@ class PushNotificationService
     public function sendNotificationToUser(User $user, $data)
     {
         $topicId = $this->topicForUser($user);
+        $topicPath = '/topics/' . $topicId;
         $payload = $this->payloadWithData($data);
-        $payload['to'] = '/topics/' . $topicId;
+        $payload['to'] = $topicPath;
+
+        Log::info('Sending push notification to ' . $topicPath);
 
         $this->sendFCMRequest($payload);
     }
