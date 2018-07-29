@@ -1,23 +1,33 @@
 version: 2
 
+references:
+  defaults: &defaults
+    machine:
+      enabled: true
+
+  restore_repo: &restore_repo
+    restore_cache:
+      keys:
+        - v1-repo-{{ .Branch }}-{{ .Revision }}
+        - v1-repo-{{ .Branch }}
+        - v1-repo
+
 jobs:
-  build:
+  test:
     docker:
       - image: caronae/php:latest
         environment:
           APP_ENV: testing
-          APP_DEBUG: true
       - image: postgres:9.6-alpine
         environment:
           POSTGRES_USER: caronae
           POSTGRES_DB: caronae_testing
-    working_directory: /var/www
     steps:
+      - *restore_repo
       - checkout
-      - restore_cache:
-          keys:
-            - composer-{{ checksum "composer.json" }}
-            - composer-
+      - run:
+          name: Persist build number
+          command: ./scripts/calcrev.sh > build_number.txt
       - run:
           name: Install dependencies
           command: composer install --no-interaction --no-ansi
@@ -34,32 +44,38 @@ jobs:
           path: ~/phpunit
       - store_artifacts:
           path: ~/phpunit
-      - setup_remote_docker:
-          version: 17.07.0-ce
+      - save_cache:
+          key: v1-repo-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - .
+
+  build:
+    <<: *defaults
+    steps:
+      - *restore_repo
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run: export TAG=$(cat build_number.txt)
       - run:
-          name: Setup Docker
-          command: apk --no-cache add docker
+          name: Build backend
+          command: |
+            docker build -t caronae/backend:$TAG -f Dockerfile.app ..
+            docker push caronae/backend:$TAG
       - run:
-          name: Build Docker images
-          working_directory: /var/www/docker
+          name: Build backend-worker
           command: |
-            if [[ "$CIRCLE_BRANCH" = "develop" || "$CIRCLE_BRANCH" = "master" ]]; then
-              [[ "${CIRCLE_BRANCH}" = "master" ]] && TAG="latest" || TAG="${CIRCLE_BRANCH}"
-              docker build -t caronae/backend:$TAG -f Dockerfile.app ..
-              docker build -t caronae/backend-worker:$TAG -f Dockerfile.worker --build-arg BACKEND_TAG=$TAG .
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
-              docker push caronae/backend:$TAG
-              docker push caronae/backend-worker:$TAG
-            fi
-      - deploy:
-          name: Deploy to dev
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "develop" ]; then
-              ssh -o StrictHostKeyChecking=No -A $CARONAE_DEV_USER@$CARONAE_DEV_HOST -p $CARONAE_DEV_PORT bash -s < scripts/update_images.sh "develop"
-            fi
-      - deploy:
-          name: Deploy to production
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ssh -o StrictHostKeyChecking=No -A $CARONAE_PROD_USER@$CARONAE_PROD_HOST -p $CARONAE_PROD_PORT bash -s < scripts/update_images.sh "latest"
-            fi
+            docker build -t caronae/backend-worker:$TAG -f Dockerfile.worker --build-arg BACKEND_TAG=$TAG .
+            docker push caronae/backend-worker:$TAG
+
+workflows:
+  version: 2
+
+  build-and-deploy:
+    jobs:
+      - test:
+          filters:
+            branches:
+              only: circleci-workflow
+      - build:
+          requires:
+            - test
+
