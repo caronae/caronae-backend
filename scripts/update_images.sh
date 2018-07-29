@@ -12,10 +12,10 @@ set -eo pipefail
 cd /var/caronae/caronae-docker
 
 echo "Updating images using the tag $CARONAE_ENV_TAG"
-/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull caronae-backend caronae-backend-worker caronae-backend-task-scheduler
-/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml stop caronae-backend caronae-backend-worker caronae-backend-task-scheduler
-/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml rm -f caronae-backend caronae-backend-worker caronae-backend-task-scheduler
-/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+/usr/local/bin/docker-compose pull caronae-backend caronae-backend-worker caronae-backend-task-scheduler
+/usr/local/bin/docker-compose stop caronae-backend caronae-backend-worker caronae-backend-task-scheduler
+/usr/local/bin/docker-compose rm -f caronae-backend caronae-backend-worker caronae-backend-task-scheduler
+/usr/local/bin/docker-compose up -d
 
 echo "Running backend update scripts..."
 docker exec caronae-backend sh /var/www/scripts/update_laravel.sh
