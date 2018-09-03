@@ -2,7 +2,6 @@
 
 namespace Caronae\Http\Controllers\API\v1;
 
-use Cache;
 use Carbon\Carbon;
 use Caronae\Http\Controllers\BaseController;
 use Caronae\Http\Requests\CreateRideRequest;
@@ -23,7 +22,6 @@ use Caronae\Notifications\RideUserLeft;
 use DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Log;
 
 class RideController extends BaseController
 {
@@ -41,50 +39,48 @@ class RideController extends BaseController
             'time' => 'string'
         ]);
 
-        return Cache::remember('rides', 10, function () use ($request) {
-            Log::info('Getting rides from db');
-            $filters = [];
-            if ($request->filled('going'))
-                $filters['going'] = $request->going;
-            if ($request->filled('neighborhoods'))
-                $filters['neighborhoods'] = explode(', ', $request->neighborhoods);
-            if ($request->filled('place'))
-                $filters['myplace'] = $request->place;
-            if ($request->filled('zone'))
-                $filters['myzone'] = $request->zone;
-            if ($request->filled('campus'))
-                $filters['hubs'] = Campus::findByName($request->campus)->hubs()->distinct('center')->pluck('center')->toArray();
-            if ($request->filled('hub'))
-                $filters['hubs'] = [$request->hub];
-            else if ($request->filled('hubs'))
-                $filters['hubs'] = explode(', ', $request->hubs);
+        $filters = [];
+        if ($request->filled('going'))
+            $filters['going'] = $request->going;
+        if ($request->filled('neighborhoods'))
+            $filters['neighborhoods'] = explode(', ', $request->neighborhoods);
+        if ($request->filled('place'))
+            $filters['myplace'] = $request->place;
+        if ($request->filled('zone'))
+            $filters['myzone'] = $request->zone;
+        if ($request->filled('campus'))
+            $filters['hubs'] = Campus::findByName($request->campus)->hubs()->distinct('center')->pluck('center')->toArray();
+        if ($request->filled('hub'))
+            $filters['hubs'] = [ $request->hub ];
+        else if ($request->filled('hubs'))
+            $filters['hubs'] = explode(', ', $request->hubs);
 
-            $rides = Ride::withAvailableSlots()
-                ->notFinished()
-                ->orderBy('rides.date')
-                ->withFilters($filters);
+        $limit = 20;
+        $rides = Ride::withAvailableSlots()
+            ->notFinished()
+            ->orderBy('rides.date')
+            ->withFilters($filters);
 
-            if ($request->filled('date')) {
-                if (!$request->filled('time')) {
-                    $dateMin = Carbon::createFromFormat('Y-m-d', $request->date)->setTime(0, 0, 0);
-                } else {
-                    $dateTimeString = $request->date . ' ' . substr($request->time, 0, 5);
-                    $dateMin = Carbon::createFromFormat('Y-m-d H:i', $dateTimeString);
-                }
-
-                $dateMax = $dateMin->copy()->setTime(23, 59, 59);
-                $rides = $rides->whereBetween('date', [$dateMin, $dateMax]);
+        if ($request->filled('date')) {
+            if (!$request->filled('time')) {
+                $dateMin = Carbon::createFromFormat('Y-m-d', $request->date)->setTime(0,0,0);
             } else {
-                $rides = $rides->inTheFuture();
+                $dateTimeString = $request->date . ' ' . substr($request->time, 0, 5);
+                $dateMin = Carbon::createFromFormat('Y-m-d H:i', $dateTimeString);
             }
 
-            $limit = 20;
-            $results = $rides->paginate($limit);
-            $results->each(function ($ride) {
-                $ride->driver = $ride->driver();
-            });
-            return $results;
+            $dateMax = $dateMin->copy()->setTime(23,59,59);
+            $rides = $rides->whereBetween('date', [$dateMin, $dateMax]);
+        } else {
+            $rides = $rides->inTheFuture();
+        }
+
+        $results = $rides->paginate($limit);
+        $results->each(function ($ride) {
+            $ride->driver = $ride->driver();
         });
+
+        return $results;
     }
     
     public function show(Ride $ride, Request $request)
