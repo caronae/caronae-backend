@@ -7,3 +7,5 @@ Homestead.json
 .env
 .idea
 build_number.txt
+load_tests/venv
+load_tests/__pycache__
