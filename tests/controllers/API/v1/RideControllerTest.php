@@ -53,6 +53,27 @@ class RideControllerTest extends TestCase
         $response->assertJsonFragment($rides[1]->toArray());
     }
 
+    /** @test */
+    public function should_include_driver_info_in_each_ride()
+    {
+        $user = $this->user;
+        factory(Ride::class, 'next', 2)->create()->each(function($ride) use ($user) {
+            $ride->users()->attach($user, ['status' => 'driver']);
+            $ride->fresh();
+        });
+
+        $response = $this->json('GET', 'api/v1/rides', [], $this->headers);
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'driver',
+                ]
+            ]
+        ]);
+    }
+
     public function testIndexShouldAllowFiltering()
     {
         $ride1 = factory(Ride::class, 'next')->create(['neighborhood' => 'Ipanema', 'going' => true])->fresh();
