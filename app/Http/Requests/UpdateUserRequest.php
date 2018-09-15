@@ -20,7 +20,7 @@ class UpdateUserRequest extends FormRequest
             'car_owner' => 'boolean',
             'car_model' => 'required_if:car_owner,true,1|string|max:25',
             'car_color' => 'required_if:car_owner,true,1|string|max:25',
-            'car_plate' => 'required_if:car_owner,true,1|regex:/[a-zA-Z]{3}-?[0-9]{4}$/',
+            'car_plate' => 'required_if:car_owner,true,1|regex:/[a-zA-Z0-9\-]{7,8}$/',
             'profile_pic_url' => 'url',
             'facebook_id' => 'string',
         ];
