@@ -70,6 +70,7 @@ return [
         'pgsql_testing' => [
             'driver'   => 'pgsql',
             'host'     => env('TESTING_DB_HOST', 'localhost'),
+            'port'     => env('TESTING_DB_PORT', '5432'),
             'database' => env('TESTING_DB_DATABASE', 'caronae_testing'),
             'username' => env('TESTING_DB_USERNAME', 'caronae'),
             'password' => env('TESTING_DB_PASSWORD', ''),

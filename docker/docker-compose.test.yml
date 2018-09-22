@@ -14,6 +14,8 @@ services:
   postgres-testing:
     image: postgres:9.6-alpine
     hostname: postgres-testing
+    ports:
+      - 5433:5432
     environment:
       - POSTGRES_USER=caronae
       - POSTGRES_DB=caronae_testing
