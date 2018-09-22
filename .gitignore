@@ -9,3 +9,4 @@ Homestead.json
 build_number.txt
 load_tests/venv
 load_tests/__pycache__
+_ide_helper.php
