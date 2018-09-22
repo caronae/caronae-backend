@@ -30,7 +30,20 @@ class LoginControllerTest extends TestCase
         $institution = factory(Institution::class)->create();
         $response = $this->get('login');
 
-        $response->assertRedirect($institution->authentication_url);
+        $response->assertRedirect(route('institution-login', $institution->slug));
+    }
+
+    /** @test */
+    public function should_show_institution_page_with_details()
+    {
+        $institution = factory(Institution::class)->create();
+        $response = $this->get('login/' . $institution->slug);
+
+        $response->assertStatus(200);
+        $response->assertViewIs('login.institution');
+        $response->assertViewHas('name', $institution->name);
+        $response->assertViewHas('authentication_url', $institution->authentication_url);
+        $response->assertViewHas('login_message', $institution->login_message);
     }
 
     /** @test */

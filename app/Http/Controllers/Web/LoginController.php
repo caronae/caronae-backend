@@ -29,7 +29,7 @@ class LoginController extends BaseController
 
             if (count($institutions) == 1) {
                 $institution = $institutions->first();
-                return redirect($institution->authentication_url);
+                return redirect(route('institution-login', $institution->getRouteKey()));
             }
 
             return view('login.institutions', [ 'institutions' => $institutions ]);
@@ -75,6 +75,15 @@ class LoginController extends BaseController
 
         Log::info('refreshToken: nova chave gerada.', [ 'id' => $user->id ]);
         return redirect(route('chave', $request->only(['token'])));
+    }
+
+    public function showInstitution(Institution $institution)
+    {
+        return response()->view('login.institution', [
+            'name' => $institution->name,
+            'authentication_url' => $institution->authentication_url,
+            'login_message' => $institution->login_message,
+        ]);
     }
 
     private function authenticateUser(Request $request)
