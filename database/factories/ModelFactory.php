@@ -131,6 +131,7 @@ $factory->define(Institution::class, function (Faker\Generator $faker) {
     $name = $faker->unique()->company;
     return [
         'name' => $name,
+        'slug' => $faker->slug,
         'password' => $faker->password,
         'authentication_url' => $faker->url,
         'going_label' => 'Chegando na ' . $name,

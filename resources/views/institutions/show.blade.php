@@ -6,12 +6,11 @@ $campi = $entry->campi;
 @section('header')
     <section class="content-header">
         <h1>
-            Instituição: {{ $entry->name }} <small>ID: {{ $entry->id }}</small>
+            Instituição: {{ $entry->name }} <small>ID: {{ $entry->id }} / {{ $entry->slug }}</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="{{ backpack_url('home') }}">{{ config('backpack.base.project_name') }}</a></li>
             <li><a href="{{ backpack_url('institutions') }}">Instituições</a></li>
-
         </ol>
     </section>
 @endsection
@@ -28,7 +27,6 @@ $campi = $entry->campi;
         <div class="box-body">
             <div class="model-details institution-details">
                 <ul class="properties">
-                    <li class="property"><span class="column-name">ID</span> {{ $entry->id }}</li>
                     <li class="property"><span class="column-name">Nome</span> {{ $entry->name }}</li>
                     <li class="property"><span class="column-name">Labels</span> {{ $entry->going_label }} / {{ $entry->leaving_label }}</li>
                     <li class="property">
@@ -36,6 +34,9 @@ $campi = $entry->campi;
                         <a href="{{ $entry->authentication_url }}">{{ $entry->authentication_url }}</a>
                     </li>
                     <li class="property"><span class="column-name">Senha</span> {{ $entry->password }}</li>
+                    <li class="property">
+                        <span class="column-name">Mensagem de login</span>
+                        {!! $entry->login_message !!}</li>
                 </ul>
             </div>
         </div>

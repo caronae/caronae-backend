@@ -24,7 +24,9 @@ class InstitutionController extends CrudController
 
         $this->crud->addFields([
             [ 'name' => 'name', 'label' => 'Nome' ],
+            [ 'name' => 'slug', 'label' => 'Slug' ],
             [ 'name' => 'authentication_url', 'label' => 'URL de autenticação', 'type' => 'url' ],
+            [ 'name' => 'login_message', 'label' => 'Mensagem de login', 'type' => 'wysiwyg' ],
             [
                 'name' => 'campi',
                 'label' => 'Campi',
