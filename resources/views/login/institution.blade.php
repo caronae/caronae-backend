@@ -12,7 +12,7 @@
         </div>
 
         <div class="institution-login">
-            <a class="btn btn-success" href="{{ $authentication_url }}">Continuar &raquo;</a>
+            <a class="btn btn-success" href="{{ $authentication_url }}">Continuar</a>
         </div>
     </div>
 @endsection

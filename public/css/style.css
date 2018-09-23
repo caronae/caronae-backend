@@ -34,7 +34,7 @@ textarea.form-control:focus {
     background: #fff;
 }
 
-button.btn {
+.btn {
     padding: 0 20px;
     border: 0;
     font-size: 16px;
@@ -191,6 +191,10 @@ img { max-width: 100%; }
 .institution-login {
     text-align: center;
     margin-top: 1.5em;
+}
+
+.institution-login .btn {
+    width: 100%;
 }
 
 .error .title {
