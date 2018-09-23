@@ -136,7 +136,7 @@ $factory->define(Institution::class, function (Faker\Generator $faker) {
         'authentication_url' => $faker->url,
         'going_label' => 'Chegando na ' . $name,
         'leaving_label' => 'Saindo da ' . $name,
-        'login_message' => $faker->text,
+        'login_message' => $faker->text(50),
     ];
 });
 

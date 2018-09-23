@@ -29,6 +29,6 @@
         <env name="DB_CONNECTION" value="pgsql_testing" force="true"/>
         <env name="FCM_API_KEY" value="FCMKEY" force="true"/>
         <env name="SLACK_WEBHOOK_URL" value="SLACKKEY" force="true"/>
-        <env name="TESTING_DB_PORT" value="5433" force="true"/>
+        <env name="TESTING_DB_PORT" value="5433"/>
     </php>
 </phpunit>

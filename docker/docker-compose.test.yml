@@ -9,6 +9,7 @@ services:
       - ../:/var/www
     environment:
       - TESTING_DB_HOST=postgres-testing
+      - TESTING_DB_PORT=5432
     entrypoint: ./vendor/bin/phpunit --debug --log-junit reports/phpunit/junit.xml
 
   postgres-testing:
