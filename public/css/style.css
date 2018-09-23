@@ -188,6 +188,11 @@ img { max-width: 100%; }
     text-align: center;
 }
 
+.institution-login {
+    text-align: center;
+    margin-top: 1.5em;
+}
+
 .error .title {
     font-size: 1.1em;
 }

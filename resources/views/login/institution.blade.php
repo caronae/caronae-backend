@@ -11,6 +11,8 @@
             {!! $login_message !!}
         </div>
 
-        <a class="btn btn-success" href="{{ $authentication_url }}">Continuar &raquo;</a>
+        <div class="institution-login">
+            <a class="btn btn-success" href="{{ $authentication_url }}">Continuar &raquo;</a>
+        </div>
     </div>
 @endsection
