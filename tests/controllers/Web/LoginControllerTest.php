@@ -30,20 +30,38 @@ class LoginControllerTest extends TestCase
         $institution = factory(Institution::class)->create();
         $response = $this->get('login');
 
-        $response->assertRedirect(route('institution-login', $institution->slug));
+        $response->assertRedirect(route('institution-login', $institution->getRouteKey()));
     }
 
     /** @test */
     public function should_show_institution_page_with_details()
     {
         $institution = factory(Institution::class)->create();
-        $response = $this->get('login/' . $institution->slug);
+        $response = $this->get('login/' . $institution->getRouteKey());
 
         $response->assertStatus(200);
         $response->assertViewIs('login.institution');
         $response->assertViewHas('name', $institution->name);
         $response->assertViewHas('authentication_url', $institution->authentication_url);
         $response->assertViewHas('login_message', $institution->login_message);
+    }
+
+    /** @test */
+    public function should_redirect_to_institution_authentication_if_login_message_is_null()
+    {
+        $institution = factory(Institution::class)->create(['login_message' => null]);
+        $response = $this->get('login/' . $institution->getRouteKey());
+
+        $response->assertRedirect($institution->authentication_url);
+    }
+
+    /** @test */
+    public function should_redirect_to_institution_authentication_if_login_message_is_empty()
+    {
+        $institution = factory(Institution::class)->create(['login_message' => '']);
+        $response = $this->get('login/' . $institution->getRouteKey());
+
+        $response->assertRedirect($institution->authentication_url);
     }
 
     /** @test */

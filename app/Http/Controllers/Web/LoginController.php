@@ -79,6 +79,10 @@ class LoginController extends BaseController
 
     public function showInstitution(Institution $institution)
     {
+        if (empty($institution->login_message)) {
+            return redirect($institution->authentication_url);
+        }
+
         return response()->view('login.institution', [
             'name' => $institution->name,
             'authentication_url' => $institution->authentication_url,
