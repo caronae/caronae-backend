@@ -3,6 +3,7 @@
 namespace Caronae\Http\Controllers\API\V1;
 
 
+use Caronae\Http\Resources\MessageResource;
 use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
@@ -37,18 +38,8 @@ class ChatControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertExactJson([
             'messages' => [
-                [
-                    'id' => $messages[1]->id,
-                    'body' => 'Hello world!',
-                    'user' => $user->toArray(),
-                    'date' => '1990-01-01 00:00:00',
-                ],
-                [
-                    'id' => $messages[0]->id,
-                    'body' => 'Olá mundo!',
-                    'user' => $user->toArray(),
-                    'date' => '1990-01-01 01:00:00',
-                ]
+                (new MessageResource($messages[1]))->resolve(),
+                (new MessageResource($messages[0]))->resolve(),
             ]
         ]);
     }

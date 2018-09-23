@@ -13,10 +13,10 @@ class MessageResourceTest extends TestCase
     /**
      * @test
      */
-    public function shouldRenderAsJson()
+    public function should_render_as_json()
     {
         $ride = factory(Ride::class)->create();
-        $user = factory(UserModel::class)->create();
+        $user = factory(UserModel::class)->create()->fresh();
         $message = factory(Message::class)->create(['ride_id' => $ride->id, 'user_id' => $user->id]);
         $resource = new MessageResource($message);
         $userResource = new UserResource($user);
@@ -24,11 +24,9 @@ class MessageResourceTest extends TestCase
             'id' => $message->id,
             'body' => $message->body,
             'date' => $message->date->toDateTimeString(),
+            'user' => $userResource,
         ];
 
-        $response = $resource->toArray(new Request());
-
-        $this->assertArraySubset($expectedJson, $response);
-        $this->assertTrue($response['user']->is($userResource));
+        $this->assertEquals($expectedJson, $resource->resolve());
     }
 }
