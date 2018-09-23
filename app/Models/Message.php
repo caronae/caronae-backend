@@ -9,7 +9,7 @@ class Message extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['ride_id', 'user_id', 'body'];
+    protected $fillable = ['ride_id', 'user_id', 'body', 'created_at'];
     protected $hidden = ['created_at', 'deleted_at', 'updated_at'];
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
     protected $appends = ['date'];
