@@ -2,25 +2,11 @@
 
 namespace Caronae\Http\Controllers\API\v1;
 
-use Carbon\Carbon;
 use Caronae\Http\Controllers\BaseController;
-use Caronae\Http\Requests\CreateRideRequest;
-use Caronae\Http\Requests\ValidateDuplicateRequest;
 use Caronae\Http\Resources\MessageResource;
-use Caronae\Http\Resources\RideResource;
-use Caronae\Models\Campus;
 use Caronae\Models\Message;
 use Caronae\Models\Ride;
-use Caronae\Models\RideUser;
-use Caronae\Models\User;
-use Caronae\Notifications\RideCanceled;
-use Caronae\Notifications\RideFinished;
-use Caronae\Notifications\RideJoinRequestAnswered;
-use Caronae\Notifications\RideJoinRequested;
 use Caronae\Notifications\RideMessageReceived;
-use Caronae\Notifications\RideUserLeft;
-use DB;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ChatController extends BaseController
