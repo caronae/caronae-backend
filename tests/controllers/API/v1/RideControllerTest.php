@@ -863,49 +863,4 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testGetChatMessages()
-    {
-        $ride = factory(Ride::class)->create()->fresh();
-        $ride->users()->attach($this->user, ['status' => 'driver']);
-
-        $messages = factory(Message::class, 3)->create([
-            'ride_id' => $ride->id,
-            'user_id' => $this->user->id
-        ])->sortBy('created_at')->values()->map(function ($message) {
-            return [
-                'id' => $message->id,
-                'body' => $message->body,
-                'user' => $message->user->toArray(),
-                'date' => $message->date->toDateTimeString(),
-            ];
-        })->all();
-
-        $response = $this->json('GET', 'api/v1/rides/' . $ride->id . '/messages', [], $this->headers);
-        $response->assertStatus(200);
-        $response->assertExactJson([
-            'messages' => $messages
-        ]);
-    }
-
-    public function testSendChatMessage()
-    {
-        $ride = factory(Ride::class)->create();
-        $ride->users()->attach($this->user, ['status' => 'accepted']);
-
-        $user2 = factory(User::class)->create();
-        $ride->users()->attach($user2, ['status' => 'accepted']);
-        $user3 = factory(User::class)->create();
-        $ride->users()->attach($user3, ['status' => 'driver']);
-
-        $request = [
-            'message' => str_random(255)
-        ];
-
-        // all users should be notified except the sender
-        $this->expectsNotification($user2, RideMessageReceived::class);
-        $this->expectsNotification($user3, RideMessageReceived::class);
-
-        $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/messages', $request, $this->headers);
-        $response->assertStatus(201);
-    }
 }

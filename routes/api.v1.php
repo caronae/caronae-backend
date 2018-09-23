@@ -29,8 +29,8 @@ Route::middleware('api.v1.auth')->group(function () {
 
     Route::middleware('api.v1.userBelongsToRide')->group(function () {
         Route::post('rides/{ride}/leave', 'RideController@leaveRide');
-        Route::post('rides/{ride}/messages', 'RideController@sendChatMessage');
-        Route::get('rides/{ride}/messages', 'RideController@getChatMessages');
+        Route::post('rides/{ride}/messages', 'ChatController@sendMessage');
+        Route::get('rides/{ride}/messages', 'ChatController@getMessages');
     });
 
     Route::middleware('api.v1.userIsTheDriver')->group(function () {

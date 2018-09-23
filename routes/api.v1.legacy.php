@@ -39,8 +39,8 @@ Route::middleware('api.v1.auth')->group(function () {
     Route::get('ride/{ride}', 'RideController@show');
 
     Route::middleware('api.v1.userBelongsToRide')->group(function () {
-        Route::get('ride/{ride}/chat', 'RideController@getChatMessages');
-        Route::post('ride/{ride}/chat', 'RideController@sendChatMessage');
+        Route::get('ride/{ride}/chat', 'ChatController@getMessages');
+        Route::post('ride/{ride}/chat', 'ChatController@sendMessage');
     });
 
     Route::get('places', 'PlaceController@index');
