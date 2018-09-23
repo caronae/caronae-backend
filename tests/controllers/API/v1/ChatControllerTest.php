@@ -55,7 +55,7 @@ class ChatControllerTest extends TestCase
     }
 
     /** @test */
-    public function should_store_chat_message()
+    public function should_store_chat_message_with_encrypted_body()
     {
         $user = factory(User::class)->create();
         $ride = factory(Ride::class)->create();
@@ -66,11 +66,10 @@ class ChatControllerTest extends TestCase
         ]);
 
         $response->assertStatus(201);
-        $this->assertDatabaseHas('messages', [
-            'ride_id' => $ride->id,
-            'user_id' => $user->id,
-            'body' => 'Hello world!',
-        ]);
+        $createdMessage = Message::find($response->json()['id']);
+        $this->assertEquals($ride->id, $createdMessage->ride_id);
+        $this->assertEquals($user->id, $createdMessage->user_id);
+        $this->assertEquals('Hello world!', decrypt($createdMessage->getAttributeValue('body')));
     }
 
     /** @test */

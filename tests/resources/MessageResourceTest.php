@@ -10,19 +10,21 @@ use Tests\TestCase;
 
 class MessageResourceTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function should_render_as_json()
+    /** @test */
+    public function should_render_as_json_and_decrypt_message_body()
     {
         $ride = factory(Ride::class)->create();
         $user = factory(UserModel::class)->create()->fresh();
-        $message = factory(Message::class)->create(['ride_id' => $ride->id, 'user_id' => $user->id]);
+        $message = Message::create([
+            'ride_id' => $ride->id,
+            'user_id' => $user->id,
+            'body' => 'Hello World!',
+        ]);
         $resource = new MessageResource($message);
         $userResource = new UserResource($user);
         $expectedJson = [
             'id' => $message->id,
-            'body' => $message->body,
+            'body' => 'Hello World!',
             'date' => $message->date->toDateTimeString(),
             'user' => $userResource,
         ];
