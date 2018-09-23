@@ -20,6 +20,7 @@ jobs:
       - image: caronae/php:latest
         environment:
           APP_ENV: testing
+          TESTING_DB_PORT: 5432
       - image: postgres:9.6-alpine
         environment:
           POSTGRES_USER: caronae
