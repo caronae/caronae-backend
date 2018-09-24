@@ -8,10 +8,13 @@ use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
 use Caronae\Notifications\RideMessageReceived;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class ChatControllerTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /** @test */
     public function should_return_chat_messages_ordered_by_date()
     {
