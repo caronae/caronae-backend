@@ -2,7 +2,6 @@
 
 namespace Caronae\Http\Controllers\API\v1;
 
-use Cache;
 use Caronae\Http\Controllers\BaseController;
 use Caronae\Http\Requests\SignUpRequest;
 use Caronae\Http\Requests\UpdateUserRequest;
@@ -20,7 +19,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class UserController extends BaseController
 {
     const USER_CONTENT_DISK = 'user_content';
-    const USER_RIDES_CACHE_TIME_MINUTES = 1;
 
     public function store(SignUpRequest $request)
     {
@@ -87,26 +85,15 @@ class UserController extends BaseController
 
     public function getRides(User $user)
     {
-        Log::info("Carregando caronas do usuário", ['id' => $user->id]);
-
-        list($pendingRides, $activeRides, $offeredRides) = $this->getRidesCached($user);
+        $pendingRides = $user->pendingRides()->with('riders')->get();
+        $activeRides = $user->activeRides()->with('riders')->get();
+        $offeredRides = $user->availableRides()->with('riders')->get()->diff($activeRides);
 
         return [
             'pending_rides' => RideResource::collection($pendingRides),
             'active_rides' => RideResource::collection($activeRides),
             'offered_rides' => RideResource::collection($offeredRides),
         ];
-    }
-
-    private function getRidesCached(User $user)
-    {
-        return Cache::remember('user-' . $user->id . '-rides', self::USER_RIDES_CACHE_TIME_MINUTES, function () use ($user) {
-            Log::info("Caronas do usuário não encontradas em cache. Carregando do banco de dados.", ['id' => $user->id]);
-            $pendingRides = $user->pendingRides()->with('riders')->get();
-            $activeRides = $user->activeRides()->with('riders')->get();
-            $offeredRides = $user->availableRides()->with('riders')->get()->diff($activeRides);
-            return [$pendingRides, $activeRides, $offeredRides];
-        });
     }
 
     public function getOfferedRides(User $user)
