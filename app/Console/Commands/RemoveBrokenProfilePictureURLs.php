@@ -14,10 +14,12 @@ class RemoveBrokenProfilePictureURLs extends Command
 {
     protected $signature = 'content:remove-broken-images';
     protected $description = 'Remove profile pictures with broken URLs from the database';
-    private $client;
 
-    private const REQUEST_CONCURRENCY_LIMIT = 15;
+    private const REQUEST_CONCURRENCY_LIMIT = 5;
     private const REQUEST_TIMEOUT_LIMIT = 15.0;
+    private $totalUsersWithInvalidImages;
+    private $totalProcessed = 0;
+    private $client;
 
     public function __construct()
     {
@@ -25,38 +27,55 @@ class RemoveBrokenProfilePictureURLs extends Command
         $this->client = new Client([
             'timeout' => self::REQUEST_TIMEOUT_LIMIT,
         ]);
+        $this->totalUsersWithInvalidImages = collect();
     }
 
     public function handle()
     {
+        $this->gatherUsersWithBlankProfilePicture();
+        $this->gatherUsersWithBrokenProfilePictures();
+
+        $this->updateUsers();
+
+        Log::info("Análise concluída. $this->totalProcessed usuários processados.");
+    }
+
+    private function gatherUsersWithBlankProfilePicture()
+    {
+        $users = User::where('profile_pic_url', '')->get(['id']);
+        Log::info("Usuários com imagem em branco: {$users->count()}");
+
+        $this->totalUsersWithInvalidImages = $this->totalUsersWithInvalidImages->concat($users);
+        $this->totalProcessed += $users->count();
+    }
+
+    private function gatherUsersWithBrokenProfilePictures()
+    {
+        $totalProcessed = 0;
         $query = User::whereNotNull('profile_pic_url');
         $totalUsers = $query->count();
-        $totalProcessed = 0;
-        $totalUsersWithInvalidImages = collect();
 
-        $query->chunk(1000, function ($users) use ($totalUsers, &$totalProcessed, &$totalUsersWithInvalidImages) {
+        $query->chunk(1000, function ($users) use ($totalUsers, &$totalProcessed) {
             Log::info("Analisando imagens de {$users->count()} usuários ($totalProcessed/$totalUsers)");
 
-            $usersWithInvalidImages = $this->usersWithInvalidProfilePictures($users);
-            $totalUsersWithInvalidImages = $totalUsersWithInvalidImages->concat($usersWithInvalidImages);
+            $usersWithInvalidImages = $this->filterUsersWithBrokenProfilePictures($users);
+            $this->totalUsersWithInvalidImages = $this->totalUsersWithInvalidImages->concat($usersWithInvalidImages);
             Log::debug("{$usersWithInvalidImages->count()} usuários possuem imagens inválidas");
 
             $totalProcessed += $users->count();
         });
 
-        Log::debug("Atualizando {$totalUsersWithInvalidImages->count()} usuários");
-        User::whereIn('id', $totalUsersWithInvalidImages->pluck('id'))->update(['profile_pic_url' => null]);
-
-        Log::info("Análise concluída. $totalProcessed usuários processados.");
+        $this->totalProcessed += $totalProcessed;
     }
 
-    private function usersWithInvalidProfilePictures($users)
+    private function filterUsersWithBrokenProfilePictures($users)
     {
         $invalidUsers = collect();
 
         $requests = $users->map(function ($user) use ($invalidUsers) {
             $profile_pic_url = $user->profile_pic_url;
-            return $this->client->getAsync($profile_pic_url)->then(null, function () use ($user, $invalidUsers) {
+            return $this->client->headAsync($profile_pic_url)->then(null, function (GuzzleException $exception) use ($user, $invalidUsers) {
+                Log::debug("Imagem inválida: {$user->profile_pic_url}", [$exception->getMessage()]);
                 $invalidUsers[] = $user;
             });
         });
@@ -64,5 +83,11 @@ class RemoveBrokenProfilePictureURLs extends Command
         Promise\each_limit($requests->toArray(), self::REQUEST_CONCURRENCY_LIMIT)->wait(true);
 
         return $invalidUsers;
+    }
+
+    private function updateUsers()
+    {
+        Log::debug("Atualizando {$this->totalUsersWithInvalidImages->count()} usuários");
+        User::whereIn('id', $this->totalUsersWithInvalidImages->pluck('id'))->update(['profile_pic_url' => null]);
     }
 }
