@@ -52,7 +52,7 @@ class RemoveBrokenProfilePictureURLs extends Command
     private function gatherUsersWithBrokenProfilePictures()
     {
         $totalProcessed = 0;
-        $query = User::whereNotNull('profile_pic_url');
+        $query = User::whereNotNull('profile_pic_url')->where('profile_pic_url', 'NOT LIKE', 'https://sigadocker.ufrj.br%');
         $totalUsers = $query->count();
 
         $query->chunk(1000, function ($users) use ($totalUsers, &$totalProcessed) {
