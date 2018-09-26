@@ -3,10 +3,10 @@
 namespace Caronae\Console\Commands;
 
 use Caronae\Models\User;
+use DB;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Promise;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Console\Command;
 use Log;
 
@@ -88,6 +88,9 @@ class RemoveBrokenProfilePictureURLs extends Command
     private function updateUsers()
     {
         Log::debug("Atualizando {$this->totalUsersWithInvalidImages->count()} usuários");
-        User::whereIn('id', $this->totalUsersWithInvalidImages->pluck('id'))->update(['profile_pic_url' => null]);
+        User::whereIn('id', $this->totalUsersWithInvalidImages->pluck('id'))->update([
+            'profile_pic_url_old' => DB::raw('profile_pic_url'),
+            'profile_pic_url' => null,
+        ]);
     }
 }
