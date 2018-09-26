@@ -44,6 +44,7 @@ class User extends Authenticatable implements JWTSubject
         'app_version',
         'banned',
         'institution_id',
+        'profile_pic_url_old',
     ];
 
     protected $dates = ['deleted_at'];
