@@ -15,8 +15,9 @@ class RemoveBrokenProfilePictureURLs extends Command
     protected $signature = 'content:remove-broken-images';
     protected $description = 'Remove profile pictures with broken URLs from the database';
 
-    private const REQUEST_CONCURRENCY_LIMIT = 5;
+    private const REQUEST_CONCURRENCY_LIMIT = 2;
     private const REQUEST_TIMEOUT_LIMIT = 15.0;
+    private const USER_BATCH_SIZE = 100;
     private $totalUsersWithInvalidImages;
     private $totalProcessed = 0;
     private $client;
@@ -55,7 +56,7 @@ class RemoveBrokenProfilePictureURLs extends Command
         $query = User::whereNotNull('profile_pic_url')->where('profile_pic_url', 'NOT LIKE', 'https://sigadocker.ufrj.br%');
         $totalUsers = $query->count();
 
-        $query->chunk(1000, function ($users) use ($totalUsers, &$totalProcessed) {
+        $query->chunk(self::USER_BATCH_SIZE, function ($users) use ($totalUsers, &$totalProcessed) {
             Log::info("Analisando imagens de {$users->count()} usuários ($totalProcessed/$totalUsers)");
 
             $usersWithInvalidImages = $this->filterUsersWithBrokenProfilePictures($users);
