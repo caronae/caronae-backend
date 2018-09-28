@@ -9,11 +9,6 @@ use Mail;
 
 class FalaeController extends BaseController
 {
-    public function __construct()
-    {
-        $this->middleware('api.v1.auth');
-    }
-
     public function sendMessage(Request $request)
     {
         $user = $request->user();
