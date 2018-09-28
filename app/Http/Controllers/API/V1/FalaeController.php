@@ -3,6 +3,7 @@
 namespace Caronae\Http\Controllers\API\v1;
 
 use Caronae\Http\Controllers\BaseController;
+use Caronae\Mail\FalaeMessage;
 use Illuminate\Http\Request;
 use Log;
 use Mail;
@@ -13,16 +14,12 @@ class FalaeController extends BaseController
     {
         $user = $request->user();
         $subject = $request->subject;
-        $body = $request->message . "\nID UFRJ: " . $user->id_ufrj;
+        $body = $request->message;
 
-        Log::info('Enviando mensagem através do Falaê', ['user_id' => $user->id, 'user_email' => $user->email, 'subject' => $subject, 'message' => $body]);
+        Log::info('Enviando mensagem através do Falaê', ['user_id' => $user->id, 'subject' => $subject]);
 
-        Mail::raw($body, function ($message) use ($user, $subject) {
-            $message->to('caronae@fundoverde.ufrj.br');
-            $message->replyTo($user->email, $user->name);
-            $message->subject($subject);
-        });
-        
+        Mail::send(new FalaeMessage($user, $subject, $body));
+
         return response()->json(['status' => 'Message sent.']);
     }
 }
