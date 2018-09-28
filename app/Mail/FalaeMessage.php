@@ -14,19 +14,20 @@ class FalaeMessage extends Mailable implements ShouldQueue
 
     public $user;
     public $userMessage;
+    public $userSubject;
 
     public function __construct(User $user, $subject, $message)
     {
         $this->user = $user;
-        $this->subject = $subject;
+        $this->userSubject = $subject;
         $this->userMessage = $message;
     }
 
     public function build()
     {
         return $this->to('caronae@fundoverde.ufrj.br')
-                    ->from($this->user->email, $this->user->name)
                     ->replyTo($this->user->email)
+                    ->subject($this->userSubject)
                     ->text('emails.falae');
     }
 }
