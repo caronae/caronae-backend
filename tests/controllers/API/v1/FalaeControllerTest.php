@@ -4,11 +4,14 @@ namespace Caronae\Http\Controllers\API\V1;
 
 use Caronae\Mail\FalaeMessage;
 use Caronae\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class FalaeControllerTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /** @test */
     public function should_send_email_to_team()
     {
