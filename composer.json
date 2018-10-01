@@ -6,6 +6,7 @@
     "type": "project",
     "require": {
         "php": ">=7.1.0",
+        "aws/aws-sdk-php": "^3.67",
         "backpack/base": "^0.9.0",
         "backpack/crud": "^3.4.0",
         "barryvdh/laravel-ide-helper": "^2.1",

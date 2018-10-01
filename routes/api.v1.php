@@ -40,7 +40,5 @@ Route::middleware('api.v1.auth')->group(function () {
     });
 
     Route::get('places', 'PlaceController@index');
-
+    Route::post('falae/messages', 'FalaeController@sendMessage');
 });
-
-Route::post('falae/messages', 'FalaeController@sendMessage');

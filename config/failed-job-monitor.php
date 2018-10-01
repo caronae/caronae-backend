@@ -24,10 +24,10 @@ return [
     /*
      * The channels to which the notification will be sent.
      */
-    'channels' => ['mail', 'slack'],
+    'channels' => ['slack'],
 
     'mail' => [
-        'to' => 'macecchi@gmail.com',
+        'to' => '',
     ],
 
     'slack' => [
