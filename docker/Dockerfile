@@ -15,7 +15,7 @@ COPY database ./database
 COPY public ./public
 COPY resources ./resources
 COPY routes ./routes
-COPY vendor ./vendor
+
 COPY scripts/update_laravel.sh ./scripts/
 COPY docker/entrypoint.sh /caronae-entrypoint.sh
 
