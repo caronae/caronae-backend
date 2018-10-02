@@ -154,7 +154,6 @@ return [
         Caronae\Providers\ViewComposerServiceProvider::class,
         Caronae\Providers\ValidatorServiceProvider::class,
         Caronae\Providers\FacebookSDKServiceProvider::class,
-        Clockwork\Support\Laravel\ClockworkServiceProvider::class,
     ],
 
     /*
