@@ -25,6 +25,8 @@ class RideController extends BaseController
     
     public function index(Request $request)
     {
+        $requestInstitution = $request->user()->institution()->first()->id;
+
         $this->validate($request, [
             'zone' => 'string',
             'neighborhoods' => 'string',
@@ -56,7 +58,8 @@ class RideController extends BaseController
         $rides = Ride::withAvailableSlots()
             ->notFinished()
             ->orderBy('rides.date')
-            ->withFilters($filters);
+            ->withFilters($filters)
+            ->withInstitution($requestInstitution);
 
         if ($request->filled('date')) {
             if (!$request->filled('time')) {
