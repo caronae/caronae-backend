@@ -21,7 +21,7 @@ COPY docker/entrypoint.sh /caronae-entrypoint.sh
 
 RUN mkdir -p storage/app
 RUN mkdir -p storage/logs
-RUN mkdir -p storage/framework/cache
+RUN mkdir -p storage/framework/cache/data
 RUN mkdir -p storage/framework/sessions
 RUN mkdir -p storage/framework/views
 
