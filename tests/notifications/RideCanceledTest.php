@@ -18,7 +18,7 @@ class RideCanceledTest extends TestCase
     	$ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
         $user = Mockery::mock(User::class);
         $user->shouldReceive('getAttribute')->with('id')->andReturn(2);
-    	$this->notification = new RideCanceled($ride, $user);
+    	$this->notification = new RideCanceled($ride, $user, 'Um motorista cancelou uma carona ativa sua');
         $this->notification->id = uniqid();
     }
 

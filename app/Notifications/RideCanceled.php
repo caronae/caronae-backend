@@ -16,10 +16,11 @@ class RideCanceled extends Notification implements ShouldQueue
     protected $ride;
     protected $user;
 
-    public function __construct(Ride $ride, User $user)
+    public function __construct(Ride $ride, User $user, String $message)
     {
         $this->ride = $ride;
         $this->user = $user;
+        $this->message = $message;
     }
 
     public function via()
@@ -31,7 +32,7 @@ class RideCanceled extends Notification implements ShouldQueue
     {
         return [
             'id'       => $this->id,
-            'message'  => 'Um motorista cancelou uma carona ativa sua',
+            'message'  => $this->message,
             'msgType'  => 'cancelled',
             'rideId'   => $this->ride->id,
             'senderId' => $this->user->id,

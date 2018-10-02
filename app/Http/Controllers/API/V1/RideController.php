@@ -22,7 +22,7 @@ use Illuminate\Http\Request;
 
 class RideController extends BaseController
 {
-    
+
     public function index(Request $request)
     {
         $this->validate($request, [
@@ -79,7 +79,7 @@ class RideController extends BaseController
 
         return $results;
     }
-    
+
     public function show(Ride $ride, Request $request)
     {
         RideResource::withoutWrapping();
@@ -146,7 +146,7 @@ class RideController extends BaseController
         RideResource::withoutWrapping();
         return RideResource::collection($ridesCreated)->response()->setStatusCode(201);
     }
-    
+
     public function validateDuplicate(ValidateDuplicateRequest $request)
     {
         $searchDate = $request->searchDate();
@@ -381,9 +381,16 @@ class RideController extends BaseController
         $rideUser = RideUser::where(['ride_id' => $ride->id, 'user_id' => $user->id])->first();
 
         if ($rideUser->status == 'driver') {
-            $rideCanceledNotification = new RideCanceled($ride, $user);
             $riders = $ride->riders()->get();
-            $riders->each->notify($rideCanceledNotification);
+            foreach ($riders as $rider) {
+                if ($rider->status == 'pending') {
+                  $message = 'Um motorista cancelou uma carona que você havia solicitado';
+                }else{
+                  $message = 'Um motorista cancelou uma carona ativa sua';
+                }
+                $rideCanceledNotification = new RideCanceled($ride, $user, $message);
+                $rider->notify($rideCanceledNotification);
+            }
 
             RideUser::where('ride_id', $ride->id)->delete();
 
