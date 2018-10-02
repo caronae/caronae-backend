@@ -34,8 +34,6 @@ services:
     volumes_from:
       - caronae-backend
     env_file: config.env
-    environment:
-      - LOG_STREAM=php://stdout
 
   nginx:
     container_name: nginx

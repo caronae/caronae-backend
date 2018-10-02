@@ -1,9 +1,5 @@
 FROM caronae/php:latest
 
-ENV LOG_STREAM="/tmp/backend.log"
-RUN mkfifo $LOG_STREAM && chmod 777 $LOG_STREAM
-CMD ["/bin/sh", "-c", "php-fpm -D | tail -f $LOG_STREAM"]
-
 # Copy application files
 COPY composer.json ./
 COPY composer.lock ./
