@@ -8,9 +8,9 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             NeighborhoodSeeder::class,
-            AdminTableSeeder::class,
             InstitutionSeeder::class,
             UserRideTableSeeder::class,
+            AdminTableSeeder::class,
         ]);
     }
 
