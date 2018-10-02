@@ -10,7 +10,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \Caronae\Http\Middleware\TrimStrings::class,
-        \Fideloper\Proxy\TrustProxies::class,
+        \Caronae\Http\Middleware\TrustProxies::class,
         \Clockwork\Support\Laravel\ClockworkMiddleware::class
     ];
 

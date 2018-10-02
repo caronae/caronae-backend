@@ -9,7 +9,7 @@ use Log;
 
 class ApiAuthenticateInstitution extends AuthenticateWithBasicAuth
 {
-    public function handle($request, Closure $next, $guard = NULL)
+    public function handle($request, Closure $next, $guard = null, $field = null)
     {
         if (($institution = Institution::where([
             'id' => $request->getUser(),

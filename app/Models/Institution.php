@@ -4,6 +4,7 @@ namespace Caronae\Models;
 
 use Backpack\CRUD\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
 
 class Institution extends Model
 {
@@ -21,7 +22,7 @@ class Institution extends Model
 
     public static function create(array $attributes = [])
     {
-        $attributes['password'] = bcrypt($attributes['name'] . time());
+        $attributes['password'] = Hash::make($attributes['name'] . time());
         $model = static::query()->create($attributes);
         return $model;
     }
