@@ -16,6 +16,7 @@ use Caronae\Notifications\RideFinished;
 use Caronae\Notifications\RideJoinRequestAnswered;
 use Caronae\Notifications\RideJoinRequested;
 use Caronae\Notifications\RideUserLeft;
+use Caronae\Services\ValidateDuplicateService;
 use DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -147,40 +148,9 @@ class RideController extends BaseController
         return RideResource::collection($ridesCreated)->response()->setStatusCode(201);
     }
     
-    public function validateDuplicate(ValidateDuplicateRequest $request)
+    public function validateDuplicate(ValidateDuplicateService $validateDuplicateService)
     {
-        $searchDate = $request->searchDate();
-
-        $ridesFound = $request->user()->offeredRides()
-            ->whereBetween('date', $request->searchRange())
-            ->where('going', $request->input('going'))
-            ->get();
-
-        if (count($ridesFound) > 0) {
-            $valid = false;
-
-            $duplicated = $ridesFound->reduce(function ($duplicated, $ride) use ($searchDate) {
-                return $duplicated || $ride->isAroundDate($searchDate);
-            }, false);
-
-            if ($duplicated) {
-                $status = 'duplicate';
-                $message = 'The user has already offered a ride on the specified date.';
-            } else {
-                $status = 'possible_duplicate';
-                $message = 'The user has already offered a ride too close to the specified date.';
-            }
-        } else {
-            $valid = true;
-            $status = 'valid';
-            $message = 'No conflicting rides were found close to the specified date.';
-        }
-
-        return [
-            'valid' => $valid,
-            'status' => $status,
-            'message' => $message
-        ];
+        return $validateDuplicateService->validate();
     }
 
     public function delete(Request $request, $rideId)
