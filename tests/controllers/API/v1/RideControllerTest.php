@@ -423,6 +423,33 @@ class RideControllerTest extends TestCase
         ]);
     }
 
+    public function testCreateDuplicateShouldFail()
+    {
+        $date = Carbon::now()->addDays(5);
+        $request = [
+            'myzone' => 'Norte',
+            'neighborhood' => 'Jardim Guanabara',
+            'place' => 'Praia da bica',
+            'route' => 'Linha Vermelha',
+            'mydate' => $date->format('d/m/Y'),
+            'mytime' => $date->format('H:i:s'),
+            'week_days' => $date->dayOfWeek,
+            'slots' => '4',
+            'hub' => 'A',
+            'description' => 'Lorem ipsum dolor',
+            'going' => true
+        ];
+
+        $response = $this->json('POST', 'api/v1/rides', $request, $this->headers);
+        $response->assertStatus(201);
+
+        $response = $this->json('POST', 'api/v1/rides', $request, $this->headers);
+        $response->assertStatus(422);
+        $response->assertJsonFragment([
+            'The user has already offered a ride on the specified date.'
+        ]);
+    }
+
     /** @test */
     public function shouldDeleteRide()
     {

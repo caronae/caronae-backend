@@ -111,6 +111,15 @@ class RideController extends BaseController
     {
         $user = $request->user();
 
+        $validateDuplicateService = new ValidateDuplicateService($user, $request->all()['date'], $request->get('going'));
+        $resultValidation = $validateDuplicateService->validate();
+
+        if (!$resultValidation['valid']) {
+            return response()->json([
+                'message' => $resultValidation['message'],
+            ], 422);
+        }
+
         $ridesCreated = collect();
         DB::transaction(function() use ($request, $user, &$ridesCreated) {
             $ride = Ride::create($request->all());
