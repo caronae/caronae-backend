@@ -417,7 +417,7 @@ class UserControllerTest extends TestCase
     {
         Storage::fake(self::USER_CONTENT_DISK);
         $user = $this->someUser(['profile_pic_url' => null]);
-        $body = ['profile_picture' => UploadedFile::fake()->image('image.jpg')];
+        $body = ['profile_picture' => UploadedFile::fake()->image('image.png')];
 
         $response = $this->jsonAs($user, 'POST', "api/v1/users/{$user->id}/profile_picture", $body);
         $newPictureURL = $response->getOriginalContent()['profile_pic_url'];
@@ -432,7 +432,7 @@ class UserControllerTest extends TestCase
     {
         Storage::fake(self::USER_CONTENT_DISK);
         $user = $this->someUser(['profile_pic_url' => 'http://example.com/old_pic.jpg']);
-        $body = ['profile_picture' => UploadedFile::fake()->image('image.jpg')];
+        $body = ['profile_picture' => UploadedFile::fake()->image('image.png')];
 
         $this->jsonAs($user,'POST', "api/v1/users/{$user->id}/profile_picture", $body);
 
