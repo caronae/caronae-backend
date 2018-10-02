@@ -20,17 +20,4 @@ class ValidateDuplicateRequest extends FormRequest
             'going' => 'required|boolean'
         ];
     }
-
-    public function searchDate()
-    {
-        return Carbon::createFromFormat('d/m/Y H:i:s', $this->input('date') . ' ' . $this->input('time'));
-    }
-
-    public function searchRange()
-    {
-        $date = $this->searchDate();
-        $dateMin = $date->copy()->setTime(0,0,0)->max(Carbon::now());
-        $dateMax = $date->copy()->setTime(23,59,59);
-        return [$dateMin, $dateMax];
-    }
 }
