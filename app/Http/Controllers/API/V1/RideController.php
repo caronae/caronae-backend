@@ -297,6 +297,11 @@ class RideController extends BaseController
         }
 
         $user = $request->user();
+        $requestInstitution = $request->user()->institution()->first()->id;
+
+        if($ride->institution()->first()->id != $requestInstitution){
+            return ['message' => 'You doesn\'t belong to the same institution of the ride.'];
+        }
 
         //if a relationship already exists, do not create another one
         $previousRequest = $ride->users()->where('users.id', $user->id);
