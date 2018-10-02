@@ -31,7 +31,8 @@ class RideModelTest extends TestCase
         $this->assertEquals($user->institution()->get(), $ride->institution()->get());
     }
 
-    public function testGetRiders()
+    /** @test */
+    public function should_only_return_accepted_users()
     {
         $ride = factory(Ride::class)->create();
 
@@ -47,7 +48,9 @@ class RideModelTest extends TestCase
         $accepted = factory(User::class)->create();
         $ride->users()->attach($accepted, ['status' => 'accepted']);
 
-        $this->assertContainsOnly($accepted, $ride->riders()->get());
+        $riders = $ride->riders()->get();
+        $this->assertCount(1, $riders);
+        $this->assertEquals($accepted->id, $riders[0]->id);
     }
 
     public function testTitleGoing()
