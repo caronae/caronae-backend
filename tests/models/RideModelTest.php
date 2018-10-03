@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Carbon\Carbon;
+use Caronae\Models\Institution;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -189,5 +190,23 @@ class RideModelTest extends TestCase
 
         $this->assertEquals('Bairro', $ride->origin);
         $this->assertEquals('Hub', $ride->destination);
+    }
+
+    /** @test */
+    public function should_filter_by_institution()
+    {
+        $institutionA = factory(Institution::class)->create();
+        $userA = factory(User::class)->create(['institution_id' => $institutionA->id]);
+        $rideA = factory(Ride::class)->create();
+        $rideA->users()->attach($userA, ['status' => 'driver']);
+
+        $institutionB = factory(Institution::class)->create();
+        $userB = factory(User::class)->create(['institution_id' => $institutionB->id]);
+        $rideB = factory(Ride::class)->create();
+        $rideB->users()->attach($userB, ['status' => 'driver']);
+
+        $results = Ride::withInstitution($institutionA->id)->get();
+        $this->assertCount(1, $results);
+        $this->assertEquals($institutionA->id, $results[0]->id);
     }
 }
