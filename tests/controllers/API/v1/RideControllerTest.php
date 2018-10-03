@@ -536,12 +536,30 @@ class RideControllerTest extends TestCase
     public function should_not_create_duplicate_request_for_ride()
     {
         $ride = factory(Ride::class, 'next')->create();
+        $driver = factory(User::class)->create();
+        $ride->users()->attach($driver, ['status' => 'driver']);
         $ride->users()->attach($this->user, ['status' => 'pending']);
 
         $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/requests', [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'message' => 'Ride request already exists.'
+        ]);
+    }
+
+    /** @test */
+    public function should_not_create_request_for_ride_from_other_institution()
+    {
+        $ride = factory(Ride::class, 'next')->create();
+
+        $driverInstitution = factory(Institution::class)->create();
+        $driver = factory(User::class)->create(['institution_id' => $driverInstitution->id]);
+        $ride->users()->attach($driver, ['status' => 'driver']);
+
+        $response = $this->jsonAs($this->user, 'POST', 'api/v1/rides/' . $ride->id . '/requests', []);
+        $response->assertStatus(403);
+        $response->assertExactJson([
+            'error' => 'You can\'t request to participate in a ride from another institution.'
         ]);
     }
 

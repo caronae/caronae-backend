@@ -276,12 +276,9 @@ class RideController extends BaseController
         }
 
         $user = $request->user();
-        $requestInstitution = $request->user()->institution->id;
 
-        if($ride->driver()){
-            if($ride->institution()->first()->id != $requestInstitution){
-                return ['message' => 'You doesn\'t belong to the same institution of the ride.'];
-            }
+        if (!$ride->institution->is($user->institution)) {
+            return $this->error('You can\'t request to participate in a ride from another institution.', 403);
         }
 
         //if a relationship already exists, do not create another one
