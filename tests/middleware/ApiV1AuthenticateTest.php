@@ -26,7 +26,7 @@ class ApiV1AuthenticateTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturn401WithInvalidToken()
+    public function should_return_401_with_invalid_token()
     {
         $request = $this->unauthorizedLegacyRequest('xxx');
 
@@ -36,7 +36,7 @@ class ApiV1AuthenticateTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturn401WithoutToken()
+    public function should_return_401_without_token()
     {
         $request = $this->unauthorizedLegacyRequest(null);
 
@@ -46,7 +46,7 @@ class ApiV1AuthenticateTest extends TestCase
     }
 
     /** @test */
-    public function shouldContinueWithValidLegacyToken()
+    public function should_continue_with_valid_legacy_token()
     {
         $request = $this->authenticatedLegacyRequest();
 
@@ -58,7 +58,7 @@ class ApiV1AuthenticateTest extends TestCase
     }
 
     /** @test */
-    public function shouldContinueWithValidJWTToken()
+    public function should_continue_with_valid_jwt_token()
     {
         $user = factory(User::class)->create()->fresh();
         $token = JWTAuth::fromUser($user);
@@ -75,7 +75,7 @@ class ApiV1AuthenticateTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturn401WhenTokenIsExpiredAndCannotBeRefreshed()
+    public function should_return_401_when_token_is_expired_and_cannot_be_refreshed()
     {
         JWTAuth::shouldReceive('parseToken->authenticate')->andThrow(new TokenExpiredException());
         JWTAuth::shouldReceive('getToken')->andReturn('oldtoken');
@@ -89,7 +89,7 @@ class ApiV1AuthenticateTest extends TestCase
     }
 
     /** @test */
-    public function shouldRefreshAndAuthorizeExpiredToken()
+    public function should_refresh_and_authorize_expired_token()
     {
         $user = factory(User::class)->create()->fresh();
         JWTAuth::shouldReceive('parseToken->authenticate')->andThrow(new TokenExpiredException());
@@ -108,7 +108,7 @@ class ApiV1AuthenticateTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturn401WhenUserIsBannedAndTokenExpired()
+    public function should_return_401_when_user_is_banned_and_token_expired()
     {
         $user = factory(User::class)->create(['banned' => true])->fresh();
         JWTAuth::shouldReceive('parseToken->authenticate')->andThrow(new TokenExpiredException());
@@ -124,7 +124,7 @@ class ApiV1AuthenticateTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturn400WhenTokenIsInvalid()
+    public function should_return_400_when_token_is_invalid()
     {
         JWTAuth::shouldReceive('parseToken->authenticate')->andThrow(new TokenInvalidException());
         $request = $this->jwtRequest();
@@ -136,7 +136,7 @@ class ApiV1AuthenticateTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturn500WhenJWTThrowsError()
+    public function should_return_500_when_jwt_throws_error()
     {
         JWTAuth::shouldReceive('parseToken->authenticate')->andThrow(new JWTException());
 
@@ -149,7 +149,7 @@ class ApiV1AuthenticateTest extends TestCase
     }
 
     /** @test */
-    public function shouldSetAuthenticatedUser()
+    public function should_set_authenticated_user()
     {
         $request = $this->authenticatedLegacyRequest();
 

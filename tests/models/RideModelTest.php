@@ -12,7 +12,8 @@ class RideModelTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testGetDriver()
+    /** @test */
+    public function test_get_driver()
     {
         $ride = factory(Ride::class)->create();
 
@@ -22,7 +23,8 @@ class RideModelTest extends TestCase
         $this->assertEquals($user->id, $ride->driver()->id);
     }
 
-    public function testInstitutionShouldReturnDriversInstitution()
+    /** @test */
+    public function should_return_drivers_institution()
     {
         $ride = factory(Ride::class)->create();
 
@@ -54,7 +56,8 @@ class RideModelTest extends TestCase
         $this->assertEquals($accepted->id, $riders[0]->id);
     }
 
-    public function testTitleGoing()
+    /** @test */
+    public function should_return_title_with_neighborhood_first_when_going()
     {
         $ride = factory(Ride::class)->create([
             'going' => true,
@@ -65,7 +68,8 @@ class RideModelTest extends TestCase
         $this->assertEquals('Ipanema → CCS | 29/01', $ride->title);
     }
 
-    public function testTitleReturning()
+    /** @test */
+    public function should_return_title_with_hub_first_when_returning()
     {
         $ride = factory(Ride::class)->create([
             'going' => false,
@@ -76,7 +80,8 @@ class RideModelTest extends TestCase
         $this->assertEquals('CCS → Ipanema | 29/01', $ride->title);
     }
 
-    public function testAvailableSlots()
+    /** @test */
+    public function should_calculate_available_slots()
     {
         $ride = factory(Ride::class)->create(['slots' => 2])->fresh();
         $ride->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
@@ -88,7 +93,7 @@ class RideModelTest extends TestCase
     /**
      * @test
      */
-    public function shouldValidateIfAroundASimilarDate()
+    public function should_validate_if_around_a_similar_date()
     {
         $ride = factory(Ride::class)->create(['date' => Carbon::parse('2017-12-03 08:00')])->fresh();
         $date = Carbon::parse('2017-12-03 08:15');
@@ -99,7 +104,7 @@ class RideModelTest extends TestCase
     /**
      * @test
      */
-    public function shouldValidateIfAroundADistantDate()
+    public function should_validate_if_around_a_distant_date()
     {
         $ride = factory(Ride::class)->create(['date' => Carbon::parse('2017-12-03 08:00')])->fresh();
         $date = Carbon::parse('2017-12-03 10:00');
@@ -107,7 +112,8 @@ class RideModelTest extends TestCase
         $this->assertFalse($ride->isAroundDate($date));
     }
 
-    public function testScopeShouldReturnRidesWithAvailableSlots()
+    /** @test */
+    public function should_return_rides_with_available_slots()
     {
         $ride = factory(Ride::class)->create([ 'slots' => 2 ])->fresh();
         $ride->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
@@ -127,7 +133,8 @@ class RideModelTest extends TestCase
         $this->assertFalse($results->contains($rideFullWithPending), 'Riders with pending status should take a slot.');
     }
 
-    public function testScopeShouldReturnRidesInTheFuture() 
+    /** @test */
+    public function should_return_rides_in_the_future()
     {
         $ride = factory(Ride::class, 'next')->create()->fresh();
         $ride->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
@@ -140,7 +147,8 @@ class RideModelTest extends TestCase
         $this->assertFalse($results->contains($rideOld));
     }
 
-    public function testScopeShouldFilterByNeighborhoods()
+    /** @test */
+    public function should_filter_by_neighborhoods()
     {
         $ride1 = factory(Ride::class, 'next')->create(['neighborhood' => 'Ipanema'])->fresh();
         $ride1->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
@@ -157,7 +165,8 @@ class RideModelTest extends TestCase
         $this->assertTrue($results->contains($ride3));
     }
 
-    public function testScopeShouldFilterByHubs()
+    /** @test */
+    public function should_filter_by_hubs()
     {
         $ride1 = factory(Ride::class, 'next')->create(['hub' => 'FND'])->fresh();
         $ride1->users()->attach(factory(User::class)->create(), ['status' => 'driver']);
@@ -175,7 +184,7 @@ class RideModelTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturnRightDirectionsWhenGoing()
+    public function should_return_right_directions_when_going()
     {
         $ride = factory(Ride::class)->create(['going' => true, 'hub' => 'Hub', 'neighborhood' => 'Bairro'])->fresh();
 
@@ -184,7 +193,7 @@ class RideModelTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturnRightDirectionsWhenReturning()
+    public function should_return_right_directions_when_returning()
     {
         $ride = factory(Ride::class)->create(['going' => false, 'hub' => 'Hub', 'neighborhood' => 'Bairro'])->fresh();
 

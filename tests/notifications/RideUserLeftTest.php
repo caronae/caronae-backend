@@ -24,7 +24,8 @@ class RideUserLeftTest extends TestCase
         $this->notification->id = uniqid();
 	}
 
-	public function testPushNotificationArrayShouldContainAllFields()
+    /** @test */
+    public function should_contain_all_fields_in_push()
     {
         $this->assertSame([
             'id'       => $this->notification->id,

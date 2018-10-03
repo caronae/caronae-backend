@@ -28,7 +28,7 @@ class RideResourceTest extends TestCase
     /**
      * @test
      */
-    public function shouldRenderAsJsonIncludingDriver()
+    public function should_render_as_json_including_driver()
     {
         $userResource = new UserResource($this->driver);
         $rideResource = new RideResource($this->ride);
@@ -60,7 +60,7 @@ class RideResourceTest extends TestCase
     /**
      * @test
      */
-    public function shouldIncludeRidersWhenLoaded()
+    public function should_include_riders_when_loaded()
     {
         $rider = factory(User::class)->create()->fresh();
         $this->ride->users()->attach($rider, ['status' => 'accepted']);
@@ -77,7 +77,7 @@ class RideResourceTest extends TestCase
     /**
      * @test
      */
-    public function shouldIncludeAvailableSlots()
+    public function should_include_available_slots()
     {
         $rideResource = new RideResource($this->ride);
 

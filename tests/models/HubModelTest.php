@@ -11,7 +11,8 @@ class HubModelTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testFindsByName()
+    /** @test */
+    public function should_find_by_name()
     {
         $institution = factory(Institution::class)->create();
         $campus = factory(Campus::class)->create(['institution_id' => $institution->id]);

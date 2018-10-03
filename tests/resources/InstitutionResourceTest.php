@@ -11,7 +11,7 @@ class InstitutionResourceTest extends TestCase
     /**
      * @test
      */
-    public function shouldRenderAsJson()
+    public function should_render_as_json()
     {
         $institution = factory(Institution::class)->create();
         $resource = new InstitutionResource($institution);

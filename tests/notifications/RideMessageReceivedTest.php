@@ -32,7 +32,8 @@ class RideMessageReceivedTest extends TestCase
         $this->notification = new RideMessageReceived($message);
 	}
 
-	public function testPushNotificationArrayShouldContainAllFields()
+    /** @test */
+    public function should_contain_all_fields_in_push()
     {
         $this->assertSame([
             'id' => '123',

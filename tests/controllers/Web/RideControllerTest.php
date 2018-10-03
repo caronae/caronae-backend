@@ -10,7 +10,7 @@ use Tests\TestCase;
 class RideControllerTest extends TestCase
 {
     /** @test */
-    public function shouldShowRideView()
+    public function should_show_ride_view()
     {
         $user = factory(User::class)->create();
         $ride = factory(Ride::class, 'next')->create([
@@ -31,7 +31,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldShowRideNotFoundView()
+    public function should_show_ride_not_found_view()
     {
         $response = $this->json('GET', 'carona/666');
 

@@ -14,7 +14,7 @@ class LoginControllerTest extends TestCase
     use DatabaseTransactions;
 
     /** @test */
-    public function shouldReturnInstitutionsViewWhenThereAreManyInstitutions()
+    public function should_return_institutions_view_when_there_are_many_institutions()
     {
         factory(Institution::class, 2)->create();
         $response = $this->get('login');
@@ -25,7 +25,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldRedirectToInstitutionWhenThereIsOneInstitution()
+    public function should_redirect_to_institution_when_there_is_one_institution()
     {
         $institution = factory(Institution::class)->create();
         $response = $this->get('login');
@@ -34,7 +34,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function should_show_institution_page_with_details()
+    public function shouldShowInstitutionPageWithDetails()
     {
         $institution = factory(Institution::class)->create();
         $response = $this->get('login/' . $institution->getRouteKey());
@@ -65,7 +65,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturnErrorView()
+    public function should_return_error_view()
     {
         $errorMessage = 'Error message';
         $response = $this->call('GET', 'login', [ 'error' => $errorMessage ]);
@@ -76,7 +76,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldRememberLoginType()
+    public function should_remember_login_type()
     {
         $response = $this->call('GET', 'login', [ 'type' => 'app' ]);
 
@@ -84,7 +84,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldRememberOnlyMostRecentLoginType()
+    public function should_remember_only_most_recent_login_type()
     {
         $response = $this->withLoginType('app')->call('GET', 'login', [ 'type' => 'web' ]);
 
@@ -92,7 +92,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldDefaultToWebLoginTypeWhenNotSpecified()
+    public function should_default_to_web_login_type_when_not_specified()
     {
         $response = $this->call('GET', 'login');
 
@@ -100,7 +100,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturnTokenViewWithWebType()
+    public function should_return_token_view_with_web_type()
     {
         $user = factory(User::class)->create();
         $jwtToken = JWTAuth::fromUser($user);
@@ -115,7 +115,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldRedirectToAppWithAppLoginType()
+    public function should_redirect_to_app_with_app_login_type()
     {
         $user = factory(User::class)->create();
         $jwtToken = JWTAuth::fromUser($user);
@@ -126,7 +126,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldRedirectToAppWithJWTTokenWithAppLoginType()
+    public function should_redirect_to_app_with_jwttoken_with_app_login_type()
     {
         $user = factory(User::class)->create();
         $jwtToken = JWTAuth::fromUser($user);
@@ -139,7 +139,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldSaveCookieWhenAcceptingTermsOfUse()
+    public function should_save_cookie_when_accepting_terms_of_use()
     {
         $user = factory(User::class)->create();
         $jwtToken = JWTAuth::fromUser($user);
@@ -154,7 +154,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldNotDisplayTermsAgainIfHasAcceptedTerms()
+    public function should_not_display_terms_again_if_has_accepted_terms()
     {
         $user = factory(User::class)->create();
         $jwtToken = JWTAuth::fromUser($user);
@@ -166,7 +166,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldRefreshToken()
+    public function should_refresh_token()
     {
         $user = factory(User::class)->create();
         $jwtToken = JWTAuth::fromUser($user);

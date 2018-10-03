@@ -32,7 +32,8 @@ class RideControllerTest extends TestCase
         $this->headers = ['token' => $this->user->token];
     }
 
-    public function testIndexShouldReturnNextRides()
+    /** @test */
+    public function should_return_next_rides()
     {
         $user = $this->user;
         $rides = factory(Ride::class, 'next', 2)->create()->each(function($ride) use ($user) {
@@ -72,7 +73,8 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testIndexShouldAllowFiltering()
+    /** @test */
+    public function should_allow_filtering_next_rides()
     {
         $ride1 = factory(Ride::class, 'next')->create(['neighborhood' => 'Ipanema', 'going' => true])->fresh();
         $ride1->users()->attach($this->user, ['status' => 'driver']);
@@ -89,7 +91,8 @@ class RideControllerTest extends TestCase
         $response->assertJson(['data' => [ $ride2->toArray() ]]);
     }
 
-    public function testIndexShouldFilterByCampus()
+    /** @test */
+    public function should_allow_filtering_next_rides_by_campus()
     {
         $institution = factory(Institution::class)->create();
         $campus1 = Campus::create(['name' => 'Cidade Universitária', 'institution_id' => $institution->id]);
@@ -113,7 +116,8 @@ class RideControllerTest extends TestCase
         $response->assertJson(['data' => [ $ride1->toArray(), $ride2->toArray() ]]);
     }
 
-    public function testIndexShouldAllowSearchByDateAndTime()
+    /** @test */
+    public function should_allow_searching_next_rides_by_date_and_time()
     {
         $futureDate = Carbon::now()->addDays(5)->setTime(12,0,0);
         $ride1 = factory(Ride::class, 'next')->create(['date' => $futureDate])->fresh();
@@ -139,7 +143,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturnRide()
+    public function should_return_ride()
     {
         $ride = factory(Ride::class)->create();
         $driver = factory(User::class)->create();
@@ -157,7 +161,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldIncludeRidersWhenUserIsRider()
+    public function should_include_riders_when_user_is_rider()
     {
         $ride = factory(Ride::class)->create();
         $driver = factory(User::class)->create();
@@ -176,7 +180,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldIncludeRidersWhenUserIsDriver()
+    public function should_include_riders_when_user_is_driver()
     {
         $ride = factory(Ride::class)->create();
         $rider = factory(User::class)->create();
@@ -302,7 +306,8 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testCreateWithoutRoutine()
+    /** @test */
+    public function should_create_a_ride()
     {
         $date = Carbon::now()->addDays(5);
         $request = [
@@ -341,7 +346,8 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testCreateWithRoutine()
+    /** @test */
+    public function should_create_a_ride_with_a_routine()
     {
         $date = Carbon::now()->addDays(5);
         $repeatsUntil = $date->copy()->addWeek();
@@ -396,7 +402,8 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testCreateRideInThePastShouldFail()
+    /** @test */
+    public function should_not_create_a_ride_in_the_past()
     {
         $date = Carbon::yesterday();
         $request = [
@@ -421,7 +428,8 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testCreateDuplicateShouldFail()
+    /** @test */
+    public function should_not_create_a_duplicated_ride()
     {
         $date = Carbon::now()->addDays(5);
         $request = [
@@ -449,7 +457,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldDeleteRide()
+    public function should_delete_ride()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -461,7 +469,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldDeleteRideRelationships()
+    public function should_delete_ride_relationships()
     {
         $ride = factory(Ride::class, 'next')->create();
         $rider = factory(User::class)->create();
@@ -476,7 +484,8 @@ class RideControllerTest extends TestCase
         $this->assertDatabaseMissing('ride_user', ['ride_id' => $ride->id, 'user_id' => $rider->id]);
     }
 
-    public function testDeleteAllFromRoutine()
+    /** @test */
+    public function should_delete_all_rides_in_routine()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -487,8 +496,9 @@ class RideControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
+    /** @deprecated  */
     /** @test */
-    public function shouldCreateRequestForRideUsingLegacyAPI()
+    public function should_create_request_for_ride_using_legacy_API()
     {
         $ride = factory(Ride::class, 'next')->create();
         $user = factory(User::class)->create();
@@ -507,7 +517,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldCreateRequestForRide()
+    public function should_create_request_for_ride()
     {
         $ride = factory(Ride::class, 'next')->create();
         $user = factory(User::class)->create();
@@ -523,7 +533,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldNotCreateDuplicateRequestForRide()
+    public function should_not_create_duplicate_request_for_ride()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'pending']);
@@ -536,7 +546,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldListRequests()
+    public function should_list_ride_requests()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -570,7 +580,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldNotListRequestsIfIsNotDriver()
+    public function should_not_list_ride_requests_if_is_not_driver()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'accepted']);
@@ -579,8 +589,9 @@ class RideControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
+    /** @deprecated */
     /** @test */
-    public function shouldUpdateRequest_legacy()
+    public function should_update_request_using_legacy_API()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -604,7 +615,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldUpdateRequest()
+    public function should_update_request()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -627,7 +638,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldNotUpdateRequestThatDoesNotExist()
+    public function should_not_update_request_that_does_not_exist()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -646,7 +657,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldNotUpdateRequestIfIsNotDriver()
+    public function should_not_update_request_if_is_not_driver()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'accepted']);
@@ -663,7 +674,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldLetUserLeaveRideAndNotifyDriver()
+    public function should_let_user_leave_ride_and_notify_driver()
     {
         $ride = factory(Ride::class, 'next')->create();
         $driver = factory(User::class)->create();
@@ -682,7 +693,8 @@ class RideControllerTest extends TestCase
     }
 
     /** @deprecated */
-    public function testLeaveAsUser_legacy()
+    /** @test */
+    public function should_let_user_leave_ride_using_legacy_API()
     {
         $ride = factory(Ride::class, 'next')->create();
         $driver = factory(User::class)->create();
@@ -703,7 +715,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldLetDriverLeaveRideAndNotifyRiders()
+    public function should_let_driver_leave_ride_and_notify_riders()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -723,7 +735,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldLetDriverFinishRideAndNotifyRiders()
+    public function should_let_driver_finish_ride_and_notify_riders()
     {
         $ride = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00']);
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -743,7 +755,8 @@ class RideControllerTest extends TestCase
     }
 
     /** @deprecated  */
-    public function testFinishRide_legacy()
+    /** @test */
+    public function should_let_user_finish_ride_using_legacy_API()
     {
         $ride = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00', 'done' => false]);
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -765,7 +778,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldNotAllowFinishingFutureRides()
+    public function should_not_allow_finishing_future_rides()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -780,7 +793,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function shouldNotAllowToFinishRideWhereUserIsNotDriver()
+    public function should_not_allow_to_finish_ride_where_user_is_not_driver()
     {
         $ride = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00', 'done' => false]);
         $ride->users()->attach($this->user, ['status' => 'accepted']);
@@ -791,7 +804,9 @@ class RideControllerTest extends TestCase
         $this->assertDatabaseHas('rides', ['id' => $ride->id, 'done' => false]);
     }
 
-    public function testGetHistory()
+    /** @deprecated */
+    /** @test */
+    public function should_get_history_using_legacy_API()
     {
         $user2 = factory(User::class)->create()->fresh();
 
@@ -854,7 +869,9 @@ class RideControllerTest extends TestCase
         ]);
     }
 
-    public function testGetHistoryCount()
+    /** @deprecated */
+    /** @test */
+    public function should_get_history_count_using_legacy_API()
     {
         $user2 = factory(User::class)->create();
 

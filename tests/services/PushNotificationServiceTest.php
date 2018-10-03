@@ -16,7 +16,8 @@ class PushNotificationServiceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testSendsNotificationToFirebase()
+    /** @test */
+    public function should_send_notification_to_firebase()
     {
         $historyContainer = [];
         $historyMiddleware = Middleware::history($historyContainer);

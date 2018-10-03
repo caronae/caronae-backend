@@ -18,20 +18,23 @@ class CampusModelTest extends TestCase
         $this->institution = factory(Institution::class)->create();
     }
 
-    public function testFindsByName()
+    /** @test */
+    public function should_find_by_name()
     {
         $campus = factory(Campus::class)->create(['name' => 'Cidade Universitária', 'institution_id' => $this->institution->id])->fresh();
         $campus2 = factory(Campus::class)->create(['name' => 'Praia Vermelha', 'institution_id' => $this->institution->id])->fresh();
         $this->assertEquals($campus, Campus::findByName('Cidade Universitária'));
     }
 
-    public function testReturnsColor()
+    /** @test */
+    public function should_return_color()
     {
         $campus = factory(Campus::class)->create(['color' => '#ff00ff', 'institution_id' => $this->institution->id]);
         $this->assertEquals('#ff00ff', $campus->color);
     }
 
-    public function testReturnsDefaultColorWhenEmpty()
+    /** @test */
+    public function should_default_color_when_empty()
     {
         $campus = factory(Campus::class)->create(['color' => null, 'institution_id' => $this->institution->id]);
         $this->assertEquals(Campus::DEFAULT_COLOR, $campus->color);

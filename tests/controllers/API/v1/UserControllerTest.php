@@ -26,7 +26,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldCreateUser()
+    public function should_create_user()
     {
         $user = $this->newUser();
         $response = $this->json('POST', 'api/v1/users', $user, $this->institutionAuthorizationHeaders());
@@ -41,7 +41,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotCreateUserWithoutAuthorizationHeaders()
+    public function should_not_create_user_without_authorization_headers()
     {
         $user = $this->newUser();
         $response = $this->json('POST', 'api/v1/users', $user);
@@ -53,7 +53,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotCreateDuplicatedUser()
+    public function should_not_create_duplicated_user()
     {
         $user = $this->newUser();
         $user['institution_id'] = $this->institution->id;
@@ -71,7 +71,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotChangeTokenWhenUserAlreadyExists()
+    public function should_not_change_token_when_user_already_exists()
     {
         $user = $this->newUser();
         $user['institution_id'] = $this->institution->id;
@@ -90,7 +90,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotChangeProfilePictureIfItAlreadyExists()
+    public function should_not_change_profile_picture_if_it_already_exists()
     {
         $oldProfilePicture = 'http://example.com/existing_pic.jpg';
         $user = $this->newUser();
@@ -108,7 +108,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldSignIn()
+    public function should_sign_in()
     {
         $user = $this->someUser();
 
@@ -141,7 +141,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnInstitutionOnSignIn()
+    public function should_return_institution_on_sign_in()
     {
         $user = $this->someUser();
         $institution = $user->institution()->first();
@@ -160,7 +160,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnUserRidesOnLegacySignIn()
+    public function should_return_user_rides_on_legacy_sign_in()
     {
         $user = $this->someUser();
 
@@ -222,7 +222,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotSignInWithInvalidUser()
+    public function should_not_sign_in_with_invalid_user()
     {
         $response = $this->json('POST', 'api/v1/users/login', [
             'id_ufrj' => str_random(11),
@@ -237,7 +237,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnTokenWithLegacyAuthentication()
+    public function should_return_token_with_legacy_authentication()
     {
         $user = $this->someUser();
         $headers = ['token' => $user->token];
@@ -251,7 +251,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnUser()
+    public function should_return_user()
     {
         $user = $this->someUser();
         $response = $this->jsonAs($user, 'GET', 'api/v1/users/' . $user->id);
@@ -279,7 +279,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotReturnOtherUser()
+    public function should_not_return_other_user()
     {
         $user = $this->someUser();
         $user2 = $this->someUser();
@@ -292,7 +292,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldUpdateUserProfileWithLegacyAPI()
+    public function should_update_user_profile_with_legacy_api()
     {
         $user = $this->someUser();
         $headers = ['token' => $user->token];
@@ -325,7 +325,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldUpdateUserProfile()
+    public function should_update_user_profile()
     {
         $user = $this->someUser();
         $headers = ['token' => $user->token];
@@ -358,7 +358,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotUpdateProtectedFields()
+    public function should_not_update_protected_fields()
     {
         $user = $this->someUser();
         $previousName = $user->name;
@@ -390,7 +390,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotUpdateOtherUser()
+    public function should_not_update_other_user()
     {
         $user = $this->someUser();
         $otherUser = $this->someUser();
@@ -442,7 +442,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnRidesDividedByCategory()
+    public function should_return_rides_divided_by_category()
     {
         $user = $this->someUser();
 
@@ -529,7 +529,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnRidesWithoutDuplicates()
+    public function should_return_rides_without_duplicates()
     {
         $user = $this->someUser();
 
@@ -595,7 +595,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotReturnRidesFromOtherUser()
+    public function should_not_return_rides_from_other_user()
     {
         $user = $this->someUser();
         $user2 = $this->someUser();
@@ -610,7 +610,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnOfferedRides()
+    public function should_return_offered_rides()
     {
         $user = $this->someUser();
 
@@ -665,7 +665,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotReturnOfferedRidesFromOtherUser()
+    public function should_not_return_offered_rides_from_other_user()
     {
         $user = $this->someUser();
         $user2 = $this->someUser();
@@ -680,7 +680,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnPendingRides()
+    public function should_return_pending_rides()
     {
         $user = $this->someUser();
         $driver = $this->someUser();
@@ -718,7 +718,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldFailWhenGettingPendingRidesForOtherUser()
+    public function should_fail_when_getting_pending_rides_for_other_user()
     {
         $user = $this->someUser();
         $user2 = $this->someUser();
@@ -733,7 +733,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldSaveFacebookID()
+    public function should_save_facebook_id()
     {
         $user = $this->someUser();
         $headers = ['token' => $user->token];
@@ -752,7 +752,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldSaveProfilePictureURL()
+    public function should_save_profile_picture_url()
     {
         $user = $this->someUser();
         $headers = ['token' => $user->token];
@@ -769,7 +769,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnRideHistoryCount()
+    public function should_return_ride_history_count()
     {
         $user = $this->someUser();
         $otherUser = $this->someUser();
@@ -792,7 +792,7 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnDetailedRideHistoryForAuthenticatedUser()
+    public function should_return_detailed_ride_history_for_authenticated_user()
     {
         $user = $this->someUser();
         $otherUser = $this->someUser();

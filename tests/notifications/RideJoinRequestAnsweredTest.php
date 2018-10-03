@@ -22,7 +22,8 @@ class RideJoinRequestAnsweredTest extends TestCase
     	$this->ride->shouldReceive('driver')->andReturn($driver);
 	}
 
-    public function testPushNotificationArrayShouldContainAllFields_whenAccepted()
+    /** @test */
+    public function should_contain_all_fields_in_push_when_accepted()
     {
     	$notification = new RideJoinRequestAnswered($this->ride, true);
         $notification->id = uniqid();
@@ -36,7 +37,8 @@ class RideJoinRequestAnsweredTest extends TestCase
         ], $notification->toPush(Mockery::mock(User::class)));
     }
 
-    public function testPushNotificationArrayShouldContainAllFields_whenRejected()
+    /** @test */
+    public function should_contain_all_fields_in_push_when_rejected()
     {
     	$notification = new RideJoinRequestAnswered($this->ride, false);
         $notification->id = uniqid();

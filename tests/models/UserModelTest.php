@@ -19,7 +19,7 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
-    public function shouldFindUserByInstitutionID()
+    public function should_find_user_by_institution_id()
     {
         $user = factory(User::class)->create(['id_ufrj' => '666'])->fresh();
 
@@ -27,7 +27,7 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
-    public function activeShouldReturnRidesWithAcceptedUsers()
+    public function should_return_rides_with_accepted_users()
     {
         $rider = factory(User::class)->create();
 
@@ -43,7 +43,7 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
-    public function activeShouldNotReturnFinishedRides()
+    public function should_not_return_finished_rides()
     {
         $this->createRideAsDriver(['done' => true]);
 
@@ -53,7 +53,7 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
-    public function activeShouldNotReturnEmptyRides()
+    public function should_not_return_empty_rides()
     {
         $this->createRideAsDriver();
 
@@ -63,7 +63,7 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
-    public function activeShouldNotReturnPendingOrRefusedRides()
+    public function should_not_return_pending_or_refused_rides()
     {
         $otherUser = factory(User::class)->create();
 
@@ -80,7 +80,7 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
-    public function shouldReturnOfferedRides()
+    public function should_return_offered_rides()
     {
         $otherUser = factory(User::class)->create();
 
@@ -96,7 +96,7 @@ class UserModelTest extends TestCase
     /**
      * @test
      */
-    public function shouldOnlyReturnAvailableRidesFromUser()
+    public function should_only_return_available_rides_from_user()
     {
         $otherUser = factory(User::class)->create();
 
@@ -112,7 +112,7 @@ class UserModelTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotConsiderAvailableRidesThatAreFinished()
+    public function should_not_consider_available_rides_that_are_finished()
     {
         $ride1 = $this->createRideAsDriver();
         $ride2 = $this->createRideAsDriver(['done' => true]);
@@ -125,7 +125,7 @@ class UserModelTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotConsiderAvailableRidesThatAreInThePast()
+    public function should_not_consider_available_rides_that_are_in_the_past()
     {
         $ride1 = $this->createRideAsDriver();
         $ride2 = $this->createRideAsDriver(['date' => Carbon::createFromDate(1970, 1, 1)]);
@@ -135,7 +135,8 @@ class UserModelTest extends TestCase
         $this->assertFalse($rides->contains($ride2));
     }
 
-    public function testReturnsPendingRides()
+    /** @test */
+    public function should_return_pending_rides()
     {
         $rider = factory(User::class)->create();
         $otherRider = factory(User::class)->create();
@@ -152,7 +153,8 @@ class UserModelTest extends TestCase
         $this->assertFalse($rides->contains($ride2));
     }
 
-    public function testPendingRidesDoesNotReturnFinishedRides()
+    /** @test */
+    public function should_not_return_finished_rides_as_pending()
     {
         $rider = factory(User::class)->create();
 
@@ -163,7 +165,8 @@ class UserModelTest extends TestCase
         $this->assertEmpty($pendingRides);
     }
 
-    public function testPendingRidesDoesNotReturnPastRides()
+    /** @test */
+    public function should_not_return_past_rides_as_pending()
     {
         $rider = factory(User::class)->create();
 
@@ -177,7 +180,7 @@ class UserModelTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnAcceptedRides()
+    public function should_return_accepted_rides()
     {
         $user = factory(User::class)->create();
 

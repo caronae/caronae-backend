@@ -9,20 +9,23 @@ class ZoneTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testFindsByName()
+    /** @test */
+    public function should_find_by_name()
     {
         $zone1 = Zone::create(['name' => 'Zona 123'])->fresh();
         $zone2 = Zone::create(['name' => 'Centro']);
         $this->assertEquals($zone1, Zone::findByName('Zona 123'));
     }
 
-    public function testReturnsColor()
+    /** @test */
+    public function should_return_color()
     {
         $zone = Zone::create(['color' => '#ff00ff', 'name' => 'Zona']);
         $this->assertEquals('#ff00ff', $zone->color);
     }
 
-    public function testReturnsDefaultColorWhenEmpty()
+    /** @test */
+    public function should_return_default_color_when_empty()
     {
         $zone = Zone::create(['color' => null, 'name' => 'Zona']);
         $this->assertEquals(Campus::DEFAULT_COLOR, $zone->color);
