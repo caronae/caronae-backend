@@ -19,6 +19,43 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
+    public function should_ban_user() {
+        $user = factory(User::class)->create();
+
+        $user->banish();
+
+        $this->assertTrue($user->banned);
+    }
+
+    /** @test */
+    public function should_delete_unfinished_rides_when_user_is_banned() {
+        $rideFinished = $this->createRideAsDriver(['done' => true]);
+        $this->createRideAsDriver(['done' => false]);
+
+        $this->driver->banish();
+
+        $rides = $this->driver->rides()->get();
+        $this->assertCount(1, $rides);
+        $this->assertEquals($rideFinished->id, $rides[0]->id);
+    }
+
+    /** @test */
+    public function should_delete_requests_for_unfinished_rides_when_user_is_banned() {
+        $user = factory(User::class)->create();
+
+        $rideFinished = $this->createRide(['done' => true]);
+        $rideFinished->users()->attach($user, ['status' => 'accepted']);
+        $rideNotFinished = $this->createRide(['done' => false]);
+        $rideNotFinished->users()->attach($user, ['status' => 'accepted']);
+
+        $user->banish();
+
+        $rides = $user->rides()->get();
+        $this->assertCount(1, $rides);
+        $this->assertEquals($rideFinished->id, $rides[0]->id);
+    }
+
+    /** @test */
     public function should_find_user_by_institution_id()
     {
         $user = factory(User::class)->create(['id_ufrj' => '666'])->fresh();
