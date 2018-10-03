@@ -131,12 +131,10 @@ class Ride extends Model
         return $query;
     }
 
-    public function scopeWithInstitution($query, $institution_id){
-        $query->leftJoin("ride_user as driver", function($join){
-            $join->on("rides.id", "=", "driver.ride_id");
-            $join->on("driver.status", "=", DB::raw("'driver'"));
-        });
-
-        $query->whereRaw("exists (select 1 from users where users.institution_id = ".$institution_id." and users.id = driver.user_id)");
+    public function scopeWithInstitution($query, $institution_id) {
+        return $query
+            ->whereHas('users', function ($query) use ($institution_id) {
+                $query->where('status', 'driver')->where('institution_id', $institution_id);
+            });
     }
 }

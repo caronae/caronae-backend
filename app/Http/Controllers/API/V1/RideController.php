@@ -276,7 +276,7 @@ class RideController extends BaseController
         }
 
         $user = $request->user();
-        $requestInstitution = $request->user()->institution()->first()->id;
+        $requestInstitution = $request->user()->institution->id;
 
         if($ride->driver()){
             if($ride->institution()->first()->id != $requestInstitution){

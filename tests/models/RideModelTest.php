@@ -215,7 +215,7 @@ class RideModelTest extends TestCase
         $rideB->users()->attach($userB, ['status' => 'driver']);
 
         $rides = Ride::withInstitution($institutionA->id)->get();
-        $this->assertCount(1, $rides);
-        $this->assertEquals($institutionA->id, $rides[0]->institution->id);
+        $this->assertTrue($rides->contains($rideA));
+        $this->assertFalse($rides->contains($rideB));
     }
 }
