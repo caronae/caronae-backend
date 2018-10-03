@@ -131,10 +131,10 @@ class Ride extends Model
         return $query;
     }
 
-    public function scopeWithInstitution($query, $institution_id) {
+    public function scopeWithInstitution($query, $institution) {
         return $query
-            ->whereHas('users', function ($query) use ($institution_id) {
-                $query->where('status', 'driver')->where('institution_id', $institution_id);
+            ->whereHas('users', function ($query) use ($institution) {
+                $query->where('status', 'driver')->where('institution_id', $institution->id);
             });
     }
 }

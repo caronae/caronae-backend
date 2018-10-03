@@ -214,7 +214,7 @@ class RideModelTest extends TestCase
         $rideB = factory(Ride::class)->create();
         $rideB->users()->attach($userB, ['status' => 'driver']);
 
-        $rides = Ride::withInstitution($institutionA->id)->get();
+        $rides = Ride::withInstitution($institutionA)->get();
         $this->assertTrue($rides->contains($rideA));
         $this->assertFalse($rides->contains($rideB));
     }
