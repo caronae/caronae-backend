@@ -13,7 +13,7 @@ class RideModelTest extends TestCase
     use DatabaseTransactions;
 
     /** @test */
-    public function test_get_driver()
+    public function should_return_driver()
     {
         $ride = factory(Ride::class)->create();
 
@@ -214,8 +214,8 @@ class RideModelTest extends TestCase
         $rideB = factory(Ride::class)->create();
         $rideB->users()->attach($userB, ['status' => 'driver']);
 
-        $results = Ride::withInstitution($institutionA->id)->get();
-        $this->assertCount(1, $results);
-        $this->assertEquals($institutionA->id, $results[0]->id);
+        $rides = Ride::withInstitution($institutionA->id)->get();
+        $this->assertCount(1, $rides);
+        $this->assertEquals($institutionA->id, $rides[0]->institution->id);
     }
 }

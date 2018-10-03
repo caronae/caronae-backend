@@ -3,11 +3,14 @@
 namespace Caronae\Http\Resources;
 
 use Caronae\Models\Institution;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class InstitutionResourceTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /**
      * @test
      */

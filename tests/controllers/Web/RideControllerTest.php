@@ -5,10 +5,13 @@ namespace Caronae\Http\Controllers\Web;
 use Carbon\Carbon;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class RideControllerTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /** @test */
     public function should_show_ride_view()
     {

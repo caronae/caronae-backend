@@ -5,12 +5,13 @@ namespace Tests;
 use Auth;
 use Caronae\Http\Middleware\ApiV1AuthenticateRequestedUser;
 use Caronae\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
 
 class ApiV1AuthenticateRequestedUserTest extends TestCase
 {
+    use DatabaseTransactions;
     private $middleware;
-
     private $user;
 
     public function setUp()

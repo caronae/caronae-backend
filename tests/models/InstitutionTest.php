@@ -3,10 +3,13 @@
 namespace Caronae\Models;
 
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class InstitutionTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /** @test */
     public function should_use_slug_as_route_key()
     {

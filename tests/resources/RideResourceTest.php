@@ -4,6 +4,7 @@ namespace Caronae\Http\Resources;
 
 use Caronae\Models\Ride;
 use Caronae\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Resources\MissingValue;
@@ -11,6 +12,7 @@ use Tests\TestCase;
 
 class RideResourceTest extends TestCase
 {
+    use DatabaseTransactions;
     private $driver;
     private $ride;
     private $request;

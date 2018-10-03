@@ -5,11 +5,13 @@ namespace Caronae\Http\Resources;
 use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\User as UserModel;
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class MessageResourceTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /** @test */
     public function should_render_as_json_and_decrypt_message_body()
     {

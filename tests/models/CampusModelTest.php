@@ -9,8 +9,8 @@ use Tests\TestCase;
 
 class CampusModelTest extends TestCase
 {
-    private $institution;
     use DatabaseTransactions;
+    private $institution;
 
     public function setUp()
     {
