@@ -1,33 +1,22 @@
 FROM caronae/php:latest
 
-# Copy application files
-COPY composer.json ./
-COPY composer.lock ./
-COPY artisan ./
-COPY app ./app/
-COPY bootstrap ./bootstrap
-COPY config ./config
+COPY composer.lock composer.json ./
 COPY database ./database
-COPY public ./public
-COPY resources ./resources
-COPY routes ./routes
 
-COPY scripts/update_laravel.sh ./scripts/
-COPY docker/entrypoint.sh /caronae-entrypoint.sh
+RUN composer install --no-interaction --no-ansi --no-dev --no-scripts
 
-RUN mkdir -p storage/app
-RUN mkdir -p storage/logs
-RUN mkdir -p storage/framework/cache/data
-RUN mkdir -p storage/framework/sessions
-RUN mkdir -p storage/framework/views
+COPY . ./
 
-RUN chown -R www-data:www-data bootstrap/cache
-RUN chown -R www-data:www-data storage
+RUN composer dump-autoload --no-interaction --no-ansi --no-dev
 
-# Install dependencies
-RUN composer install --no-interaction --no-ansi --no-dev
+RUN chown -R www-data:www-data \
+        /var/www/storage \
+        /var/www/bootstrap/cache
+
+COPY docker/entrypoint.sh /root/entrypoint.sh
+RUN mv docker/entrypoint.sh /root/entrypoint.sh && rm -rf ./docker
 
 VOLUME /var/www
 
-ENTRYPOINT ["/caronae-entrypoint.sh"]
+ENTRYPOINT ["/root/entrypoint.sh"]
 CMD ["server"]
