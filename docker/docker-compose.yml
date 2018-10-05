@@ -12,7 +12,7 @@ services:
       - redis
     env_file: config.env
     volumes:
-      - .:/var/www
+      - ..:/var/www
 
   caronae-backend-worker:
     container_name: caronae-backend-worker

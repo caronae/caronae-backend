@@ -10,22 +10,30 @@ if [ ! -p ${LOG_STREAM} ]; then
     mkfifo -m 666 ${LOG_STREAM}
 fi
 
-case $command in
+cd /var/www
+
+case ${command} in
     server)
         echo 'Starting application'
         php-fpm -D | tail -f ${LOG_STREAM}
     ;;
     queue)
         echo 'Starting queue processor'
-        php /var/www/artisan queue:work --sleep=2 --tries=3
+        php artisan queue:work --sleep=2 --tries=3
     ;;
     scheduler)
         echo 'Starting task scheduler'
         while [ true ]
         do
-            php /var/www/artisan schedule:run --verbose --no-interaction &
+            php artisan schedule:run --verbose --no-interaction &
             sleep 60
         done
+    ;;
+    test)
+        echo 'Installing dependencies'
+        composer install --no-interaction --no-ansi
+        echo 'Starting tests'
+        ./vendor/bin/phpunit --debug --log-junit reports/phpunit/junit.xml
     ;;
     *)
         echo 'Invalid operation'

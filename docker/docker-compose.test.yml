@@ -3,6 +3,10 @@ version: '2'
 services:
   caronae-backend-tests:
     image: caronae/backend
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: test
     links:
       - postgres-testing
     volumes:
@@ -10,7 +14,6 @@ services:
     environment:
       - TESTING_DB_HOST=postgres-testing
       - TESTING_DB_PORT=5432
-    entrypoint: ./vendor/bin/phpunit --debug --log-junit reports/phpunit/junit.xml
 
   postgres-testing:
     image: postgres:9.6-alpine
