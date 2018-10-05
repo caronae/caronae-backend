@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -euo pipefail
 
 SRC_DIR=$(dirname "${BASH_SOURCE[0]}")

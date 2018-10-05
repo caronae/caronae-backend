@@ -26,10 +26,10 @@ jobs:
             pip install docker-compose
       - run:
           name: Persist build number
-          command: $CIRCLE_WORKING_DIRECTORY/scripts/calcrev.sh > build_number.txt
+          command: ./scripts/calcrev.sh > build_number.txt
       - run:
           name: Run tests
-          command: $CIRCLE_WORKING_DIRECTORY/scripts/test.sh
+          command: ./scripts/test.sh
       - store_test_results:
           path: /tmp/caronae/reports/phpunit
       - store_artifacts:
