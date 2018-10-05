@@ -55,7 +55,6 @@ jobs:
     <<: *defaults
     steps:
       - *restore_repo
-      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run:
           name: Docker build
           command: ./scripts/build.sh
@@ -64,7 +63,6 @@ jobs:
     <<: *defaults
     steps:
       - *restore_repo
-      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run:
           name: Tag image as develop
           command: ./scripts/tag.sh develop
@@ -77,7 +75,6 @@ jobs:
     <<: *defaults
     steps:
       - *restore_repo
-      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run:
           name: Tag image as latest
           command: ./scripts/tag.sh latest
