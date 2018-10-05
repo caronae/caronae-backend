@@ -14,6 +14,7 @@ docker/*.yml
 docker/*.env
 tests
 load_tests
+reports
 #scripts
 README.md
 phpunit.xml

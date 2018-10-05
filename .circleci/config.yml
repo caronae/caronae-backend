@@ -3,8 +3,8 @@ version: 2
 references:
   defaults: &defaults
     working_directory: /tmp/caronae
-    machine:
-      enabled: true
+    docker:
+      - image: docker:stable-git
 
   restore_repo: &restore_repo
     restore_cache:
@@ -15,37 +15,25 @@ references:
 
 jobs:
   test:
-    working_directory: /tmp/caronae
-    docker:
-      - image: caronae/php:latest
-        environment:
-          APP_ENV: testing
-          TESTING_DB_PORT: 5432
-      - image: postgres:9.6-alpine
-        environment:
-          POSTGRES_USER: caronae
-          POSTGRES_DB: caronae_testing
+    <<: *defaults
     steps:
       - checkout
+      - setup_remote_docker
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --no-cache py-pip
+            pip install docker-compose
       - run:
           name: Persist build number
           command: $CIRCLE_WORKING_DIRECTORY/scripts/calcrev.sh > build_number.txt
       - run:
-          name: Install dependencies
-          command: composer install --no-interaction --no-ansi
-      - save_cache:
-          key: composer-{{ checksum "composer.json" }}
-          paths:
-            - vendor
-      - run:
           name: Run tests
-          command: |
-            mkdir -p ~/phpunit
-            ./vendor/bin/phpunit --debug --log-junit ~/phpunit/junit.xml
+          command: docker-compose -f docker/docker-compose.test.yml up caronae-backend-tests
       - store_test_results:
-          path: ~/phpunit
+          path: /tmp/caronae/reports/phpunit
       - store_artifacts:
-          path: ~/phpunit
+          path: /tmp/caronae/reports/phpunit
       - save_cache:
           key: v1-repo-{{ .Branch }}-{{ .Revision }}
           paths:
