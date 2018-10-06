@@ -51,6 +51,7 @@ jobs:
     <<: *defaults
     steps:
       - *restore_repo
+      - setup_remote_docker
       - run:
           name: Docker build
           command: ./scripts/build.sh
@@ -59,6 +60,7 @@ jobs:
     <<: *defaults
     steps:
       - *restore_repo
+      - setup_remote_docker
       - run:
           name: Tag image as develop
           command: ./scripts/tag.sh develop
@@ -71,6 +73,7 @@ jobs:
     <<: *defaults
     steps:
       - *restore_repo
+      - setup_remote_docker
       - run:
           name: Tag image as latest
           command: ./scripts/tag.sh latest
