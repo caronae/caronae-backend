@@ -1,6 +1,22 @@
 #!/bin/sh
+set -eo pipefail
 
-set -e
+function run_migrations() {
+    if [ "$APP_ENV" == "production" ] || [ "$APP_ENV" == "staging" ]; then
+        php artisan backup:run --no-interaction --no-ansi
+    fi
+
+    php artisan migrate --force
+}
+
+function optimize_laravel() {
+    if [ "$APP_ENV" == "production" ] || [ "$APP_ENV" == "staging" ]; then
+        php artisan cache:clear
+        php artisan view:clear
+        php artisan config:cache
+        php artisan route:cache
+    fi
+}
 
 command=$1
 
@@ -14,6 +30,10 @@ case ${command} in
         if [ ! -p ${LOG_STREAM} ]; then
             mkfifo -m 666 ${LOG_STREAM}
         fi
+
+        run_migrations
+        optimize_laravel
+
         php-fpm -D | tail -f ${LOG_STREAM}
     ;;
     queue)
