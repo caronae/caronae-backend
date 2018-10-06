@@ -15,25 +15,33 @@ references:
 
 jobs:
   test:
-    <<: *defaults
+    working_directory: /tmp/caronae
+    docker:
+      - image: caronae/php:latest
+        environment:
+          APP_ENV: testing
+          TESTING_DB_PORT: 5432
+      - image: postgres:9.6-alpine
+        environment:
+          POSTGRES_USER: caronae
+          POSTGRES_DB: caronae_testing
     steps:
       - checkout
-      - setup_remote_docker
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --no-cache py-pip
-            pip install docker-compose
       - run:
           name: Persist build number
           command: ./scripts/calcrev.sh > build_number.txt
       - run:
+          name: Install dependencies
+          command: composer install --no-interaction --no-ansi
+      - run:
           name: Run tests
-          command: ./scripts/test.sh
+          command: |
+            mkdir -p ~/phpunit
+            ./vendor/bin/phpunit --debug --log-junit ~/phpunit/junit.xml
       - store_test_results:
-          path: /tmp/caronae/reports/phpunit
+          path: ~/phpunit
       - store_artifacts:
-          path: /tmp/caronae/reports/phpunit
+          path: ~/phpunit
       - save_cache:
           key: v1-repo-{{ .Branch }}-{{ .Revision }}
           paths:
