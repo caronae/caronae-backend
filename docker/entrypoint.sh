@@ -4,17 +4,16 @@ set -e
 
 command=$1
 
-export LOG_CHANNEL=stdout
-export LOG_STREAM=/tmp/stdout-${command}
-if [ ! -p ${LOG_STREAM} ]; then
-    mkfifo -m 666 ${LOG_STREAM}
-fi
-
 cd /var/www
 
 case ${command} in
     server)
         echo 'Starting application'
+        export LOG_CHANNEL=stdout
+        export LOG_STREAM=/tmp/stdout
+        if [ ! -p ${LOG_STREAM} ]; then
+            mkfifo -m 666 ${LOG_STREAM}
+        fi
         php-fpm -D | tail -f ${LOG_STREAM}
     ;;
     queue)
