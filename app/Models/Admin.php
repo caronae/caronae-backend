@@ -21,7 +21,7 @@ class Admin extends Model implements AuthenticatableContract,
     use CrudTrait;
 
     protected $table = 'admins';
-    protected $fillable = ['name', 'email', 'password'];
+    protected $fillable = ['name', 'email', 'password', 'user_id'];
     protected $hidden = ['password', 'remember_token', 'updated_at', 'created_at'];
 
     public function sendPasswordResetNotification($token)

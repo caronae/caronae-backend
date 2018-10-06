@@ -1,6 +1,7 @@
 <?php
 
 use Caronae\Models\Admin;
+use Caronae\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -11,9 +12,10 @@ class AdminTableSeeder extends Seeder
         DatabaseSeeder::emptyTable('admins');
 
         Admin::create([
-            'name' => 'Administrador',
+            'name' => 'Fulana Silva',
             'email' => 'user@example.com',
             'password' => Hash::make('123456'),
+            'user_id' => User::first()->id,
         ]);
     }
 }

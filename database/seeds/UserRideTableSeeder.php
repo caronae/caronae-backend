@@ -21,6 +21,8 @@ class UserRideTableSeeder extends Seeder
 
     public function run()
     {
+        $this->createAdminUser();
+
         $this->createDrivers();
         echo "Created " . count($this->drivers) . " drivers offering " . count($this->rides) . " rides.\n";
 
@@ -29,6 +31,14 @@ class UserRideTableSeeder extends Seeder
 
 	    echo "Users table size: " . User::count() . "\n";
 	    echo "Rides table size: " . Ride::count() . "\n";
+    }
+
+    protected function createAdminUser()
+    {
+        factory(User::class, 'driver')->create([
+            'name' => 'Fulana Silva',
+            'email' => 'user@example.com',
+        ]);
     }
 
     protected function createDrivers()
