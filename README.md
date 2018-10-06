@@ -47,6 +47,15 @@ Pronto! Agora você já pode fazer login na área administrativa utilizando o us
 * Senha: 123456
 
 
+## Usando a API através do Postman
+
+Nós recomendamos usar o aplicativo [Postman](https://www.getpostman.com/) pra testar as chamadas da API.
+
+Como as rotas da API são protegidas apenas para usuários logados, você precisa gerar um token [JWT](https://jwt.io/) pra se autenticar na API. Você pode gerar um token pela área administrativa clicando em [API tokens](http://localhost:8000/admin/self-service-token).
+
+Uma vez gerado o token, você pode configurá-lo na aba Authorization do Postman. No campo Type, selecione 'Bearer Token'. No campo Token, insira o token gerado na área administrativa.
+
+
 ## Testes
 
 Este projeto possui alguns testes unitários e de integração, que ficam dentro da
