@@ -3,8 +3,9 @@
 [![CircleCI](https://circleci.com/gh/caronae/caronae-backend.svg?style=svg)](https://circleci.com/gh/caronae/caronae-backend)
 
 Backend do Caronaê, baseado no [Laravel](https://github.com/laravel/laravel). O backend é
-composto da API mobile e da área administrativa.
+composto por uma API REST usada pelos apps e pela área administrativa, usada internamente.
 
+O Caronaê é um sistema de código aberto, seguro e prático de caronas compartilhadas, criado com o objetivo de ser replicado em diferentes instituições e feito exclusivamente para a comunidade acadêmica das instituições integrantes da Rede Caronaê. Para conhecer mais sobre o projeto, visite nosso [site](https://caronae.org).
 
 ## Instalação
 
