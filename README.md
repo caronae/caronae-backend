@@ -12,46 +12,35 @@ O Caronaê é um sistema de código aberto, seguro e prático de caronas compart
 O backend do Caronaê executa em um ambiente com PHP 7, PostgreSQL e Redis.
 
 O jeito mais fácil de executar este projeto localmente é utilizando nossas imagens 
-Docker. No diretório `docker` há uma configuração do [Docker Compose](https://docs.docker.com/compose/overview/).
-Para iniciar o projeto junto com as dependências, execute:
+**Docker**. Você não precisa ter nada instalado na sua máquina além do [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/overview/).
+
+No diretório `docker` há uma configuração do [Docker Compose](https://docs.docker.com/compose/overview/).
+Para rodar o projeto junto com todas as dependências necessárias, execute:
 
 ```bash
 cd docker
 docker-compose up
 ```
 
-Todos os comandos deste README devem ser executados de dentro do container do backend.
-Você pode criar uma sessão dentro do container do caronae-backend através do comando abaixo:
+Você pode criar uma terminal dentro do container do caronae-backend através do comando abaixo:
 
 ```bash
 docker exec -it caronae-backend sh
 ```
 
-
-### Instalando dependências
-
-Para instalar todas as ferramentas, incluindo as bibliotecas de teste (para o restante da configuração),
-execute o comando abaixo de dentro do container:
-
-```bash
-composer install
-```
-
-
 ### Populando o banco de dados
 
-Há um seed do banco que cria um banco de dados limitado para desenvolvimento local.
-Para usá-lo, execute o comando abaixo de dentro do container:
+Quando você executa o projeto pela primeira vez, o banco de dados está vazio. Porém
+há um [seed](https://laravel.com/docs/5.7/seeding) que popula um banco de dados com dados aleatórios, perfeito para desenvolvimento local.
+Para usá-lo, execute o comando abaixo:
 
-_Importante: o comando abaixo apaga todas as informações do banco de dados antes de
-inserir os novos dados._
+_Importante: o comando abaixo apaga todos os dados existentes antes de inserir os novos dados._
 
 ```bash
-php artisan migrate:refresh --seed
+docker exec -it caronae-backend php artisan migrate:refresh --seed
 ```
 
-Pronto! Agora você já pode fazer login na área administrativa utilizando o usuário
-padrão.
+Pronto! Agora você já pode fazer login na área administrativa utilizando o usuário padrão.
 
 * URL: [localhost:8000/admin](http://localhost:8000/admin)
 * E-mail: user@example.com
@@ -61,17 +50,13 @@ padrão.
 ## Testes
 
 Este projeto possui alguns testes unitários e de integração, que ficam dentro da
-pasta **tests**.
+pasta **tests**. Eles verificam o comportamento da aplicação a fim de evitar que mudanças no código
+quebrem alguma funcionalidade existente. Para ler mais sobre testes no Laravel, consulte a
+[documentação oficial](https://laravel.com/docs/5.7/testing).
 
-Os testes são executados em uma tabela separada do banco de dados. Portanto, é necessário criar uma tabela **caronae_testing**.
-Para criá-la, execute o comando abaixo de dentro do container:
+Existe um arquivo de configuração do Docker Compose feito só pra poder rodar os testes.
+Você pode executá-lo da sua máquina usando o comando abaixo de dentro da pasta `docker`:
 
-```
-createdb -h $DB_HOST -U $DB_USERNAME -O $DB_USERNAME -E utf8 caronae_testing
-```
-
-Para executar os testes, execute o **PHPUnit**:
-
-```
-./vendor/bin/phpunit
+```bash
+docker-compose -f docker-compose.test.yml up --build --exit-code-from caronae-backend-tests
 ```
