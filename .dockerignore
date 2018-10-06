@@ -15,7 +15,7 @@ docker/*.env
 tests
 load_tests
 reports
-#scripts
+scripts
 README.md
 phpunit.xml
 build_number.txt
