@@ -1,7 +1,7 @@
 #!/bin/sh
 set -euo pipefail
 
-SRC_DIR=$(dirname "${BASH_SOURCE[0]}")
+SRC_DIR=$(dirname $(readlink -f $0))
 
 if [ -f "$SRC_DIR/../build_number.txt" ]; then
     version=$(cat "$SRC_DIR/../build_number.txt")
