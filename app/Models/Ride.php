@@ -122,7 +122,7 @@ class Ride extends Model
             if ($key == 'neighborhoods') {
                 $query = $query->whereIn('rides.neighborhood', $value);
             } else if ($key == 'hubs') {
-                $query = $query->whereIn('rides.hub', $value);
+                $query = $query->where('rides.hub', 'SIMILAR TO', '(' . implode('|', $value) . ')%');
             } else {
                 $query = $query->where('rides.' . $key, $value);
             }
