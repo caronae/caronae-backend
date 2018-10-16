@@ -63,7 +63,7 @@ class RideListRequestTest extends TestCase
     }
 
     /** @test */
-    public function should_have_a_center_filter()
+    public function should_have_a_center_filter_with_a_single_center()
     {
         $institution = factory(Institution::class)->create();
         $campus1 = Campus::create(['name' => 'Cidade Universitária', 'institution_id' => $institution->id]);
@@ -75,6 +75,21 @@ class RideListRequestTest extends TestCase
         $this->request = new RideListRequest(['center' => 'CT']);
 
         $this->assertFilterEquals('hubs', ['CT', 'CT: Bloco A', 'Outro hub do CT']);
+    }
+
+    /** @test */
+    public function should_have_a_center_filter_with_multiple_centers()
+    {
+        $institution = factory(Institution::class)->create();
+        $campus1 = Campus::create(['name' => 'Cidade Universitária', 'institution_id' => $institution->id]);
+        $campus2 = Campus::create(['name' => 'Praia Vermelha', 'institution_id' => $institution->id]);
+        Hub::create(['name' => 'CT: Bloco A', 'center' => 'CT', 'campus_id' => $campus1->id]);
+        Hub::create(['name' => 'Hub qualquer', 'center' => 'CCS', 'campus_id' => $campus2->id]);
+        Hub::create(['name' => 'CCMN: Frente', 'center' => 'CCMN', 'campus_id' => $campus2->id]);
+
+        $this->request = new RideListRequest(['centers' => 'CT, CCS']);
+
+        $this->assertFilterEquals('hubs', ['CT', 'CCS', 'CT: Bloco A', 'Hub qualquer']);
     }
 
     /** @test */

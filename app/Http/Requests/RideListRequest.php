@@ -55,6 +55,10 @@ class RideListRequest extends FormRequest
             $center = $this->input('center');
             $hubs = Hub::where('center', $center)->pluck('name')->toArray();
             $filters['hubs'] = array_merge([$center], $hubs);
+        } else if ($this->filled('centers')) {
+            $centers = explode(', ', $this->input('centers'));
+            $hubs = Hub::whereIn('center', $centers)->pluck('name')->toArray();
+            $filters['hubs'] = array_merge($centers, $hubs);
         }
 
         if ($this->filled('hub'))
