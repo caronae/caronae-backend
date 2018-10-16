@@ -4,6 +4,7 @@ namespace Caronae\Http\Requests;
 
 use Carbon\Carbon;
 use Caronae\Models\Campus;
+use Caronae\Models\Hub;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RideListRequest extends FormRequest
@@ -43,8 +44,18 @@ class RideListRequest extends FormRequest
         if ($this->filled('zone'))
             $filters['myzone'] = $this->input('zone');
 
-        if ($this->filled('campus'))
-            $filters['hubs'] = Campus::findByName($this->input('campus'))->hubs()->distinct('center')->pluck('center')->toArray();
+        if ($this->filled('campus')) {
+            $campus = Campus::findByName($this->input('campus'));
+            $centers = $campus->hubs()->distinct('center')->pluck('center')->toArray();
+            $hubs = $campus->hubs()->pluck('name')->toArray();
+            $filters['hubs'] = array_merge($centers, $hubs);
+        }
+
+        if ($this->filled('center')) {
+            $center = $this->input('center');
+            $hubs = Hub::where('center', $center)->pluck('name')->toArray();
+            $filters['hubs'] = array_merge([$center], $hubs);
+        }
 
         if ($this->filled('hub'))
             $filters['hubs'] = [ $this->input('hub') ];
