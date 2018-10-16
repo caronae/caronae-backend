@@ -2,6 +2,7 @@
 
 namespace Caronae\Http\Requests;
 
+use Carbon\Carbon;
 use Caronae\Models\Campus;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -51,5 +52,24 @@ class RideListRequest extends FormRequest
             $filters['hubs'] = explode(', ', $this->input('hubs'));
 
         return $filters;
+    }
+
+    public function dateRange()
+    {
+        if (!$this->filled('date')) {
+            return null;
+        }
+
+        $date = $this->input('date');
+        if ($this->filled('time')) {
+            $dateTimeString = $date . ' ' . substr($this->input('time'), 0, 5);
+            $dateMin = Carbon::createFromFormat('Y-m-d H:i', $dateTimeString);
+        } else {
+            $dateMin = Carbon::createFromFormat('Y-m-d', $date)->setTime(0, 0, 0);
+        }
+
+        $dateMax = $dateMin->copy()->setTime(23,59,59);
+
+        return [$dateMin, $dateMax];
     }
 }

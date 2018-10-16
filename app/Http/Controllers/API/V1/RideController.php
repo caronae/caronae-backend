@@ -34,16 +34,8 @@ class RideController extends BaseController
             ->withFilters($request->filters())
             ->withInstitution($request->user()->institution);
 
-        if ($request->filled('date')) {
-            if (!$request->filled('time')) {
-                $dateMin = Carbon::createFromFormat('Y-m-d', $request->date)->setTime(0,0,0);
-            } else {
-                $dateTimeString = $request->date . ' ' . substr($request->time, 0, 5);
-                $dateMin = Carbon::createFromFormat('Y-m-d H:i', $dateTimeString);
-            }
-
-            $dateMax = $dateMin->copy()->setTime(23,59,59);
-            $rides = $rides->whereBetween('date', [$dateMin, $dateMax]);
+        if ($request->dateRange()) {
+            $rides = $rides->whereBetween('date', $request->dateRange());
         } else {
             $rides = $rides->inTheFuture();
         }

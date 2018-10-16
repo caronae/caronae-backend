@@ -2,6 +2,7 @@
 
 namespace Caronae\Http\Requests;
 
+use Carbon\Carbon;
 use Caronae\Models\Campus;
 use Caronae\Models\Hub;
 use Caronae\Models\Institution;
@@ -74,6 +75,34 @@ class RideListRequestTest extends TestCase
         $this->request = new RideListRequest(['hubs' => 'CT: Bloco A, CCMN: Frente, CCS']);
 
         $this->assertFilterEquals('hubs', ['CT: Bloco A', 'CCMN: Frente', 'CCS']);
+    }
+
+    /** @test */
+    public function should_return_a_null_date_range_when_not_specified()
+    {
+        $this->request = new RideListRequest();
+
+        $this->assertNull($this->request->dateRange());
+    }
+
+    /** @test */
+    public function should_return_the_days_range_when_date_specified()
+    {
+        $this->request = new RideListRequest(['date' => '2018-10-16']);
+
+        list($dateMin, $dateMax) = $this->request->dateRange();
+        $this->assertEquals(Carbon::createMidnightDate(2018,10, 16), $dateMin);
+        $this->assertEquals(Carbon::create(2018,10, 16, 23, 59, 59), $dateMax);
+    }
+
+    /** @test */
+    public function should_return_the_rest_of_the_days_range_when_date_and_time_specified()
+    {
+        $this->request = new RideListRequest(['date' => '2018-10-16', 'time' => '10:45:10']);
+
+        list($dateMin, $dateMax) = $this->request->dateRange();
+        $this->assertEquals(Carbon::create(2018,10, 16, 10, 45, 00), $dateMin);
+        $this->assertEquals(Carbon::create(2018,10, 16, 23, 59, 59), $dateMax);
     }
 
 
