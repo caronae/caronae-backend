@@ -5,6 +5,7 @@ namespace Caronae\Http\Controllers\API\v1;
 use Carbon\Carbon;
 use Caronae\Http\Controllers\BaseController;
 use Caronae\Http\Requests\CreateRideRequest;
+use Caronae\Http\Requests\RideListRequest;
 use Caronae\Http\Requests\ValidateDuplicateRequest;
 use Caronae\Http\Resources\RideResource;
 use Caronae\Models\Campus;
@@ -24,40 +25,13 @@ use Illuminate\Http\Request;
 class RideController extends BaseController
 {
     
-    public function index(Request $request)
+    public function index(RideListRequest $request)
     {
-        $this->validate($request, [
-            'zone' => 'string',
-            'neighborhoods' => 'string',
-            'place' => 'string|max:255',
-            'hub' => 'string|max:255',
-            'campus' => 'string|max:255',
-            'going' => 'boolean',
-            'date' => 'string',
-            'time' => 'string'
-        ]);
-
-        $filters = [];
-        if ($request->filled('going'))
-            $filters['going'] = $request->going;
-        if ($request->filled('neighborhoods'))
-            $filters['neighborhoods'] = explode(', ', $request->neighborhoods);
-        if ($request->filled('place'))
-            $filters['myplace'] = $request->place;
-        if ($request->filled('zone'))
-            $filters['myzone'] = $request->zone;
-        if ($request->filled('campus'))
-            $filters['hubs'] = Campus::findByName($request->campus)->hubs()->distinct('center')->pluck('center')->toArray();
-        if ($request->filled('hub'))
-            $filters['hubs'] = [ $request->hub ];
-        else if ($request->filled('hubs'))
-            $filters['hubs'] = explode(', ', $request->hubs);
-
         $limit = 20;
         $rides = Ride::withAvailableSlots()
             ->notFinished()
             ->orderBy('rides.date')
-            ->withFilters($filters)
+            ->withFilters($request->filters())
             ->withInstitution($request->user()->institution);
 
         if ($request->filled('date')) {
