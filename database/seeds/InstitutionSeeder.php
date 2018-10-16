@@ -12,7 +12,13 @@ class InstitutionSeeder extends Seeder
         DatabaseSeeder::emptyTable('institutions');
         DatabaseSeeder::emptyTable('hubs');
 
-        $ufrj = Institution::create(['name' => 'UFRJ', 'authentication_url' => 'http://cas.ufrj.br/example']);
+        $ufrj = Institution::create([
+            'name' => 'UFRJ',
+            'slug' => 'ufrj',
+            'authentication_url' => 'http://cas.ufrj.br/example',
+            'going_label' => 'Chegando na UFRJ',
+            'leaving_label' => 'Saindo da UFRJ',
+        ]);
 
         $fundao = Campus::create(['name' => 'Cidade Universitária', 'institution_id' => $ufrj->id]);
         collect([
