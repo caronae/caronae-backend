@@ -1,5 +1,14 @@
 <?php
 
+function getNotificationChannels()
+{
+    $env = env('APP_ENV');
+    if (($env == 'production' || $env == 'staging') && !empty(env('SLACK_WEBHOOK_URL'))) {
+        return ['slack'];
+    }
+    return [];
+}
+
 return [
 
     /*
@@ -24,7 +33,7 @@ return [
     /*
      * The channels to which the notification will be sent.
      */
-    'channels' => ['slack'],
+    'channels' => getNotificationChannels(),
 
     'mail' => [
         'to' => '',
