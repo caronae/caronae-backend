@@ -54,6 +54,11 @@ class User extends Authenticatable implements JWTSubject
         return self::where('id_ufrj', $id)->first();
     }
 
+    public function getFirstNameAttribute()
+    {
+        return array_first(explode(' ', $this->name));
+    }
+
     public function setCarPlateAttribute($value)
     {
         $this->attributes['car_plate'] = strtoupper($value);

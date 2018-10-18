@@ -19,6 +19,14 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
+    public function should_return_first_name()
+    {
+        $user = factory(User::class)->create(['name' => 'Fulana Silva']);
+
+        $this->assertEquals('Fulana', $user->firstName);
+    }
+
+    /** @test */
     public function should_ban_user() {
         $user = factory(User::class)->create();
 
