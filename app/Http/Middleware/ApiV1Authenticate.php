@@ -24,23 +24,6 @@ class ApiV1Authenticate
         return response()->json(['error' => 'Authentication required.'], 401);
     }
 
-    private function updateUserAppInfo($request)
-    {
-        $userAgent = $request->header('User-Agent');
-        $appVersionRegex = '(\d+\.)?(\d+\.)?(\*|\d+)';
-
-        if (preg_match('/Caronae\/(?P<version>' . $appVersionRegex . ') .*(?P<platform>(iOS|Android))/', $userAgent, $matches)) {
-            $platform = $matches['platform'];
-            $version = $matches['version'];
-
-            if ($platform == 'iOS' || $platform == 'Android') {
-                $request->user()->app_platform = $platform;
-                $request->user()->app_version = $version;
-                $request->user()->save();
-            }
-        }
-    }
-
     /** @deprecated */
     private function handleLegacyTokenAuthentication($request, Closure $next)
     {
@@ -49,7 +32,6 @@ class ApiV1Authenticate
         }
 
         auth()->setUser($user);
-        $this->updateUserAppInfo($request);
         return $next($request);
     }
 
@@ -77,7 +59,6 @@ class ApiV1Authenticate
             return response()->json(['error' => 'Error validating token.', 'exception' => $e->getMessage()], 500);
         }
 
-        $this->updateUserAppInfo($request);
         return ($response != null) ? $response : $next($request);
     }
 }

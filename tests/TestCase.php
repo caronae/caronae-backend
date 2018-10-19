@@ -13,10 +13,15 @@ abstract class TestCase extends BaseTestCase
 
     public function jsonAs(User $user, $method, $uri, array $data = [], array $headers = [])
     {
-        JWTAuth::shouldReceive('parseToken->authenticate')->andReturn($user);
+        $this->authenticateAs($user, $headers);
         $headers['Authorization'] = 'Bearer token';
-        Auth::setUser($user);
         return parent::json($method, $uri, $data, $headers);
+    }
+
+    public function authenticateAs(User $user)
+    {
+        JWTAuth::shouldReceive('parseToken->authenticate')->andReturn($user);
+        Auth::setUser($user);
     }
 
 
