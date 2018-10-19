@@ -14,7 +14,16 @@ class UpdateAppNotification extends Notification implements ShouldQueue
 
     public function via()
     {
-        return ['mail'];
+        return ['mail', 'database'];
+    }
+
+    public function toArray(User $user)
+    {
+        return [
+            'userID' => $user->id,
+            'app_platform' => $user->app_platform,
+            'app_version' => $user->app_version,
+        ];
     }
 
     public function toMail(User $user)
