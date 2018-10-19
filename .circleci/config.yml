@@ -97,10 +97,10 @@ workflows:
       - deploy-dev:
           requires:
             - build
-      - hold_prod:
+      - hold-prod:
           type: approval
           requires:
             - deploy-dev
       - deploy-prod:
           requires:
-            - hold_prod
+            - hold-prod
