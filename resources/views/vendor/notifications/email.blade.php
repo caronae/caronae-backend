@@ -50,8 +50,8 @@ Obrigado!<br>Equipe Caronaê
 @isset($actionText)
 @component('mail::subcopy')
 @lang(
-    "If you’re having trouble clicking the \":actionText\" button, copy and paste the URL below\n".
-    'into your web browser: ',
+    "Se você está tendo problemas ao clicar no botão \":actionText\", copie e cole a URL abaixo\n".
+    'no seu navegador: ',
     [
         'actionText' => $actionText
     ]
