@@ -18,5 +18,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('backup:clean')->daily();
         $schedule->command('backup:run')->daily();
+
+        $schedule->command('user:notify-old-app')->everyFifteenMinutes();
     }
 }
