@@ -162,13 +162,6 @@ class User extends Authenticatable implements JWTSubject
         return $this;
     }
 
-    public function scopeWithOldAppVersion($query)
-    {
-        return $query
-            ->where('app_platform', 'iOS')->where('app_version', '~', '^1\.[0-4]\.\d+$')
-            ->orWhere('app_platform', 'Android')->where('app_version', '~', '^(3\.0\.[0-2])|(2\.\d+\.\d+)$');
-    }
-
     public function getJWTIdentifier()
     {
         return $this->getKey();
