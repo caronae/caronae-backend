@@ -31,7 +31,7 @@ class RideModelTest extends TestCase
         $user = factory(User::class)->create();
         $ride->users()->attach($user, ['status' => 'driver']);
 
-        $this->assertEquals($user->institution()->get(), $ride->institution()->get());
+        $this->assertEquals($user->institution, $ride->institution);
     }
 
     /** @test */
@@ -51,7 +51,7 @@ class RideModelTest extends TestCase
         $accepted = factory(User::class)->create();
         $ride->users()->attach($accepted, ['status' => 'accepted']);
 
-        $riders = $ride->riders()->get();
+        $riders = $ride->riders;
         $this->assertCount(1, $riders);
         $this->assertEquals($accepted->id, $riders[0]->id);
     }
