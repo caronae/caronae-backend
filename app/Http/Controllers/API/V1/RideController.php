@@ -334,6 +334,8 @@ class RideController extends BaseController
             $rideCanceledNotification = new RideCanceled($ride, $user);
             $riders = $ride->riders()->get();
             $riders->each->notify($rideCanceledNotification);
+            $requests = $ride->requests;
+            $requests->each->notify($rideCanceledNotification);
 
             RideUser::where('ride_id', $ride->id)->delete();
 

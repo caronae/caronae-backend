@@ -57,6 +57,28 @@ class RideModelTest extends TestCase
     }
 
     /** @test */
+    public function should_return_pending_users()
+    {
+        $ride = factory(Ride::class)->create();
+
+        $driver = factory(User::class)->create();
+        $ride->users()->attach($driver, ['status' => 'driver']);
+
+        $pending = factory(User::class)->create();
+        $ride->users()->attach($pending, ['status' => 'pending']);
+
+        $rejected = factory(User::class)->create();
+        $ride->users()->attach($rejected, ['status' => 'rejected']);
+
+        $accepted = factory(User::class)->create();
+        $ride->users()->attach($accepted, ['status' => 'accepted']);
+
+        $requests = $ride->requests;
+        $this->assertCount(1, $requests);
+        $this->assertTrue($requests->contains($pending));
+    }
+
+    /** @test */
     public function should_return_title_with_neighborhood_first_when_going()
     {
         $ride = factory(Ride::class)->create([

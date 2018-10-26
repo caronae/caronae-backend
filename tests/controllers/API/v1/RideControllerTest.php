@@ -733,7 +733,7 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function should_let_driver_leave_ride_and_notify_riders()
+    public function should_let_driver_leave_ride_and_notify_riders_including_requesters()
     {
         $ride = factory(Ride::class, 'next')->create();
         $ride->users()->attach($this->user, ['status' => 'driver']);
@@ -741,7 +741,11 @@ class RideControllerTest extends TestCase
         $rider = factory(User::class)->create();
         $ride->users()->attach($rider, ['status' => 'accepted']);
 
+        $requester = factory(User::class)->create();
+        $ride->users()->attach($requester, ['status' => 'pending']);
+
         $this->expectsNotification($rider, RideCanceled::class);
+        $this->expectsNotification($requester, RideCanceled::class);
 
         $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/leave', [], $this->headers);
         $response->assertStatus(200);
