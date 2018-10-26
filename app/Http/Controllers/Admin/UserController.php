@@ -37,11 +37,8 @@ class UserController extends CrudController
                 'name' => 'name',
                 'label' => 'Nome',
                 'searchLogic' => function ($query, $column, $searchTerm) {
-                    $names = array_filter(explode(' ', $searchTerm));
-                    foreach ($names as $searchName) {
-                        $searchName = trim($searchName);
-                        $query->where('name', 'ILIKE', "%{$searchName}%");
-                    }
+                    $searchTerm = str_replace(' ', '%', $searchTerm);
+                    $query->where('name', 'ILIKE', "%{$searchTerm}%");
                 }
             ],
             ['name' => 'profile', 'label' => 'Perfil'],
