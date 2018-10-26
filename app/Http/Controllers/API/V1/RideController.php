@@ -6,9 +6,7 @@ use Carbon\Carbon;
 use Caronae\Http\Controllers\BaseController;
 use Caronae\Http\Requests\CreateRideRequest;
 use Caronae\Http\Requests\RideListRequest;
-use Caronae\Http\Requests\ValidateDuplicateRequest;
 use Caronae\Http\Resources\RideResource;
-use Caronae\Models\Campus;
 use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
 use Caronae\Models\User;
@@ -227,7 +225,7 @@ class RideController extends BaseController
 
     public function getRequests(Ride $ride)
     {
-        return $ride->users()->where('status', 'pending')->get();
+        return $ride->requests;
     }
 
     public function createRequest(Ride $ride = null, Request $request)
@@ -332,8 +330,8 @@ class RideController extends BaseController
 
         if ($rideUser->status == 'driver') {
             $rideCanceledNotification = new RideCanceled($ride, $user);
-            $riders = $ride->riders()->get();
-            $riders->each->notify($rideCanceledNotification);
+            $ride->riders->each->notify($rideCanceledNotification);
+            $ride->requests->each->notify($rideCanceledNotification);
 
             RideUser::where('ride_id', $ride->id)->delete();
 
