@@ -39,7 +39,8 @@ class UserController extends CrudController
                 'label' => 'Nome',
                 'searchLogic' => function ($query, $column, $searchTerm) {
                     $searchTerm = str_replace(' ', '%', $searchTerm);
-                    $query->where(DB::raw('unaccent(name)'), 'ILIKE', DB::raw("unaccent('%{$searchTerm}%')"));
+                    $searchTerm = DB::getPdo()->quote("%{$searchTerm}%");
+                    $query->where(DB::raw('unaccent(name)'), 'ILIKE', DB::raw("unaccent({$searchTerm})"));
                 }
             ],
             ['name' => 'profile', 'label' => 'Perfil'],
