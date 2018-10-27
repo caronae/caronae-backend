@@ -5,6 +5,7 @@ namespace Caronae\Http\Controllers\Admin;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Caronae\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends CrudController
 {
@@ -37,11 +38,9 @@ class UserController extends CrudController
                 'name' => 'name',
                 'label' => 'Nome',
                 'searchLogic' => function ($query, $column, $searchTerm) {
-                    $names = array_filter(explode(' ', $searchTerm));
-                    foreach ($names as $searchName) {
-                        $searchName = trim($searchName);
-                        $query->where('name', 'ILIKE', "%{$searchName}%");
-                    }
+                    $searchTerm = str_replace(' ', '%', $searchTerm);
+                    $searchTerm = DB::getPdo()->quote("%{$searchTerm}%");
+                    $query->where(DB::raw('unaccent(name)'), 'ILIKE', DB::raw("unaccent({$searchTerm})"));
                 }
             ],
             ['name' => 'profile', 'label' => 'Perfil'],
