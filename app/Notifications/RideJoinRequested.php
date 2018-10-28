@@ -29,9 +29,12 @@ class RideJoinRequested extends Notification implements ShouldQueue
 
     public function toPush()
     {
+        $dateString = date_string($this->ride->date);
+
         return [
             'id'       => $this->id,
-            'message'  => 'Sua carona recebeu uma solicitação',
+            'title'    => $this->ride->title,
+            'message'  => "{$this->requester->shortName} quer sua carona de {$dateString}",
             'msgType'  => 'joinRequest',
             'rideId'   => $this->ride->id,
             'senderId' => $this->requester->id,
