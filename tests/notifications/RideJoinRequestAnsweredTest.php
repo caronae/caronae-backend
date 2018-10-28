@@ -5,22 +5,25 @@ namespace Tests\notifications;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
 use Caronae\Notifications\RideJoinRequestAnswered;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Mockery;
 use Tests\TestCase;
 
 class RideJoinRequestAnsweredTest extends TestCase
 {
+    use DatabaseTransactions;
+
 	private $ride;
+    private $driver;
 
-	public function setUp()
+    public function setUp()
     {
-        $this->ride = Mockery::mock(Ride::class);
-    	$this->ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        parent::setUp();
 
-    	$driver = Mockery::mock(User::class);
-    	$driver->shouldReceive('getAttribute')->with('id')->andReturn(2);
-    	$this->ride->shouldReceive('driver')->andReturn($driver);
-	}
+        $this->driver = factory(User::class, 'driver')->create(['name' => 'Fulana Santos Silva']);
+        $this->ride = factory(Ride::class)->create(['date' => '2018-11-02 20:00:00']);
+        $this->ride->users()->attach($this->driver, ['status' => 'driver']);
+    }
 
     /** @test */
     public function should_contain_all_fields_in_push_when_accepted()
@@ -30,25 +33,21 @@ class RideJoinRequestAnsweredTest extends TestCase
 
         $this->assertSame([
             'id'       => $notification->id,
-            'message'  => 'Você foi aceito em uma carona =)',
+            'title'    => $this->ride->title,
+            'message'  => 'Fulana Silva aceitou seu pedido de carona de sexta-feira (02/11) às 20:00 =)',
             'msgType'  => 'accepted',
-            'rideId'   => 1,
-            'senderId' => 2
+            'rideId'   => $this->ride->id,
+            'senderId' => $this->driver->id,
         ], $notification->toPush(Mockery::mock(User::class)));
     }
 
     /** @test */
-    public function should_contain_all_fields_in_push_when_rejected()
+    public function should_change_message_when_rejected()
     {
     	$notification = new RideJoinRequestAnswered($this->ride, false);
         $notification->id = uniqid();
 
-        $this->assertEquals([
-            'id'       => $notification->id,
-            'message'  => 'Você foi recusado em uma carona =(',
-            'msgType'  => 'refused',
-            'rideId'   => 1,
-            'senderId' => 2,
-        ], $notification->toPush(Mockery::mock(User::class)));
+        $toPush = $notification->toPush(factory(User::class));
+        $this->assertEquals('Fulana Silva recusou seu pedido de carona de sexta-feira (02/11) às 20:00 =(', $toPush['message']);
     }
 }

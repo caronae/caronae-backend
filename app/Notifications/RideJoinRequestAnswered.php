@@ -28,12 +28,24 @@ class RideJoinRequestAnswered extends Notification implements ShouldQueue
 
     public function toPush()
     {
+        $dateString = date_string($this->ride->date);
+        $driver = $this->ride->driver();
+
+        if ($this->accepted) {
+            $action = 'aceitou';
+            $emoji = '=)';
+        } else {
+            $action = 'recusou';
+            $emoji = '=(';
+        }
+
         return [
             'id'       => $this->id,
-            'message'  => $this->accepted ? 'Você foi aceito em uma carona =)' : 'Você foi recusado em uma carona =(',
+            'title'    => $this->ride->title,
+            'message'  => "{$driver->shortName} {$action} seu pedido de carona de {$dateString} {$emoji}",
             'msgType'  => $this->accepted ? 'accepted' : 'refused',
             'rideId'   => $this->ride->id,
-            'senderId' => $this->ride->driver()->id
+            'senderId' => $driver->id
         ];
     }
 
