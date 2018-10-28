@@ -11,7 +11,6 @@ use Caronae\Models\Ride;
 use Caronae\Models\RideUser;
 use Caronae\Models\User;
 use Caronae\Notifications\RideCanceled;
-use Caronae\Notifications\RideFinished;
 use Caronae\Notifications\RideJoinRequestAnswered;
 use Caronae\Notifications\RideJoinRequested;
 use Caronae\Notifications\RideUserLeft;
@@ -361,10 +360,6 @@ class RideController extends BaseController
 
         $ride->done = true;
         $ride->save();
-
-        $rideFinishedNotification = new RideFinished($ride, $request->user());
-        $riders = $ride->riders()->get();
-        $riders->each->notify($rideFinishedNotification);
 
         return ['message' => 'Ride finished.'];
     }
