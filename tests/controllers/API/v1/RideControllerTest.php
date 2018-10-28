@@ -81,7 +81,7 @@ class RideControllerTest extends TestCase
         $ride2 = factory(Ride::class, 'next')->create(['neighborhood' => 'Niterói', 'going' => false])->fresh();
         $ride2->users()->attach($this->user, ['status' => 'driver']);
 
-        $response = $this->json('GET', 'rides', ['neighborhoods' => 'Ipanema'], $this->headers);
+        $response = $this->json('GET', 'api/v1/rides', ['neighborhoods' => 'Ipanema'], $this->headers);
         $response->assertStatus(200);
         $response->assertJson(['data' => [ $ride1->toArray() ]]);
 
@@ -131,7 +131,7 @@ class RideControllerTest extends TestCase
         $ride3->users()->attach($this->user, ['status' => 'driver']);
 
         $filterParams = ['date' => $futureDate->format('Y-m-d'), 'time' => '12:00'];
-        $response = $this->json('GET', 'rides', $filterParams, $this->headers);
+        $response = $this->json('GET', 'api/v1/rides', $filterParams, $this->headers);
         $response->assertStatus(200);
         $response->assertJson(['data' => [ $ride1->toArray() ]]);
 
