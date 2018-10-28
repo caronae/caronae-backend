@@ -29,9 +29,12 @@ class RideUserLeft extends Notification implements ShouldQueue
 
     public function toPush()
     {
+        $dateString = date_string($this->ride->date);
+
         return [
             'id'       => $this->id,
-            'message'  => 'Um caronista desistiu de sua carona',
+            'title'    => $this->ride->title,
+            'message'  => "{$this->user->shortName} desistiu da sua carona de {$dateString}",
             'msgType'  => 'quitter',
             'rideId'   => $this->ride->id,
             'senderId' => $this->user->id,
