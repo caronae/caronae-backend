@@ -467,23 +467,6 @@ class RideControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @deprecated  */
-    /** @test */
-    public function should_create_request_for_ride_using_legacy_API()
-    {
-        $ride = factory(Ride::class, 'next')->create();
-        $user = factory(User::class)->create();
-        $ride->users()->attach($user, ['status' => 'driver']);
-
-        $this->expectsNotification($user, RideJoinRequested::class);
-
-        $response = $this->jsonAs($this->user, 'POST', 'api/v1/rides/' . $ride->id . '/requests');
-        $response->assertStatus(200);
-        $response->assertExactJson([
-            'message' => 'Request created.'
-        ]);
-    }
-
     /** @test */
     public function should_create_request_for_ride()
     {
@@ -573,31 +556,6 @@ class RideControllerTest extends TestCase
 
         $response = $this->json('GET', 'api/v1/rides/' . $ride->id . '/requests', [], $this->headers);
         $response->assertStatus(403);
-    }
-
-    /** @deprecated */
-    /** @test */
-    public function should_update_request_using_legacy_API()
-    {
-        $ride = factory(Ride::class, 'next')->create();
-        $ride->users()->attach($this->user, ['status' => 'driver']);
-
-        $rider = factory(User::class)->create();
-        $ride->users()->attach($rider, ['status' => 'pending']);
-
-        $this->expectsNotification($rider, RideJoinRequestAnswered::class);
-
-        $request = [
-            'rideId' => $ride->id,
-            'userId' => $rider->id,
-            'accepted' => true,
-        ];
-
-        $response = $this->json('POST', 'ride/answerJoinRequest', $request, $this->headers);
-        $response->assertStatus(200);
-        $response->assertExactJson([
-            'message' => 'Request updated.'
-        ]);
     }
 
     /** @test */

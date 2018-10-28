@@ -175,15 +175,8 @@ class RideController extends BaseController
         return ['message' => 'Request created.'];
     }
 
-    public function updateRequest(Ride $ride = null, Request $request)
+    public function updateRequest(Ride $ride, Request $request)
     {
-        if ($ride == null) {
-            $this->validate($request, [
-                'rideId' => 'required|int'
-            ]);
-            $ride = Ride::find($request->input('rideId'));
-        }
-
         $this->validate($request, [
             'userId' => 'required|int',
             'accepted' => 'required|boolean',
@@ -201,40 +194,6 @@ class RideController extends BaseController
         $user->notify(new RideJoinRequestAnswered($ride, $request->input('accepted')));
 
         return ['message' => 'Request updated.'];
-    }
-
-    public function getMyActiveRides(Request $request)
-    {
-        $user = $request->user();
-
-        //active rides have 'driver' or 'accepted' status
-        $rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->where('done', false)->get();
-
-        $resultArray = array();
-        foreach($rides as $ride) {
-            $resultRide = $ride;
-
-            $riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
-            //if count == 1 driver is the only one on the ride, therefore ride is not active
-            if (count($riders) == 1) continue;
-
-            //now we need to put the driver in the beginning of the array
-            $resultRiders = [];
-            foreach($riders as $rider) {
-                $riderStatus = $rider->pivot->status;
-
-                if ($riderStatus == 'driver') {
-                    $resultRide->driver = $rider;
-                } else {
-                    $resultRiders[] = $rider;
-                }
-            }
-
-            $resultRide->riders = $resultRiders;
-            $resultArray[] = $resultRide;
-        }
-
-        return $resultArray;
     }
 
     public function leaveRide(Ride $ride = null, Request $request)
