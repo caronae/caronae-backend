@@ -196,13 +196,9 @@ class RideController extends BaseController
         return ['message' => 'Request updated.'];
     }
 
-    public function leaveRide(Ride $ride = null, Request $request)
+    public function leaveRide(Ride $ride, Request $request)
     {
         $user = $request->user();
-        if ($ride == null) {
-            $ride = Ride::find($request->rideId);
-        }
-
         $rideUser = RideUser::where(['ride_id' => $ride->id, 'user_id' => $user->id])->first();
 
         if ($rideUser->status == 'driver') {
@@ -223,15 +219,8 @@ class RideController extends BaseController
         return ['message' => 'Left ride.'];
     }
 
-    public function finishRide(Ride $ride = null, Request $request)
+    public function finishRide(Ride $ride, Request $request)
     {
-        if ($ride == null) {
-            $ride = $request->user()->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
-            if ($ride == null) {
-                return $this->error('User is not the driver of this ride', 403);
-            }
-        }
-
         if ($ride->date->isFuture()) {
             return $this->error('A ride in the future cannot be marked as finished', 403);
         }

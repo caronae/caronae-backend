@@ -636,28 +636,6 @@ class RideControllerTest extends TestCase
         $this->assertDatabaseHas('ride_user', ['ride_id' => $ride->id, 'user_id' => $this->user->id, 'status' => 'quit']);
     }
 
-    /** @deprecated */
-    /** @test */
-    public function should_let_user_leave_ride_using_legacy_API()
-    {
-        $ride = factory(Ride::class, 'next')->create();
-        $driver = factory(User::class)->create();
-        $ride->users()->attach($driver, ['status' => 'driver']);
-        $ride->users()->attach($this->user, ['status' => 'accepted']);
-
-        $this->expectsNotification($driver, RideUserLeft::class);
-
-        $request = [
-            'rideId' => $ride->id
-        ];
-
-        $response = $this->json('POST', 'ride/leaveRide', $request, $this->headers);
-        $response->assertStatus(200);
-        $response->assertExactJson([
-            'message' => 'Left ride.'
-        ]);
-    }
-
     /** @test */
     public function should_let_driver_leave_ride_and_notify_riders_including_requesters()
     {
@@ -698,27 +676,6 @@ class RideControllerTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('rides', ['id' => $ride->id, 'done' => true]);
-    }
-
-    /** @deprecated  */
-    /** @test */
-    public function should_let_user_finish_ride_using_legacy_API()
-    {
-        $ride = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00', 'done' => false]);
-        $ride->users()->attach($this->user, ['status' => 'driver']);
-
-        $rider = factory(User::class)->create();
-        $ride->users()->attach($rider, ['status' => 'accepted']);
-
-        $request = [
-            'rideId' => $ride->id
-        ];
-
-        $response = $this->json('POST', 'ride/finishRide', $request, $this->headers);
-        $response->assertStatus(200);
-        $response->assertExactJson([
-            'message' => 'Ride finished.'
-        ]);
     }
 
     /** @test */

@@ -20,8 +20,6 @@ Route::middleware('api.v1.auth')->group(function () {
     Route::post('ride', 'RideController@store');
     Route::delete('ride/allFromRoutine/{routineId}', 'RideController@deleteAllFromRoutine');
     Route::get('ride/getRequesters/{rideId}', 'RideController@getRequests');
-    Route::post('ride/leaveRide', 'RideController@leaveRide');
-    Route::post('ride/finishRide', 'RideController@finishRide');
     Route::post('ride/saveFeedback', 'RideController@saveFeedback');
     Route::get('ride/validateDuplicate', 'RideController@validateDuplicate');
     Route::get('ride/{ride}', 'RideController@show');
