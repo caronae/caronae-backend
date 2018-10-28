@@ -5,28 +5,35 @@ namespace Tests\notifications;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
 use Caronae\Notifications\RideCanceled;
-use Mockery;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class RideCanceledTest extends TestCase
 {
+    use DatabaseTransactions;
+
 	protected $notification;
+
+    private $ride;
+    private $driver;
 
     public function setUp()
     {
-        $ride = Mockery::mock(Ride::class);
-    	$ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $driver = Mockery::mock(User::class);
-        $driver->shouldReceive('getAttribute')->with('id')->andReturn(2);
-    	$this->notification = new RideCanceled($ride, $driver);
+        parent::setUp();
+
+        $this->driver = factory(User::class, 'driver')->create();
+        $this->ride = factory(Ride::class)->create();
+        $this->ride->users()->attach($this->driver, ['status' => 'driver']);
+
+    	$this->notification = new RideCanceled($this->ride, $this->driver);
         $this->notification->id = uniqid();
     }
 
     /** @test */
     public function should_contain_all_fields_in_push()
     {
-        $user = Mockery::mock(User::class);
-        $user->shouldReceive('getAttribute')->with('status')->andReturn('accepted');
+        $user = factory(User::class)->create();
+        $user->status = 'accepted';
 
         $payload = $this->notification->toPush($user);
 
@@ -34,16 +41,16 @@ class RideCanceledTest extends TestCase
             'id'       => $this->notification->id,
             'message'  => 'Um motorista cancelou uma carona ativa sua',
             'msgType'  => 'cancelled',
-            'rideId'   => 1,
-            'senderId' => 2,
+            'rideId'   => $this->ride->id,
+            'senderId' => $this->driver->id,
         ], $payload);
     }
 
     /** @test */
-    public function should_send_proper_message_for_pending_user()
+    public function should_send_same_message_to_pending_user()
     {
-        $user = Mockery::mock(User::class);
-        $user->shouldReceive('getAttribute')->with('status')->andReturn('pending');
+        $user = factory(User::class)->create();
+        $user->status = 'pending';
 
         $payload = $this->notification->toPush($user);
 
