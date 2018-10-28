@@ -18,8 +18,4 @@ abstract class BaseController extends Controller
         return response()->json(['error' => $message], $statusCode);
     }
 
-    protected function isLegacyAPI($request)
-    {
-        return strpos($request->path(), 'api/v') === false;
-    }
 }

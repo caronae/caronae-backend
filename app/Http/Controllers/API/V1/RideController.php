@@ -279,19 +279,6 @@ class RideController extends BaseController
         ];
     }
 
-    public function saveFeedback(Request $request)
-    {
-        $matchThese = ['ride_id' => $request->rideId, 'user_id' => $request->userId];
-        $ride_user = RideUser::where($matchThese)->first();
-
-        if ($ride_user == null) {
-            return $this->error('relationship between user with id ' . $request->userId . ' and ride with id '. $request->rideId . ' does not exist or ride does not exist', 400);
-        }
-
-        $ride_user->feedback = $request->feedback;
-        $ride_user->save();
-    }
-
 
     /// Helper methods
 
