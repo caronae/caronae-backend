@@ -29,4 +29,16 @@
             @include('users.user')
         </div>
     </div>
+
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">
+                Caronas do usuário
+            </h3>
+        </div>
+
+        <div class="box-body">
+            @include('users.rides', ['entry' => $entry->rides()->get()])
+        </div>
+    </div>
 @endsection
