@@ -59,6 +59,16 @@ class User extends Authenticatable implements JWTSubject
         return array_first(explode(' ', $this->name));
     }
 
+    public function getShortNameAttribute()
+    {
+        $names = explode(' ', $this->name);
+        $shortName = array_first($names);
+        if (count($names) > 1) {
+            $shortName .= ' ' . array_last($names);
+        }
+        return $shortName;
+    }
+
     public function setCarPlateAttribute($value)
     {
         $this->attributes['car_plate'] = strtoupper($value);

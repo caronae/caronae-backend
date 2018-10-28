@@ -27,6 +27,30 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
+    public function should_return_first_and_last_name_when_there_are_many()
+    {
+        $user = factory(User::class)->create(['name' => 'Fulana dos Santos Silva']);
+
+        $this->assertEquals('Fulana Silva', $user->shortName);
+    }
+
+    /** @test */
+    public function should_return_first_and_last_name_when_there_are_only_those()
+    {
+        $user = factory(User::class)->create(['name' => 'Fulana Silva']);
+
+        $this->assertEquals('Fulana Silva', $user->shortName);
+    }
+
+    /** @test */
+    public function should_return_first_name_when_there_is_only_one()
+    {
+        $user = factory(User::class)->create(['name' => 'Fulana']);
+
+        $this->assertEquals('Fulana', $user->shortName);
+    }
+
+    /** @test */
     public function should_ban_user() {
         $user = factory(User::class)->create();
 
