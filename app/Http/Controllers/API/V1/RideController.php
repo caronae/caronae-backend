@@ -125,7 +125,7 @@ class RideController extends BaseController
     {
         return $validateDuplicateService->validate();
     }
-    
+
     public function deleteAllFromRoutine(Request $request, $routineId)
     {
         return DB::transaction(function() use ($request, $routineId) {
@@ -153,15 +153,8 @@ class RideController extends BaseController
         return $ride->requests;
     }
 
-    public function createRequest(Ride $ride = null, Request $request)
+    public function createRequest(Ride $ride, Request $request)
     {
-        if ($ride == null) {
-            $this->validate($request, [
-                'rideId' => 'required|int'
-            ]);
-            $ride = Ride::find($request->input('rideId'));
-        }
-
         $user = $request->user();
 
         if (!$ride->institution->is($user->institution)) {

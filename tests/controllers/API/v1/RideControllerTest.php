@@ -476,11 +476,8 @@ class RideControllerTest extends TestCase
         $ride->users()->attach($user, ['status' => 'driver']);
 
         $this->expectsNotification($user, RideJoinRequested::class);
-        $request = [
-            'rideId' => $ride->id
-        ];
 
-        $response = $this->json('POST', 'ride/requestJoin', $request, $this->headers);
+        $response = $this->jsonAs($this->user, 'POST', 'api/v1/rides/' . $ride->id . '/requests');
         $response->assertStatus(200);
         $response->assertExactJson([
             'message' => 'Request created.'
