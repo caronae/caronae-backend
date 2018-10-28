@@ -86,24 +86,6 @@ class UserController extends BaseController
         ];
     }
 
-    public function getOfferedRides(User $user)
-    {
-        $rides = $user->offeredRides()
-            ->inTheFuture()
-            ->notFinished()
-            ->with('riders')
-            ->get();
-
-        return ['rides' => RideResource::collection($rides)];
-    }
-
-    public function getPendingRides(User $user)
-    {
-        $rides = $user->pendingRides()->get();
-
-        return ['rides' => RideResource::collection($rides)];
-    }
-
     public function getRidesHistory(User $user, Request $request)
     {
         $offeredRides = $user->offeredRides()->finished();
