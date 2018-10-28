@@ -55,17 +55,7 @@ class UserController extends BaseController
             return $this->error('User not found with provided credentials.', 401);
         }
 
-        $response = ['user' => new UserResource($user)];
-
-        if ($this->isLegacyAPI($request)) {
-            $drivingRides = $user->rides()->where(['status' => 'driver', 'done' => false])->get();
-            $response += ['rides' => $drivingRides];
-        } else {
-            $institution = $user->institution()->first();
-            $response += ['institution' => new InstitutionResource($institution)];
-        }
-
-        return $response;
+        return ['user' => new UserResource($user)];
     }
 
     public function show(User $user)
