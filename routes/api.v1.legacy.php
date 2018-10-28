@@ -9,8 +9,6 @@ Route::post('user/login', 'UserController@login');
 Route::middleware('api.v1.auth')->group(function () {
 
     Route::put('user', 'UserController@update');
-    Route::put('user/saveFaceId', 'UserController@saveFacebookId');
-    Route::put('user/saveProfilePicUrl', 'UserController@saveProfilePicUrl');
     Route::get('user/{id}/mutualFriends', 'UserController@getMutualFriends');
 
     Route::middleware('api.v1.userMatchesRequestedUser')->group(function () {

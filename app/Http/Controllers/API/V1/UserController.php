@@ -134,27 +134,6 @@ class UserController extends BaseController
         return ['profile_pic_url' => $imageURL];
     }
 
-    public function saveFacebookId(Request $request)
-    {
-        $this->validate($request, [
-            'id' => 'required'
-        ]);
-
-        $user = $request->user();
-        $user->face_id = $request->input('id');
-        $user->save();
-    }
-
-    public function saveProfilePicUrl(Request $request)
-    {
-        $this->validate($request, [
-            'url' => 'required'
-        ]);
-
-        $request->user()->profile_pic_url = $request->url;
-        $request->user()->save();
-    }
-
     public function getMutualFriends(Request $request, Facebook $fb, $fbID)
     {
         $fbToken = $request->header('Facebook-Token');

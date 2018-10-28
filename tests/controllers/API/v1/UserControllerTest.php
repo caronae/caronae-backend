@@ -529,42 +529,6 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function should_save_facebook_id()
-    {
-        $user = $this->someUser();
-        $headers = ['token' => $user->token];
-        $newId = 'new-facebook-id';
-
-        $response = $this->json('PUT', 'user/saveFaceId', [
-            'id' => $newId
-        ], $headers);
-
-        $response->assertStatus(200);
-
-        $savedUser = $user->fresh();
-        $this->assertEquals($newId, $savedUser->face_id);
-    }
-
-    /**
-     * @test
-     */
-    public function should_save_profile_picture_url()
-    {
-        $user = $this->someUser();
-        $headers = ['token' => $user->token];
-        $newURL = 'https://example.com/new-profile-picture-url.jpg';
-
-        $response = $this->json('PUT', 'user/saveProfilePicUrl', [
-            'url' => $newURL
-        ], $headers);
-
-        $response->assertStatus(200);
-        $this->assertEquals($newURL, $user->fresh()->profile_pic_url);
-    }
-
-    /**
-     * @test
-     */
     public function should_return_ride_history_count()
     {
         $user = $this->someUser();
