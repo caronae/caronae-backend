@@ -21,7 +21,6 @@ Route::middleware('api.v1.auth')->group(function () {
 
     Route::get('rides', 'RideController@index');
     Route::post('rides', 'RideController@store');
-    Route::delete('rides/{rideId}', 'RideController@delete');
     Route::delete('rides/allFromRoutine/{routineId}', 'RideController@deleteAllFromRoutine');
     Route::post('rides/{ride}/requests', 'RideController@createRequest');
     Route::get('rides/validateDuplicate', 'RideController@validateDuplicate');

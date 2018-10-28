@@ -55,17 +55,7 @@ class UserController extends BaseController
             return $this->error('User not found with provided credentials.', 401);
         }
 
-        $response = ['user' => new UserResource($user)];
-
-        if ($this->isLegacyAPI($request)) {
-            $drivingRides = $user->rides()->where(['status' => 'driver', 'done' => false])->get();
-            $response += ['rides' => $drivingRides];
-        } else {
-            $institution = $user->institution()->first();
-            $response += ['institution' => new InstitutionResource($institution)];
-        }
-
-        return $response;
+        return ['user' => new UserResource($user)];
     }
 
     public function show(User $user)
@@ -94,24 +84,6 @@ class UserController extends BaseController
             'active_rides' => RideResource::collection($activeRides),
             'offered_rides' => RideResource::collection($offeredRides),
         ];
-    }
-
-    public function getOfferedRides(User $user)
-    {
-        $rides = $user->offeredRides()
-            ->inTheFuture()
-            ->notFinished()
-            ->with('riders')
-            ->get();
-
-        return ['rides' => RideResource::collection($rides)];
-    }
-
-    public function getPendingRides(User $user)
-    {
-        $rides = $user->pendingRides()->get();
-
-        return ['rides' => RideResource::collection($rides)];
     }
 
     public function getRidesHistory(User $user, Request $request)
@@ -160,27 +132,6 @@ class UserController extends BaseController
         $imageURL = Storage::disk(self::USER_CONTENT_DISK)->url($imagePath);
 
         return ['profile_pic_url' => $imageURL];
-    }
-
-    public function saveFacebookId(Request $request)
-    {
-        $this->validate($request, [
-            'id' => 'required'
-        ]);
-
-        $user = $request->user();
-        $user->face_id = $request->input('id');
-        $user->save();
-    }
-
-    public function saveProfilePicUrl(Request $request)
-    {
-        $this->validate($request, [
-            'url' => 'required'
-        ]);
-
-        $request->user()->profile_pic_url = $request->url;
-        $request->user()->save();
     }
 
     public function getMutualFriends(Request $request, Facebook $fb, $fbID)

@@ -126,33 +126,6 @@ class RideController extends BaseController
         return $validateDuplicateService->validate();
     }
 
-    public function delete(Request $request, $rideId)
-    {
-        return DB::transaction(function() use ($request, $rideId) {
-            $user = $request->user();
-            $ride = $user->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
-            if ($ride == null) {
-                return $this->error('User is not the driver on this ride or ride does not exist.', 403);
-            }
-
-            RideUser::where('ride_id', $rideId)->delete(); //delete all relationships with this ride first
-            $ride->forceDelete();
-        });
-    }
-
-    public function deleteAllFromUser(Request $request, $userId, $going)
-    {
-        return DB::transaction(function() use ($request, $going) {
-            $user = $request->user();
-
-            $matchThese = ['status' => 'driver', 'going' => $going, 'done' => false];
-            $rideIdList = $user->rides()->where($matchThese)->pluck('ride_id')->toArray();
-
-            RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
-            Ride::whereIn('id', $rideIdList)->forceDelete();
-        });
-    }
-
     public function deleteAllFromRoutine(Request $request, $routineId)
     {
         return DB::transaction(function() use ($request, $routineId) {
@@ -175,67 +148,13 @@ class RideController extends BaseController
         });
     }
 
-    /**
-     * @deprecated
-     */
-    public function listFiltered(Request $request)
-    {
-        $locations = explode(', ', $request->location);
-
-        //location can be zones or neighborhoods, check if first array position is a zone or a neighborhood
-        if ($locations[0] == 'Centro' || $locations[0] == 'Zona Sul' || $locations[0] == 'Zona Oeste' || $locations[0] == 'Zona Norte' || $locations[0] == 'Baixada' || $locations[0] == 'Grande Niterói' || $locations[0] == 'Outros') {
-            $locationColumn = 'myzone';
-        } else {
-            $locationColumn = 'neighborhood';
-        }
-
-        $dateMin = Carbon::createFromFormat('Y-m-d H:i', $request->date . ' ' . substr($request->time, 0, 5));
-        $dateMax = $dateMin->copy()->setTime(23,59,59);
-
-        $rides = Ride::whereBetween('date', [$dateMin, $dateMax])
-            ->where('done', false)
-            ->where('going', $request->go)
-            ->whereIn($locationColumn, $locations);
-
-        if ($request->filled('center')) {
-            $rides = $rides->where('hub', 'LIKE', $request->input('center') . '%');
-        }
-
-        $rides = $rides->get();
-
-        $results = [];
-        foreach($rides as $ride) {
-            //check if ride is full
-            if ($ride->users()->whereIn('status', ['pending', 'accepted'])->count() < $ride->slots) {
-                //gets the driver
-                $driver = $ride->users()->where('status', 'driver')->first();
-                //if could not find driver, he's probably been banned, so skip ride
-                if (!$driver) continue;
-
-                $resultRide = $ride;
-                $resultRide->driver = $driver;
-
-                $results[] = $resultRide;
-            }
-        }
-
-        return $results;
-    }
-
     public function getRequests(Ride $ride)
     {
         return $ride->requests;
     }
 
-    public function createRequest(Ride $ride = null, Request $request)
+    public function createRequest(Ride $ride, Request $request)
     {
-        if ($ride == null) {
-            $this->validate($request, [
-                'rideId' => 'required|int'
-            ]);
-            $ride = Ride::find($request->input('rideId'));
-        }
-
         $user = $request->user();
 
         if (!$ride->institution->is($user->institution)) {
@@ -256,15 +175,8 @@ class RideController extends BaseController
         return ['message' => 'Request created.'];
     }
 
-    public function updateRequest(Ride $ride = null, Request $request)
+    public function updateRequest(Ride $ride, Request $request)
     {
-        if ($ride == null) {
-            $this->validate($request, [
-                'rideId' => 'required|int'
-            ]);
-            $ride = Ride::find($request->input('rideId'));
-        }
-
         $this->validate($request, [
             'userId' => 'required|int',
             'accepted' => 'required|boolean',
@@ -284,47 +196,9 @@ class RideController extends BaseController
         return ['message' => 'Request updated.'];
     }
 
-    public function getMyActiveRides(Request $request)
+    public function leaveRide(Ride $ride, Request $request)
     {
         $user = $request->user();
-
-        //active rides have 'driver' or 'accepted' status
-        $rides = $user->rides()->whereIn('status', ['driver', 'accepted'])->where('done', false)->get();
-
-        $resultArray = array();
-        foreach($rides as $ride) {
-            $resultRide = $ride;
-
-            $riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
-            //if count == 1 driver is the only one on the ride, therefore ride is not active
-            if (count($riders) == 1) continue;
-
-            //now we need to put the driver in the beginning of the array
-            $resultRiders = [];
-            foreach($riders as $rider) {
-                $riderStatus = $rider->pivot->status;
-
-                if ($riderStatus == 'driver') {
-                    $resultRide->driver = $rider;
-                } else {
-                    $resultRiders[] = $rider;
-                }
-            }
-
-            $resultRide->riders = $resultRiders;
-            $resultArray[] = $resultRide;
-        }
-
-        return $resultArray;
-    }
-
-    public function leaveRide(Ride $ride = null, Request $request)
-    {
-        $user = $request->user();
-        if ($ride == null) {
-            $ride = Ride::find($request->rideId);
-        }
-
         $rideUser = RideUser::where(['ride_id' => $ride->id, 'user_id' => $user->id])->first();
 
         if ($rideUser->status == 'driver') {
@@ -345,15 +219,8 @@ class RideController extends BaseController
         return ['message' => 'Left ride.'];
     }
 
-    public function finishRide(Ride $ride = null, Request $request)
+    public function finishRide(Ride $ride, Request $request)
     {
-        if ($ride == null) {
-            $ride = $request->user()->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
-            if ($ride == null) {
-                return $this->error('User is not the driver of this ride', 403);
-            }
-        }
-
         if ($ride->date->isFuture()) {
             return $this->error('A ride in the future cannot be marked as finished', 403);
         }
@@ -362,67 +229,6 @@ class RideController extends BaseController
         $ride->save();
 
         return ['message' => 'Ride finished.'];
-    }
-
-    /**
-     * @deprecated
-     */
-    public function getRidesHistory(Request $request)
-    {
-        $user = $request->user();
-        $rides = $user->rides()->where('done', true)->whereIn('status', ['driver', 'accepted'])->get();
-
-        $resultJson = [];
-        foreach ($rides as $ride) {
-            $riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
-
-            $resultRide = $ride;
-
-            $resultRiders = [];
-            foreach($riders as $rider) {
-                $riderStatus = $rider->pivot->status;
-
-                if ($riderStatus == 'driver') {
-                    $resultRide->driver = $rider;
-                } else {
-                    $resultRiders[] = $rider;
-                }
-            }
-
-            $resultRide->riders = $resultRiders;
-            $resultRide->feedback = $resultRide->pivot->feedback;
-            $resultJson[] = $resultRide;
-        }
-
-        return $resultJson;
-    }
-
-    /**
-     * @deprecated
-     */
-    public function getRidesHistoryCount($userId)
-    {
-        $user = User::find($userId);
-        $offeredCount = $user->rides()->where('done', true)->where('status', 'driver')->count();
-        $takenCount = $user->rides()->where('done', true)->where('status', 'accepted')->count();
-
-        return [
-            'offeredCount' => $offeredCount,
-            'takenCount' => $takenCount
-        ];
-    }
-
-    public function saveFeedback(Request $request)
-    {
-        $matchThese = ['ride_id' => $request->rideId, 'user_id' => $request->userId];
-        $ride_user = RideUser::where($matchThese)->first();
-
-        if ($ride_user == null) {
-            return $this->error('relationship between user with id ' . $request->userId . ' and ride with id '. $request->rideId . ' does not exist or ride does not exist', 400);
-        }
-
-        $ride_user->feedback = $request->feedback;
-        $ride_user->save();
     }
 
 

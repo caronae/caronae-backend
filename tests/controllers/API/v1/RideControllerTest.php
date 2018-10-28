@@ -81,7 +81,7 @@ class RideControllerTest extends TestCase
         $ride2 = factory(Ride::class, 'next')->create(['neighborhood' => 'Niterói', 'going' => false])->fresh();
         $ride2->users()->attach($this->user, ['status' => 'driver']);
 
-        $response = $this->json('GET', 'rides', ['neighborhoods' => 'Ipanema'], $this->headers);
+        $response = $this->json('GET', 'api/v1/rides', ['neighborhoods' => 'Ipanema'], $this->headers);
         $response->assertStatus(200);
         $response->assertJson(['data' => [ $ride1->toArray() ]]);
 
@@ -131,7 +131,7 @@ class RideControllerTest extends TestCase
         $ride3->users()->attach($this->user, ['status' => 'driver']);
 
         $filterParams = ['date' => $futureDate->format('Y-m-d'), 'time' => '12:00'];
-        $response = $this->json('GET', 'rides', $filterParams, $this->headers);
+        $response = $this->json('GET', 'api/v1/rides', $filterParams, $this->headers);
         $response->assertStatus(200);
         $response->assertJson(['data' => [ $ride1->toArray() ]]);
 
@@ -456,34 +456,6 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function should_delete_ride()
-    {
-        $ride = factory(Ride::class, 'next')->create();
-        $ride->users()->attach($this->user, ['status' => 'driver']);
-
-        $response = $this->json('DELETE', 'api/v1/rides/' . $ride->id, [], $this->headers);
-        $response->assertStatus(200);
-
-        $this->assertDatabaseMissing('rides', ['id' => $ride->id]);
-    }
-
-    /** @test */
-    public function should_delete_ride_relationships()
-    {
-        $ride = factory(Ride::class, 'next')->create();
-        $rider = factory(User::class)->create();
-        $ride->users()->attach($this->user, ['status' => 'driver']);
-        $ride->users()->attach($rider, ['status' => 'accepted']);
-
-        $response = $this->json('DELETE', 'api/v1/rides/' . $ride->id, [], $this->headers);
-        $response->assertStatus(200);
-
-        $this->assertDatabaseMissing('rides', ['id' => $ride->id]);
-        $this->assertDatabaseMissing('ride_user', ['ride_id' => $ride->id, 'user_id' => $this->user->id]);
-        $this->assertDatabaseMissing('ride_user', ['ride_id' => $ride->id, 'user_id' => $rider->id]);
-    }
-
-    /** @test */
     public function should_delete_all_rides_in_routine()
     {
         $ride = factory(Ride::class, 'next')->create();
@@ -493,26 +465,6 @@ class RideControllerTest extends TestCase
 
         $response = $this->json('DELETE', 'api/v1/rides/allFromRoutine/' . $ride->id, [], $this->headers);
         $response->assertStatus(200);
-    }
-
-    /** @deprecated  */
-    /** @test */
-    public function should_create_request_for_ride_using_legacy_API()
-    {
-        $ride = factory(Ride::class, 'next')->create();
-        $user = factory(User::class)->create();
-        $ride->users()->attach($user, ['status' => 'driver']);
-
-        $this->expectsNotification($user, RideJoinRequested::class);
-        $request = [
-            'rideId' => $ride->id
-        ];
-
-        $response = $this->json('POST', 'ride/requestJoin', $request, $this->headers);
-        $response->assertStatus(200);
-        $response->assertExactJson([
-            'message' => 'Request created.'
-        ]);
     }
 
     /** @test */
@@ -606,31 +558,6 @@ class RideControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @deprecated */
-    /** @test */
-    public function should_update_request_using_legacy_API()
-    {
-        $ride = factory(Ride::class, 'next')->create();
-        $ride->users()->attach($this->user, ['status' => 'driver']);
-
-        $rider = factory(User::class)->create();
-        $ride->users()->attach($rider, ['status' => 'pending']);
-
-        $this->expectsNotification($rider, RideJoinRequestAnswered::class);
-
-        $request = [
-            'rideId' => $ride->id,
-            'userId' => $rider->id,
-            'accepted' => true,
-        ];
-
-        $response = $this->json('POST', 'ride/answerJoinRequest', $request, $this->headers);
-        $response->assertStatus(200);
-        $response->assertExactJson([
-            'message' => 'Request updated.'
-        ]);
-    }
-
     /** @test */
     public function should_update_request()
     {
@@ -709,28 +636,6 @@ class RideControllerTest extends TestCase
         $this->assertDatabaseHas('ride_user', ['ride_id' => $ride->id, 'user_id' => $this->user->id, 'status' => 'quit']);
     }
 
-    /** @deprecated */
-    /** @test */
-    public function should_let_user_leave_ride_using_legacy_API()
-    {
-        $ride = factory(Ride::class, 'next')->create();
-        $driver = factory(User::class)->create();
-        $ride->users()->attach($driver, ['status' => 'driver']);
-        $ride->users()->attach($this->user, ['status' => 'accepted']);
-
-        $this->expectsNotification($driver, RideUserLeft::class);
-
-        $request = [
-            'rideId' => $ride->id
-        ];
-
-        $response = $this->json('POST', 'ride/leaveRide', $request, $this->headers);
-        $response->assertStatus(200);
-        $response->assertExactJson([
-            'message' => 'Left ride.'
-        ]);
-    }
-
     /** @test */
     public function should_let_driver_leave_ride_and_notify_riders_including_requesters()
     {
@@ -773,27 +678,6 @@ class RideControllerTest extends TestCase
         $this->assertDatabaseHas('rides', ['id' => $ride->id, 'done' => true]);
     }
 
-    /** @deprecated  */
-    /** @test */
-    public function should_let_user_finish_ride_using_legacy_API()
-    {
-        $ride = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00', 'done' => false]);
-        $ride->users()->attach($this->user, ['status' => 'driver']);
-
-        $rider = factory(User::class)->create();
-        $ride->users()->attach($rider, ['status' => 'accepted']);
-
-        $request = [
-            'rideId' => $ride->id
-        ];
-
-        $response = $this->json('POST', 'ride/finishRide', $request, $this->headers);
-        $response->assertStatus(200);
-        $response->assertExactJson([
-            'message' => 'Ride finished.'
-        ]);
-    }
-
     /** @test */
     public function should_not_allow_finishing_future_rides()
     {
@@ -820,106 +704,4 @@ class RideControllerTest extends TestCase
 
         $this->assertDatabaseHas('rides', ['id' => $ride->id, 'done' => false]);
     }
-
-    /** @deprecated */
-    /** @test */
-    public function should_get_history_using_legacy_API()
-    {
-        $user2 = factory(User::class)->create()->fresh();
-
-        $ride1 = factory(Ride::class)->create(['done' => true]);
-        $ride2 = factory(Ride::class)->create(['done' => true]);
-        $ride3 = factory(Ride::class)->create(['done' => false]);
-        $ride4 = factory(Ride::class, 'next')->create();
-        $ride5 = factory(Ride::class)->create(['done' => true]);
-        $ride6 = factory(Ride::class)->create(['done' => true]);
-
-        $ride1->users()->attach($this->user, ['status' => 'driver']);
-        $ride2->users()->attach($this->user, ['status' => 'accepted']);
-        $ride2->users()->attach($user2, ['status' => 'driver']);
-        $ride3->users()->attach($this->user, ['status' => 'driver']);
-        $ride4->users()->attach($this->user, ['status' => 'accepted']);
-        $ride5->users()->attach($user2, ['status' => 'driver']);
-        $ride6->users()->attach($this->user, ['status' => 'rejected']);
-
-        $response = $this->json('GET', 'ride/getRidesHistory', [], $this->headers);
-        $response->assertStatus(200);
-        $response->assertExactJson([
-            [
-                'id' => $ride1->id,
-                'myzone' => $ride1->myzone,
-                'neighborhood' => $ride1->neighborhood,
-                'going' => $ride1->going,
-                'place' => $ride1->place,
-                'route' => $ride1->route,
-                'routine_id' => $ride1->routine_id,
-                'hub' => $ride1->hub,
-                'slots' => $ride1->slots,
-                'mytime' => $ride1->date->format('H:i:s'),
-                'mydate' => $ride1->date->format('Y-m-d'),
-                'description' => $ride1->description,
-                'week_days' => $ride1->week_days,
-                'repeats_until' => $ride1->repeats_until,
-                'driver' => $this->user->toArray(),
-                'riders' => [],
-                'feedback' => null
-            ],
-            [
-                'id' => $ride2->id,
-                'myzone' => $ride2->myzone,
-                'neighborhood' => $ride2->neighborhood,
-                'going' => $ride2->going,
-                'place' => $ride2->place,
-                'route' => $ride2->route,
-                'routine_id' => $ride2->routine_id,
-                'hub' => $ride2->hub,
-                'slots' => $ride2->slots,
-                'mytime' => $ride2->date->format('H:i:s'),
-                'mydate' => $ride2->date->format('Y-m-d'),
-                'description' => $ride2->description,
-                'week_days' => $ride2->week_days,
-                'repeats_until' => $ride2->repeats_until,
-                'driver' => $user2->toArray(),
-                'riders' => [$this->user->toArray()],
-                'feedback' => null
-            ]
-        ]);
-    }
-
-    /** @deprecated */
-    /** @test */
-    public function should_get_history_count_using_legacy_API()
-    {
-        $user2 = factory(User::class)->create();
-
-        $ride1 = factory(Ride::class)->create(['done' => true]); // offered
-        $ride1->users()->attach($this->user, ['status' => 'driver']);
-
-        $ride1 = factory(Ride::class)->create(['done' => true]); // offered
-        $ride1->users()->attach($this->user, ['status' => 'driver']);
-
-        $ride2 = factory(Ride::class)->create(['done' => true]); // taken
-        $ride2->users()->attach($this->user, ['status' => 'accepted']);
-        $ride2->users()->attach($user2, ['status' => 'driver']);
-
-        $ride3 = factory(Ride::class)->create(['done' => false]); // incomplete
-        $ride3->users()->attach($this->user, ['status' => 'driver']);
-
-        $ride4 = factory(Ride::class, 'next')->create(); // incomplete
-        $ride4->users()->attach($this->user, ['status' => 'accepted']);
-
-        $ride5 = factory(Ride::class)->create(['done' => true]); // from other user
-        $ride5->users()->attach($user2, ['status' => 'driver']);
-
-        $ride6 = factory(Ride::class)->create(['done' => true]); // rejected
-        $ride6->users()->attach($this->user, ['status' => 'rejected']);
-
-        $response = $this->json('GET', 'ride/getRidesHistoryCount/' . $this->user->id, [], $this->headers);
-        $response->assertStatus(200);
-        $response->assertExactJson([
-            'offeredCount' => 2,
-            'takenCount' => 1
-        ]);
-    }
-
 }
