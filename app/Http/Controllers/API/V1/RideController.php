@@ -162,53 +162,6 @@ class RideController extends BaseController
         });
     }
 
-    /**
-     * @deprecated
-     */
-    public function listFiltered(Request $request)
-    {
-        $locations = explode(', ', $request->location);
-
-        //location can be zones or neighborhoods, check if first array position is a zone or a neighborhood
-        if ($locations[0] == 'Centro' || $locations[0] == 'Zona Sul' || $locations[0] == 'Zona Oeste' || $locations[0] == 'Zona Norte' || $locations[0] == 'Baixada' || $locations[0] == 'Grande Niterói' || $locations[0] == 'Outros') {
-            $locationColumn = 'myzone';
-        } else {
-            $locationColumn = 'neighborhood';
-        }
-
-        $dateMin = Carbon::createFromFormat('Y-m-d H:i', $request->date . ' ' . substr($request->time, 0, 5));
-        $dateMax = $dateMin->copy()->setTime(23,59,59);
-
-        $rides = Ride::whereBetween('date', [$dateMin, $dateMax])
-            ->where('done', false)
-            ->where('going', $request->go)
-            ->whereIn($locationColumn, $locations);
-
-        if ($request->filled('center')) {
-            $rides = $rides->where('hub', 'LIKE', $request->input('center') . '%');
-        }
-
-        $rides = $rides->get();
-
-        $results = [];
-        foreach($rides as $ride) {
-            //check if ride is full
-            if ($ride->users()->whereIn('status', ['pending', 'accepted'])->count() < $ride->slots) {
-                //gets the driver
-                $driver = $ride->users()->where('status', 'driver')->first();
-                //if could not find driver, he's probably been banned, so skip ride
-                if (!$driver) continue;
-
-                $resultRide = $ride;
-                $resultRide->driver = $driver;
-
-                $results[] = $resultRide;
-            }
-        }
-
-        return $results;
-    }
-
     public function getRequests(Ride $ride)
     {
         return $ride->requests;
