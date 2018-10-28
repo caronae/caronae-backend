@@ -125,21 +125,7 @@ class RideController extends BaseController
     {
         return $validateDuplicateService->validate();
     }
-
-    public function delete(Request $request, $rideId)
-    {
-        return DB::transaction(function() use ($request, $rideId) {
-            $user = $request->user();
-            $ride = $user->rides()->where(['rides.id' => $request->rideId, 'status' => 'driver'])->first();
-            if ($ride == null) {
-                return $this->error('User is not the driver on this ride or ride does not exist.', 403);
-            }
-
-            RideUser::where('ride_id', $rideId)->delete(); //delete all relationships with this ride first
-            $ride->forceDelete();
-        });
-    }
-
+    
     public function deleteAllFromRoutine(Request $request, $routineId)
     {
         return DB::transaction(function() use ($request, $routineId) {

@@ -456,34 +456,6 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function should_delete_ride()
-    {
-        $ride = factory(Ride::class, 'next')->create();
-        $ride->users()->attach($this->user, ['status' => 'driver']);
-
-        $response = $this->json('DELETE', 'api/v1/rides/' . $ride->id, [], $this->headers);
-        $response->assertStatus(200);
-
-        $this->assertDatabaseMissing('rides', ['id' => $ride->id]);
-    }
-
-    /** @test */
-    public function should_delete_ride_relationships()
-    {
-        $ride = factory(Ride::class, 'next')->create();
-        $rider = factory(User::class)->create();
-        $ride->users()->attach($this->user, ['status' => 'driver']);
-        $ride->users()->attach($rider, ['status' => 'accepted']);
-
-        $response = $this->json('DELETE', 'api/v1/rides/' . $ride->id, [], $this->headers);
-        $response->assertStatus(200);
-
-        $this->assertDatabaseMissing('rides', ['id' => $ride->id]);
-        $this->assertDatabaseMissing('ride_user', ['ride_id' => $ride->id, 'user_id' => $this->user->id]);
-        $this->assertDatabaseMissing('ride_user', ['ride_id' => $ride->id, 'user_id' => $rider->id]);
-    }
-
-    /** @test */
     public function should_delete_all_rides_in_routine()
     {
         $ride = factory(Ride::class, 'next')->create();

@@ -18,7 +18,6 @@ Route::middleware('api.v1.auth')->group(function () {
 
     Route::get('rides', 'RideController@index');
     Route::post('ride', 'RideController@store');
-    Route::delete('ride/{rideId}', 'RideController@delete');
     Route::delete('ride/allFromRoutine/{routineId}', 'RideController@deleteAllFromRoutine');
     Route::post('ride/requestJoin', 'RideController@createRequest');
     Route::get('ride/getRequesters/{rideId}', 'RideController@getRequests');
