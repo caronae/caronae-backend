@@ -28,8 +28,6 @@ Route::middleware('api.v1.auth')->group(function () {
     Route::get('ride/getMyActiveRides', 'RideController@getMyActiveRides');
     Route::post('ride/leaveRide', 'RideController@leaveRide');
     Route::post('ride/finishRide', 'RideController@finishRide');
-    Route::get('ride/getRidesHistory', 'RideController@getRidesHistory');
-    Route::get('ride/getRidesHistoryCount/{userId}', 'RideController@getRidesHistoryCount');
     Route::post('ride/saveFeedback', 'RideController@saveFeedback');
     Route::get('ride/validateDuplicate', 'RideController@validateDuplicate');
     Route::get('ride/{ride}', 'RideController@show');
