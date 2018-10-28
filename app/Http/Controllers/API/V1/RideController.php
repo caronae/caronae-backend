@@ -140,19 +140,6 @@ class RideController extends BaseController
         });
     }
 
-    public function deleteAllFromUser(Request $request, $userId, $going)
-    {
-        return DB::transaction(function() use ($request, $going) {
-            $user = $request->user();
-
-            $matchThese = ['status' => 'driver', 'going' => $going, 'done' => false];
-            $rideIdList = $user->rides()->where($matchThese)->pluck('ride_id')->toArray();
-
-            RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
-            Ride::whereIn('id', $rideIdList)->forceDelete();
-        });
-    }
-
     public function deleteAllFromRoutine(Request $request, $routineId)
     {
         return DB::transaction(function() use ($request, $routineId) {
