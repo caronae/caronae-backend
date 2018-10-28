@@ -231,54 +231,6 @@ class RideController extends BaseController
         return ['message' => 'Ride finished.'];
     }
 
-    /**
-     * @deprecated
-     */
-    public function getRidesHistory(Request $request)
-    {
-        $user = $request->user();
-        $rides = $user->rides()->where('done', true)->whereIn('status', ['driver', 'accepted'])->get();
-
-        $resultJson = [];
-        foreach ($rides as $ride) {
-            $riders = $ride->users()->whereIn('status', ['driver', 'accepted'])->get();
-
-            $resultRide = $ride;
-
-            $resultRiders = [];
-            foreach($riders as $rider) {
-                $riderStatus = $rider->pivot->status;
-
-                if ($riderStatus == 'driver') {
-                    $resultRide->driver = $rider;
-                } else {
-                    $resultRiders[] = $rider;
-                }
-            }
-
-            $resultRide->riders = $resultRiders;
-            $resultRide->feedback = $resultRide->pivot->feedback;
-            $resultJson[] = $resultRide;
-        }
-
-        return $resultJson;
-    }
-
-    /**
-     * @deprecated
-     */
-    public function getRidesHistoryCount($userId)
-    {
-        $user = User::find($userId);
-        $offeredCount = $user->rides()->where('done', true)->where('status', 'driver')->count();
-        $takenCount = $user->rides()->where('done', true)->where('status', 'accepted')->count();
-
-        return [
-            'offeredCount' => $offeredCount,
-            'takenCount' => $takenCount
-        ];
-    }
-
 
     /// Helper methods
 
