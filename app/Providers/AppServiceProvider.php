@@ -13,12 +13,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Carbon::setToStringFormat(config('custom.nativeDateFormat'));
+        setlocale(LC_TIME, config('app.locale'));
     }
 
     public function register()
     {
         $this->app->singleton(Generator::class, function() {
-            return Factory::create('pt_BR');
+            return Factory::create(config('app.locale'));
         });
 
         $this->app->bind(ValidateDuplicateService::class, function()

@@ -27,17 +27,14 @@ class RideCanceled extends Notification implements ShouldQueue
         return ['database', PushChannel::class];
     }
 
-    public function toPush(User $user)
+    public function toPush()
     {
-        if ($user->status == 'pending') {
-            $message = 'Um motorista cancelou uma carona que você havia solicitado';
-        } else {
-            $message = 'Um motorista cancelou uma carona ativa sua';
-        }
+        $dateString = date_string($this->ride->date);
 
         return [
             'id'       => $this->id,
-            'message'  => $message,
+            'title'    => $this->ride->title,
+            'message'  => "{$this->driver->shortName} teve que cancelar sua carona de {$dateString}",
             'msgType'  => 'cancelled',
             'rideId'   => $this->ride->id,
             'senderId' => $this->driver->id,
@@ -48,7 +45,6 @@ class RideCanceled extends Notification implements ShouldQueue
     {
         return [
             'rideID' => $this->ride->id,
-
         ];
     }
 }

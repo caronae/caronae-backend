@@ -21,8 +21,8 @@ class RideCanceledTest extends TestCase
     {
         parent::setUp();
 
-        $this->driver = factory(User::class, 'driver')->create();
-        $this->ride = factory(Ride::class)->create();
+        $this->driver = factory(User::class, 'driver')->create(['name' => 'Fulana Santos Silva']);
+        $this->ride = factory(Ride::class)->create(['date' => '2018-11-02 20:00:00']);
         $this->ride->users()->attach($this->driver, ['status' => 'driver']);
 
     	$this->notification = new RideCanceled($this->ride, $this->driver);
@@ -39,21 +39,11 @@ class RideCanceledTest extends TestCase
 
         $this->assertSame([
             'id'       => $this->notification->id,
-            'message'  => 'Um motorista cancelou uma carona ativa sua',
+            'title'    => $this->ride->title,
+            'message'  => 'Fulana Silva teve que cancelar sua carona de sexta-feira (02/11) às 20:00',
             'msgType'  => 'cancelled',
             'rideId'   => $this->ride->id,
             'senderId' => $this->driver->id,
         ], $payload);
-    }
-
-    /** @test */
-    public function should_send_same_message_to_pending_user()
-    {
-        $user = factory(User::class)->create();
-        $user->status = 'pending';
-
-        $payload = $this->notification->toPush($user);
-
-        $this->assertEquals('Um motorista cancelou uma carona que você havia solicitado', $payload['message']);
     }
 }
