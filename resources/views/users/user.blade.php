@@ -5,7 +5,15 @@
 
     <ul class="properties">
         <li class="property"><span class="column-name">Nome</span> {{ $entry->name }}</li>
-        <li class="property"><span class="column-name">Usuário desde</span> {{ $entry->created_at }}</li>
+        <li class="property">
+            <span class="column-name">Usuário desde</span>
+            {{ ucfirst(Date::parse($entry->created_at)->format('F')) }}
+            de
+            {{ $entry->created_at->format('Y') }}
+            <small>
+                ({{ $entry->created_at->diffForHumans() }})
+            </small>
+        </li>
         <li class="property">
             <span class="column-name">E-mail</span>
             @if ($entry->email)
