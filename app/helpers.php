@@ -24,12 +24,11 @@ if (!function_exists('recurringDates')) {
         $transformer = new \Recurr\Transformer\ArrayTransformer();
         $events = $transformer->transform($recurringRule);
 
-        $dates = [];
-        foreach ($events as $event) {
-            $dates[] = $event->getStart();
-        }
-
-        return $dates;
+        return $events->map(function ($event) {
+           return $event->getStart();
+        })->filter(function ($date) use ($startDate) {
+            return $date != $startDate;
+        });
     }
 }
 

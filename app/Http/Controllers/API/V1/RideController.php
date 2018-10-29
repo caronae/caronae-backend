@@ -75,7 +75,7 @@ class RideController extends BaseController
     {
         $user = $request->user();
 
-        $validateDuplicateService = new ValidateDuplicateService($user, $request->all()['date'], $request->get('going'));
+        $validateDuplicateService = new ValidateDuplicateService($user, $request->input('date'), $request->input('going'));
         $resultValidation = $validateDuplicateService->validate();
 
         if (!$resultValidation['valid']) {
@@ -91,30 +91,22 @@ class RideController extends BaseController
             $ridesCreated[] = $ride;
 
             if ($request->isRoutine()) {
-                $repeats_until = $request->getRoutineEndDate();
+                $routineEndDate = $request->getRoutineEndDate();
 
-                $ride->repeats_until = $repeats_until;
+                $ride->repeats_until = $routineEndDate;
                 $ride->week_days = $request->week_days;
                 $ride->routine_id = $ride->id;
                 $ride->save();
 
-                $repeating_dates = recurringDates($ride->date, $repeats_until, $ride->week_days);
+                $routineDates = recurringDates($ride->date, $routineEndDate, $ride->week_days);
 
-                foreach ($repeating_dates as $date) {
-                    if ($date == $ride->date) {
-                        continue;
-                    }
+                foreach ($routineDates as $date) {
+                    $repeatingRide = $ride->replicate();
+                    $repeatingRide->date = $date;
+                    $repeatingRide->save();
+                    $repeatingRide->users()->attach($user->id, ['status' => 'driver']);
 
-                    $repeating_ride = new Ride();
-                    $repeating_ride->fill($request->all());
-                    $repeating_ride->date = $date;
-                    $repeating_ride->week_days = $ride->week_days;
-                    $repeating_ride->routine_id = $ride->id;
-                    $repeating_ride->save();
-
-                    $ridesCreated[] = $repeating_ride;
-
-                    $repeating_ride->users()->attach($user->id, ['status' => 'driver']);
+                    $ridesCreated[] = $repeatingRide;
                 }
             }
         });
