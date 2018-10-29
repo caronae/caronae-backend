@@ -1,6 +1,7 @@
 # Caronaê - Backend
 
 [![CircleCI](https://circleci.com/gh/caronae/caronae-backend.svg?style=svg)](https://circleci.com/gh/caronae/caronae-backend)
+[![StyleCI](https://github.styleci.io/repos/70729847/shield?branch=master)](https://github.styleci.io/repos/70729847)
 
 Backend do Caronaê, baseado no [Laravel](https://github.com/laravel/laravel). O backend é
 composto por uma API REST usada pelos apps e pela área administrativa, usada internamente.
