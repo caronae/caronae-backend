@@ -83,7 +83,7 @@ class User extends Authenticatable implements JWTSubject
     public function rides()
     {
         return $this->belongsToMany(Ride::class)
-            ->withPivot('status', 'feedback')
+            ->withPivot('status')
             ->withTimestamps();
     }
 

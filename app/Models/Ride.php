@@ -22,7 +22,7 @@ class Ride extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot('status', 'feedback')->withTimestamps();
+        return $this->belongsToMany(User::class)->withPivot('status')->withTimestamps();
     }
 
     public function driver()
