@@ -1,6 +1,6 @@
 <div class="model-details user-details">
     <div class="user-image">
-        <img src="{{ $entry->profile_pic_url or asset('images/user-placeholder.png') }}">
+        <img src="{{ $entry->profile_pic_url ?: asset('images/user-placeholder.png') }}">
     </div>
 
     <ul class="properties">
