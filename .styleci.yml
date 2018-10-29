@@ -1,0 +1,9 @@
+preset: laravel
+risky: false
+finder:
+  exclude:
+  - node_modules
+  - storage
+  - vendor
+  name: "*.php"
+  not-name: "*.blade.php"
