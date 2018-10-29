@@ -14,7 +14,7 @@ class ChatController extends BaseController
     public function getMessages(Request $request, Ride $ride)
     {
         $this->validate($request, [
-            'since' => 'date'
+            'since' => 'date',
         ]);
 
         if ($request->since) {
@@ -24,14 +24,14 @@ class ChatController extends BaseController
         }
 
         return [
-            'messages' => MessageResource::collection($messages)
+            'messages' => MessageResource::collection($messages),
         ];
     }
 
     public function sendMessage(Request $request, Ride $ride)
     {
         $this->validate($request, [
-            'message' => 'required'
+            'message' => 'required',
         ]);
 
         $message = Message::create([
@@ -40,7 +40,7 @@ class ChatController extends BaseController
             'body' => $request->message,
         ]);
         $notification = new RideMessageReceived($message);
-        
+
         $subscribers = $ride->users()
             ->whereIn('status', ['accepted', 'driver'])
             ->where('user_id', '!=', $request->user()->id)
@@ -49,8 +49,7 @@ class ChatController extends BaseController
 
         return response()->json([
             'message' => 'Message sent.',
-            'id' => $message->id
+            'id' => $message->id,
         ], 201);
     }
-
 }

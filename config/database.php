@@ -79,7 +79,6 @@ return [
             'schema'   => 'public',
         ],
 
-
     ],
 
     /*

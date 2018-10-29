@@ -3,7 +3,7 @@
 use Caronae\Models\Hub;
 use Faker\Generator as Faker;
 
-/**
+/*
  * @var Illuminate\Database\Eloquent\Factory $factory
  */
 $factory->define(Hub::class, function (Faker $faker) {

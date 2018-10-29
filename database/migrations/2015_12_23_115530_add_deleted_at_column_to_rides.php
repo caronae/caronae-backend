@@ -12,7 +12,7 @@ class AddDeletedAtColumnToRides extends Migration
      */
     public function up()
     {
-        Schema::table('rides', function(Blueprint $table){
+        Schema::table('rides', function (Blueprint $table) {
             $table->softDeletes();
         });
     }
@@ -24,7 +24,7 @@ class AddDeletedAtColumnToRides extends Migration
      */
     public function down()
     {
-        Schema::table('rides', function(Blueprint $table){
+        Schema::table('rides', function (Blueprint $table) {
             $table->dropSoftDeletes();
         });
     }

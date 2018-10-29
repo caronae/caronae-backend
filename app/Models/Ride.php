@@ -72,6 +72,7 @@ class Ride extends Model
         } else {
             $route = $this->hub . ' → ' . $this->neighborhood;
         }
+
         return $route . ' | ' . $this->date->format('d/m');
     }
 
@@ -88,6 +89,7 @@ class Ride extends Model
     public function availableSlots()
     {
         $ridersCount = $this->belongsToMany(User::class)->wherePivot('status', 'accepted')->count();
+
         return $this->slots - $ridersCount;
     }
 
@@ -101,7 +103,7 @@ class Ride extends Model
         return $query
             ->leftjoin('ride_user', 'rides.id', '=', 'ride_user.ride_id')
             ->select('rides.*')
-            ->whereIn('ride_user.status', ['pending','accepted','driver'])
+            ->whereIn('ride_user.status', ['pending', 'accepted', 'driver'])
             ->groupBy('rides.id')
             ->having(DB::raw('count(ride_user.user_id)-1'), '<', DB::raw('rides.slots'));
     }
@@ -126,7 +128,7 @@ class Ride extends Model
         collect($filters)->each(function ($value, $key) use (&$query) {
             if ($key == 'neighborhoods') {
                 $query = $query->whereIn('rides.neighborhood', $value);
-            } else if ($key == 'hubs') {
+            } elseif ($key == 'hubs') {
                 $query = $query->where('rides.hub', 'SIMILAR TO', '(' . implode('|', $value) . ')%');
             } else {
                 $query = $query->where('rides.' . $key, $value);
@@ -136,7 +138,8 @@ class Ride extends Model
         return $query;
     }
 
-    public function scopeWithInstitution($query, $institution) {
+    public function scopeWithInstitution($query, $institution)
+    {
         return $query
             ->whereHas('users', function ($query) use ($institution) {
                 $query->where('status', 'driver')->where('institution_id', $institution->id);

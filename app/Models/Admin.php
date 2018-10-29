@@ -13,7 +13,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 
-class Admin extends Model implements AuthenticatableContract,
+class Admin extends Model implements
+    AuthenticatableContract,
                                     AuthorizableContract,
                                     CanResetPasswordContract
 {

@@ -66,6 +66,7 @@ class User extends Authenticatable implements JWTSubject
         if (count($names) > 1) {
             $shortName .= ' ' . array_last($names);
         }
+
         return $shortName;
     }
 
@@ -143,7 +144,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function banish()
     {
-        DB::transaction(function(){
+        DB::transaction(function () {
             $ids = $this->rides()->where('done', false)->get()->pluck('id');
 
             RideUser::where('status', '<>', 'driver')
@@ -169,6 +170,7 @@ class User extends Authenticatable implements JWTSubject
     public function generateToken()
     {
         $this->token = strtoupper(substr(base_convert(sha1(uniqid() . rand()), 16, 36), 0, 6));
+
         return $this;
     }
 

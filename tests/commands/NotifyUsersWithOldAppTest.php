@@ -2,7 +2,6 @@
 
 namespace Caronae\Console\Commands;
 
-
 use Carbon\Carbon;
 use Caronae\Models\User;
 use Caronae\Notifications\UpdateAppNotification;

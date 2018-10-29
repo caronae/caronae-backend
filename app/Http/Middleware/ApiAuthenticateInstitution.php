@@ -13,17 +13,17 @@ class ApiAuthenticateInstitution extends AuthenticateWithBasicAuth
     {
         if (($institution = Institution::where([
             'id' => $request->getUser(),
-            'password' => $request->getPassword()
-            ])->first()) == NULL) {
+            'password' => $request->getPassword(),
+            ])->first()) == null) {
             Log::warning('Autenticação da instituição falhou', [ 'id' => $request->getUser(), 'password' => $request->getPassword() ]);
+
             return response()->json(['error' => 'Institution not authorized.'], 401);
         }
 
         $request->merge([
-            'institution' => $institution
+            'institution' => $institution,
         ]);
 
         return $next($request);
     }
-
 }

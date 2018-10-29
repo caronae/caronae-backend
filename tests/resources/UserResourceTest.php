@@ -32,7 +32,7 @@ class UserResourceTest extends TestCase
             'created_at' => $user->created_at->format('Y-m-d H:i:s'),
             'location' => $user->location,
             'face_id' => $user->face_id,
-            'profile_pic_url' => $user->profile_pic_url
+            'profile_pic_url' => $user->profile_pic_url,
         ];
 
         $this->assertEquals($expectedJson, $userResource->toArray(new Request()));

@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -10,7 +11,8 @@ use Log;
 
 class InstitutionController extends CrudController
 {
-    public function setup() {
+    public function setup()
+    {
         $this->crud->setModel('Caronae\Models\Institution');
         $this->crud->setRoute('admin/institutions');
         $this->crud->setEntityNameStrings('instituição', 'instituições');
@@ -36,7 +38,7 @@ class InstitutionController extends CrudController
                     'name' => 'Nome',
                     'color' => 'Cor',
                 ],
-                'min' => 1
+                'min' => 1,
             ],
             [ 'name' => 'going_label', 'label' => 'Label de chegada' ],
             [ 'name' => 'leaving_label', 'label' => 'Label de saída' ],
@@ -50,7 +52,7 @@ class InstitutionController extends CrudController
 
     public function update(Request $request)
     {
-         $this->validate($request, [
+        $this->validate($request, [
              'name' => 'required|string',
              'authentication_url' => 'required|url',
              'going_label' => 'required|string',
@@ -60,8 +62,10 @@ class InstitutionController extends CrudController
         $institution = Institution::find($request->institution);
 
         $campi = collect(json_decode($request->input('campi'), true));
-        $campi->each(function($campusRequest) use ($institution) {
-            if (empty($campusRequest)) return;
+        $campi->each(function ($campusRequest) use ($institution) {
+            if (empty($campusRequest)) {
+                return;
+            }
 
             if (isset($campusRequest['id'])) {
                 $campus = Campus::findOrFail($campusRequest['id']);
@@ -74,6 +78,7 @@ class InstitutionController extends CrudController
         });
 
         $this->clearCache($institution);
+
         return parent::updateCrud($request);
     }
 

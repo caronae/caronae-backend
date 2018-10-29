@@ -12,7 +12,7 @@ class CreateFeedbackColumn extends Migration
      */
     public function up()
     {
-        Schema::table('ride_user', function(Blueprint $table){
+        Schema::table('ride_user', function (Blueprint $table) {
             $table->string('feedback')->nullable();
         });
     }
@@ -24,7 +24,7 @@ class CreateFeedbackColumn extends Migration
      */
     public function down()
     {
-        Schema::table('ride_user', function(Blueprint $table){
+        Schema::table('ride_user', function (Blueprint $table) {
             $table->dropColumn('feedback');
         });
     }

@@ -6,7 +6,6 @@ Route::post('users', 'UserController@store')->middleware('api.institution');
 Route::post('users/login', 'UserController@login');
 
 Route::middleware('api.v1.auth')->group(function () {
-
     Route::get('users/{id}/mutualFriends', 'UserController@getMutualFriends');
     Route::get('users/{user}/rides/history', 'UserController@getRidesHistory');
 
@@ -17,7 +16,6 @@ Route::middleware('api.v1.auth')->group(function () {
         Route::get('users/{user}/rides', 'UserController@getRides');
         Route::get('users/{user}/token', 'UserController@getToken');
     });
-
 
     Route::get('rides', 'RideController@index');
     Route::post('rides', 'RideController@store');

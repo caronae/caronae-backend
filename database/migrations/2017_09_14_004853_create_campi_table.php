@@ -22,10 +22,10 @@ class CreateCampiTable extends Migration
             $table->timestamps();
         });
 
-        DB::connection()->getPdo()->exec("
+        DB::connection()->getPdo()->exec('
             INSERT INTO campi (name, institution_id)
             SELECT DISTINCT campus, institutions.id FROM hubs, institutions
-        ");
+        ');
     }
 
     /**

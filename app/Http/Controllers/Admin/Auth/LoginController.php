@@ -1,4 +1,5 @@
 <?php
+
 namespace Caronae\Http\Controllers\Admin\Auth;
 
 use Caronae\Http\Controllers\BaseController;

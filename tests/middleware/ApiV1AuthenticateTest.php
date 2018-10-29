@@ -30,7 +30,8 @@ class ApiV1AuthenticateTest extends TestCase
     {
         $request = $this->unauthorizedLegacyRequest('xxx');
 
-        $response = $this->middleware->handle($request, function($r){ });
+        $response = $this->middleware->handle($request, function ($r) {
+        });
 
         $this->assertResponseIsUnauthorized($response);
     }
@@ -40,7 +41,8 @@ class ApiV1AuthenticateTest extends TestCase
     {
         $request = $this->unauthorizedLegacyRequest(null);
 
-        $response = $this->middleware->handle($request, function($r){ });
+        $response = $this->middleware->handle($request, function ($r) {
+        });
 
         $this->assertResponseIsUnauthorized($response);
     }
@@ -50,7 +52,7 @@ class ApiV1AuthenticateTest extends TestCase
     {
         $request = $this->authenticatedLegacyRequest();
 
-        $result = $this->middleware->handle($request, function() {
+        $result = $this->middleware->handle($request, function () {
             return 'next';
         });
 
@@ -67,7 +69,7 @@ class ApiV1AuthenticateTest extends TestCase
         $request = new Request();
         $request->headers = new HeaderBag(['Authorization' => "Bearer $token"]);
 
-        $result = $this->middleware->handle($request, function() {
+        $result = $this->middleware->handle($request, function () {
             return 'next';
         });
 
@@ -82,10 +84,11 @@ class ApiV1AuthenticateTest extends TestCase
         JWTAuth::shouldReceive('refresh')->andThrow(new TokenExpiredException('Token expired'));
         $request = $this->jwtRequest();
 
-        $response = $this->middleware->handle($request, function($r){ });
+        $response = $this->middleware->handle($request, function ($r) {
+        });
 
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertArraySubset(['error' => 'Token expired'], (array)$response->getData());
+        $this->assertArraySubset(['error' => 'Token expired'], (array) $response->getData());
     }
 
     /** @test */
@@ -99,7 +102,7 @@ class ApiV1AuthenticateTest extends TestCase
 
         $request = $this->jwtRequest();
 
-        $response = $this->middleware->handle($request, function() {
+        $response = $this->middleware->handle($request, function () {
             return new Response();
         });
 
@@ -118,7 +121,9 @@ class ApiV1AuthenticateTest extends TestCase
 
         $request = $this->jwtRequest();
 
-        $response = $this->middleware->handle($request, function($r){ return new Response(); });
+        $response = $this->middleware->handle($request, function ($r) {
+            return new Response();
+        });
 
         $this->assertResponseIsUnauthorized($response);
     }
@@ -129,10 +134,11 @@ class ApiV1AuthenticateTest extends TestCase
         JWTAuth::shouldReceive('parseToken->authenticate')->andThrow(new TokenInvalidException());
         $request = $this->jwtRequest();
 
-        $response = $this->middleware->handle($request, function($r){ });
+        $response = $this->middleware->handle($request, function ($r) {
+        });
 
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArraySubset([ 'error' => 'Token is invalid.' ], (array)$response->getData());
+        $this->assertArraySubset([ 'error' => 'Token is invalid.' ], (array) $response->getData());
     }
 
     /** @test */
@@ -142,10 +148,11 @@ class ApiV1AuthenticateTest extends TestCase
 
         $request = $this->jwtRequest();
 
-        $response = $this->middleware->handle($request, function($r){ });
+        $response = $this->middleware->handle($request, function ($r) {
+        });
 
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertArraySubset([ 'error' => 'Error validating token.' ], (array)$response->getData());
+        $this->assertArraySubset([ 'error' => 'Error validating token.' ], (array) $response->getData());
     }
 
     /** @test */
@@ -153,7 +160,8 @@ class ApiV1AuthenticateTest extends TestCase
     {
         $request = $this->authenticatedLegacyRequest();
 
-        $this->middleware->handle($request, function($request) {});
+        $this->middleware->handle($request, function ($request) {
+        });
 
         $this->assertNotNull(Auth::user());
     }
@@ -161,7 +169,7 @@ class ApiV1AuthenticateTest extends TestCase
     private function assertResponseIsUnauthorized($response)
     {
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertArrayHasKey('error', (array)$response->getData());
+        $this->assertArrayHasKey('error', (array) $response->getData());
         $this->assertNull($response->headers->get('Authorization'));
     }
 
@@ -170,6 +178,7 @@ class ApiV1AuthenticateTest extends TestCase
         $user = factory(User::class)->create()->fresh();
         $request = new Request();
         $request->headers = new HeaderBag(['token' => $user->token]);
+
         return $request;
     }
 
@@ -177,6 +186,7 @@ class ApiV1AuthenticateTest extends TestCase
     {
         $request = new Request();
         $request->headers = new HeaderBag(['token' => $token]);
+
         return $request;
     }
 
@@ -186,7 +196,8 @@ class ApiV1AuthenticateTest extends TestCase
     private function jwtRequest(): Request
     {
         $request = new Request();
-        $request->headers = new HeaderBag(['Authorization' => "Bearer token"]);
+        $request->headers = new HeaderBag(['Authorization' => 'Bearer token']);
+
         return $request;
     }
 }

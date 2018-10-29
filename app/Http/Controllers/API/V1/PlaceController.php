@@ -27,6 +27,7 @@ class PlaceController extends BaseController
         return Cache::remember('zones', self::CACHE_TIME_MINUTES, function () {
             Log::info('Loading zones from database.');
             $zones = Zone::all();
+
             return $zones->map(function ($zone) {
                 return [
                     'name' => $zone->name,
@@ -40,9 +41,11 @@ class PlaceController extends BaseController
     private function getCampi(Request $request)
     {
         $institution = $request->user()->institution;
+
         return Cache::remember('campi_institution_' . $institution->id, self::CACHE_TIME_MINUTES, function () use ($institution) {
             Log::info("Loading campi for {$institution->name} from database.");
             $campi = $institution->campi;
+
             return $campi->filter(function ($campus) {
                 return $campus->hubs()->count() > 0;
             })->map(function ($campus) {

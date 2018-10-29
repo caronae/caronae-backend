@@ -13,7 +13,7 @@ class RideJoinRequestAnsweredTest extends TestCase
 {
     use DatabaseTransactions;
 
-	private $ride;
+    private $ride;
     private $driver;
 
     public function setUp()
@@ -28,7 +28,7 @@ class RideJoinRequestAnsweredTest extends TestCase
     /** @test */
     public function should_contain_all_fields_in_push_when_accepted()
     {
-    	$notification = new RideJoinRequestAnswered($this->ride, true);
+        $notification = new RideJoinRequestAnswered($this->ride, true);
         $notification->id = uniqid();
 
         $this->assertSame([
@@ -44,7 +44,7 @@ class RideJoinRequestAnsweredTest extends TestCase
     /** @test */
     public function should_change_message_when_rejected()
     {
-    	$notification = new RideJoinRequestAnswered($this->ride, false);
+        $notification = new RideJoinRequestAnswered($this->ride, false);
         $notification->id = uniqid();
 
         $toPush = $notification->toPush(factory(User::class));

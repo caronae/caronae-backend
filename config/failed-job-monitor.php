@@ -7,6 +7,7 @@ if (!function_exists('getNotificationChannels')) {
         if (($env == 'production' || $env == 'staging') && !empty(env('SLACK_WEBHOOK_URL'))) {
             return ['slack'];
         }
+
         return [];
     }
 }

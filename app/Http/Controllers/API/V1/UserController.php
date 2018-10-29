@@ -5,7 +5,6 @@ namespace Caronae\Http\Controllers\API\v1;
 use Caronae\Http\Controllers\BaseController;
 use Caronae\Http\Requests\SignUpRequest;
 use Caronae\Http\Requests\UpdateUserRequest;
-use Caronae\Http\Resources\InstitutionResource;
 use Caronae\Http\Resources\RideResource;
 use Caronae\Http\Resources\UserResource;
 use Caronae\Models\User;
@@ -40,6 +39,7 @@ class UserController extends BaseController
         $user->save();
 
         $token = JWTAuth::fromUser($user);
+
         return [ 'user' => new UserResource($user), 'token' => $token ];
     }
 
@@ -47,7 +47,7 @@ class UserController extends BaseController
     {
         $this->validate($request, [
             'id_ufrj' => 'required',
-            'token' => 'required'
+            'token' => 'required',
         ]);
 
         $user = User::where(['id_ufrj' => $request->input('id_ufrj'), 'token' => $request->input('token')])->first();
@@ -69,9 +69,9 @@ class UserController extends BaseController
     public function getToken(User $user)
     {
         $token = JWTAuth::fromUser($user);
+
         return response(['message' => 'Ok'])->header('Authorization', "Bearer $token");
     }
-
 
     public function getRides(User $user)
     {
@@ -143,13 +143,14 @@ class UserController extends BaseController
 
         try {
             $response = $fb->get('/' . $fbID . '?fields=context.fields(mutual_friends)', $fbToken);
-        } catch(FacebookSDKException $e) {
+        } catch (FacebookSDKException $e) {
             return $this->error('Facebook SDK returned an error: ' . $e->getMessage(), 500);
         }
 
         $context = $response->getGraphNode()['context'];
         if (!array_key_exists('mutual_friends', $context)) {
             Log::warning('Facebook SDK returned an empty response for mutual_friends.');
+
             return ['total_count' => 0, 'mutual_friends' => []];
         }
 

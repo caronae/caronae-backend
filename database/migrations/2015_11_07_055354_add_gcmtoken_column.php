@@ -25,7 +25,7 @@ class AddGcmtokenColumn extends Migration
     public function down()
     {
         Schema::table('users', function ($table) {
-			$table->dropColumn('gcm_token');
-		});
+            $table->dropColumn('gcm_token');
+        });
     }
 }

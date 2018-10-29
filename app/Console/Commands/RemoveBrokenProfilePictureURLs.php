@@ -77,6 +77,7 @@ class RemoveBrokenProfilePictureURLs extends Command
 
         $requests = $users->map(function ($user) use ($invalidUsers) {
             $profile_pic_url = $user->profile_pic_url;
+
             return $this->client->getAsync($profile_pic_url)->then(null, function (GuzzleException $exception) use ($user, $invalidUsers) {
                 Log::debug("Imagem inválida: {$user->profile_pic_url}", [$exception->getMessage()]);
                 $invalidUsers[] = $user;

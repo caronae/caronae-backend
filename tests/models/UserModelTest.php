@@ -51,7 +51,8 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
-    public function should_ban_user() {
+    public function should_ban_user()
+    {
         $user = factory(User::class)->create();
 
         $user->banish();
@@ -60,7 +61,8 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
-    public function should_delete_unfinished_rides_when_user_is_banned() {
+    public function should_delete_unfinished_rides_when_user_is_banned()
+    {
         $rideFinished = $this->createRideAsDriver(['done' => true]);
         $this->createRideAsDriver(['done' => false]);
 
@@ -72,7 +74,8 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
-    public function should_delete_requests_for_unfinished_rides_when_user_is_banned() {
+    public function should_delete_requests_for_unfinished_rides_when_user_is_banned()
+    {
         $user = factory(User::class)->create();
 
         $rideFinished = $this->createRide(['done' => true]);
@@ -273,6 +276,7 @@ class UserModelTest extends TestCase
     {
         $ride = $this->createRide($attributes);
         $ride->users()->attach($this->driver, ['status' => 'driver']);
+
         return $ride;
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -11,7 +12,8 @@ class NeighborhoodController extends CrudController
 {
     private $zone;
 
-    public function setup() {
+    public function setup()
+    {
         $this->crud->setModel('Caronae\Models\Neighborhood');
         $this->crud->setRoute('admin/neighborhoods');
         $this->crud->setEntityNameStrings('bairro', 'bairros');
@@ -50,7 +52,9 @@ class NeighborhoodController extends CrudController
     public function index()
     {
         $view = parent::index();
-        if (!$this->zone) return $view;
+        if (!$this->zone) {
+            return $view;
+        }
 
         return $view->with([
             'title' => $this->zone->name,
@@ -58,13 +62,13 @@ class NeighborhoodController extends CrudController
         ]);
     }
 
-
     public function store(Request $request)
     {
         $this->validateInput($request);
 
         Log::info('Adding neighborhood ' . $request->name);
         $this->clearCache();
+
         return parent::storeCrud();
     }
 
@@ -74,6 +78,7 @@ class NeighborhoodController extends CrudController
 
         Log::info('Updating neighborhood ' . $request->name);
         $this->clearCache();
+
         return parent::updateCrud();
     }
 
@@ -81,6 +86,7 @@ class NeighborhoodController extends CrudController
     {
         Log::info('Deleting neighborhood ' . $id);
         $this->clearCache();
+
         return parent::destroy($id);
     }
 

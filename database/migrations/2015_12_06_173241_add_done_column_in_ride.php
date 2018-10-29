@@ -25,7 +25,7 @@ class AddDoneColumnInRide extends Migration
     public function down()
     {
         Schema::table('rides', function ($table) {
-    			$table->dropColumn('done');
-    		});
+            $table->dropColumn('done');
+        });
     }
 }

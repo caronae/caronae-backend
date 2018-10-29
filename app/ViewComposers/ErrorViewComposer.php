@@ -14,7 +14,8 @@ class ErrorViewComposer
         $this->request = $request;
     }
 
-    public function compose(View $view){
+    public function compose(View $view)
+    {
         $view->with([
             'url' => $this->request->url(),
             'returnURL' => route('home'),

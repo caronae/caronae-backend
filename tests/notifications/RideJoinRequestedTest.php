@@ -6,7 +6,6 @@ use Caronae\Models\Ride;
 use Caronae\Models\User;
 use Caronae\Notifications\RideJoinRequested;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Mockery;
 use Tests\TestCase;
 
 class RideJoinRequestedTest extends TestCase

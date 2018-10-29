@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notification;
 class PushChannel
 {
     protected $push;
-    
+
     public function __construct(PushNotificationService $push)
     {
         $this->push = $push;
@@ -29,7 +29,7 @@ class PushChannel
         if ($notifiable instanceof User) {
             $this->push->sendNotificationToUser($notifiable, $message);
         } else {
-            throw new Exception("Invalid notifiable instance to notify via mobile push.");
+            throw new Exception('Invalid notifiable instance to notify via mobile push.');
         }
     }
 }

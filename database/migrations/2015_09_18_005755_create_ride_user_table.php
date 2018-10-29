@@ -15,9 +15,9 @@ class CreateRideUserTable extends Migration
         Schema::create('ride_user', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('status');
-			$table->integer('user_id')->unsigned();
+            $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
-			$table->integer('ride_id')->unsigned();
+            $table->integer('ride_id')->unsigned();
             $table->foreign('ride_id')->references('id')->on('rides');
             $table->timestamps();
         });
