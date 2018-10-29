@@ -18,15 +18,15 @@ class PushNotificationService
     {
         $fcmApiKey = env('FCM_API_KEY');
         if (empty($fcmApiKey)) {
-            throw new FirebaseException("FCM API key must be provided");
+            throw new FirebaseException('FCM API key must be provided');
         }
 
         $this->client = new Client([
             'base_uri' => self::FCM_API_URL,
             'timeout' => 15.0,
             'headers' => [
-                'Authorization' => 'key=' . $fcmApiKey
-            ]
+                'Authorization' => 'key=' . $fcmApiKey,
+            ],
         ]);
     }
 
@@ -57,7 +57,7 @@ class PushNotificationService
         $notification = [
             'body' => $data['message'],
             'icon' => 'ic_stat_name',
-            'sound' => 'beep_beep.wav'
+            'sound' => 'beep_beep.wav',
         ];
 
         if (!empty($data['title'])) {
@@ -68,7 +68,7 @@ class PushNotificationService
             'content_available' => true,
             'priority' => 'high',
             'notification' => $notification,
-            'data' => $data
+            'data' => $data,
         ];
     }
 

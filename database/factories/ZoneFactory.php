@@ -3,7 +3,7 @@
 use Caronae\Models\Zone;
 use Faker\Generator as Faker;
 
-/**
+/*
  * @var Illuminate\Database\Eloquent\Factory $factory
  */
 $factory->define(Zone::class, function (Faker $faker) {

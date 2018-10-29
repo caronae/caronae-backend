@@ -22,7 +22,7 @@ class UserResource extends Resource
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'location' => $this->location,
             'face_id' => $this->face_id,
-            'profile_pic_url' => $this->profile_pic_url
+            'profile_pic_url' => $this->profile_pic_url,
         ];
     }
 

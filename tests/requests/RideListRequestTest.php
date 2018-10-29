@@ -122,8 +122,8 @@ class RideListRequestTest extends TestCase
         $this->request = new RideListRequest(['date' => '2018-10-16']);
 
         list($dateMin, $dateMax) = $this->request->dateRange();
-        $this->assertEquals(Carbon::createMidnightDate(2018,10, 16), $dateMin);
-        $this->assertEquals(Carbon::create(2018,10, 16, 23, 59, 59), $dateMax);
+        $this->assertEquals(Carbon::createMidnightDate(2018, 10, 16), $dateMin);
+        $this->assertEquals(Carbon::create(2018, 10, 16, 23, 59, 59), $dateMax);
     }
 
     /** @test */
@@ -132,10 +132,9 @@ class RideListRequestTest extends TestCase
         $this->request = new RideListRequest(['date' => '2018-10-16', 'time' => '10:45:10']);
 
         list($dateMin, $dateMax) = $this->request->dateRange();
-        $this->assertEquals(Carbon::create(2018,10, 16, 10, 45, 00), $dateMin);
-        $this->assertEquals(Carbon::create(2018,10, 16, 23, 59, 59), $dateMax);
+        $this->assertEquals(Carbon::create(2018, 10, 16, 10, 45, 00), $dateMin);
+        $this->assertEquals(Carbon::create(2018, 10, 16, 23, 59, 59), $dateMax);
     }
-
 
     private function assertFilterEquals($filter, $expected)
     {

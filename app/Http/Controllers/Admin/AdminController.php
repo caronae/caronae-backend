@@ -1,14 +1,14 @@
-<?php 
+<?php
+
 namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Caronae\Http\Requests\AdminUpdateRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class AdminController extends CrudController
 {
-    public function setup() {
+    public function setup()
+    {
         $this->crud->setModel('Caronae\Models\Admin');
         $this->crud->setRoute('admin/admins');
         $this->crud->setEntityNameStrings('administrador', 'administradores');
@@ -40,7 +40,7 @@ class AdminController extends CrudController
                 'model' => 'Caronae\Models\User',
                 'placeholder' => '',
                 'minimum_input_length' => 3,
-                'data_source' => route('admin-user-search-json')
+                'data_source' => route('admin-user-search-json'),
             ],
         ]);
     }

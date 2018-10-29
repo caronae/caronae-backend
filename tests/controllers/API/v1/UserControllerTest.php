@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-use Caronae\Http\Resources\InstitutionResource;
 use Caronae\Models\Institution;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
@@ -114,7 +113,7 @@ class UserControllerTest extends TestCase
 
         $response = $this->json('POST', 'api/v1/users/login', [
             'id_ufrj' => $user->id_ufrj,
-            'token' => $user->token
+            'token' => $user->token,
         ]);
 
         $response->assertStatus(200);
@@ -133,7 +132,7 @@ class UserControllerTest extends TestCase
                 'created_at' => $user->created_at->format('Y-m-d H:i:s'),
                 'location' => $user->location,
                 'face_id' => $user->face_id,
-                'profile_pic_url' => $user->profile_pic_url
+                'profile_pic_url' => $user->profile_pic_url,
             ],
         ]);
     }
@@ -145,11 +144,11 @@ class UserControllerTest extends TestCase
     {
         $response = $this->json('POST', 'api/v1/users/login', [
             'id_ufrj' => str_random(11),
-            'token' => str_random(6)
+            'token' => str_random(6),
         ]);
         $response->assertStatus(401);
         $response->assertExactJson([
-            'error' => 'User not found with provided credentials.'
+            'error' => 'User not found with provided credentials.',
         ]);
     }
 
@@ -190,7 +189,7 @@ class UserControllerTest extends TestCase
                 'created_at' => $user->created_at->format('Y-m-d H:i:s'),
                 'location' => $user->location,
                 'face_id' => $user->face_id,
-                'profile_pic_url' => $user->profile_pic_url
+                'profile_pic_url' => $user->profile_pic_url,
             ],
         ]);
     }
@@ -203,7 +202,7 @@ class UserControllerTest extends TestCase
         $user = $this->someUser();
         $user2 = $this->someUser();
 
-        $response = $this->jsonAs($user,'GET', 'api/v1/users/' . $user2->id);
+        $response = $this->jsonAs($user, 'GET', 'api/v1/users/' . $user2->id);
 
         $response->assertStatus(403);
     }
@@ -289,7 +288,7 @@ class UserControllerTest extends TestCase
             'car_model' => 'Car',
             'car_color' => 'color',
             'car_plate' => 'ABC-1234',
-            'profile_pic_url' => 'http://example.com/image.jpg'
+            'profile_pic_url' => 'http://example.com/image.jpg',
         ];
 
         $response = $this->json('PUT', 'api/v1/users/' . $otherUser->id, $body, [ 'token' => $user->token ]);
@@ -320,7 +319,7 @@ class UserControllerTest extends TestCase
         $user = $this->someUser(['profile_pic_url' => 'http://example.com/old_pic.jpg']);
         $body = ['profile_picture' => UploadedFile::fake()->image('image.png')];
 
-        $this->jsonAs($user,'POST', "api/v1/users/{$user->id}/profile_picture", $body);
+        $this->jsonAs($user, 'POST', "api/v1/users/{$user->id}/profile_picture", $body);
 
         $this->assertEquals('http://example.com/old_pic.jpg', $user->fresh()->profile_pic_url);
     }
@@ -366,7 +365,7 @@ class UserControllerTest extends TestCase
                     'week_days' => $pendingRide->week_days,
                     'repeats_until' => $pendingRide->repeats_until,
                     'driver' => $pendingRideDriver->toArray(),
-                    'riders' => []
+                    'riders' => [],
                 ],
             ],
             'active_rides' => [
@@ -386,7 +385,7 @@ class UserControllerTest extends TestCase
                     'week_days' => $activeRide->week_days,
                     'repeats_until' => $activeRide->repeats_until,
                     'driver' => $activeRideDriver->toArray(),
-                    'riders' => [$user->toArray()]
+                    'riders' => [$user->toArray()],
                 ],
             ],
             'offered_rides' => [
@@ -406,7 +405,7 @@ class UserControllerTest extends TestCase
                     'week_days' => $offeredRide->week_days,
                     'repeats_until' => $offeredRide->repeats_until,
                     'driver' => $user->toArray(),
-                    'riders' => []
+                    'riders' => [],
                 ],
             ],
         ]);
@@ -450,7 +449,7 @@ class UserControllerTest extends TestCase
                     'week_days' => $pendingRide->week_days,
                     'repeats_until' => $pendingRide->repeats_until,
                     'driver' => $pendingRide->driver()->toArray(),
-                    'riders' => []
+                    'riders' => [],
                 ],
             ],
             'active_rides' => [
@@ -470,7 +469,7 @@ class UserControllerTest extends TestCase
                     'week_days' => $activeRide->week_days,
                     'repeats_until' => $activeRide->repeats_until,
                     'driver' => $user->toArray(),
-                    'riders' => [$activeRideRider->toArray()]
+                    'riders' => [$activeRideRider->toArray()],
                 ],
             ],
             'offered_rides' => [
@@ -487,7 +486,7 @@ class UserControllerTest extends TestCase
         $user2 = $this->someUser();
 
         $response = $this->json('GET', 'api/v1/users/' . $user2->id . '/rides', [], [
-            'token' => $user->token
+            'token' => $user->token,
         ]);
 
         $response->assertStatus(403);
@@ -589,7 +588,7 @@ class UserControllerTest extends TestCase
     private function institutionAuthorizationHeaders()
     {
         return [
-            'Authorization' => 'Basic ' . base64_encode($this->institution->id . ':' . $this->institution->password)
+            'Authorization' => 'Basic ' . base64_encode($this->institution->id . ':' . $this->institution->password),
         ];
     }
 
@@ -599,7 +598,7 @@ class UserControllerTest extends TestCase
             'name' => 'Foo Bar',
             'profile' => 'Aluno',
             'id_ufrj' => '111',
-            'course' => 'Course'
+            'course' => 'Course',
         ];
     }
 
@@ -608,6 +607,7 @@ class UserControllerTest extends TestCase
         $ride = factory(Ride::class, 'next')->create(['done' => false])->fresh();
         $ride->users()->attach($driver, ['status' => 'driver']);
         $ride->users()->attach($user, ['status' => 'pending']);
+
         return $ride;
     }
 }

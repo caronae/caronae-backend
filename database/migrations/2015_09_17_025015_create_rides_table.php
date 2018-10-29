@@ -16,7 +16,7 @@ class CreateRidesTable extends Migration
             $table->increments('id');
             $table->string('zone');
             $table->string('neighborhood');
-			$table->boolean('go');
+            $table->boolean('go');
             $table->string('place')->nullable();
             $table->string('way')->nullable();
             $table->integer('routine_id')->nullable();

@@ -8,7 +8,6 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-
 use Caronae\Services\PushNotificationService;
 use Caronae\Models\User;
 
@@ -30,7 +29,7 @@ class PushNotificationServiceTest extends TestCase
         $user = factory(User::class)->create();
         $data = [
             'message' => 'Example message',
-            'title' => 'Example title'
+            'title' => 'Example title',
         ];
 
         $push->sendNotificationToUser($user, $data);
@@ -49,9 +48,9 @@ class PushNotificationServiceTest extends TestCase
                 'body' => 'Example message',
                 'title' => 'Example title',
                 'icon' => 'ic_stat_name',
-                'sound' => 'beep_beep.wav'
+                'sound' => 'beep_beep.wav',
             ],
-            'data' => $data
+            'data' => $data,
         ];
         $this->assertEquals($expectedBody, json_decode($request->getBody()->getContents(), true));
     }

@@ -2,6 +2,6 @@
 
 namespace Caronae\Exceptions;
 
-class FirebaseException extends \Exception {
-
+class FirebaseException extends \Exception
+{
 }

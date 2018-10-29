@@ -15,7 +15,7 @@ abstract class BaseController extends Controller
     protected function error(string $message, int $statusCode)
     {
         Log::warning(get_class($this) . ': ' . $message);
+
         return response()->json(['error' => $message], $statusCode);
     }
-
 }

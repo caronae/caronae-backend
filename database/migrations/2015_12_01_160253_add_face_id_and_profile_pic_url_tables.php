@@ -26,8 +26,8 @@ class AddFaceIdAndProfilePicUrlTables extends Migration
     public function down()
     {
         Schema::table('users', function ($table) {
-			$table->dropColumn('face_id');
-			$table->dropColumn('profile_pic_url');
-		});
+            $table->dropColumn('face_id');
+            $table->dropColumn('profile_pic_url');
+        });
     }
 }

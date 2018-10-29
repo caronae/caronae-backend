@@ -14,5 +14,4 @@ class Handler extends ExceptionHandler
         'password',
         'password_confirmation',
     ];
-
 }

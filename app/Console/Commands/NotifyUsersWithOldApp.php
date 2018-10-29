@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Caronae\Models\User;
 use Caronae\Notifications\UpdateAppNotification;
 use Caronae\Services\UserAppService;
-use DB;
 use Illuminate\Console\Command;
 use Log;
 
@@ -44,5 +43,4 @@ class NotifyUsersWithOldApp extends Command
                 ->exists();
         });
     }
-
 }

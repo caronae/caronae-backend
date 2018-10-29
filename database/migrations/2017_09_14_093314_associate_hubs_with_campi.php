@@ -18,16 +18,15 @@ class AssociateHubsWithCampi extends Migration
             $table->foreign('campus_id')->references('id')->on('campi');
         });
 
-        DB::connection()->getPdo()->exec("
+        DB::connection()->getPdo()->exec('
             UPDATE hubs
             SET campus_id = (SELECT id FROM campi WHERE campi.name = hubs.campus)
-        ");
+        ');
 
         Schema::table('hubs', function (Blueprint $table) {
             $table->integer('campus_id')->nullable(false)->change();
             $table->dropColumn('campus');
         });
-
     }
 
     /**
@@ -41,10 +40,10 @@ class AssociateHubsWithCampi extends Migration
             $table->string('campus')->nullable();
         });
 
-        DB::connection()->getPdo()->exec("
+        DB::connection()->getPdo()->exec('
             UPDATE hubs
             SET campus = (SELECT campi.name FROM campi WHERE campi.id = hubs.campus_id)
-        ");
+        ');
 
         Schema::table('hubs', function (Blueprint $table) {
             $table->dropColumn('campus_id');

@@ -6,14 +6,13 @@ use Caronae\Models\Ride;
 use Caronae\Models\User;
 use Caronae\Notifications\RideUserLeft;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Mockery;
 use Tests\TestCase;
 
 class RideUserLeftTest extends TestCase
 {
     use DatabaseTransactions;
 
-	private $notification;
+    private $notification;
     private $user;
     private $ride;
 
@@ -26,7 +25,7 @@ class RideUserLeftTest extends TestCase
 
         $this->notification = new RideUserLeft($this->ride, $this->user);
         $this->notification->id = uniqid();
-	}
+    }
 
     /** @test */
     public function should_contain_all_fields_in_push()

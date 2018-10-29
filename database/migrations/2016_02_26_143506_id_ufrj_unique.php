@@ -15,7 +15,7 @@ class IdUfrjUnique extends Migration
         // Fix to delete users with an empty UFRJ id
         $this->clearInvalidUsers();
 
-		Schema::table('users', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->unique('id_ufrj');
         });
     }
@@ -39,7 +39,7 @@ class IdUfrjUnique extends Migration
     }
 
     private function clearUsersWithoutUFRJId()
-    {        
+    {
         // Delete relationships
         DB::connection()->getPdo()->exec("DELETE 
             FROM ride_user ru
@@ -55,9 +55,9 @@ class IdUfrjUnique extends Migration
     private function mergeUserWithDuplicatedIds()
     {
         // Move all relationships to one user
-        DB::connection()->getPdo()->exec("UPDATE ride_user SET user_id = 8540 WHERE user_id IN (8539, 8541)");
+        DB::connection()->getPdo()->exec('UPDATE ride_user SET user_id = 8540 WHERE user_id IN (8539, 8541)');
 
         // Delete the duplicated users
-        DB::connection()->getPdo()->exec("DELETE FROM users WHERE id IN (8539, 8541)");
+        DB::connection()->getPdo()->exec('DELETE FROM users WHERE id IN (8539, 8541)');
     }
 }

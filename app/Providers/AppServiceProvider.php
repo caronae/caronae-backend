@@ -18,12 +18,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton(Generator::class, function() {
+        $this->app->singleton(Generator::class, function () {
             return Factory::create(config('app.locale'));
         });
 
-        $this->app->bind(ValidateDuplicateService::class, function()
-        {
+        $this->app->bind(ValidateDuplicateService::class, function () {
             $request = app('request');
 
             $dateTime = Carbon::createFromFormat('d/m/Y H:i:s', $request->input('date') . ' ' . $request->input('time'));

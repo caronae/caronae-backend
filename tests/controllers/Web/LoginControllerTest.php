@@ -144,9 +144,9 @@ class LoginControllerTest extends TestCase
         $user = factory(User::class)->create();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $response = $this->call('GET','login', [
+        $response = $this->call('GET', 'login', [
             'token' => $jwtToken,
-            'acceptedTermsOfUse' => true
+            'acceptedTermsOfUse' => true,
         ]);
 
         $response->assertStatus(200);

@@ -2,13 +2,11 @@
 
 namespace Caronae\Services;
 
-
 use Carbon\Carbon;
 use Caronae\Models\User;
 
 class ValidateDuplicateService
 {
-
     /**
      * @var User
      */
@@ -20,7 +18,7 @@ class ValidateDuplicateService
     private $searchRange;
 
     /**
-     * @var boolean
+     * @var bool
      */
     private $going;
     /**
@@ -74,14 +72,15 @@ class ValidateDuplicateService
         return [
             'valid' => $valid,
             'status' => $status,
-            'message' => $message
+            'message' => $message,
         ];
     }
 
     public function getSearchRange(Carbon $dateTime)
     {
-        $dateMin = $dateTime->copy()->setTime(0,0,0)->max(Carbon::now());
-        $dateMax = $dateTime->copy()->setTime(23,59,59);
+        $dateMin = $dateTime->copy()->setTime(0, 0, 0)->max(Carbon::now());
+        $dateMax = $dateTime->copy()->setTime(23, 59, 59);
+
         return [$dateMin, $dateMax];
     }
 }

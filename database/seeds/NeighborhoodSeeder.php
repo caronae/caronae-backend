@@ -197,10 +197,9 @@ class NeighborhoodSeeder extends Seeder
             ['zone_id' => $niteroi, 'name' => 'Maricá', 'distance' => 61.3],
             ['zone_id' => $niteroi, 'name' => 'Itaboraí', 'distance' => 51.9],
             ['zone_id' => $niteroi, 'name' => 'Tanguá', 'distance' => 66.9],
-            ['zone_id' => $niteroi, 'name' => 'Rio Bonito', 'distance' => 77.9]
-        ])->each(function($data){
+            ['zone_id' => $niteroi, 'name' => 'Rio Bonito', 'distance' => 77.9],
+        ])->each(function ($data) {
             Neighborhood::create($data);
         });
-
     }
 }

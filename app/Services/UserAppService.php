@@ -2,7 +2,6 @@
 
 namespace Caronae\Services;
 
-
 use Caronae\Models\User;
 use Illuminate\Support\Facades\DB;
 

@@ -2,7 +2,6 @@
 
 namespace Caronae\Http;
 
-use Caronae\Http\Middleware\UpdateUserAppInfo;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -26,7 +25,7 @@ class Kernel extends HttpKernel
         'api.v1' => [
             'bindings',
             \Caronae\Http\Middleware\UpdateUserAppInfo::class,
-        ]
+        ],
     ];
 
     protected $routeMiddleware = [

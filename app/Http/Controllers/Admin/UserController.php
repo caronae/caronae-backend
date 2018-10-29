@@ -25,7 +25,7 @@ class UserController extends CrudController
             [
                 'type' => 'simple',
                 'name' => 'banned',
-                'label' => 'Banidos'
+                'label' => 'Banidos',
             ],
             false,
             function () {
@@ -41,7 +41,7 @@ class UserController extends CrudController
                     $searchTerm = str_replace(' ', '%', $searchTerm);
                     $searchTerm = DB::getPdo()->quote("%{$searchTerm}%");
                     $query->where(DB::raw('unaccent(name)'), 'ILIKE', DB::raw("unaccent({$searchTerm})"));
-                }
+                },
             ],
             ['name' => 'profile', 'label' => 'Perfil'],
             ['name' => 'course', 'label' => 'Curso'],
@@ -94,12 +94,14 @@ class UserController extends CrudController
     public function ban(User $user)
     {
         $user->banish();
+
         return response()->json(['message' => 'User banned']);
     }
 
     public function unban(User $user)
     {
         $user->unban();
+
         return response()->json(['message' => 'User unbanned']);
     }
 
@@ -108,9 +110,8 @@ class UserController extends CrudController
         $search_term = $request->input('q');
         $page = $request->input('page');
 
-        if ($search_term)
-        {
-            $results = User::where('name', 'LIKE', '%'.$search_term.'%')->paginate(10);
+        if ($search_term) {
+            $results = User::where('name', 'LIKE', '%' . $search_term . '%')->paginate(10);
         } else {
             $results = User::paginate(10);
         }

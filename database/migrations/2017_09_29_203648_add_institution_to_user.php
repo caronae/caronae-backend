@@ -8,25 +8,25 @@ class AddInstitutionToUser extends Migration
 {
     public function up()
     {
-      Schema::table('users', function (Blueprint $table) {
-          $table->integer('institution_id')->unsigned()->nullable();
-          $table->foreign('institution_id')->references('id')->on('institutions');
-      });
+        Schema::table('users', function (Blueprint $table) {
+            $table->integer('institution_id')->unsigned()->nullable();
+            $table->foreign('institution_id')->references('id')->on('institutions');
+        });
 
-      DB::connection()->getPdo()->exec("
+        DB::connection()->getPdo()->exec("
           UPDATE users
           SET institution_id = (SELECT id FROM institutions WHERE institutions.name = 'UFRJ')
       ");
 
-      Schema::table('users', function (Blueprint $table) {
-          $table->integer('institution_id')->nullable(false)->change();
-      });
+        Schema::table('users', function (Blueprint $table) {
+            $table->integer('institution_id')->nullable(false)->change();
+        });
     }
 
     public function down()
     {
-      Schema::table('users', function (Blueprint $table) {
-          $table->dropColumn('institution_id');
-      });
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('institution_id');
+        });
     }
 }

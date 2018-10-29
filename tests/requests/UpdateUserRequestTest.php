@@ -2,9 +2,8 @@
 
 namespace Caronae\Http\Requests;
 
-
 use Tests\TestCase;
-use \Validator;
+use Validator;
 
 class UpdateUserRequestTest extends TestCase
 {
@@ -46,5 +45,4 @@ class UpdateUserRequestTest extends TestCase
 
         $this->assertTrue($validator->passes());
     }
-
 }

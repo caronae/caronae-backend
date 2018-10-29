@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class CreateExtensionUnaccent extends Migration
@@ -13,7 +11,9 @@ class CreateExtensionUnaccent extends Migration
      */
     public function up()
     {
-        if (DB::connection()->getDriverName() != 'pgsql') return;
+        if (DB::connection()->getDriverName() != 'pgsql') {
+            return;
+        }
 
         DB::connection()->getPdo()->exec('
             CREATE EXTENSION IF NOT EXISTS unaccent;
@@ -27,7 +27,9 @@ class CreateExtensionUnaccent extends Migration
      */
     public function down()
     {
-        if (DB::connection()->getDriverName() != 'pgsql') return;
+        if (DB::connection()->getDriverName() != 'pgsql') {
+            return;
+        }
 
         DB::connection()->getPdo()->exec('
             DROP EXTENSION IF EXISTS unaccent;

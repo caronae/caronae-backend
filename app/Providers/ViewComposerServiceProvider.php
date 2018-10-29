@@ -24,7 +24,6 @@ class ViewComposerServiceProvider extends ServiceProvider
             ['errors.404', 'errors.500'],
             ErrorViewComposer::class
         );
-
     }
 
     /**

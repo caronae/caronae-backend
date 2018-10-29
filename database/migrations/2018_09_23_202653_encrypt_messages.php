@@ -8,8 +8,8 @@ class EncryptMessages extends Migration
     public function up()
     {
         Message::all()->each(function ($message) {
-           $message->body = $message->getAttributeValue('body');
-           $message->save();
+            $message->body = $message->getAttributeValue('body');
+            $message->save();
         });
     }
 
@@ -17,8 +17,8 @@ class EncryptMessages extends Migration
     {
         Message::all()->each(function ($message) {
             DB::connection()->getPdo()->exec("
-                UPDATE messages SET body = '" . $message->body . "' WHERE id = " . $message->id . "
-            ");
+                UPDATE messages SET body = '" . $message->body . "' WHERE id = " . $message->id . '
+            ');
         });
     }
 }

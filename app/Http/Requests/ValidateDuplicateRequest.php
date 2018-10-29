@@ -2,7 +2,6 @@
 
 namespace Caronae\Http\Requests;
 
-use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ValidateDuplicateRequest extends FormRequest
@@ -17,7 +16,7 @@ class ValidateDuplicateRequest extends FormRequest
         return [
             'date' => 'required|date_format:d/m/Y',
             'time' => 'required|date_format:H:i:s',
-            'going' => 'required|boolean'
+            'going' => 'required|boolean',
         ];
     }
 }

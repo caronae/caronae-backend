@@ -26,7 +26,7 @@ class CreateRideRequest extends FormRequest
             'description' => 'string|max:255',
             'going' => 'required|boolean',
             'mydate' => 'required|string',
-            'mytime' => 'required|string'
+            'mytime' => 'required|string',
         ];
     }
 
@@ -56,14 +56,15 @@ class CreateRideRequest extends FormRequest
         }
 
         $this->merge([
-            'date' => $date
+            'date' => $date,
         ]);
     }
 
     public function isRoutine()
     {
         $repeatsUntil = $this->input('repeats_until');
-        return (!empty($repeatsUntil) && is_string($repeatsUntil));
+
+        return !empty($repeatsUntil) && is_string($repeatsUntil);
     }
 
     public function getRoutineEndDate()
@@ -71,10 +72,11 @@ class CreateRideRequest extends FormRequest
         $repeatsUntil = $this->input('repeats_until');
         try {
             $date = Carbon::createFromFormat('d/m/Y', $repeatsUntil);
-        } catch(\InvalidArgumentException $error) {
+        } catch (\InvalidArgumentException $error) {
             $date = Carbon::createFromFormat('Y-m-d', $repeatsUntil);
         }
-        return $date->setTime(23,59,59);
+
+        return $date->setTime(23, 59, 59);
     }
 
     public function response(array $errors)
