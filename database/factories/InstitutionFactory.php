@@ -3,11 +3,12 @@
 use Caronae\Models\Institution;
 use Faker\Generator as Faker;
 
-/**
+/*
  * @var Illuminate\Database\Eloquent\Factory $factory
  */
 $factory->define(Institution::class, function (Faker $faker) {
     $name = $faker->unique()->company;
+
     return [
         'name' => $name,
         'slug' => $faker->slug,

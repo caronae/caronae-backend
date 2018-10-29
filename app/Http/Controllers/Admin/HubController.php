@@ -1,4 +1,5 @@
 <?php
+
 namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -11,7 +12,8 @@ use Illuminate\Support\Facades\Log;
 
 class HubController extends CrudController
 {
-    public function setup() {
+    public function setup()
+    {
         $this->crud->setModel('Caronae\Models\Hub');
         $this->crud->setRoute('admin/hubs');
         $this->crud->setEntityNameStrings('hub', 'hubs');
@@ -40,7 +42,7 @@ class HubController extends CrudController
                 'entity' => 'campus',
                 'attribute' => 'fullName',
                 'model' => 'Caronae\Models\Campus',
-            ]
+            ],
         ]);
     }
 
@@ -50,6 +52,7 @@ class HubController extends CrudController
 
         Log::info('Adding hub ' . $request->name);
         $this->clearCache($request);
+
         return parent::storeCrud($request);
     }
 
@@ -59,6 +62,7 @@ class HubController extends CrudController
 
         Log::info('Updating hub ' . $request->name);
         $this->clearCache($request);
+
         return parent::updateCrud($request);
     }
 
@@ -67,6 +71,7 @@ class HubController extends CrudController
         $hub = Hub::find($id);
         Log::info('Deleting hub ' . $hub->id);
         $this->clearInstitutionCache($hub->campus->institution);
+
         return parent::destroy($id);
     }
 

@@ -1,7 +1,7 @@
 <?php
+
 namespace Caronae\Http\Controllers\Admin;
 
-use function Aws\map;
 use Backpack\Base\app\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Caronae\Models\Admin;
@@ -33,12 +33,13 @@ class TokenController extends Controller
 
                 $expirationDate = Carbon::createFromTimestampUTC($payload['exp']);
                 $issuedDate = Carbon::createFromTimestampUTC($payload['iat']);
+
                 return [
                     'token' => $token,
                     'expiration' => $expirationDate->toDayDateTimeString(),
                     'issued_at' => $issuedDate->toDayDateTimeString(),
                 ];
-            })->reject(function($value) {
+            })->reject(function ($value) {
                 return is_null($value);
             });
         }
@@ -62,7 +63,7 @@ class TokenController extends Controller
     private function getTokenCacheKey(Admin $admin)
     {
         $user = $admin->user;
+
         return 'self-service-tokens-user-' . $user->id;
     }
-
 }

@@ -4,7 +4,7 @@ use Caronae\Models\Neighborhood;
 use Caronae\Models\Ride;
 use Faker\Generator as Faker;
 
-/**
+/*
  * @var Illuminate\Database\Eloquent\Factory $factory
  */
 $factory->define(Ride::class, function (Faker $faker) {
@@ -32,15 +32,16 @@ $factory->define(Ride::class, function (Faker $faker) {
         'hub' => $hub,
         'slots' => $faker->numberBetween(1, 4),
         'date' => $faker->dateTime(),
-        'done' => $faker->boolean()
+        'done' => $faker->boolean(),
     ];
 });
 
 $factory->defineAs(Ride::class, 'next', function (Faker $faker) use ($factory) {
     $ride = $factory->raw(Ride::class);
     $date = $faker->dateTimeBetween('+1 hour', 'tomorrow 23:59:59');
+
     return array_merge($ride, [
         'date' => $date,
-        'done' => false
+        'done' => false,
     ]);
 });

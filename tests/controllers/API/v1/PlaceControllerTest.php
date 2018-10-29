@@ -40,7 +40,7 @@ class PlaceControllerTest extends TestCase
     /** @test */
     public function should_return_zones()
     {
-        $response = $this->jsonAs($this->user,'GET', 'api/v1/places');
+        $response = $this->jsonAs($this->user, 'GET', 'api/v1/places');
 
         $response->assertStatus(200);
         $response->assertJsonFragment([
@@ -48,7 +48,7 @@ class PlaceControllerTest extends TestCase
                 [
                     'name' => $this->zone->name,
                     'color' => $this->zone->color,
-                    'neighborhoods' => [ $this->neighborhood->name ]
+                    'neighborhoods' => [ $this->neighborhood->name ],
                 ],
             ],
         ]);
@@ -57,7 +57,7 @@ class PlaceControllerTest extends TestCase
     /** @test */
     public function should_return_users_institution()
     {
-        $response = $this->jsonAs($this->user,'GET', 'api/v1/places');
+        $response = $this->jsonAs($this->user, 'GET', 'api/v1/places');
 
         $response->assertStatus(200);
         $response->assertJsonFragment([
@@ -68,7 +68,7 @@ class PlaceControllerTest extends TestCase
     /** @test */
     public function should_return_campi_from_users_institution()
     {
-        $response = $this->jsonAs($this->user,'GET', 'api/v1/places');
+        $response = $this->jsonAs($this->user, 'GET', 'api/v1/places');
 
         $response->assertStatus(200);
         $response->assertJsonFragment([
@@ -77,9 +77,9 @@ class PlaceControllerTest extends TestCase
                     'name' => $this->campus->name,
                     'color' => $this->campus->color,
                     'centers' => [ $this->hub->center ],
-                    'hubs' => [ $this->hub->name ]
+                    'hubs' => [ $this->hub->name ],
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -88,7 +88,7 @@ class PlaceControllerTest extends TestCase
     {
         $campusWithoutHubs = factory(Campus::class)->create(['institution_id' => $this->institution->id]);
 
-        $response = $this->jsonAs($this->user,'GET', 'api/v1/places');
+        $response = $this->jsonAs($this->user, 'GET', 'api/v1/places');
 
         $response->assertStatus(200);
         $campi = $response->getOriginalContent()['campi'];

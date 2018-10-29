@@ -28,7 +28,9 @@ class ApiV1AuthenticateRequestedUserTest extends TestCase
         $request = new Request();
         $request->user = $this->user;
 
-        $response = $this->middleware->handle($request, function() { return 'next'; });
+        $response = $this->middleware->handle($request, function () {
+            return 'next';
+        });
         $this->assertEquals('next', $response);
     }
 
@@ -39,7 +41,9 @@ class ApiV1AuthenticateRequestedUserTest extends TestCase
         $request = new Request();
         $request->user = $user2;
 
-        $response = $this->middleware->handle($request, function() { return 'next'; });
+        $response = $this->middleware->handle($request, function () {
+            return 'next';
+        });
         $this->assertEquals(403, $response->getStatusCode());
     }
 }

@@ -15,7 +15,7 @@ class ValidatorServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Validator::extend('after_or_equals', AfterOrEqualsValidator::class.'@validate');
+        Validator::extend('after_or_equals', AfterOrEqualsValidator::class . '@validate');
     }
 
     /**

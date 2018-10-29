@@ -2,7 +2,6 @@
 
 namespace Caronae\Http\Middleware;
 
-
 use Caronae\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
@@ -23,7 +22,8 @@ class UpdateUserAppInfoTest extends TestCase
         $request->headers = new HeaderBag(['User-Agent' => 'Caronae/1.5.1 (iPhone; iOS 12.0.1; Scale/3.00)']);
         $middleware = new UpdateUserAppInfo();
 
-        $middleware->handle($request, function($r){ });
+        $middleware->handle($request, function ($r) {
+        });
 
         $this->assertDatabaseHas('users', ['id' => $user->id, 'app_platform' => 'iOS', 'app_version' => '1.5.1']);
     }
@@ -38,7 +38,8 @@ class UpdateUserAppInfoTest extends TestCase
         $request->headers = new HeaderBag(['User-Agent' => 'Caronae/3.0.3 (Samsung: SM-J700M; Android: 6.0.1)']);
         $middleware = new UpdateUserAppInfo();
 
-        $middleware->handle($request, function($r){ });
+        $middleware->handle($request, function ($r) {
+        });
 
         $this->assertDatabaseHas('users', ['id' => $user->id, 'app_platform' => 'Android', 'app_version' => '3.0.3']);
     }
@@ -53,7 +54,8 @@ class UpdateUserAppInfoTest extends TestCase
         $request->headers = new HeaderBag(['User-Agent' => 'Caronae Dev/1.5.1 (iPhone; iOS 12.0.1; Scale/3.00)']);
         $middleware = new UpdateUserAppInfo();
 
-        $middleware->handle($request, function($r){ });
+        $middleware->handle($request, function ($r) {
+        });
 
         $this->assertDatabaseHas('users', ['id' => $user->id, 'app_platform' => 'iOS', 'app_version' => '1.5.1']);
     }
@@ -65,7 +67,8 @@ class UpdateUserAppInfoTest extends TestCase
         $request->headers = new HeaderBag(['User-Agent' => 'Caronae/3.0.3 (Samsung: SM-J700M; Android: 6.0.1)']);
         $middleware = new UpdateUserAppInfo();
 
-        $middleware->handle($request, function($r){ });
+        $middleware->handle($request, function ($r) {
+        });
 
         $this->assertDatabaseMissing('users', ['app_platform' => 'Android', 'app_version' => '3.0.3']);
     }
@@ -79,7 +82,8 @@ class UpdateUserAppInfoTest extends TestCase
         $request->headers = new HeaderBag(['User-Agent' => 'PostmanRuntime/7.3.0']);
         $middleware = new UpdateUserAppInfo();
 
-        $middleware->handle($request, function($r){ });
+        $middleware->handle($request, function ($r) {
+        });
 
         $this->assertDatabaseMissing('users', ['app_platform' => 'PostmanRuntime', 'app_version' => '7.3.0']);
     }

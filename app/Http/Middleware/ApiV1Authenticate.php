@@ -27,11 +27,12 @@ class ApiV1Authenticate
     /** @deprecated */
     private function handleLegacyTokenAuthentication($request, Closure $next)
     {
-        if (($user = User::where('token', $request->header('token'))->first()) == NULL || $user->banned) {
+        if (($user = User::where('token', $request->header('token'))->first()) == null || $user->banned) {
             return response()->json(['error' => 'User token not authorized.'], 401);
         }
 
         auth()->setUser($user);
+
         return $next($request);
     }
 

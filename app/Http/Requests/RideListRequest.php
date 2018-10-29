@@ -32,17 +32,21 @@ class RideListRequest extends FormRequest
     {
         $filters = [];
 
-        if ($this->filled('going'))
+        if ($this->filled('going')) {
             $filters['going'] = $this->input('going');
+        }
 
-        if ($this->filled('neighborhoods'))
+        if ($this->filled('neighborhoods')) {
             $filters['neighborhoods'] = explode(', ', $this->input('neighborhoods'));
+        }
 
-        if ($this->filled('place'))
+        if ($this->filled('place')) {
             $filters['myplace'] = $this->input('place');
+        }
 
-        if ($this->filled('zone'))
+        if ($this->filled('zone')) {
             $filters['myzone'] = $this->input('zone');
+        }
 
         if ($this->filled('campus')) {
             $campus = Campus::findByName($this->input('campus'));
@@ -55,16 +59,17 @@ class RideListRequest extends FormRequest
             $center = $this->input('center');
             $hubs = Hub::where('center', $center)->pluck('name')->toArray();
             $filters['hubs'] = array_merge([$center], $hubs);
-        } else if ($this->filled('centers')) {
+        } elseif ($this->filled('centers')) {
             $centers = explode(', ', $this->input('centers'));
             $hubs = Hub::whereIn('center', $centers)->pluck('name')->toArray();
             $filters['hubs'] = array_merge($centers, $hubs);
         }
 
-        if ($this->filled('hub'))
+        if ($this->filled('hub')) {
             $filters['hubs'] = [ $this->input('hub') ];
-        else if ($this->filled('hubs'))
+        } elseif ($this->filled('hubs')) {
             $filters['hubs'] = explode(', ', $this->input('hubs'));
+        }
 
         return $filters;
     }
@@ -83,7 +88,7 @@ class RideListRequest extends FormRequest
             $dateMin = Carbon::createFromFormat('Y-m-d', $date)->setTime(0, 0, 0);
         }
 
-        $dateMax = $dateMin->copy()->setTime(23,59,59);
+        $dateMax = $dateMin->copy()->setTime(23, 59, 59);
 
         return [$dateMin, $dateMax];
     }

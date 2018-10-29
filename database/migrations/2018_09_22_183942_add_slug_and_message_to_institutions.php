@@ -13,9 +13,9 @@ class AddSlugAndMessageToInstitutions extends Migration
             $table->text('login_message')->nullable();
         });
 
-        DB::connection()->getPdo()->exec("
+        DB::connection()->getPdo()->exec('
             UPDATE institutions SET slug = LOWER(name)
-        ");
+        ');
 
         Schema::table('institutions', function (Blueprint $table) {
             $table->unique('slug');

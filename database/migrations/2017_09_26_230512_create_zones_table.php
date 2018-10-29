@@ -28,10 +28,10 @@ class CreateZonesTable extends Migration
 
     private function initializeZones()
     {
-        DB::connection()->getPdo()->exec("
+        DB::connection()->getPdo()->exec('
             INSERT INTO zones (name)
             SELECT DISTINCT zone FROM neighborhoods
-        ");
+        ');
     }
 
     private function createZoneAssociations()
@@ -41,10 +41,10 @@ class CreateZonesTable extends Migration
             $table->foreign('zone_id')->references('id')->on('zones');
         });
 
-        DB::connection()->getPdo()->exec("
+        DB::connection()->getPdo()->exec('
             UPDATE neighborhoods
             SET zone_id = (SELECT id FROM zones WHERE zones.name = neighborhoods.zone)
-        ");
+        ');
 
         Schema::table('neighborhoods', function (Blueprint $table) {
             $table->integer('zone_id')->nullable(false)->change();
@@ -58,10 +58,10 @@ class CreateZonesTable extends Migration
             $table->string('zone')->nullable();
         });
 
-        DB::connection()->getPdo()->exec("
+        DB::connection()->getPdo()->exec('
             UPDATE neighborhoods
             SET zone = (SELECT zones.name FROM zones WHERE zones.id = neighborhoods.zone_id)
-        ");
+        ');
 
         Schema::table('neighborhoods', function (Blueprint $table) {
             $table->dropColumn('zone_id');

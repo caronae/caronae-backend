@@ -11,26 +11,26 @@ use Tests\TestCase;
 
 class RideMessageReceivedTest extends TestCase
 {
-	protected $notification;
+    protected $notification;
 
-	public function setUp()
+    public function setUp()
     {
         $ride = Mockery::mock(Ride::class);
-    	$ride->shouldReceive('getAttribute')->with('title')->andReturn('ride title');
+        $ride->shouldReceive('getAttribute')->with('title')->andReturn('ride title');
 
-    	$user = Mockery::mock(User::class);
-    	$user->shouldReceive('getAttribute')->with('id')->andReturn(2);
-    	$user->shouldReceive('getAttribute')->with('name')->andReturn('Foo');
+        $user = Mockery::mock(User::class);
+        $user->shouldReceive('getAttribute')->with('id')->andReturn(2);
+        $user->shouldReceive('getAttribute')->with('name')->andReturn('Foo');
 
-    	$message = Mockery::mock(Message::class);
+        $message = Mockery::mock(Message::class);
         $message->shouldReceive('getAttribute')->with('id')->andReturn(123);
-    	$message->shouldReceive('getAttribute')->with('user')->andReturn($user);
-    	$message->shouldReceive('getAttribute')->with('ride')->andReturn($ride);
-    	$message->shouldReceive('getAttribute')->with('ride_id')->andReturn(1);
-    	$message->shouldReceive('getAttribute')->with('body')->andReturn('bar');
+        $message->shouldReceive('getAttribute')->with('user')->andReturn($user);
+        $message->shouldReceive('getAttribute')->with('ride')->andReturn($ride);
+        $message->shouldReceive('getAttribute')->with('ride_id')->andReturn(1);
+        $message->shouldReceive('getAttribute')->with('body')->andReturn('bar');
 
         $this->notification = new RideMessageReceived($message);
-	}
+    }
 
     /** @test */
     public function should_contain_all_fields_in_push()

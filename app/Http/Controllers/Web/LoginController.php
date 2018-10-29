@@ -21,6 +21,7 @@ class LoginController extends BaseController
         if ($request->filled('error')) {
             $error = $request->input('error');
             Log::info('Login: instituição não autorizou login.', [ 'error' => $error ]);
+
             return response()->view('login.error', [ 'error' => $error ], 401);
         }
 
@@ -29,6 +30,7 @@ class LoginController extends BaseController
 
             if (count($institutions) == 1) {
                 $institution = $institutions->first();
+
                 return redirect(route('institution-login', $institution->getRouteKey()));
             }
 
@@ -43,6 +45,7 @@ class LoginController extends BaseController
             ]);
         } catch (JWTException $e) {
             Log::warning('Login: erro autenticando token.', [ 'error' => $e->getMessage(), 'token' => $request->input('token') ]);
+
             return response()->view('login.error', [ 'error' => 'Token inválido.' ], 401);
         }
 
@@ -57,7 +60,7 @@ class LoginController extends BaseController
         return view('login.token', [
             'user' => $user,
             'token' => $request->input('token'),
-            'displayTermsOfUse' => !$this->hasAcceptedTermsOfUse($request)
+            'displayTermsOfUse' => !$this->hasAcceptedTermsOfUse($request),
         ]);
     }
 
@@ -67,6 +70,7 @@ class LoginController extends BaseController
             $user = $this->authenticateUser($request);
         } catch (JWTException $e) {
             Log::warning('refreshToken: erro autenticando token.', [ 'error' => $e->getMessage(), 'token' => $request->input('token') ]);
+
             return response()->view('login.error', [ 'error' => 'Token inválido.' ], 401);
         }
 
@@ -74,6 +78,7 @@ class LoginController extends BaseController
         $user->save();
 
         Log::info('refreshToken: nova chave gerada.', [ 'id' => $user->id ]);
+
         return redirect(route('chave', $request->only(['token'])));
     }
 
@@ -94,7 +99,9 @@ class LoginController extends BaseController
     {
         JWTAuth::setToken($request->input('token'));
         $user = JWTAuth::authenticate();
-        if (!$user) throw new JWTException('User not found', 401);
+        if (!$user) {
+            throw new JWTException('User not found', 401);
+        }
         return $user;
     }
 
@@ -102,6 +109,7 @@ class LoginController extends BaseController
     {
         if ($request->has('acceptedTermsOfUse')) {
             Cookie::queue('acceptedTermsOfUse', true);
+
             return true;
         }
 
@@ -137,5 +145,4 @@ class LoginController extends BaseController
     {
         return $this->getLoginType($request) == 'app_jwt';
     }
-
 }

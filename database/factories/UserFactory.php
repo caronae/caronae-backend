@@ -4,7 +4,7 @@ use Caronae\Models\Institution;
 use Caronae\Models\User;
 use Faker\Generator as Faker;
 
-/**
+/*
  * @var Illuminate\Database\Eloquent\Factory $factory
  */
 $factory->define(User::class, function (Faker $faker) {
@@ -23,23 +23,24 @@ $factory->define(User::class, function (Faker $faker) {
         'phone_number' => $faker->regexify('[0-9]{11}'),
         'location' => $faker->city,
         'car_owner' => false,
-        'car_model' => NULL,
-        'car_color' => NULL,
-        'car_plate' => NULL,
+        'car_model' => null,
+        'car_color' => null,
+        'car_plate' => null,
         'token' => strtoupper(str_random(6)),
         'id_ufrj' => $faker->unique()->cpf(false),
         'profile_pic_url' => $faker->imageUrl(500, 500, 'people'),
-        'face_id' => NULL,
+        'face_id' => null,
         'institution_id' => $institution->id,
     ];
 });
 
 $factory->defineAs(User::class, 'driver', function (Faker $faker) use ($factory) {
     $user = $factory->raw(User::class);
+
     return array_merge($user, [
         'car_owner' => true,
         'car_model' => $faker->company,
         'car_color' => $faker->colorName,
-        'car_plate' => $faker->regexify('[A-Z]{3}-[0-9]{4}')
+        'car_plate' => $faker->regexify('[A-Z]{3}-[0-9]{4}'),
     ]);
 });

@@ -2,7 +2,6 @@
 
 namespace Caronae\Http\Controllers\API\v1;
 
-use Carbon\Carbon;
 use Caronae\Http\Controllers\BaseController;
 use Caronae\Http\Requests\CreateRideRequest;
 use Caronae\Http\Requests\RideListRequest;
@@ -21,7 +20,6 @@ use Illuminate\Http\Request;
 
 class RideController extends BaseController
 {
-    
     public function index(RideListRequest $request)
     {
         $limit = 20;
@@ -44,7 +42,7 @@ class RideController extends BaseController
 
         return $results;
     }
-    
+
     public function show(Ride $ride, Request $request)
     {
         RideResource::withoutWrapping();
@@ -54,6 +52,7 @@ class RideController extends BaseController
         }
 
         $rideResource = new RideResource($ride);
+
         return $rideResource->withAvailableSlots();
     }
 
@@ -68,6 +67,7 @@ class RideController extends BaseController
         $title = $ride->title . ' | ' . $ride->date->format('H:i');
         $driver = $ride->driver()->name;
         $deepLinkUrl = 'caronae://carona/' . $ride->id;
+
         return view('rides.showWeb', ['title' => $title, 'driver' => $driver, 'deepLinkUrl' => $deepLinkUrl]);
     }
 
@@ -85,7 +85,7 @@ class RideController extends BaseController
         }
 
         $ridesCreated = collect();
-        DB::transaction(function() use ($request, $user, &$ridesCreated) {
+        DB::transaction(function () use ($request, $user, &$ridesCreated) {
             $ride = Ride::create($request->all());
             $ride->users()->attach($user->id, ['status' => 'driver']);
             $ridesCreated[] = $ride;
@@ -101,7 +101,9 @@ class RideController extends BaseController
                 $repeating_dates = $this->recurringDates($ride->date, $repeats_until, $ride->week_days);
 
                 foreach ($repeating_dates as $date) {
-                    if ($date == $ride->date) continue;
+                    if ($date == $ride->date) {
+                        continue;
+                    }
 
                     $repeating_ride = new Ride();
                     $repeating_ride->fill($request->all());
@@ -118,9 +120,10 @@ class RideController extends BaseController
         });
 
         RideResource::withoutWrapping();
+
         return RideResource::collection($ridesCreated)->response()->setStatusCode(201);
     }
-    
+
     public function validateDuplicate(ValidateDuplicateService $validateDuplicateService)
     {
         return $validateDuplicateService->validate();
@@ -128,7 +131,7 @@ class RideController extends BaseController
 
     public function deleteAllFromRoutine(Request $request, $routineId)
     {
-        return DB::transaction(function() use ($request, $routineId) {
+        return DB::transaction(function () use ($request, $routineId) {
             $user = $request->user();
 
             $matchThese = ['routine_id' => $routineId, 'done' => false];
@@ -144,7 +147,6 @@ class RideController extends BaseController
 
             RideUser::whereIn('ride_id', $rideIdList)->delete(); //delete all relationships with the rides first
             Ride::where($matchThese)->forceDelete();
-
         });
     }
 
@@ -231,7 +233,6 @@ class RideController extends BaseController
         return ['message' => 'Ride finished.'];
     }
 
-
     /// Helper methods
 
     protected function recurringDates($startDate, $endDate, $weekDaysString)
@@ -265,16 +266,15 @@ class RideController extends BaseController
             '4' => 'TH',
             '5' => 'FR',
             '6' => 'SA',
-            '7' => 'SU'
+            '7' => 'SU',
         ];
 
         $weekDays = explode(',', $weekDaysString);
-        for ($i=0; $i < count($weekDays); $i++) {
+        for ($i = 0; $i < count($weekDays); $i++) {
             $number = $weekDays[$i];
             $weekDays[$i] = $weekDaysTable[$number];
         }
 
         return $weekDays;
     }
-
 }

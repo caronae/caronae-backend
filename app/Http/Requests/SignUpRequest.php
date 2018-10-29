@@ -18,7 +18,7 @@ class SignUpRequest extends FormRequest
             'id_ufrj' => 'required|string',
             'course' => 'string',
             'profile' => 'required|string',
-            'profile_pic_url' => 'nullable|string'
+            'profile_pic_url' => 'nullable|string',
         ];
     }
 }

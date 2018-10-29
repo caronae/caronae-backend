@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 class Institution extends Model
 {
     use CrudTrait;
-    
+
     protected $fillable = [
         'name',
         'slug',
@@ -24,6 +24,7 @@ class Institution extends Model
     {
         $attributes['password'] = Hash::make($attributes['name'] . time());
         $model = static::query()->create($attributes);
+
         return $model;
     }
 
@@ -41,5 +42,4 @@ class Institution extends Model
     {
         return 'slug';
     }
-
 }

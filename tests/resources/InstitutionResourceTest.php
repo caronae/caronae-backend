@@ -28,5 +28,4 @@ class InstitutionResourceTest extends TestCase
 
         $this->assertArraySubset($expectedJson, $response);
     }
-
 }

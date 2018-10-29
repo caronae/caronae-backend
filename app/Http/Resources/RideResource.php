@@ -34,6 +34,7 @@ class RideResource extends Resource
     public function withAvailableSlots()
     {
         $this->displayAvailableSlots = true;
+
         return $this;
     }
 }

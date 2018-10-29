@@ -2,8 +2,6 @@
 
 namespace Caronae\Http\Controllers\API\V1;
 
-
-use Caronae\Http\Resources\MessageResource;
 use Caronae\Models\Message;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
@@ -37,7 +35,7 @@ class ChatControllerTest extends TestCase
             ]),
         ];
 
-        $response = $this->jsonAs($user,'GET', 'api/v1/rides/' . $ride->id . '/messages', []);
+        $response = $this->jsonAs($user, 'GET', 'api/v1/rides/' . $ride->id . '/messages', []);
         $response->assertStatus(200);
         $response->assertExactJson([
             'messages' => [
@@ -52,8 +50,8 @@ class ChatControllerTest extends TestCase
                     'body' => 'Olá mundo!',
                     'user' => $user->toArray(),
                     'date' => '1990-01-01 01:00:00',
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -64,8 +62,8 @@ class ChatControllerTest extends TestCase
         $ride = factory(Ride::class)->create();
         $ride->users()->attach($user, ['status' => 'accepted']);
 
-        $response = $this->jsonAs($user,'POST', 'api/v1/rides/' . $ride->id . '/messages', [
-            'message' => 'Hello world!'
+        $response = $this->jsonAs($user, 'POST', 'api/v1/rides/' . $ride->id . '/messages', [
+            'message' => 'Hello world!',
         ]);
 
         $response->assertStatus(201);
@@ -90,8 +88,8 @@ class ChatControllerTest extends TestCase
         $this->expectsNotification($user2, RideMessageReceived::class);
         $this->expectsNotification($user3, RideMessageReceived::class);
 
-        $response = $this->jsonAs($user,'POST', 'api/v1/rides/' . $ride->id . '/messages', [
-            'message' => 'Hello world!'
+        $response = $this->jsonAs($user, 'POST', 'api/v1/rides/' . $ride->id . '/messages', [
+            'message' => 'Hello world!',
         ]);
 
         $response->assertStatus(201);

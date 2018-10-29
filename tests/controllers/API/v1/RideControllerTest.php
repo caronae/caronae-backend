@@ -35,7 +35,7 @@ class RideControllerTest extends TestCase
     public function should_return_next_rides()
     {
         $user = $this->user;
-        $rides = factory(Ride::class, 'next', 2)->create()->each(function($ride) use ($user) {
+        $rides = factory(Ride::class, 'next', 2)->create()->each(function ($ride) use ($user) {
             $ride->users()->attach($user, ['status' => 'driver']);
             $ride->fresh();
         });
@@ -55,7 +55,7 @@ class RideControllerTest extends TestCase
     public function should_include_driver_info_in_each_ride()
     {
         $user = $this->user;
-        factory(Ride::class, 'next', 2)->create()->each(function($ride) use ($user) {
+        factory(Ride::class, 'next', 2)->create()->each(function ($ride) use ($user) {
             $ride->users()->attach($user, ['status' => 'driver']);
             $ride->fresh();
         });
@@ -67,8 +67,8 @@ class RideControllerTest extends TestCase
             'data' => [
                 '*' => [
                     'driver',
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -99,11 +99,11 @@ class RideControllerTest extends TestCase
         $hub = Hub::create(['name' => 'CT1', 'center' => 'CT', 'campus_id' => $campus1->id]);
         $hub2 = Hub::create(['name' => 'PV', 'center' => 'PV', 'campus_id' => $campus2->id]);
 
-        $futureDate = Carbon::now()->addDays(5)->setTime(12,0,0);
+        $futureDate = Carbon::now()->addDays(5)->setTime(12, 0, 0);
         $ride1 = factory(Ride::class, 'next')->create(['hub' => $hub->name, 'date' => $futureDate])->fresh();
         $ride1->users()->attach($this->user, ['status' => 'driver']);
 
-        $futureDate = Carbon::now()->addDays(5)->setTime(13,0,0);
+        $futureDate = Carbon::now()->addDays(5)->setTime(13, 0, 0);
         $ride2 = factory(Ride::class, 'next')->create(['hub' => $hub->center, 'date' => $futureDate])->fresh();
         $ride2->users()->attach($this->user, ['status' => 'driver']);
 
@@ -118,11 +118,11 @@ class RideControllerTest extends TestCase
     /** @test */
     public function should_allow_searching_next_rides_by_date_and_time()
     {
-        $futureDate = Carbon::now()->addDays(5)->setTime(12,0,0);
+        $futureDate = Carbon::now()->addDays(5)->setTime(12, 0, 0);
         $ride1 = factory(Ride::class, 'next')->create(['date' => $futureDate])->fresh();
         $ride1->users()->attach($this->user, ['status' => 'driver']);
 
-        $futureDate2 = $futureDate->copy()->setTime(8,0,0);
+        $futureDate2 = $futureDate->copy()->setTime(8, 0, 0);
         $ride2 = factory(Ride::class, 'next')->create(['date' => $futureDate2])->fresh();
         $ride2->users()->attach($this->user, ['status' => 'driver']);
 
@@ -206,14 +206,14 @@ class RideControllerTest extends TestCase
         $parameters = [
             'date' => '18/12/2016',
             'time' => '16:00:00',
-            'going' => 1
+            'going' => 1,
         ];
         $response = $this->json('GET', 'api/v1/rides/validateDuplicate', $parameters, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'valid' => true,
             'status' => 'valid',
-            'message' => 'No conflicting rides were found close to the specified date.'
+            'message' => 'No conflicting rides were found close to the specified date.',
         ]);
     }
 
@@ -230,14 +230,14 @@ class RideControllerTest extends TestCase
         $parameters = [
             'date' => '18/12/2016',
             'time' => '16:00:00',
-            'going' => 1
+            'going' => 1,
         ];
         $response = $this->json('GET', 'api/v1/rides/validateDuplicate', $parameters, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'valid' => true,
             'status' => 'valid',
-            'message' => 'No conflicting rides were found close to the specified date.'
+            'message' => 'No conflicting rides were found close to the specified date.',
         ]);
     }
 
@@ -246,12 +246,12 @@ class RideControllerTest extends TestCase
     {
         Carbon::setTestNow('2016-12-18 15:45:00');
         $pastRide = factory(Ride::class)->create(['date' => '2016-12-18 15:35:00', 'going' => true]);
-        $pastRide ->users()->attach($this->user, ['status' => 'driver']);
+        $pastRide->users()->attach($this->user, ['status' => 'driver']);
 
         $parameters = [
             'date' => '18/12/2016',
             'time' => '16:00:00',
-            'going' => 1
+            'going' => 1,
         ];
         $response = $this->json('GET', 'api/v1/rides/validateDuplicate', $parameters, $this->headers);
 
@@ -259,7 +259,7 @@ class RideControllerTest extends TestCase
         $response->assertExactJson([
             'valid' => true,
             'status' => 'valid',
-            'message' => 'No conflicting rides were found close to the specified date.'
+            'message' => 'No conflicting rides were found close to the specified date.',
         ]);
     }
 
@@ -273,14 +273,14 @@ class RideControllerTest extends TestCase
         $parameters = [
             'date' => '18/12/2016',
             'time' => '16:00:00',
-            'going' => 1
+            'going' => 1,
         ];
         $response = $this->json('GET', 'api/v1/rides/validateDuplicate', $parameters, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'valid' => false,
             'status' => 'possible_duplicate',
-            'message' => 'The user has already offered a ride too close to the specified date.'
+            'message' => 'The user has already offered a ride too close to the specified date.',
         ]);
     }
 
@@ -294,14 +294,14 @@ class RideControllerTest extends TestCase
         $parameters = [
             'date' => '18/12/2016',
             'time' => '16:00:00',
-            'going' => 1
+            'going' => 1,
         ];
         $response = $this->json('GET', 'api/v1/rides/validateDuplicate', $parameters, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
             'valid' => false,
             'status' => 'duplicate',
-            'message' => 'The user has already offered a ride on the specified date.'
+            'message' => 'The user has already offered a ride on the specified date.',
         ]);
     }
 
@@ -316,12 +316,12 @@ class RideControllerTest extends TestCase
             'route' => 'Linha Vermelha',
             'mydate' => $date->format('d/m/Y'),
             'mytime' => $date->format('H:i:s'),
-            'week_days' => NULL,
-            'repeats_until' => NULL,
+            'week_days' => null,
+            'repeats_until' => null,
             'slots' => '4',
             'hub' => 'A',
             'description' => 'Lorem ipsum dolor',
-            'going' => false
+            'going' => false,
         ];
 
         $response = $this->json('POST', 'api/v1/rides', $request, $this->headers);
@@ -337,11 +337,11 @@ class RideControllerTest extends TestCase
             'slots' => '4',
             'hub' => 'A',
             'description' => 'Lorem ipsum dolor',
-            'going' => false
+            'going' => false,
         ]);
 
         $response->assertJsonStructure([
-            '*' => ['id']
+            '*' => ['id'],
         ]);
     }
 
@@ -362,14 +362,14 @@ class RideControllerTest extends TestCase
             'slots' => '4',
             'hub' => 'A',
             'description' => 'Lorem ipsum dolor',
-            'going' => true
+            'going' => true,
         ];
 
         $response = $this->json('POST', 'api/v1/rides', $request, $this->headers);
         $response->assertStatus(201);
 
         $jsonContent = json_decode($response->getContent());
-        $this->assertEquals(2, count($jsonContent), "Should create exactly 2 rides.");
+        $this->assertEquals(2, count($jsonContent), 'Should create exactly 2 rides.');
 
         $response->assertJsonFragment([
             'myzone' => 'Norte',
@@ -381,7 +381,7 @@ class RideControllerTest extends TestCase
             'slots' => '4',
             'hub' => 'A',
             'description' => 'Lorem ipsum dolor',
-            'going' => true
+            'going' => true,
         ]);
         $response->assertJsonFragment([
             'myzone' => 'Norte',
@@ -393,11 +393,11 @@ class RideControllerTest extends TestCase
             'slots' => '4',
             'hub' => 'A',
             'description' => 'Lorem ipsum dolor',
-            'going' => true
+            'going' => true,
         ]);
 
         $response->assertJsonStructure([
-            '*' => ['id', 'routine_id', 'week_days']
+            '*' => ['id', 'routine_id', 'week_days'],
         ]);
     }
 
@@ -412,18 +412,18 @@ class RideControllerTest extends TestCase
             'route' => 'Linha Vermelha',
             'mydate' => $date->format('d/m/Y'),
             'mytime' => $date->format('H:i:s'),
-            'week_days' => NULL,
-            'repeats_until' => NULL,
+            'week_days' => null,
+            'repeats_until' => null,
             'slots' => '4',
             'hub' => 'A',
             'description' => 'Lorem ipsum dolor',
-            'going' => false
+            'going' => false,
         ];
 
         $response = $this->json('POST', 'api/v1/rides', $request, $this->headers);
         $response->assertStatus(422);
         $response->assertJsonFragment([
-            'mydate' => ['You cannot create a ride in the past.']
+            'mydate' => ['You cannot create a ride in the past.'],
         ]);
     }
 
@@ -442,7 +442,7 @@ class RideControllerTest extends TestCase
             'slots' => '4',
             'hub' => 'A',
             'description' => 'Lorem ipsum dolor',
-            'going' => true
+            'going' => true,
         ];
 
         $response = $this->json('POST', 'api/v1/rides', $request, $this->headers);
@@ -451,7 +451,7 @@ class RideControllerTest extends TestCase
         $response = $this->json('POST', 'api/v1/rides', $request, $this->headers);
         $response->assertStatus(422);
         $response->assertJsonFragment([
-            'The user has already offered a ride on the specified date.'
+            'The user has already offered a ride on the specified date.',
         ]);
     }
 
@@ -479,7 +479,7 @@ class RideControllerTest extends TestCase
         $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/requests', [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
-            'message' => 'Request created.'
+            'message' => 'Request created.',
         ]);
     }
 
@@ -494,7 +494,7 @@ class RideControllerTest extends TestCase
         $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/requests', [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
-            'message' => 'Ride request already exists.'
+            'message' => 'Ride request already exists.',
         ]);
     }
 
@@ -510,7 +510,7 @@ class RideControllerTest extends TestCase
         $response = $this->jsonAs($this->user, 'POST', 'api/v1/rides/' . $ride->id . '/requests', []);
         $response->assertStatus(403);
         $response->assertExactJson([
-            'error' => 'You can\'t request to participate in a ride from another institution.'
+            'error' => 'You can\'t request to participate in a ride from another institution.',
         ]);
     }
 
@@ -543,8 +543,8 @@ class RideControllerTest extends TestCase
                 'created_at' => $user->created_at->format('Y-m-d H:i:s'),
                 'location' => $user->location,
                 'face_id' => $user->face_id,
-                'profile_pic_url' => $user->profile_pic_url
-            ]
+                'profile_pic_url' => $user->profile_pic_url,
+            ],
         ]);
     }
 
@@ -577,7 +577,7 @@ class RideControllerTest extends TestCase
         $response = $this->json('PUT', 'api/v1/rides/' . $ride->id . '/requests', $request, $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
-            'message' => 'Request updated.'
+            'message' => 'Request updated.',
         ]);
     }
 
@@ -596,7 +596,7 @@ class RideControllerTest extends TestCase
         $response = $this->json('PUT', 'api/v1/rides/' . $ride->id . '/requests', $request, $this->headers);
         $response->assertStatus(400);
         $response->assertExactJson([
-            'error' => 'Ride request not found.'
+            'error' => 'Ride request not found.',
         ]);
     }
 
@@ -630,7 +630,7 @@ class RideControllerTest extends TestCase
         $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/leave', [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
-            'message' => 'Left ride.'
+            'message' => 'Left ride.',
         ]);
 
         $this->assertDatabaseHas('ride_user', ['ride_id' => $ride->id, 'user_id' => $this->user->id, 'status' => 'quit']);
@@ -654,7 +654,7 @@ class RideControllerTest extends TestCase
         $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/leave', [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
-            'message' => 'Left ride.'
+            'message' => 'Left ride.',
         ]);
 
         $this->assertDatabaseMissing('rides', ['id' => $ride->id, 'deleted_at' => null]);
@@ -672,7 +672,7 @@ class RideControllerTest extends TestCase
         $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/finish', [], $this->headers);
         $response->assertStatus(200);
         $response->assertExactJson([
-            'message' => 'Ride finished.'
+            'message' => 'Ride finished.',
         ]);
 
         $this->assertDatabaseHas('rides', ['id' => $ride->id, 'done' => true]);
@@ -687,7 +687,7 @@ class RideControllerTest extends TestCase
         $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/finish', [], $this->headers);
         $response->assertStatus(403);
         $response->assertExactJson([
-            'error' => 'A ride in the future cannot be marked as finished'
+            'error' => 'A ride in the future cannot be marked as finished',
         ]);
 
         $this->assertDatabaseHas('rides', ['id' => $ride->id, 'done' => false]);

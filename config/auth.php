@@ -1,4 +1,5 @@
 <?php
+
 return [
 
     'defaults' => [
@@ -25,7 +26,7 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => Caronae\Models\User::class,
-        ]
+        ],
     ],
 
     'passwords' => [

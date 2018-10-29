@@ -1,4 +1,5 @@
 <?php
+
 namespace Caronae\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -8,7 +9,8 @@ use Illuminate\Support\Facades\Log;
 
 class ZoneController extends CrudController
 {
-    public function setup() {
+    public function setup()
+    {
         $this->crud->setModel('Caronae\Models\Zone');
         $this->crud->setRoute('admin/zones');
         $this->crud->setEntityNameStrings('zona', 'zonas');
@@ -31,6 +33,7 @@ class ZoneController extends CrudController
 
         Log::info('Adding zone ' . $request->name);
         $this->clearCache();
+
         return parent::storeCrud();
     }
 
@@ -40,6 +43,7 @@ class ZoneController extends CrudController
 
         Log::info('Updating zone ' . $request->name);
         $this->clearCache();
+
         return parent::updateCrud();
     }
 
@@ -47,6 +51,7 @@ class ZoneController extends CrudController
     {
         Log::info('Deleting zone ' . $id);
         $this->clearCache();
+
         return parent::destroy($id);
     }
 

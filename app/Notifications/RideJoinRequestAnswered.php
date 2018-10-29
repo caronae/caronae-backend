@@ -45,7 +45,7 @@ class RideJoinRequestAnswered extends Notification implements ShouldQueue
             'message'  => "{$driver->shortName} {$action} seu pedido de carona de {$dateString} {$emoji}",
             'msgType'  => $this->accepted ? 'accepted' : 'refused',
             'rideId'   => $this->ride->id,
-            'senderId' => $driver->id
+            'senderId' => $driver->id,
         ];
     }
 
@@ -53,7 +53,7 @@ class RideJoinRequestAnswered extends Notification implements ShouldQueue
     {
         return [
             'rideID' => $this->ride->id,
-            'status' => $this->accepted ? 'accepted' : 'refused'
+            'status' => $this->accepted ? 'accepted' : 'refused',
         ];
     }
 }

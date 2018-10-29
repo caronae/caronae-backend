@@ -2,7 +2,6 @@
 
 namespace Caronae\Services;
 
-
 use Carbon\Carbon;
 use Caronae\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;

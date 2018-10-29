@@ -15,8 +15,7 @@ class TokenMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if ($request->input('age') < 200)
-        {
+        if ($request->input('age') < 200) {
             return redirect('home');
         }
 

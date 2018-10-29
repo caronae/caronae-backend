@@ -2,7 +2,6 @@
 
 namespace Caronae\Models;
 
-
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 

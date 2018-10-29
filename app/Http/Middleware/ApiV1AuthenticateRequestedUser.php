@@ -17,6 +17,7 @@ class ApiV1AuthenticateRequestedUser extends ApiV1Authenticate
                 'requested_user' => $request->user->id,
                 'authenticated_user' => $authenticatedUserID,
             ]);
+
             return response()->json(['error' => 'You are not authorized.'], 403);
         }
 

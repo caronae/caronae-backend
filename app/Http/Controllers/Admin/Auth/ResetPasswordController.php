@@ -1,5 +1,7 @@
 <?php
+
 namespace Caronae\Http\Controllers\Admin\Auth;
+
 use Auth;
 use Caronae\Http\Controllers\BaseController;
 use Illuminate\Foundation\Auth\ResetsPasswords;

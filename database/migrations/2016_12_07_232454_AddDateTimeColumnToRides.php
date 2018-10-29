@@ -19,12 +19,12 @@ class AddDateTimeColumnToRides extends Migration
         });
 
         Caronae\Models\Ride::withTrashed()->update([
-        	'date' => DB::raw('mydate + mytime')
+            'date' => DB::raw('mydate + mytime'),
         ]);
 
         Schema::table('rides', function (Blueprint $table) {
-        	$table->dropColumn('mydate');
-        	$table->dropColumn('mytime');
+            $table->dropColumn('mydate');
+            $table->dropColumn('mytime');
         });
     }
 
@@ -35,14 +35,14 @@ class AddDateTimeColumnToRides extends Migration
      */
     public function down()
     {
-    	Schema::table('rides', function (Blueprint $table) {
-        	$table->date('mydate')->after('slots')->default(DB::raw('CURRENT_TIMESTAMP'));
-        	$table->time('mytime')->after('mydate')->default(DB::raw('CURRENT_TIMESTAMP'));
+        Schema::table('rides', function (Blueprint $table) {
+            $table->date('mydate')->after('slots')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->time('mytime')->after('mydate')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
 
-    	Caronae\Models\Ride::withTrashed()->update([
-        	'mydate' => DB::raw('date::DATE'),
-        	'mytime' => DB::raw('date::TIME')
+        Caronae\Models\Ride::withTrashed()->update([
+            'mydate' => DB::raw('date::DATE'),
+            'mytime' => DB::raw('date::TIME'),
         ]);
 
         Schema::table('rides', function (Blueprint $table) {

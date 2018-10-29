@@ -36,7 +36,7 @@ class RideController extends CrudController
             [
                 'type' => 'date_range',
                 'name' => 'from_to',
-                'label' => 'Período'
+                'label' => 'Período',
             ],
             false,
             function ($value) {
@@ -50,7 +50,7 @@ class RideController extends CrudController
             [
                 'type' => 'simple',
                 'name' => 'finished',
-                'label' => 'Concluídas'
+                'label' => 'Concluídas',
             ],
             false,
             function () {
@@ -62,15 +62,12 @@ class RideController extends CrudController
             [
                 'type' => 'simple',
                 'name' => 'routine',
-                'label' => 'Rotinas'
+                'label' => 'Rotinas',
             ],
             false,
             function () {
                 $this->crud->addClause('whereHas', 'routine');
             }
         );
-
     }
-
-
 }
