@@ -98,7 +98,7 @@ class RideController extends BaseController
                 $ride->routine_id = $ride->id;
                 $ride->save();
 
-                $repeating_dates = $this->recurringDates($ride->date, $repeats_until, $ride->week_days);
+                $repeating_dates = recurringDates($ride->date, $repeats_until, $ride->week_days);
 
                 foreach ($repeating_dates as $date) {
                     if ($date == $ride->date) {
@@ -231,50 +231,5 @@ class RideController extends BaseController
         $ride->save();
 
         return ['message' => 'Ride finished.'];
-    }
-
-    /// Helper methods
-
-    protected function recurringDates($startDate, $endDate, $weekDaysString)
-    {
-        $weekDays = $this->weekDaysStringToRecurrString($weekDaysString);
-
-        $recurringRule = new \Recurr\Rule();
-        $recurringRule->setFreq('WEEKLY');
-        $recurringRule->setByDay($weekDays);
-        $recurringRule->setStartDate($startDate);
-        $recurringRule->setUntil($endDate);
-
-        $transformer = new \Recurr\Transformer\ArrayTransformer();
-        $events = $transformer->transform($recurringRule);
-
-        $dates = [];
-        foreach ($events as $event) {
-            $dates[] = $event->getStart();
-        }
-
-        return $dates;
-    }
-
-    protected function weekDaysStringToRecurrString($weekDaysString)
-    {
-        $weekDaysTable = [
-            '0' => 'SU',
-            '1' => 'MO',
-            '2' => 'TU',
-            '3' => 'WE',
-            '4' => 'TH',
-            '5' => 'FR',
-            '6' => 'SA',
-            '7' => 'SU',
-        ];
-
-        $weekDays = explode(',', $weekDaysString);
-        for ($i = 0; $i < count($weekDays); $i++) {
-            $number = $weekDays[$i];
-            $weekDays[$i] = $weekDaysTable[$number];
-        }
-
-        return $weekDays;
     }
 }
