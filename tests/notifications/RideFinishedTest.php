@@ -10,15 +10,19 @@ use Tests\TestCase;
 
 class RideFinishedTest extends TestCase
 {
-	protected $notification;
+	private $notification;
+    private $driver;
+    private $ride;
 
-	public function setUp()
+    public function setUp()
     {
-        $ride = Mockery::mock(Ride::class);
-    	$ride->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $user = Mockery::mock(User::class);
-        $user->shouldReceive('getAttribute')->with('id')->andReturn(2);
-    	$this->notification = new RideFinished($ride, $user);
+        parent::setUp();
+
+        $this->driver = factory(User::class, 'driver')->create(['name' => 'Fulana Santos Silva']);
+        $this->ride = factory(Ride::class)->create(['date' => '2018-11-02 20:00:00']);
+        $this->ride->users()->attach($this->driver, ['status' => 'driver']);
+
+    	$this->notification = new RideFinished($this->ride);
         $this->notification->id = uniqid();
     }
 
@@ -26,11 +30,12 @@ class RideFinishedTest extends TestCase
     public function should_contain_all_fields_in_push()
     {
         $this->assertSame([
-            'id'      => $this->notification->id,
-            'message' => 'Um motorista concluiu uma carona ativa sua',
-            'msgType' => 'finished',
-            'rideId'  => 1,
-            'senderId' => 2,
+            'id'       => $this->notification->id,
+            'title'    => $this->ride->title,
+            'message'  => 'Deu tudo certo com a sua carona? Use o Falaê para reportar qualquer problema ou nos mandar seu feedback. Obrigado por usar o Caronaê! ;)',
+            'msgType'  => 'finished',
+            'rideId'   => $this->ride->id,
+            'senderId' => $this->driver->id,
         ], $this->notification->toPush(Mockery::mock(User::class)));
     }
 }

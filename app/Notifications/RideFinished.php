@@ -17,7 +17,7 @@ class RideFinished extends Notification implements ShouldQueue
     protected $user;
     public $automated;
 
-    public function __construct(Ride $ride, bool $automated)
+    public function __construct(Ride $ride, bool $automated = false)
     {
         $this->ride = $ride;
         $this->automated = $automated;
@@ -31,11 +31,12 @@ class RideFinished extends Notification implements ShouldQueue
     public function toPush()
     {
         return [
-            'id'      => $this->id,
-            'message' => 'Um motorista concluiu uma carona ativa sua',
-            'msgType' => 'finished',
-            'rideId'  => $this->ride->id,
-//            'senderId' => $this->user->id,
+            'id'       => $this->id,
+            'title'    => $this->ride->title,
+            'message'  => 'Deu tudo certo com a sua carona? Use o Falaê para reportar qualquer problema ou nos mandar seu feedback. Obrigado por usar o Caronaê! ;)',
+            'msgType'  => 'finished',
+            'rideId'   => $this->ride->id,
+            'senderId' => $this->ride->driver()->id,
         ];
     }
 

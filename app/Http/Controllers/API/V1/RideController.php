@@ -223,9 +223,8 @@ class RideController extends BaseController
         $ride->done = true;
         $ride->save();
 
-        $rideFinishedNotification = new RideFinished($ride, $request->user());
-        $riders = $ride->riders()->get();
-        $riders->each->notify($rideFinishedNotification);
+        $rideFinishedNotification = new RideFinished($ride);
+        $ride->riders->each->notify($rideFinishedNotification);
 
         return ['message' => 'Ride finished.'];
     }
