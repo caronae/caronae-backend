@@ -4,7 +4,6 @@ namespace Caronae\Notifications;
 
 use Caronae\Channels\PushChannel;
 use Caronae\Models\Ride;
-use Caronae\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;

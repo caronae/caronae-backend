@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class RideFinishedTest extends TestCase
 {
-	private $notification;
+    private $notification;
     private $driver;
     private $ride;
 
@@ -22,7 +22,7 @@ class RideFinishedTest extends TestCase
         $this->ride = factory(Ride::class)->create(['date' => '2018-11-02 20:00:00']);
         $this->ride->users()->attach($this->driver, ['status' => 'driver']);
 
-    	$this->notification = new RideFinished($this->ride);
+        $this->notification = new RideFinished($this->ride);
         $this->notification->id = uniqid();
     }
 
