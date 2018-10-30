@@ -25,7 +25,7 @@ if (!function_exists('recurringDates')) {
         $events = $transformer->transform($recurringRule);
 
         return $events->map(function ($event) {
-           return $event->getStart();
+            return $event->getStart();
         })->filter(function ($date) use ($startDate) {
             return $date != $startDate;
         });
