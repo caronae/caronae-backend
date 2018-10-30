@@ -5,8 +5,10 @@ namespace Caronae\Console\Commands;
 use Carbon\Carbon;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
+use Caronae\Notifications\RideFinished;
 use DateTime;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class FinishActiveRidesTest extends TestCase
@@ -18,6 +20,7 @@ class FinishActiveRidesTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
+        Notification::fake();
         $this->command = new FinishActiveRides();
     }
 
@@ -49,6 +52,22 @@ class FinishActiveRidesTest extends TestCase
         $this->command->handle();
 
         $this->assertDatabaseHas('rides', ['id' => $rideNotActive->id, 'done' => false]);
+    }
+
+    /** @test */
+    public function should_notify_users_when_ride_is_finished()
+    {
+        $ride = $this->createActiveRide(new Carbon('2 hours 5 minutes ago'));
+
+        $this->command->handle();
+
+        Notification::assertSentTo($ride->riders, RideFinished::class, function ($notification) {
+            return $notification->automated;
+        });
+
+        Notification::assertSentTo($ride->driver(), RideFinished::class, function ($notification) {
+            return $notification->automated;
+        });
     }
 
     private function createActiveRide(DateTime $date)

@@ -4,6 +4,7 @@ namespace Caronae\Console\Commands;
 
 use Carbon\Carbon;
 use Caronae\Models\Ride;
+use Caronae\Notifications\RideFinished;
 use Illuminate\Console\Command;
 
 class FinishActiveRides extends Command
@@ -14,9 +15,16 @@ class FinishActiveRides extends Command
     public function handle()
     {
         $untilDate = new Carbon('2 hours ago');
-        Ride::where('date', '<', $untilDate)
+        $rides = Ride::where('date', '<', $untilDate)
             ->where('done', false)
-            ->has('riders')
-            ->update(['done' => true]);
+            ->has('riders');
+
+        $rides->get()->each(function (Ride $ride) {
+            $notification = new RideFinished($ride, true);
+            $ride->driver()->notify($notification);
+            $ride->riders->each->notify($notification);
+        });
+
+        $rides->update(['done' => true]);
     }
 }

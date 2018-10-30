@@ -15,11 +15,12 @@ class RideFinished extends Notification implements ShouldQueue
 
     protected $ride;
     protected $user;
+    public $automated;
 
-    public function __construct(Ride $ride, User $user)
+    public function __construct(Ride $ride, bool $automated)
     {
         $this->ride = $ride;
-        $this->user = $user;
+        $this->automated = $automated;
     }
 
     public function via()
@@ -34,7 +35,7 @@ class RideFinished extends Notification implements ShouldQueue
             'message' => 'Um motorista concluiu uma carona ativa sua',
             'msgType' => 'finished',
             'rideId'  => $this->ride->id,
-            'senderId' => $this->user->id,
+//            'senderId' => $this->user->id,
         ];
     }
 
