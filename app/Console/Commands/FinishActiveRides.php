@@ -16,7 +16,7 @@ class FinishActiveRides extends Command
     {
         $untilDate = new Carbon('2 hours ago');
         $rides = Ride::where('date', '<', $untilDate)
-            ->where('done', false)
+            ->notFinished()
             ->has('riders');
 
         $rides->get()->each(function (Ride $ride) {
