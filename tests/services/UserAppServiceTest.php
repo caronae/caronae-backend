@@ -75,7 +75,7 @@ class UserAppServiceTest extends TestCase
     /** @test */
     public function should_return_users_that_were_active_in_the_last_15_days()
     {
-        $userTwoWeeksAgo = factory(User::class)->create(['updated_at' => new Carbon('15 days ago'), 'app_platform' => 'Android', 'app_version' => '1.0.0']);
+        $userTwoWeeksAgo = factory(User::class)->create(['updated_at' => new Carbon('14 days ago'), 'app_platform' => 'Android', 'app_version' => '1.0.0']);
         $userYesterday = factory(User::class)->create(['updated_at' => new Carbon('yesterday'), 'app_platform' => 'Android', 'app_version' => '1.0.0']);
 
         $users = $this->service->getActiveUsersWithOldAppVersions();
