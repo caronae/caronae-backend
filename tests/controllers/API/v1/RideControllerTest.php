@@ -9,6 +9,7 @@ use Caronae\Models\Institution;
 use Caronae\Models\Ride;
 use Caronae\Models\User;
 use Caronae\Notifications\RideCanceled;
+use Caronae\Notifications\RideFinished;
 use Caronae\Notifications\RideJoinRequestAnswered;
 use Caronae\Notifications\RideJoinRequested;
 use Caronae\Notifications\RideUserLeft;
@@ -661,13 +662,15 @@ class RideControllerTest extends TestCase
     }
 
     /** @test */
-    public function should_let_driver_finish_ride()
+    public function should_let_driver_finish_ride_and_notify_riders()
     {
         $ride = factory(Ride::class)->create(['date' => '1990-01-01 00:00:00']);
         $ride->users()->attach($this->user, ['status' => 'driver']);
 
         $rider = factory(User::class)->create();
         $ride->users()->attach($rider, ['status' => 'accepted']);
+
+        $this->expectsNotification($rider, RideFinished::class);
 
         $response = $this->json('POST', 'api/v1/rides/' . $ride->id . '/finish', [], $this->headers);
         $response->assertStatus(200);
