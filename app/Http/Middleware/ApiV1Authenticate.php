@@ -13,6 +13,10 @@ class ApiV1Authenticate
 {
     public function handle($request, Closure $next)
     {
+        if (auth()->check()) {
+            return $next($request);
+        }
+        
         if (!empty($request->header('token'))) {
             return $this->handleLegacyTokenAuthentication($request, $next);
         }

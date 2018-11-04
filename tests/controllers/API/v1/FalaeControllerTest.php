@@ -22,7 +22,7 @@ class FalaeControllerTest extends TestCase
             'message' => 'Combinei com o motorista e ele não compareceu no horário marcado.',
         ];
 
-        $response = $this->jsonAs($user, 'POST', 'api/v1/falae/messages', $request);
+        $response = $this->be($user)->json('POST', 'api/v1/falae/messages', $request);
 
         $response->assertStatus(200);
         $response->assertJson(['status' => 'Message sent.']);

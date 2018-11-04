@@ -40,7 +40,7 @@ class PlaceControllerTest extends TestCase
     /** @test */
     public function should_return_zones()
     {
-        $response = $this->jsonAs($this->user, 'GET', 'api/v1/places');
+        $response = $this->be($this->user)->json('GET', 'api/v1/places');
 
         $response->assertStatus(200);
         $response->assertJsonFragment([
@@ -57,7 +57,7 @@ class PlaceControllerTest extends TestCase
     /** @test */
     public function should_return_users_institution()
     {
-        $response = $this->jsonAs($this->user, 'GET', 'api/v1/places');
+        $response = $this->be($this->user)->json('GET', 'api/v1/places');
 
         $response->assertStatus(200);
         $response->assertJsonFragment([
@@ -68,7 +68,7 @@ class PlaceControllerTest extends TestCase
     /** @test */
     public function should_return_campi_from_users_institution()
     {
-        $response = $this->jsonAs($this->user, 'GET', 'api/v1/places');
+        $response = $this->be($this->user)->json('GET', 'api/v1/places');
 
         $response->assertStatus(200);
         $response->assertJsonFragment([
@@ -88,7 +88,7 @@ class PlaceControllerTest extends TestCase
     {
         $campusWithoutHubs = factory(Campus::class)->create(['institution_id' => $this->institution->id]);
 
-        $response = $this->jsonAs($this->user, 'GET', 'api/v1/places');
+        $response = $this->be($this->user)->json('GET', 'api/v1/places');
 
         $response->assertStatus(200);
         $campi = $response->getOriginalContent()['campi'];

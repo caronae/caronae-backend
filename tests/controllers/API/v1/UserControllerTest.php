@@ -16,6 +16,8 @@ class UserControllerTest extends TestCase
 
     protected $institution;
 
+    private $user;
+
     public function setUp()
     {
         parent::setUp();
@@ -107,10 +109,9 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function should_sign_in()
+    public function should_sign_in_with_institution_id_and_token()
     {
         $user = $this->someUser();
-
         $response = $this->json('POST', 'api/v1/users/login', [
             'id_ufrj' => $user->id_ufrj,
             'token' => $user->token,
@@ -158,9 +159,9 @@ class UserControllerTest extends TestCase
     public function should_return_token_with_legacy_authentication()
     {
         $user = $this->someUser();
-        $headers = ['token' => $user->token];
+        $this->be($user);
 
-        $response = $this->json('GET', 'api/v1/users/' . $user->id . '/token', [], $headers);
+        $response = $this->json('GET', 'api/v1/users/' . $user->id . '/token');
 
         $response->assertStatus(200);
         $this->assertStringStartsWith('Bearer ', $response->headers->get('Authorization'));
@@ -172,7 +173,7 @@ class UserControllerTest extends TestCase
     public function should_return_user()
     {
         $user = $this->someUser();
-        $response = $this->jsonAs($user, 'GET', 'api/v1/users/' . $user->id);
+        $response = $this->be($user)->json('GET', 'api/v1/users/' . $user->id);
         $response->assertStatus(200);
         $response->assertExactJson([
             'user' => [
@@ -202,7 +203,7 @@ class UserControllerTest extends TestCase
         $user = $this->someUser();
         $user2 = $this->someUser();
 
-        $response = $this->jsonAs($user, 'GET', 'api/v1/users/' . $user2->id);
+        $response = $this->be($user)->json('GET', 'api/v1/users/' . $user2->id);
 
         $response->assertStatus(403);
     }
@@ -213,7 +214,6 @@ class UserControllerTest extends TestCase
     public function should_update_user_profile()
     {
         $user = $this->someUser();
-        $headers = ['token' => $user->token];
         $body = [
             'phone_number' => '021998781890',
             'email' => 'TEST@example.com',
@@ -226,7 +226,7 @@ class UserControllerTest extends TestCase
             'facebook_id' => 'facebookid123456',
         ];
 
-        $response = $this->json('PUT', 'api/v1/users/' . $user->id, $body, $headers);
+        $response = $this->be($user)->json('PUT', 'api/v1/users/' . $user->id, $body);
         $response->assertStatus(200);
 
         $user = $user->fresh();
@@ -261,7 +261,7 @@ class UserControllerTest extends TestCase
             'profile' => 'newprofile',
         ];
 
-        $response = $this->json('PUT', 'api/v1/users/' . $user->id, $body, ['token' => $user->token]);
+        $response = $this->be($user)->json('PUT', 'api/v1/users/' . $user->id, $body);
         $response->assertStatus(200);
 
         $user = $user->fresh();
@@ -291,7 +291,7 @@ class UserControllerTest extends TestCase
             'profile_pic_url' => 'http://example.com/image.jpg',
         ];
 
-        $response = $this->json('PUT', 'api/v1/users/' . $otherUser->id, $body, [ 'token' => $user->token ]);
+        $response = $this->be($user)->json('PUT', 'api/v1/users/' . $otherUser->id, $body);
         $response->assertStatus(403);
     }
 
@@ -304,7 +304,7 @@ class UserControllerTest extends TestCase
         $user = $this->someUser(['profile_pic_url' => null]);
         $body = ['profile_picture' => UploadedFile::fake()->image('image.png')];
 
-        $response = $this->jsonAs($user, 'POST', "api/v1/users/{$user->id}/profile_picture", $body);
+        $response = $this->be($user)->json('POST', "api/v1/users/{$user->id}/profile_picture", $body);
         $newPictureURL = $response->getOriginalContent()['profile_pic_url'];
 
         $this->assertNotEmpty($newPictureURL);
@@ -319,7 +319,7 @@ class UserControllerTest extends TestCase
         $user = $this->someUser(['profile_pic_url' => 'http://example.com/old_pic.jpg']);
         $body = ['profile_picture' => UploadedFile::fake()->image('image.png')];
 
-        $this->jsonAs($user, 'POST', "api/v1/users/{$user->id}/profile_picture", $body);
+        $this->be($user)->json('POST', "api/v1/users/{$user->id}/profile_picture", $body);
 
         $this->assertEquals('http://example.com/old_pic.jpg', $user->fresh()->profile_pic_url);
     }
@@ -344,7 +344,7 @@ class UserControllerTest extends TestCase
         $pendingRide->users()->attach($pendingRideDriver, ['status' => 'driver']);
         $pendingRide->users()->attach($user, ['status' => 'pending']);
 
-        $response = $this->json('GET', 'api/v1/users/' . $user->id . '/rides', [], ['token' => $user->token]);
+        $response = $this->be($user)->json('GET', 'api/v1/users/' . $user->id . '/rides', []);
 
         $response->assertStatus(200);
         $response->assertExactJson([
@@ -428,7 +428,7 @@ class UserControllerTest extends TestCase
         $pendingRide->users()->attach($this->someUser(), ['status' => 'driver']);
         $pendingRide->users()->attach($user, ['status' => 'pending']);
 
-        $response = $this->json('GET', 'api/v1/users/' . $user->id . '/rides', [], ['token' => $user->token]);
+        $response = $this->be($user)->json('GET', 'api/v1/users/' . $user->id . '/rides', []);
 
         $response->assertStatus(200);
         $response->assertExactJson([
@@ -485,9 +485,7 @@ class UserControllerTest extends TestCase
         $user = $this->someUser();
         $user2 = $this->someUser();
 
-        $response = $this->json('GET', 'api/v1/users/' . $user2->id . '/rides', [], [
-            'token' => $user->token,
-        ]);
+        $response = $this->be($user)->json('GET', 'api/v1/users/' . $user2->id . '/rides');
 
         $response->assertStatus(403);
     }
@@ -506,7 +504,7 @@ class UserControllerTest extends TestCase
         $takenRide2 = factory(Ride::class)->create(['done' => true]);
         $takenRide2->users()->attach($otherUser, ['status' => 'accepted']);
 
-        $response = $this->json('GET', 'api/v1/users/' . $otherUser->id . '/rides/history', [], ['token' => $user->token]);
+        $response = $this->be($user)->json('GET', 'api/v1/users/' . $otherUser->id . '/rides/history', []);
 
         $response->assertStatus(200);
         $response->assertExactJson([
@@ -531,7 +529,7 @@ class UserControllerTest extends TestCase
         $takenRide2 = factory(Ride::class)->create(['done' => false])->fresh();
         $takenRide2->users()->attach($user, ['status' => 'accepted']);
 
-        $response = $this->json('GET', 'api/v1/users/' . $user->id . '/rides/history', [], ['token' => $user->token]);
+        $response = $this->be($user)->json('GET', 'api/v1/users/' . $user->id . '/rides/history');
 
         $response->assertStatus(200);
         $response->assertExactJson([
