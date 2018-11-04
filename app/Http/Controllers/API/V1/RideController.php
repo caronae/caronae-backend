@@ -16,7 +16,6 @@ use Caronae\Notifications\RideJoinRequested;
 use Caronae\Notifications\RideUserLeft;
 use Caronae\Services\ValidateDuplicateService;
 use DB;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class RideController extends BaseController
@@ -55,21 +54,6 @@ class RideController extends BaseController
         $rideResource = new RideResource($ride);
 
         return $rideResource->withAvailableSlots();
-    }
-
-    public function showWeb($id)
-    {
-        try {
-            $ride = Ride::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            return response()->view('rides.notFound')->setStatusCode(404);
-        }
-
-        $title = $ride->title . ' | ' . $ride->date->format('H:i');
-        $driver = $ride->driver()->name;
-        $deepLinkUrl = 'caronae://carona/' . $ride->id;
-
-        return view('rides.showWeb', ['title' => $title, 'driver' => $driver, 'deepLinkUrl' => $deepLinkUrl]);
     }
 
     public function store(CreateRideRequest $request)
