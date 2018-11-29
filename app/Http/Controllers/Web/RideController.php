@@ -17,7 +17,7 @@ class RideController extends BaseController
         }
 
         $title = $ride->title . ' | ' . $ride->date->format('H:i');
-        $driver = $ride->driver()->name;
+        $driver = $ride->driver()->shortName;
         $deepLinkUrl = 'caronae://carona/' . $ride->id;
 
         return view('rides.showWeb', ['title' => $title, 'driver' => $driver, 'deepLinkUrl' => $deepLinkUrl]);

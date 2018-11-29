@@ -29,7 +29,7 @@ class RideControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('rides.showWeb');
         $response->assertViewHas('title', 'Ipanema → CT | 15/07 | 12:00');
-        $response->assertViewHas('driver', $user->name);
+        $response->assertViewHas('driver', $user->shortName);
         $response->assertViewHas('deepLinkUrl', 'caronae://carona/' . $ride->id);
     }
 

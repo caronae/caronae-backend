@@ -34,7 +34,7 @@
 @endsection
 
 @section('head-tags')
-    <meta property="og:title" content="{{ "Carona $title" }}">
-    <meta property="og:description" content="{{ "Pegue uma carona com $driver pelo Caronaê" }}">
+    <meta property="og:title" content="{{ "Carona de $title" }}">
+    <meta property="og:description" content="{{ "Pegue uma carona com $driver pelo Caronaê!" }}">
     <meta property="og:image" content="{{ asset('images/logo_caronae.png') }}">
 @endsection
