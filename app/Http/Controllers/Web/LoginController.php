@@ -102,6 +102,7 @@ class LoginController extends BaseController
         if (!$user) {
             throw new JWTException('User not found', 401);
         }
+
         return $user;
     }
 

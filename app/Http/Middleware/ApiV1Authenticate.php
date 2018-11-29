@@ -16,7 +16,7 @@ class ApiV1Authenticate
         if (auth()->check()) {
             return $next($request);
         }
-        
+
         if (!empty($request->header('token'))) {
             return $this->handleLegacyTokenAuthentication($request, $next);
         }
