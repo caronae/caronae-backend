@@ -1,5 +1,7 @@
 @extends('templates.login')
 
+@section('title', "Carona de $driver - $title - Caronaê")
+
 @section('content')
     <div class="form-top">
         <div class="form-top-left">
@@ -29,4 +31,10 @@
             </a>
         </section>
     </div>
+@endsection
+
+@section('head-tags')
+    <meta property="og:title" content="{{ "Carona $title" }}">
+    <meta property="og:description" content="{{ "Pegue uma carona com $driver pelo Caronaê" }}">
+    <meta property="og:image" content="{{ asset('images/logo_caronae.png') }}">
 @endsection

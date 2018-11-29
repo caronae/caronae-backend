@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Caronaê</title>
+    <title>@yield('title', 'Caronaê')</title>
 
     <link rel="icon" type="image/png" href="{{ asset('favicon-32x32.png') }}" sizes="32x32">
     <link rel="icon" type="image/png" href="{{ asset('favicon-96x96.png') }}" sizes="96x96">
@@ -23,6 +23,8 @@
         ga('create', 'UA-97867968-4', 'auto');
         ga('send', 'pageview');
     </script>
+
+    @yield('head-tags')
 </head>
 
 <body>
