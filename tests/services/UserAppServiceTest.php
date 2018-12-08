@@ -47,9 +47,9 @@ class UserAppServiceTest extends TestCase
     }
 
     /** @test */
-    public function should_return_android_users_with_app_versions_prior_to_3_0_3()
+    public function should_return_android_users_with_app_versions_prior_to_3_0_5()
     {
-        $userOld = factory(User::class)->create(['app_platform' => 'Android', 'app_version' => '3.0.2']);
+        $userOld = factory(User::class)->create(['app_platform' => 'Android', 'app_version' => '3.0.4']);
         $userVeryOld = factory(User::class)->create(['app_platform' => 'Android', 'app_version' => '2.2.6']);
         $userVeryVeryOld = factory(User::class)->create(['app_platform' => 'Android', 'app_version' => '2.1.3']);
 
@@ -61,9 +61,9 @@ class UserAppServiceTest extends TestCase
     }
 
     /** @test */
-    public function should_not_return_android_users_with_app_versions_equal_or_later_then_3_0_3()
+    public function should_not_return_android_users_with_app_versions_equal_or_later_then_3_0_5()
     {
-        $userNew = factory(User::class)->create(['app_platform' => 'Android', 'app_version' => '3.0.3']);
+        $userNew = factory(User::class)->create(['app_platform' => 'Android', 'app_version' => '3.0.5']);
         $userVeryNew = factory(User::class)->create(['app_platform' => 'Android', 'app_version' => '4.0.0']);
 
         $users = $this->service->getActiveUsersWithOldAppVersions();
