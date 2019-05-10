@@ -11,6 +11,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \Caronae\Http\Middleware\TrimStrings::class,
         \Caronae\Http\Middleware\TrustProxies::class,
+        \jdavidbakr\CloudfrontProxies\CloudfrontProxies::class,
     ];
 
     protected $middlewareGroups = [
